@@ -66,8 +66,7 @@ class Purchase_invoice extends CI_Controller {
             $data['potype']='I';
             $data['amount']=$this->input->post('amount');
             $data['terms_list']=$this->type_of_payment_model->select_list();
-			$this->template->display_form_input($this->file_view,$data,'');			
-                 
+			$this->template->display_form_input($this->file_view,$data,'');			                 
 	}
 	function save(){
         $data['potype']='I';
@@ -424,6 +423,43 @@ class Purchase_invoice extends CI_Controller {
 	function amount_paid($faktur){return 0;}
 	function amount_retur($faktur){return 0;}
 	function amount_crdb($faktur){return 0;}
+	
+	function select_list(){
+		
+		$q=$this->input->get('q');
+		$cst=$this->input->get('supp');
+		if($q){
+			if($q=='not_paid'){				
+				$sql="select purchase_order_number,po_date,due_date,amount,terms 
+				from purchase_order 
+				where potype='I' and (paid=false or isnull(paid))
+				and supplier_number='$cst'";
+				 
+				$query=$this->db->query($sql);
+				$i=0;
+				$this->load->model('purchase_order_model');
+				$data='';
+				foreach($query->result() as $row){
+					$saldo=$this->purchase_order_model->recalc($row->purchase_order_number);
+					$data[$i][]=$row->purchase_order_number;
+					$data[$i][]=$row->po_date;
+					$data[$i][]=$row->due_date;
+					$data[$i][]=$row->terms;
+					$data[$i][]=$row->amount;
+					$data[$i][]=$saldo;
+					$data[$i][]=form_input('bayar[]');
+					$data[$i][]=form_hidden('faktur[]',$row->purchase_order_number);
+					$i++;
+				}
+				
+				$this->load->library('browse');
+				$header=array('Faktur','Tanggal','Jth Tempo','Termin','Jumlah','Saldo','Bayar');
+				$this->browse->set_header($header);
+				$this->browse->data($data);
+				echo $this->browse->refresh();
+			}
+		}
+	}
 	
 
 }

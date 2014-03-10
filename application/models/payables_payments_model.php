@@ -16,12 +16,14 @@ private $table_name='payables_payments';
 		return $this->db->get($this->table_name);
 	}
 	function save($data){		 
-		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+		if($data['date_paid'])$data['date_paid']= date('Y-m-d H:i:s', strtotime($data['date_paid']));
+		return $this->db->insert($this->table_name,$data);
+		//return $this->db->insert_id();
 	}
 	function update($id,$data){
+		if($data['date_paid'])$data['date_paid']= date('Y-m-d H:i:s', strtotime($data['date_paid']));
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		return $this->db->update($this->table_name,$data);
 	}
 	function delete($no_bukti){
 		$this->db->where($this->primary_key,$no_bukti);

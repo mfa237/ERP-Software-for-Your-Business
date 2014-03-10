@@ -13,7 +13,7 @@
  
 $action="";
 echo form_open($action,"id='frmAddPay' ");?>    
-<table style="width:100%;">
+<table >
     <?=form_hidden('purchase_order_number',$purchase_order_number,'id="purchase_order_number"')?>
     <tr><td colspan="2"><h1>Silahkan input pembayaran untuk faktur: <?=$purchase_order_number?></h1></td></tr>
     <tr><td>Nomor: </td><td><?=form_input('no_bukti',$no_bukti)?>*nomor sementara</td></tr>

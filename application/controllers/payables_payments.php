@@ -7,15 +7,16 @@ class Payables_payments extends CI_Controller {
             from purchase_order i
             left join suppliers c on c.supplier_number=i.supplier_number
             where i.potype='I'";
-    private $controller='purchase_invoice';
-    private $primary_key='purchase_order_number';
-    private $file_view='purchase/purchase_invoice';
-    private $table_name='purchase_order';
+    private $controller='payables_payments';
+    private $primary_key='no_bukti';
+    private $file_view='purchase/payables_payments';
+    private $table_name='payables';
     function __construct()
 	{
 		parent::__construct();
- 		$this->load->helper(array('url','form','browse_helper'));
+ 		$this->load->helper(array('url','form','mylib_helper'));
 		$this->load->library(array('form_validation','sysvar'));
+        $this->load->library('template');
 		$this->load->model('payables_payments_model');
                 
 	}
@@ -71,36 +72,97 @@ class Payables_payments extends CI_Controller {
 	}
 	function save()
 	{
-		$this->load->model('payables_model');
-		$this->_set_rules();
-		$data['no_bukti']=$this->input->post('no_bukti');
-		$data['date_paid']=$this->input->post('date_paid');
-		$data['how_paid']=$this->input->post('how_paid');
-		$data['amount_paid']=$this->input->post('amount_paid');
-		$data['purchase_order_number']=$this->input->post('purchase_order_number');
-		$data['bill_id']=$this->payables_model->get_bill_id($data['purchase_order_number']);
-		if ($this->form_validation->run()=== TRUE){               
-		    $this->payables_payments_model->save($data);
-		    if($this->input->post('mode')=='add')$this->sysvar->autonumber_inc("AP Payment Numbering");
-			//header('location:'.base_url().'index.php/purchase_invoice/payments/'.$data['purchase_order_number']);
-		} else {
-		      echo validation_errors();
-		};
+   		$this->load->model('bank_accounts_model');
+		$this->load->model('supplier_model');
+		$this->load->model('purchase_order_model');
+		
+		$faktur=$this->input->post("faktur");
+   		$no_bukti=$this->nomor_bukti();
+   		$bayar=$this->input->post("bayar");
+		$total_paid=0;
+		$account=$this->input->post('how_paid_account_id');
+		$bank=$this->bank_accounts_model->get_by_id($account)->row();
+		$account_id=$bank->account_id;
+		$how_paid=strtolower($this->input->post('how_paid'));
+		$trtype='cash in';
+		$cust="";
+		$cust_name="";
+		switch ($how_paid) {
+			case 'trans in':
+				$trtype='trans in';
+				break;
+			case 'giro':
+				$trtype='cheque in';
+				break;
+			default:
+				$trtype='cash in';
+				break;
+		}
+		for($i=0;$i<count($bayar);$i++){
+			if(intval($bayar[$i])<>0){
+				$amount_paid=$bayar[$i];
+				$no_faktur=$faktur[$i];
+				$rfaktur=$this->purchase_order_model->get_by_id($no_faktur)->row();
+				if($cust==""){
+					$rcust=$this->supplier_model->get_by_id($rfaktur->supplier_number)->row();		
+					$cust=$rcust->supplier_number;
+					$cust_name=$rcust->supplier_name;
+				}
+                $data['no_bukti']=$no_bukti;
+                $data['date_paid']=$this->input->post('date_paid');
+                $data['how_paid']=$how_paid;
+                $data['amount_paid']=$amount_paid;
+                $data['purchase_order_number']=$no_faktur;
+				$data['how_paid_account_id']=$account_id;
+				 
+                $this->payables_payments_model->save($data);
+				$total_paid=$total_paid+$amount_paid;
+			}	
+		}
+		//-- simpan juga bukti pembayaran di module kas masuk
+		$rkas['voucher']=$no_bukti;
+		$rkas['check_date']=$this->input->post('date_paid');
+		$rkas['deposit_amount']=0;
+		$rkas['payment_amount']=$total_paid;
+		$rkas['account_number']=$account;
+		$rkas['trans_type']=$trtype;
+		$rkas['payee']=$cust_name;
+		$rkas['supplier_number']=$cust;
+		$rkas['memo']="Pelunasan hutang supplier ".$cust_name;
+		$this->load->model('check_writer_model');
+		$this->check_writer_model->save($rkas); 	 	
+		$this->nomor_bukti(true);
+		redirect(base_url().'index.php/payables_payments/view/'.$no_bukti);
 	}
     function add(){
     	 
         $this->load->model('purchase_order_model');
+        $this->load->model('bank_accounts_model');
+		
     	$nomor=$this->input->get('purchase_order_number');
         $data['mode']='add';
-        $data['no_bukti']=$this->sysvar
-            ->autonumber("AP Payment Numbering",0,'!APP~$00001');        
+        $data['no_bukti']=$this->nomor_bukti();        
         $data['date_paid']=date('Y-m-d');
         $data['how_paid']='Cash';
         $data['saldo']=$this->purchase_order_model->recalc($nomor);
         $data['purchase_order_number']=$nomor;
         $data['amount_paid']=$data['saldo'];
-        $this->load->view('purchase/payables_payments',$data);
+		$data['account_list']=$this->bank_accounts_model->account_number_list();
+		$data['how_paid_account_id']='';
+		$data['supplier_number']='';
+		
+		$this->template->display_form_input('purchase/payment_multi',$data,'');			                 
    }
+	function nomor_bukti($add=false)
+	{
+		$key="AP Payment Numbering";
+		if($add){
+		  	$this->sysvar->autonumber_inc($key);
+		} else {			
+			return $this->sysvar->autonumber($key,0,'!APP~$00001');
+		}
+	}
+	
    function delete($line_number)
    {
    		$this->payables_payments_model->delete_line($line_number);
@@ -124,6 +186,33 @@ class Payables_payments extends CI_Controller {
    		echo $s.browse_simple('select no_bukti,date_paid,how_paid,how_paid_account_id,
    		amount_paid,line_number,bill_id from payables_payments where bill_id='.$bill_id);
    }
+        
+   function view($no_bukti){
+   		$this->load->model('check_writer_model');
+		$rcek=$this->check_writer_model->get_by_id($no_bukti)->row();
+		if($rcek){
+			$data['voucher']=$rcek->voucher;
+			$data['date_paid']=$rcek->check_date;
+			$data['amount_paid']=$rcek->deposit_amount;
+			$data['account_number']=$rcek->account_number;
+			$data['trans_type']=$rcek->trans_type;
+			$data['supplier_info']=$rcek->supplier_number.' - '.$rcek->payee;
+  		
+			$this->template->display_form_input('purchase/payment_multi_view',$data,'');
+						
+		} else {
+			echo 'Nomor voucher tidak ditemukan ! </br>Atau tidak terdaftar di kas masuk ! </br>Nomor Bukti: '.$no_bukti;
+		}
+   }
+    function load_nomor($voucher){
+		$sql="select i.purchase_order_number,i.po_date,p.date_paid,i.amount,
+		p.amount_paid from payables_payments p left join purchase_order i 
+		on i.purchase_order_number=p.purchase_order_number
+		where p.no_bukti='$voucher'";
+        echo datasource($sql);
+    }
+
+      
     
 }
  

@@ -30,10 +30,8 @@ class Purchase_order extends CI_Controller {
             $data['mode']='';
             $data['message']='';
             if($record==NULL){
-			$data['purchase_order_number']=
-                                $this->sysvar->autonumber("Purchase Order Numbering",0,
-                                '!PO~$00001');
-            }
+				$data['purchase_order_number']=$this->nomor_bukti();
+			}
             return $data;
 	}
 	function index()

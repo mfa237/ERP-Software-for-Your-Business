@@ -22,6 +22,7 @@ class Purchase_invoice extends CI_Controller {
 		$this->load->model('purchase_order_model');
 		$this->load->model('supplier_model');
 		$this->load->model('inventory_model');
+		$this->load->model('type_of_payment_model');
 		 
 	}
 	function set_defaults($record=NULL){
@@ -29,8 +30,7 @@ class Purchase_invoice extends CI_Controller {
             $data['mode']='';
             $data['message']='';
             if($record==NULL){
-				$data['purchase_order_number']=$this->sysvar
-				->autonumber("Purchase Invoice Numbering",0,'!PI~$00001');
+				$data['purchase_order_number']=$this->nomor_bukti();
             }
             $data['po_date']= date("Y-m-d");
             return $data;
@@ -45,33 +45,58 @@ class Purchase_invoice extends CI_Controller {
             $data=data_table_post($this->table_name);
             return $data;
 	}
+	function nomor_bukti($add=false)
+	{
+		$key="Purchase Invoice Numbering";
+		if($add){
+		  	$this->sysvar->autonumber_inc($key);
+		} else {			
+			return $this->sysvar->autonumber($key,0,'!PI~$00001');
+		}
+	}
+
 	function add()
 	{
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-            $data['potype']='I';
-			$this->purchase_order_model->save($data);
-            $id=$this->input->post('purchase_order_number');
-            $this->sysvar->autonumber_inc("Purchase Order Numbering");
-            redirect('/purchase_invoice/view/'.$id, 'refresh');
-		} else {
-                        
-			$this->load->model('type_of_payment_model');			
 			$data['mode']='add';
 			$data['message']='';
             $data['supplier_number']=$this->input->post('supplier_number');
-            $data['supplier_list']=$this->supplier_model->select_list();
             if($data['po_date']=='')$data['po_date']= date("Y-m-d");
             $data['potype']='I';
             $data['amount']=$this->input->post('amount');
             $data['terms_list']=$this->type_of_payment_model->select_list();
 			$this->template->display_form_input($this->file_view,$data,'');			
-		}
-             
                  
 	}
+	function save(){
+        $data['potype']='I';
+        $id=$this->nomor_bukti();
+		$data['purchase_order_number']=$id;
+		$data['po_date']=$this->input->post('po_date');
+        $data['supplier_number']=$this->input->post('supplier_number');
+        $data['terms']=$this->input->post('terms');
+        $data['due_date']=$this->input->post('due_date');
+        $data['comments']=$this->input->post('comments');
+
+		if ($this->purchase_order_model->save($data)){
+			$this->nomor_bukti(true);
+			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+	}
+	function items($nomor,$type='')
+	{
+            $sql="select p.item_number,i.description,p.quantity 
+            ,p.unit,p.price,p.discount,p.total_price,p.line_number
+            from purchase_order_lineitems p
+            left join inventory i on i.item_number=p.item_number
+            where purchase_order_number='$nomor'";
+			 
+			echo datasource($sql);
+	}
+	
 	function update()
 	{
 		 $data=$this->set_defaults();

@@ -103,21 +103,21 @@ class Gudang extends CI_Controller {
             $url='';
             $this->session->set_userdata('_right_menu', $url);
             $this->template->display_browse2($data);
-        }
-        function browse_data($offset=0,$limit=10,$nama=''){
-            $sql=$this->sql." where location_number like '".$nama."%'";
-            $query=$this->db->query($sql);
-            $i=0; 
-            foreach($query->result_array() as $row){
-                $rows[$i++]=$row;
-            };
-            $data['total']=$i;
-            $data['rows']=$rows;
-           
-            echo json_encode($data);
-           
-        }
-	 
+    }
+    function browse_data($offset=0,$limit=10,$nama=''){
+        $sql=$this->sql." where location_number like '".$nama."%'";
+        $query=$this->db->query($sql);
+        $i=0; 
+        foreach($query->result_array() as $row){
+            $rows[$i++]=$row;
+        };
+        $data['total']=$i;
+        $data['rows']=$rows;
+       
+        echo json_encode($data);
+       
+    }
+ 
 	function delete($id){
 	 	$this->shipping_location_model->delete($id);
 	 	$this->browse();

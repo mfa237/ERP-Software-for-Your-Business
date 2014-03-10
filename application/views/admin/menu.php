@@ -30,6 +30,7 @@
  					<li><?=anchor('company/sales','Setting Penjualan');?></li>
  					<li><?=anchor('company/purchase','Setting Pembelian');?></li>
  					<li><?=anchor('company/inventory','Setting Inventory');?></li>
+ 					<li><?=anchor('nomor','Setting Penomoran');?></li>
  					<li><?=anchor('company/others','Setting Lain-lain');?></li>
  				</ul>				
 			</li>

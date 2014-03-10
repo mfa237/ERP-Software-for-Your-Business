@@ -12,8 +12,7 @@ class Company extends CI_Controller {
     private $primary_key='company_code';
     private $controller='company';
 
-    function __construct()
-    {
+    function __construct()    {
             parent::__construct();
             $this->load->helper(array('url','form','mylib_helper'));
             $this->load->library('template');
@@ -26,16 +25,14 @@ class Company extends CI_Controller {
             $data=data_table($this->table_name,$record);
              return $data;
     }
-    function index()
-    {	
+    function index()    {	
             $this->browse();
     }
     function get_posts(){
             $data=data_table_post($this->table_name);
             return $data;
     }
-    function add()
-    {
+    function add()   {
              $data=$this->set_defaults();
              $this->_set_rules();
              if ($this->form_validation->run()=== TRUE){
@@ -50,8 +47,7 @@ class Company extends CI_Controller {
                     $this->template->display_form_input($this->file_view,$data,'company_menu');			
             }
     }
-    function update()
-    {
+    function update()   {
 
              $data=$this->set_defaults();
              $this->_set_rules();
@@ -67,7 +63,7 @@ class Company extends CI_Controller {
             }
     }
 
-    function view($id,$message=null){
+    function view($id,$message=null)	{
              $data['id']=$id;
              $model=$this->company_model->get_by_id($id)->row();
              $data=$this->set_defaults($model);

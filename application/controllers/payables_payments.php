@@ -22,11 +22,12 @@ class Payables_payments extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Kode Supplier','Nama Supplier','Kota','Gudang');
-		$data['fields']=array('purchase_order_number','po_date','amount', 
-                'supplier_number','supplier_name','city','warehouse_code');
-		$data['field_key']='purchase_order_number';
-		$data['caption']='DAFTAR FAKTUR PEMBELIAN';
+		$data['fields_caption']=array('Nomor Bukri','Tgl Bayar','Faktur','Tgl Faktur','Jenis','Jumlah Faktur',
+			'Jumlah Bayar','Kode Supplier','Nama Supplier','Kota');
+		$data['fields']=array('no_bukti','date_paid','purchase_order_number','po_date','how_paid','amount',
+				'amount_paid', 'supplier_number','supplier_name','city');
+		$data['field_key']='no_bukti';
+		$data['caption']='DAFTAR PEMBAYARAN FAKTUR PEMBELIAN';
 
 		$this->load->library('search_criteria');
 		
@@ -38,11 +39,11 @@ class Payables_payments extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){
- 		$sql="select p.date_paid,p.invoice_number,p.no_bukti,p.how_paid,
- 			p.amount_paid,i.sold_to_customer,c.company
- 	 		from payments p
- 	 		left join invoice i on i.invoice_number=p.invoice_number 
- 	 		left join customers c on c.customer_number=i.sold_to_customer 
+ 		$sql="select p.no_bukti, p.date_paid,p.purchase_order_number,i.po_date,p.how_paid,
+ 			i.amount,p.amount_paid,i.supplier_number,c.supplier_name,c.city
+ 	 		from payables_payments p
+ 	 		left join purchase_order i on i.purchase_order_number=p.purchase_order_number 
+ 	 		left join suppliers c on c.supplier_number=i.supplier_number 
  	 		where  1=1";
     	$nama=$this->input->get('sid_cust');
 		$no_bukti=$this->input->get('no_bukti');
@@ -53,8 +54,8 @@ class Payables_payments extends CI_Controller {
  			$sql.=" and how_paid='$no_bukti'";	
 		} else {
  	 		$sql.=" and date_paid between'$d1' and '$d2'";
-			if($nama!='')$sql.=" and company like '$nama%'";	
-			if($no_faktur!='')$sql.=" and invoice_number='$no_faktur'";	
+			if($nama!='')$sql.=" and supplier_name like '$nama%'";	
+			if($no_faktur!='')$sql.=" and purchase_order_number='$no_faktur'";	
  	 	}
         echo datasource($sql);
     }	 

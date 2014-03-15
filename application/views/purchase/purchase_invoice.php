@@ -84,8 +84,7 @@
 				<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
 				<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
 					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-             		   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
-             		
+             		   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>             		
 				</td>
 			</tr>
 		</table>		

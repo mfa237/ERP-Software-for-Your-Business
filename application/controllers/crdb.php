@@ -43,28 +43,56 @@ class CrDb extends CI_Controller {
 	}
 	function save()
 	{
-		 var_dump($_POST);
-		 var_dump($_GET);
-		 
 		$invoice_number=$this->input->post('docnumber');
 		if($invoice_number)
 		{
-			$data['kodecrdbx']=$this->nomor_bukti();
+			$id=$this->nomor_bukti();
+			$data['kodecrdb']=$id;
 			$data['tanggal']=$this->input->post('tanggal');
 			$data['docnumber']=$invoice_number;
 			$data['amount']=$this->input->post('amount');
 			$data['keterangan']=$this->input->post('keterangan');
-			$this->crdb_model->save($data);
-			$this->nomor_bukti(true);
-		} else {echo 'Save: Invalid Invoice Number';}
-	
+			$data['transtype']=$this->input->post('transtype');
+			if ($this->crdb_model->save($data)){
+				$this->nomor_bukti(true);
+				echo json_encode(array('success'=>true,'kodecrdb'=>$id));
+			} else {
+				echo json_encode(array('msg'=>'Some errors occured.'));
+			}
+		}
 	}
 	function items($kode,$type="json"){
-		$sql="select c.account,c.account_description,d.amount,d.lineid 
+		$sql="select c.account,c.account_description as description,d.amount,d.lineid as line_number 
 		from crdb_memo_dtl d left join chart_of_accounts c 
 		on c.id=d.accountid
 		 where kodecrdb='$kode'";
 		echo datasource($sql);
 	}
-	
+	function save_item(){
+		$acc=$this->input->post('account');
+		$amt=$this->input->post("amount");
+		$kode=$this->input->post('kodecrdb_no');
+		if($amt=='')$amt=0;
+		if($acc){
+			$this->load->model('chart_of_accounts_model');
+			$accid=$this->chart_of_accounts_model->get_by_id($acc)->row()->id;
+			if($accid){
+				$data['accountid']=$accid;
+				$data['kodecrdb']=$kode;
+				$data['amount']=$amt;
+				if ($this->crdb_model->save_item($data)){
+					$this->nomor_bukti(true);
+					echo json_encode(array('success'=>true));
+				} else {
+					echo json_encode(array('msg'=>'Some errors occured.'));
+				}
+			}
+		}
+		
+	}
+    function delete_item(){
+    	$id=$this->input->post('line_number');
+        $this->load->model('crdb_model');
+        return $this->crdb_model->delete_item($id);
+    }        
 }

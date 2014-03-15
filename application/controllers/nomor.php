@@ -52,6 +52,8 @@ class Nomor extends CI_Controller {
 	}
     function update()   {
     	$id=$this->input->post('varname');
+    	$id=urldecode($id);
+		
         $data['varname']=$id;
         $data['varvalue']=$this->input->post('varvalue');
         $data['keterangan']=$this->input->post('keterangan');

@@ -53,7 +53,7 @@
        oleh administrator</h4>
    <h3>
        <?php echo form_open('','id="frmLogin"')?>
-           <img src="images/login_logo.png" style="margin:5px"
+           <img src="<?=base_url()?>/images/login_logo.png" style="margin:5px"
                 width="50" height="50" align="left">
        <div  >
             <label for="username">Username:</label><br/>

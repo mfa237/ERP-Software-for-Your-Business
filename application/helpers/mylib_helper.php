@@ -206,6 +206,15 @@ function data_table_get($table,$is_sql=false){
     }   
     return $data;
 }}
-
+if (!function_exists("load_view")){
+    function load_view($viewName,$data = array()){
+ 
+        $CI = & get_instance();
+ 
+        $content = $CI->load->view($viewName,$data,true);
+ 
+        return $content;
+    }
+}
 }                    
 ?>

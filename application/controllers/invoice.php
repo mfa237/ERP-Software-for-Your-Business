@@ -49,7 +49,11 @@ class Invoice extends CI_Controller {
 	}
 	function index()
 	{          
-            $this->browse();
+		if(!$this->access->is_login()){
+		    redirect(base_url());
+			exit;
+		}				
+        $this->browse();
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);

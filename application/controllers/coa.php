@@ -176,4 +176,9 @@ class Coa extends CI_Controller {
          		$this->view($id,$message);		
 		}	  	
 	}        
+	function select($account=''){
+		$sql="select account,account_description,id from chart_of_accounts where 1=1";
+		if($account!="")$sql.=" and account like '$account%'";
+		echo datasource($sql);	
+	}
 }

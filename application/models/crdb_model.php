@@ -24,14 +24,17 @@ private $table_name='crdb_memo';
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
-		$this->db->insert($this->table_name,$data);
-		$id=$this->db->insert_id();
+		if(isset($data['tanggal']))$data['tanggal']= date('Y-m-d H:i:s', strtotime($data['tanggal']));
+		$ok=$this->db->insert($this->table_name,$data);
+//		$id=$this->db->insert_id();
 		$faktur=$data['docnumber'];
 		$this->load->model('invoice_model');
 		$this->invoice_model->recalc($faktur);
+		return $ok;
 	}
 	function update($id,$data){
 		$faktur=$data['docnumber'];
+		if(isset($data['tanggal']))$data['tanggal']= date('Y-m-d H:i:s', strtotime($data['tanggal']));
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 		$this->load->model('invoice_model');
@@ -43,6 +46,13 @@ private $table_name='crdb_memo';
 		$this->db->delete($this->table_name);
 		$this->load->model('invoice_model');
 		$this->invoice_model->recalc($faktur);
+	}
+	function save_item($data){
+		return $this->db->insert('crdb_memo_dtl',$data);
+	}
+	function delete_item($id){
+		$this->db->where("lineid",$id);
+		return $this->db->delete("crdb_memo_dtl");
 	}
 	
 }

@@ -34,8 +34,10 @@ function __construct(){
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
-		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		if($id!=''){
+			$this->db->where($this->primary_key,$id);
+			$this->db->update($this->table_name,$data);
+		}
 	}
 	function delete($id){
 		$this->db->where($this->primary_key,$id);

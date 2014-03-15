@@ -3,7 +3,7 @@
 class Purchase_DbMemo extends CI_Controller {
     private $limit=10;
     private $sql="select kodecrdb,tanggal,docnumber,amount,keterangan,c.account, c.account_description
-     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where 1=1 ";
+     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='PO-DEBITMEMO'";
     private $controller='Purchase_DbMemo';
     private $primary_key='kodecrdb';
     private $file_view='purchase/debit_memo';
@@ -34,7 +34,7 @@ class Purchase_DbMemo extends CI_Controller {
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Keterangan','Kode Akun','Perkiraan');
-		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','keterangan','account','account_description','');
+		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','keterangan','account','account_description');
 		$data['field_key']='kodecrdb';
 		$data['caption']='DAFTAR DEBIT MEMO';
 
@@ -79,10 +79,25 @@ class Purchase_DbMemo extends CI_Controller {
 			$data['docnumber']=$invoice_number;
 			$data['amount']=$this->input->post('amount');
 			$data['keterangan']=$this->input->post('keterangan');
+			$data['transtype']=$this->input->post('transtype');
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
 		} else {echo 'Save: Invalid Invoice Number';}
 	
+	}
+	function view($id,$message=null){
+		 $data['id']=$id;
+		 $model=$this->crdb_model->get_by_id($id)->result_array();
+		 $data=$this->set_defaults($model[0]);
+		 $data['mode']='view';
+         $this->template->display('purchase/debit_memo',$data);                 
+	}
+   
+	function set_defaults($record=NULL){
+            $data=data_table($this->table_name,$record);
+            $data['mode']='';
+            $data['message']='';
+			return $data;
 	}
 	
 }

@@ -2,7 +2,7 @@
 
 class Purchase_retur extends CI_Controller {
         private $limit=10;
-        private $sql="select purchase_order_number,po_date,amount, 
+        private $sql="select purchase_order_number,po_date,amount, i.po_ref,
                 i.supplier_number,c.supplier_name,c.city,i.warehouse_code
                 from purchase_order i
                 left join suppliers c on c.supplier_number=i.supplier_number
@@ -14,6 +14,9 @@ class Purchase_retur extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+
+		if(!$this->access->is_login()){redirect('home', 'refresh');exit;}            
+
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
         $this->load->library('sysvar');
         $this->load->library('javascript');
@@ -44,8 +47,7 @@ class Purchase_retur extends CI_Controller {
 	}
 	function index()
 	{	
-            
-            $this->browse();
+        $this->browse();
            
 	}
 	function get_posts(){
@@ -53,6 +55,25 @@ class Purchase_retur extends CI_Controller {
             return $data;
 	}
 	function save(){
+        $data['potype']='R';
+        $id=$this->nomor_bukti();
+		$data['purchase_order_number']=$id;
+		$data['po_date']=$this->input->post('po_date');
+        $data['supplier_number']=$this->input->post('supplier_number');
+        $data['terms']=$this->input->post('terms');
+        $data['due_date']=$this->input->post('due_date');
+        $data['comments']=$this->input->post('comments');
+        $data['po_ref']=$this->input->post('po_ref');
+
+		if ($this->purchase_order_model->save($data)){
+			$this->nomor_bukti(true);
+			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+	}
+	
+	function save_old(){
 		$this->load->model('purchase_order_lineitems_model');
 		$this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -81,7 +102,13 @@ class Purchase_retur extends CI_Controller {
             header('location: '.base_url().'index.php/purchase_retur/view/'.$nomor);
          }
 	}
-	function add($nomor_faktur)
+	function add()	{
+	    $data=$this->set_defaults();
+		$this->_set_rules();
+		$data['mode']='add';
+		$this->template->display_form_input('purchase/retur',$data,'');			
+	}
+	function add_single($nomor_faktur)
 	{
 		$this->load->model('purchase_order_lineitems_model');
 	    $data=$this->set_defaults();
@@ -132,8 +159,9 @@ class Purchase_retur extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Kode Supplier','Nama Supplier','Kota','Gudang');
-		$data['fields']=array('purchase_order_number','po_date','amount', 
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Faktur','Kode Supplier',
+		'Nama Supplier','Kota','Gudang');
+		$data['fields']=array('purchase_order_number','po_date','amount','po_ref', 
                 'supplier_number','supplier_name','city','warehouse_code');
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR PURCHASE RETUR';

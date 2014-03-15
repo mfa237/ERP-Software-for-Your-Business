@@ -23,9 +23,7 @@ class Template {
 	<link rel="stylesheet" type="text/css" href="'.base_url().'/themes/standard/style.css">
 	';
 
-
-
- }
+}
 
  function display($template,$data=null)
  {
@@ -65,7 +63,7 @@ class Template {
  }
  function display_login($template,$data=null)
  {
-        $data['message']='Ready';
+     $data['message']='Ready';
 	 if(!$this->is_ajax())
 	 {	 
 		$data['_content']=$this->_ci->load->view($template,$data, true);

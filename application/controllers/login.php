@@ -30,8 +30,7 @@ class Login extends CI_Controller {
 
  }
 
- function index()
- {
+ function index() {
     $data['message']='';
 	$user_id = $this->input->post('user_id');
 	if($user_id) {

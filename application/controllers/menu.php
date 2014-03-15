@@ -9,10 +9,13 @@ class Menu extends CI_Controller {
 		$this->load->library('template');
              
 	}
-	function index()
-	{	
-        }
+	function index(){
+    }
         function load($m){
+			if(!$this->access->is_login()){
+			    redirect(base_url());
+				exit;
+			}				
             $url=$m.'/menu';
 			$this->session->set_userdata('_left_menu_caption',$m);
             $this->session->set_userdata('_left_menu', $url);

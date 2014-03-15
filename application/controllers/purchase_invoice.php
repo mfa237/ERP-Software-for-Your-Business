@@ -29,9 +29,7 @@ class Purchase_invoice extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
-            if($record==NULL){
-				$data['purchase_order_number']=$this->nomor_bukti();
-            }
+			$data['purchase_order_number']=$this->nomor_bukti();
             $data['po_date']= date("Y-m-d");
             return $data;
 	}
@@ -57,16 +55,17 @@ class Purchase_invoice extends CI_Controller {
 
 	function add()
 	{
-		 $data=$this->set_defaults();
-		 $this->_set_rules();
-			$data['mode']='add';
-			$data['message']='';
-            $data['supplier_number']=$this->input->post('supplier_number');
-            if($data['po_date']=='')$data['po_date']= date("Y-m-d");
-            $data['potype']='I';
-            $data['amount']=$this->input->post('amount');
-            $data['terms_list']=$this->type_of_payment_model->select_list();
-			$this->template->display_form_input($this->file_view,$data,'');			                 
+	 	$data=$this->set_defaults();
+		$this->_set_rules();
+		$data['mode']='add';
+		$data['message']='';
+        $data['supplier_number']='';
+        $data['po_date']= date("Y-m-d");
+        $data['potype']='I';
+        $data['amount']=0;
+		 
+        $data['terms_list']=$this->type_of_payment_model->select_list();
+		$this->template->display_form_input($this->file_view,$data,'');			                 
 	}
 	function save(){
         $data['potype']='I';
@@ -460,6 +459,12 @@ class Purchase_invoice extends CI_Controller {
 			}
 		}
 	}
-	
+	function select($supplier=''){
+		$s="select purchase_order_number,po_date,terms from purchase_order 
+		where potype='I'";
+		if($supplier!="")$s.=" and supplier_number='".$supplier."'";
+	 
+		echo datasource($s);
+	}
 
 }

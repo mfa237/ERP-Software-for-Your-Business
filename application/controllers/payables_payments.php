@@ -137,20 +137,16 @@ class Payables_payments extends CI_Controller {
 	}
     function add(){
     	 
-        $this->load->model('purchase_order_model');
         $this->load->model('bank_accounts_model');
 		
-    	$nomor=$this->input->get('purchase_order_number');
         $data['mode']='add';
         $data['no_bukti']=$this->nomor_bukti();        
         $data['date_paid']=date('Y-m-d');
         $data['how_paid']='Cash';
-        $data['saldo']=$this->purchase_order_model->recalc($nomor);
-        $data['purchase_order_number']=$nomor;
-        $data['amount_paid']=$data['saldo'];
 		$data['account_list']=$this->bank_accounts_model->account_number_list();
-		$data['how_paid_account_id']='';
 		$data['supplier_number']='';
+        $data['amount_paid']=0;
+		$data['how_paid_account_id']='';
 		
 		$this->template->display_form_input('purchase/payment_multi',$data,'');			                 
    }

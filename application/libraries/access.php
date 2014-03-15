@@ -21,10 +21,10 @@ class Access
 	 $this->CI->load->model('user_model');
 	
 	 $this->users_model =& $this->CI->users_model;
-         $data=$this->CI->session->userdata('logged_in');
-         $this->user_id=$data['user_id'];
-         $this->username=$data['username'];
-         $this->cid=$data['cid'];         
+     $data=$this->CI->session->userdata('logged_in');
+     $this->user_id=$data['user_id'];
+     $this->username=$data['username'];
+     $this->cid=$data['cid'];         
  }
 
  /**

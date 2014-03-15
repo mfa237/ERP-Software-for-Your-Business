@@ -22,35 +22,35 @@ function recalc($nomor){
 	if($nomor=='undefined')$nomor=$this->session->userdata('invoice_number');
 	
     $inv=$this->get_by_id($nomor)->row();
-    
-    $this->sub_total=$this->invoice_lineitems_model->sum_total_price($nomor);
+    if($inv) {
+	    $this->sub_total=$this->invoice_lineitems_model->sum_total_price($nomor);
+		
+		$disc_amount=$inv->discount*$this->sub_total;
+	    $this->amount=$this->sub_total-$disc_amount;
+		$tax_amount=$inv->sales_tax_percent*$this->amount;
+		$this->amount=$this->amount+$tax_amount;
+		$this->amount=$this->amount+$inv->freight;
+		$this->amount=$this->amount+$inv->other;
 	
-	$disc_amount=$inv->discount*$this->sub_total;
-    $this->amount=$this->sub_total-$disc_amount;
-	$tax_amount=$inv->sales_tax_percent*$this->amount;
-	$this->amount=$this->amount+$tax_amount;
-	$this->amount=$this->amount+$inv->freight;
-	$this->amount=$this->amount+$inv->other;
+	    $this->amount_paid=$this->payment_model->total_amount($nomor);
+		$this->retur_amount=$this->total_retur($nomor);
+		$this->crdb_amount=$this->crdb_model->total_by_invoice($nomor);
+		
+	    $this->saldo=$inv->amount-$this->amount_paid
+			-$this->retur_amount
+			+$this->crdb_amount;
+		
+		$sql="update invoice set paid=";
+		if($this->saldo==0){
+			$sql.="true";
+		} else {
+			$sql.="false";
+		}
+		$sql.=",amount=".$this->amount.",subtotal=".$this->sub_total
+		.",saldo_invoice=".$this->saldo." where invoice_number='$nomor'";
+		$this->db->query($sql);
 
-    $this->amount_paid=$this->payment_model->total_amount($nomor);
-	$this->retur_amount=$this->total_retur($nomor);
-	$this->crdb_amount=$this->crdb_model->total_by_invoice($nomor);
-	
-    $this->saldo=$inv->amount-$this->amount_paid
-		-$this->retur_amount
-		+$this->crdb_amount;
-	
-	$sql="update invoice set paid=";
-	if($this->saldo==0){
-		$sql.="true";
-	} else {
-		$sql.="false";
 	}
-	$sql.=",amount=".$this->amount.",subtotal=".$this->sub_total
-	.",saldo_invoice=".$this->saldo." where invoice_number='$nomor'";
-	$this->db->query($sql);
-
-
     return $this->saldo;
 }
 function total_retur($nomor)

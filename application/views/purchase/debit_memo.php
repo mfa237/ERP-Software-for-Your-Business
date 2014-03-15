@@ -14,8 +14,8 @@
         </tr>
        <tr>
             <td>Faktur</td>
-            <td><?=form_input('docnumber',$docnumber,'id=docnumber"');?>
-            	<?=link_button("",'cari_faktur()','search','true')?>
+            <td><?=form_input('docnumber',$docnumber,'id="docnumber"');?>
+            	<?=link_button("",'select_faktur()','search','true')?>
             </td>
        </tr>
        <tr>
@@ -29,12 +29,16 @@
             </td>
        </tr>
        <tr><td colspan="4">
-       	<? if($mode=='add'){  echo link_button("Save",'save()','save','true'); } ?>
+			        <input type='hidden' id='transtype' name='transtype' value='PO-DEBITMEMO'>
        </td></tr>
    </table>
 </form>
+<? if($mode=='add'){ ?>
+	<span id='cmdSaveDbMemo'><?=link_button("Save","save_db_memo()","save","false")?></span>
+<? } ?>
+
+<div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
 <h1>DEBIT MEMO - PILIH KODE PERKIRAAN</H1>
-<div id='divItem' style=''>
 	<div id='dgItem'>
 		<table>
 			<tr>
@@ -58,7 +62,8 @@
 			</tr>
 		</table>		
 	</div>
-	<table id="dg" class="easyui-datagrid"  
+	<table id="dgItemMemo" class="easyui-datagrid"  		
+		style="width:800px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -69,55 +74,24 @@
 			<tr>
 				<th data-options="field:'account',width:80">Kode Akun</th>
 				<th data-options="field:'description',width:150">Nama Perkiraan</th>
-				<th data-options="field:'amount',width:60,align:'right',editor:'numberbox'">Jumlah</th>
+				<th data-options="field:'amount',width:60,align:'right'">Jumlah</th>
 				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 			</tr>
 		</thead>
 	</table>
 </div>
+<div id="tb" style="height:auto">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
+</div>
 
-<!-- DIALOG KODE PERKIRAAN -->
-<div id='dlgCoa' class="easyui-dialog"  style="width:400px;height:380px;padding:10px 20px" closed="true">
-		<table id="dgCoa" class="easyui-datagrid"  
-		data-options="toolbar: '#tbCoa', singleSelect: true,
-			url: '<?=base_url()?>index.php/coa/filter'">
-			<thead>
-				<tr>
-					<th data-options="field:'account',width:80">Kode Barang</th>
-					<th data-options="field:'description_description',width:150">Nama Barang</th>
-					<th data-options="field:'id',width:30">ID</th>
-				</tr>
-			</thead>
-		</table>
-</div>
-<div id="tbCoa" style="height:auto">
-	Enter Text: <input  id="search_coa" style='width:180' name="search_coa">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="search_coa()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="select_coa()">Select</a>
-</div>
-<script type="text/javascript">
-	function lookup_coa() {
-		$('#dgCoa').dialog('open').dialog('setTitle','Cari kode perkiraan');
-		coa=$('#search_coa').val();
-		$('#dgCoa').datagrid({url:'<?=base_url()?>index.php/coa/filter/'+coa});
-		$('#dgCoa').datagrid('reload');
-	}
-	function select_coa() {
-		var row = $('#dgCoa').datagrid('getSelected');
-		if (row){
-			$('#account').val(row.account);
-			$('#description').val(row.description);
-			$('#dgCoa').dialog('close');
-		}			
-	}
-</script>
-<!-- END DIALOG KODE PERKIRAAN -->
+<?=load_view('gl/select_coa')?>
+<? include_once 'faktur_select_crdb.php' ?>
 
 
 <script type="text/javascript">
 	var url;	
-    function save(){
+    function save_db_memo(){
         if($('#kodecrdb').val()==''){alert('Isi nomor bukti !');return false;}
         if($('#docnumber').val()==''){alert('Isi nomor faktur !');return false;}
 		url='<?=base_url()?>index.php/crdb/save';
@@ -129,7 +103,13 @@
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
+					$('#divItem').show('slow');
 					$('#kodecrdb').val(result.kodecrdb);
+					var nomor=$('#kodecrdb').val();
+					$('#cmdSaveDbMemo').hide();
+					url='<?=base_url()?>index.php/crdb/items/'+nomor+'/json';
+					$('#dgItemMemo').datagrid({url:url});
+					$('#dgItemMemo').datagrid('reload');
 					$.messager.show({
 						title:'Success',msg:'Data sudah tersimpan. Silahkan pilih kode perkiraan.'
 					});
@@ -143,8 +123,8 @@
 		});
     }
 		function save_item(){
-			url = '<?=base_url()?>index.php/sales_order/save_item';
-			$('#so_number').val($('#sales_order_number').val());
+			url = '<?=base_url()?>index.php/crdb/save_item';
+			$('#kodecrdb_no').val($('#kodecrdb').val());
 						 
 			$('#frmItem').form('submit',{
 				url: url,
@@ -154,11 +134,12 @@
 				success: function(result){
 					var result = eval('('+result+')');
 					if (result.success){
-						$('#dg').datagrid('reload');
-						$('#frmCrDb').form('clear');
+						$('#dgItemMemo').datagrid('reload');
+						$('#frmItem').form('clear');
 						$('#account').val('');
 						$('#description').val('');
-						$('#linenumber').val('');
+						$('#line_number').val('');
+						$('#amount').val('');
 						$.messager.show({
 							title: 'Success',
 							msg: 'Success'
@@ -174,14 +155,14 @@
 		}
 		
 		function deleteItem(){
-			var row = $('#dg').datagrid('getSelected');
+			var row = $('#dgItemMemo').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
 					if (r){
 						url='<?=base_url()?>index.php/crdb/delete_item';
-						$.post(url,{linenumber:row.linenumber},function(result){
+						$.post(url,{line_number:row.line_number},function(result){
 							if (result.success){
-								$('#dg').datagrid('reload');	// reload the user data
+								$('#dgItemMemo').datagrid('reload');	// reload the user data
 							} else {
 								$.messager.show({	// show error message
 									title: 'Error',
@@ -194,14 +175,14 @@
 			}
 		}
 		function editItem(){
-			var row = $('#dg').datagrid('getSelected');
+			var row = $('#dgItemMemo').datagrid('getSelected');
 			if (row){
 				console.log(row);
 				$('#frmCrDb').form('load',row);
 				$('#account').val(row.account);
 				$('#description').val(row.description);
 				$('#amount').val(row.amount);
-				$('#linenumber').val(row.line_number);
+				$('#line_number').val(row.line_number);
 				$('#kodecrdb_id').val(row.kodecrdb);
 			}
 		}

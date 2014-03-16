@@ -1,12 +1,12 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowd');
 
-class Purchase_DbMemo extends CI_Controller {
+class Purchase_CrMemo extends CI_Controller {
     private $limit=10;
     private $sql="select kodecrdb,tanggal,docnumber,amount,keterangan,c.account, c.account_description
-     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='PO-DEBIT MEMO'";
-    private $controller='purchase_dbmemo';
+     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='PO-CREDIT MEMO'";
+    private $controller='purchase_crmemo';
     private $primary_key='kodecrdb';
-    private $file_view='purchase/debit_memo';
+    private $file_view='purchase/credit_memo';
     private $table_name='crdb_memo';
 	function __construct()
 	{
@@ -36,7 +36,7 @@ class Purchase_DbMemo extends CI_Controller {
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Keterangan','Kode Akun','Perkiraan');
 		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','keterangan','account','account_description');
 		$data['field_key']='kodecrdb';
-		$data['caption']='DAFTAR DEBIT MEMO';
+		$data['caption']='DAFTAR CREDI MEMO';
 
 		$this->load->library('search_criteria');
 		
@@ -65,7 +65,7 @@ class Purchase_DbMemo extends CI_Controller {
 		$data['amount']=0;
 		$data['keterangan']="";
 		$data['mode']='add';
-		$this->template->display_form_input('purchase/debit_memo',$data,'');			
+		$this->template->display_form_input('purchase/credit_memo',$data,'');			
 		
 	}
 	function save()
@@ -90,7 +90,7 @@ class Purchase_DbMemo extends CI_Controller {
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
 		 $data['mode']='view';
-         $this->template->display('purchase/debit_memo',$data);                 
+         $this->template->display('purchase/credit_memo',$data);                 
 	}
    
 	function set_defaults($record=NULL){

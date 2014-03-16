@@ -1,4 +1,4 @@
-<h1>PROSES DEBIT MEMO - HEADER  </H1>
+<h1>PROSES CREDIT MEMO - HEADER  </H1>
 <form id="frmCrDb"  method="post">
    <table>
 		<tr>
@@ -29,7 +29,7 @@
             </td>
        </tr>
        <tr><td colspan="4">
-			        <input type='hidden' id='transtype' name='transtype' value='PO-DEBIT MEMO'>
+			        <input type='hidden' id='transtype' name='transtype' value='PO-CREDIT MEMO'>
        </td></tr>
    </table>
 </form>

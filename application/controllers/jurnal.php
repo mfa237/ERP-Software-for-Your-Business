@@ -16,9 +16,11 @@ class Jurnal extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form','mylib_helper'));
+        $this->load->library('sysvar');
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
 	}
 	function set_defaults($record=NULL){
 		$data['mode']='';
@@ -54,18 +56,39 @@ class Jurnal extends CI_Controller {
 		$data['credit']=$this->input->post('credit');
 		return $data;
 	}
+	function nomor_bukti($add=false)
+	{
+		$key="GL Numbering";
+		if($add){
+		  	$this->sysvar->autonumber_inc($key);
+		} else {			
+			$no=$this->sysvar->autonumber($key,0,'!GL~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!GL~$00001');
+				$rst=$this->jurnal_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
+		}
+	}
+
 	function add()
 	{
-		 $data=$this->set_defaults();
-		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-			$id=$this->jurnal_model->save($data);
-                        $message='update success';
-		} else {
-			$data['mode']='add';
-                        $this->template->display_form_input($this->file_view,$data,'');
-		}
+	 	$data=$this->set_defaults();
+		$this->_set_rules();
+		$data['mode']='add';
+		$data['gl_id']=$this->nomor_bukti();
+		$this->nomor_bukti(true);	//langsung tambah satu
+	    $this->template->display_form_input($this->file_view,$data,'');
+	}
+	function save(){
+		$data=$this->get_posts();
+		$id=$this->jurnal_model->save($data);
+        $message='update success';		
 	}
 	function view($gl_id)
 	{
@@ -174,16 +197,20 @@ class Jurnal extends CI_Controller {
 			if($this->input->get('sid_opr')!='')$sql.=" operation like '".$this->input->get('sid_opr')."%'";
 		}
         //$sql.=" limit $offset,$limit";
-        echo $sql;
+        ///echo $sql;
         echo datasource($sql);
     }	      
 	function delete($id){
 	 	$this->jurnal_model->delete($id);
 	 	$this->browse();
 	}
-        function delete_item($id){
-            return $this->jurnal_model->delete_item($id);
-        }
+    function delete_item($id){
+        if($this->jurnal_model->delete_item($id)){
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+    }
 	function add_item(){
             
             if(isset($_GET)){
@@ -203,14 +230,29 @@ class Jurnal extends CI_Controller {
             $this->load->view('gl/add_account',$data);
         }
         function save_item(){
-            //var_dump($_POST);
+			$account=$this->input->post('account');
+			$accid=$this->chart_of_accounts_model->get_by_id($account)->row()->id;
             $data['gl_id']=$this->input->post('gl_id');
             $data['date']=$this->input->post('date');
-            $data['account_id']=$this->input->post('account');
+            $data['account_id']=$accid;
             $data['debit']=$this->input->post('debit');
+			if($data['debit']=='')$data['debit']='0';
             $data['credit']=$this->input->post('credit');
+			if($data['credit']=='')$data['credit']='0';
             $data['source']=$this->input->post('source');
             $data['operation']=$this->input->post('operation');
-            $this->jurnal_model->save($data);
+            if($this->jurnal_model->save($data)){
+				echo json_encode(array('success'=>true));
+			} else {
+				echo json_encode(array('msg'=>'Some errors occured.'));
+			}
         }
+	function items($kode){
+		$sql="select c.account,c.account_description,g.debit,g.credit,
+		g.source,g.operation,g.transaction_id 
+		from gl_transactions g left join chart_of_accounts c 
+		on c.id=g.account_id
+		 where gl_id='$kode'";
+		echo datasource($sql);
+	}
 }

@@ -30,12 +30,12 @@ function __construct(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
-		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+	$data['date']= date('Y-m-d H:i:s', strtotime($data['date']));
+		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){
-		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+	$data['date']= date('Y-m-d H:i:s', strtotime($data['date']));
+		return $this->db->where($this->primary_key,$id);
 	}
 	function delete($id){
 		$this->db->where($this->primary_key,$id);
@@ -43,7 +43,8 @@ function __construct(){
 	}
 	function delete_item($id){
 		$this->db->where('transaction_id',$id);
-		$this->db->delete($this->table_name);
+		return $this->db->delete($this->table_name);
 	}
+	
 
 }

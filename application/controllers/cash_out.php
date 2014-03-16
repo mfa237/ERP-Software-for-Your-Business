@@ -10,7 +10,7 @@ class Cash_out extends CI_Controller {
                 ";
     private $file_view='bank/cash_out';
     private $primary_key='voucher';
-    private $controller='cash_out';
+    private $controller='cash_out';  
     
 	function __construct()
 	{

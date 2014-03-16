@@ -37,6 +37,8 @@
 	<div id='divFaktur'><img src="<?=base_url()?>images/loading.gif"></div>
 </div>
 </div>
+<script src="<?=base_url();?>js/jquery/jquery-1.8.0.min.js"></script>
+
 <script  language="javascript">
 $().ready(function(){
 	void get_this(CI_ROOT+'supplier/grafik_saldo_hutang','','divSupplier');

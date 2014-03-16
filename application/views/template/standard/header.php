@@ -1,12 +1,8 @@
-<script src="<?=base_url();?>js/jquery-ui/jquery.easyui.min.js"></script>
-<script src="<?=base_url();?>js/lib.js"></script>
 <script>
- $(document).ready(function(){
-     //from header.php
- })
  function load_menu(path){
      xurl='<?=base_url()?>index.php/menu/load/'+path;
-     get_this(xurl,'','');
+//     get_this(xurl,'','');
+     window.open(xurl,'_self');
      return false;
  }
 </script>

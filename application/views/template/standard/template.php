@@ -1,6 +1,4 @@
 <?
-	echo $library_src;
-	echo $script_head;
 	if(!isset($_left_menu_caption))$_left_menu_caption='Left Menu';
 ?> 
 <script type="text/javascript">
@@ -24,8 +22,7 @@ border:solid 1px #000;background-color:black;height:20px;color:#fff;">
 	echo "<br/>".date("Y-m-d H:i a");
 	?>
 </div>
- <div id="wrap">
-	 
+<div id="wrap">	 
 <div class="easyui-layout" style="width:100%;height:1000px;
     box-shadow: 10px 10px 10px rgba(0,0,0,0.15);
 	 border-radius: 5px;
@@ -56,7 +53,11 @@ border:solid 1px #000;background-color:black;height:20px;color:#fff;">
 
 
  </div>
- 
 </body>
 
 </html>
+<?
+	echo $library_src;
+	echo $script_head;
+?> 
+

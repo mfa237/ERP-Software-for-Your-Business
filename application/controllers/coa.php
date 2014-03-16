@@ -1,7 +1,10 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowd');
 
 class Coa extends CI_Controller {
-        private $sql="select account,account_description,jenis,db_or_cr,saldo_awal,parent from qry_coa";
+        private $sql="select account,account_description,jenis,db_or_cr,
+        saldo_awal,parent 
+        from qry_coa 
+        ";
         private $file_view='gl/coa';
 	function __construct()
 	{
@@ -17,7 +20,7 @@ class Coa extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']='coa';
-		$data['fields_caption']=array('Kode Akun','Nama Akun Perkiraan','Kelompok','Db/Cr','Saldo','Parent');
+		$data['fields_caption']=array('Kode Akun','Nama Akun Perkiraan','H/D','Db/Cr','Saldo','Parent');
 		$data['fields']=array('account','account_description','jenis','db_or_cr','saldo_awal','parent');
 		$data['field_key']='account';
 		$data['caption']='DAFTAR KODE AKUN / COA / PERKIRAAN';
@@ -37,6 +40,7 @@ class Coa extends CI_Controller {
 		} else {
 			if($this->input->get('sid_nama')!='')$sql.=" account_description like '".$this->input->get('sid_nama')."%'";
 		}
+		$sql.=" order by account";
         //$sql.=" limit $offset,$limit";
         //echo $sql;
         echo datasource($sql);

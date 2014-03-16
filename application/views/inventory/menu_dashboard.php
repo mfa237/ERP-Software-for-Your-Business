@@ -43,6 +43,8 @@
 	<div id='divStockSisa'><img src="<?=base_url()?>images/loadingx.gif"></div>
 </div>
 </div>
+<script src="<?=base_url();?>js/jquery/jquery-1.8.0.min.js"></script>
+
 <script  language="javascript">
 $().ready(function(){
 	void get_this(CI_ROOT+'inventory/grafik_jual','','divSales');

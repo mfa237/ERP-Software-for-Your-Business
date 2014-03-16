@@ -18,10 +18,16 @@
 }
 -->
  </style>
+ 
+ <?
+  $CI =& get_instance();
+ ?>
 <div class="box1">
 <div id="p" class="easyui-panel box2" title="Saldo Piutang Pelanggan"  style='width:900px'
 	data-options="iconCls:'icon-help'" >
-	<div id='divCustomer'><img src="<?=base_url()?>images/loading.gif"></div>
+	<div id='divCustomer'>
+		 <img src="<?=base_url()?>images/loading.gif">		
+	</div>
 </div>
 </div>
 
@@ -37,6 +43,10 @@
 	<div id='divFaktur'><img src="<?=base_url()?>images/loading.gif"></div>
 </div>
 </div>
+
+<script src="<?=base_url();?>js/jquery/jquery-1.8.0.min.js"></script>
+
+
 <script  language="javascript">
 $().ready(function(){
 	void get_this(CI_ROOT+'customer/grafik_saldo','','divCustomer');

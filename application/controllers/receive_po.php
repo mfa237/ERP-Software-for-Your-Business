@@ -28,29 +28,53 @@ class Receive_po extends CI_Controller {
 	{
         $this->browse();
 	}
+	function nomor_bukti($add=false)
+	{
+		$key="Receivement Numbering";
+		if($add){
+		  	$this->sysvar->autonumber_inc($key);
+		} else {			
+			$no=$this->sysvar->autonumber($key,0,'!TRM~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!TRM~$00001');
+				$rst=$this->inventory_products_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
+		}
+	}
 	        
     function add()
     {
         $this->_set_rules();
-        if ($this->form_validation->run()=== TRUE){
-            var_dump($_POST);
-            //$data['shipment_id']=$this->sysvar->autonumber("Receivement Numbering",0,'!TRM~$00001');
-            //$this->sysvar->autonumber_inc("Receivement Numbering");
-            //$this->view($data['shipment_id']);
-       } else {
-            $data=$this->set_defaults(); 
-            $data['message']='update error';
-            $data['mode']='add';
-            $data['supplier_number']=$this->input->post('supplier_number') ?: $data['supplier_number'];
-            $data['purchase_order_number']=$this->input->post('purchase_order_number')?: $data['purchase_order_number'];
-            $data['date_received']=$this->input->post('date_received') ?: $data['date_received'];
-            $data['warehouse_code']=$this->input->post('warehouse_code') ?: $data['warehouse_code'];
-            $data['comments']=$this->input->post('comments') ?: $data['comments'];
-            $data['receipt_by']=$this->input->post('receipt_by') ?: $data['receipt_by'];
-            $this->template->display_form_input($this->file_view,$data,''); 
-       }
+        $data=$this->set_defaults(); 
+        $data['mode']='add';
+        $data['supplier_number']='';
+        $data['date_received']= date("Y-m-d");
+        $this->template->display_form_input($this->file_view,$data,''); 
     }
-	function set_defaults($record=NULL){
+	function save(){
+        $data['potype']='O';
+        $id=$this->nomor_bukti();
+		$data['purchase_order_number']=$id;
+		$data['po_date']=$this->input->post('po_date');
+        $data['supplier_number']=$this->input->post('supplier_number');
+        $data['terms']=$this->input->post('terms');
+        $data['due_date']=$this->input->post('due_date');
+        $data['comments']=$this->input->post('comments');
+
+		if ($this->purchase_order_model->save($data)){
+			$this->nomor_bukti(true);
+			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+	}
+    	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
@@ -89,11 +113,11 @@ class Receive_po extends CI_Controller {
             $data['mode']='view';
             $data['message']=$message;
             $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
-            $data['detail']=$this->receive_items($id);    
+//            $data['detail']=$this->receive_items($id);    
  
-	         $left='inventory/menu_receive_po';
-			 $this->session->set_userdata('_right_menu',$left);
-	         $this->session->set_userdata('shipment_id',$id);
+//	         $left='inventory/menu_receive_po';
+//			 $this->session->set_userdata('_right_menu',$left);
+//	         $this->session->set_userdata('shipment_id',$id);
            $this->template->display('inventory/receive_po_view',$data);
 			
 			
@@ -101,13 +125,13 @@ class Receive_po extends CI_Controller {
        }
          
     function receive_items($id){
-        $sql="select i.item_number,s.description,i.quantity_received as qty,
+        $sql="select i.item_number,s.description,i.quantity_received,
             i.unit,i.id
             from inventory_products i
             left join inventory s on s.item_number=i.item_number
             where shipment_id='".$id."'";
-               
-        return browse_simple($sql,'Daftar Barang diterima');
+		echo datasource($sql);               
+ //       return browse_simple($sql,'Daftar Barang diterima');
     }                 
 	 // validation rules
 	function _set_rules(){	
@@ -217,32 +241,40 @@ class Receive_po extends CI_Controller {
             $this->load->model('inventory_products_model');
             $this->load->model('inventory_model');
             $this->load->model('purchase_order_lineitems_model');
-            $data['purchase_order_number']=$this->input->post('purchase_order_number');
-            $data['shipment_id']=$this->sysvar->autonumber("Receivement Numbering",0,'!TRM~$00001');
-            $this->sysvar->autonumber_inc("Receivement Numbering");
-            $data['supplier_number']=$this->input->post('supplier_number');
+            $this->load->model('purchase_order_model');
+
+			$po_number=$this->input->post('purchase_order_number');
+			$po=$this->purchase_order_model->get_by_id($po_number)->row();
+			
+            $data['purchase_order_number']=$po_number;
+            $data['shipment_id']=$this->nomor_bukti();
+			
+            $data['supplier_number']=$po->supplier_number;
             $data['date_received']=$this->input->post('date_received');
             $data['warehouse_code']=$this->input->post('warehouse_code');
             $data['comments']=$this->input->post('comments');
             $data['receipt_by']=$this->input->post('receipt_by');
             $data['receipt_type']='PO';
+            
             $qty=$this->input->post('qty');
-            $line=$this->input->post('line_number');
+            $line=$this->input->post('line');
             //var_dump(count($qty));
             for($i=0;$i<count($qty);$i++){
                 if($qty[$i]>0){
                     $poline=$this->purchase_order_lineitems_model->get_by_id($line[$i])->row();
                     $itemno=$poline->item_number;
                     $stock=$this->inventory_model->get_by_id($itemno)->row();
+					
                     $data['item_number']=$stock->item_number;
                     $data['cost']=$stock->cost;
                     $data['quantity_received']=$qty[$i];
                     $data['unit']=$stock->unit_of_measure;
                     $data['total_amount']=$data['quantity_received']*$data['cost'];
-                    //var_dump($data);
-                     $this->inventory_products_model->save($data);
+                    $this->inventory_products_model->save($data);
+					$this->purchase_order_lineitems_model->update_qty_received($line[$i],$qty[$i]);
                 }
             }
+			$this->nomor_bukti(true);
             header('location: '.base_url().'index.php/receive_po/view/'.$data['shipment_id']);
         }
         function add_with_po($purchase_order_number)

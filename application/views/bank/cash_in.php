@@ -6,35 +6,25 @@
             $disabled='disable';
     } else {
             $disabled='';
-            echo form_open('cash_in/add','id=myform name=myform'); 
+            echo form_open('cash_in/save','id=myform name=myform'); 
     }
 ?>
 
    <div class='box6x'><h1>KAS / BANK MASUK</h1>
    <table>
-	<tr>
-		<td>Voucher</td><td>
-		<?php
-		if($mode=='view'){
-			echo $voucher;
-			echo form_hidden('voucher',$voucher);
-		} else { 
-			echo form_input('voucher',$voucher);
-		}		
-		?></td>
-	</tr>	 
+       <tr>
+            <td>Rekening</td><td><?php echo form_dropdown( 'account_number',$account_number_list,$account_number);?></td>
+       </tr>
        <tr>
             <td>Jenis</td><td>
-                <?php echo form_radio('trans_type','cash in',$trans_type=='cash in');?>Cash
+                <?php echo form_radio('trans_type','cash in',$trans_type=='cash in'," checked ");?>Cash
                 <?php echo form_radio('trans_type','cheque in',$trans_type=='cheque in');?>Giro/Cek
                 <?php echo form_radio('trans_type','trans in',$trans_type=='trans in');?>Transfer
             </td>
        </tr>
        <tr>
-            <td>Tanggal</td><td><?php echo form_input('check_date',$check_date);?></td>
-       </tr>
-       <tr>
-            <td>Rekening</td><td><?php echo form_dropdown( 'account_number',$account_number_list,$account_number);?></td>
+            <td>Tanggal</td><td><?php echo form_input('check_date',$check_date,'id=check_date 
+             class="easyui-datetimebox" required style="width:150px"');?></td>
        </tr>
        <tr>
             <td>Terima dari</td><td><?php echo form_input('payee',$payee);?></td>
@@ -45,6 +35,18 @@
        <tr>
             <td>Keterangan</td><td><?php echo form_input('memo',$memo,"style='width:300px'");?></td>
        </tr>
+		<tr>
+			<td>Voucher</td><td>
+			<?php
+			echo form_hidden('mode',$mode);
+			if($mode=='view'){
+				echo $voucher;
+				echo form_hidden('voucher',$voucher);
+			} else { 
+				echo form_input('voucher',$voucher);
+			}		
+			?></td>
+		</tr>	 
  	 
 	 <tr><td>
             <a href="#" class="easyui-linkbutton" 
@@ -61,25 +63,6 @@ echo form_close();
         if($('#voucher').val()===''){alert('Isi kode voucher !');return false;};
         if($('#trans_type').val()===''){alert('Isi jenis penerimaan !');return false;};
        $('#myform').submit();
-//        $('#myform').submit(function(event) {
-//          
-//          event.preventDefault(); // Prevent the form from submitting via the browser.
-//          var form = $(this);
-//          param=form.serialize();
-//          console.log(param);
-//          $.ajax({
-//            type: form.attr('method'),
-//            url: form.attr('action'),
-//            data: param
-//          }).done(function(msg) {     
-//            //$('#main_content').html(msg);
-//            $('#dlg').dialog('close');
-//            $.messager.alert('Info','Success !')
-//          }).fail(function(jqXHR, textStatus, errorThrown) {
-//              console.log(jqXHR.responseText);
-//              $.messager.alert('Info','Error !')
-//          });
-//        });
     }
 </script>  
 

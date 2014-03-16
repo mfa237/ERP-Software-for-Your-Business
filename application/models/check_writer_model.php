@@ -35,6 +35,7 @@ function __construct(){
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
+		$data['check_date']= date('Y-m-d H:i:s', strtotime($data['check_date'])); 
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 	}

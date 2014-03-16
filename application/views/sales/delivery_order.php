@@ -19,11 +19,11 @@
    <?php 
         if($mode=='view') 
         {
-                echo form_open('delivery_order/update',"id=myform");
+                echo form_open(base_url().'index.php/delivery_order/update',"id=myform");
                 $disabled='disable';
         } else {
                 $disabled='';
-                echo form_open('delivery_order/add',"id=myform"); 
+                echo form_open(base_url().'index.php/delivery_order/add',"id=myform"); 
         }
 		
    ?>
@@ -35,6 +35,8 @@
             		
             ?>
         </td>        
+    </tr>
+     <tr>
 	     <td>Pelanggan</td><td><?
     	    echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer');?>
         	<? if($mode=='add') { ?>
@@ -43,10 +45,13 @@
 			<? } ?>
         </td>
     </tr>
-     <tr><td>Tanggal</td><td><?         
+     <tr>
+     	<td>Tanggal</td><td><?         
          echo form_input('invoice_date',$invoice_date,' class="easyui-datetimebox" required ');                 
          ?>
          </td>
+    </tr>
+     <tr>
 	     <td>Nomor SO</td><td><?         
 	        echo form_input('sales_order_number',$sales_order_number,'id=sales_order_number');?>
 

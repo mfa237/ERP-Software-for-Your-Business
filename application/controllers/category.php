@@ -36,12 +36,12 @@ class Category extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$id=$this->category_model->save($data);
-                        $message='update success';
-                        $data['mode']='view';
-                        $this->browse();
+            $message='update success';
+            $data['mode']='view';
+            $this->browse();
 		} else {
 			$data['mode']='add';
-                         $this->template->display_form_input($this->file_view,$data,'');
+	         $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
 	function update()

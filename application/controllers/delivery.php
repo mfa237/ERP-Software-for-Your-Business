@@ -29,8 +29,18 @@ class Delivery extends CI_Controller {
 		if($add){
 		  	$this->sysvar->autonumber_inc($key);
 		} else {			
-			return $this->sysvar->autonumber($key,0,'!EOUT~$00001');
-		}
+			$no=$this->sysvar->autonumber($key,0,'!EOUT~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!EOUT~$00001');
+				$rst=$this->inventory_products_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
+					}
 	}
 	
 	function set_defaults($record=NULL){

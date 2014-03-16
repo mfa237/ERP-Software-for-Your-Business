@@ -1,12 +1,12 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowd');
 
-class Purchase_DbMemo extends CI_Controller {
+class sales_dbmemo extends CI_Controller {
     private $limit=10;
     private $sql="select kodecrdb,tanggal,docnumber,amount,keterangan,c.account, c.account_description
-     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='PO-DEBIT MEMO'";
-    private $controller='purchase_dbmemo';
+     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='SO-DEBIT MEMO'";
+    private $controller='sales_dbmemo';
     private $primary_key='kodecrdb';
-    private $file_view='purchase/debit_memo';
+    private $file_view='sales/debit_memo';
     private $table_name='crdb_memo';
 	function __construct()
 	{
@@ -20,13 +20,13 @@ class Purchase_DbMemo extends CI_Controller {
 	}
 	function nomor_bukti($add=false)
 	{
-		$key="Purchase CrDB Numbering";
+		$key="Sales CrDB Numbering";
 		if($add){
 		  	$this->sysvar->autonumber_inc($key);
 		} else {			
-			$no=$this->sysvar->autonumber($key,0,'!CRDBP~$00001');
+			$no=$this->sysvar->autonumber($key,0,'!CRDBS~$00001');
 			for($i=0;$i<100;$i++){			
-				$no=$this->sysvar->autonumber($key,0,'!CRDBP~$00001');
+				$no=$this->sysvar->autonumber($key,0,'!CRDBS~$00001');
 				$rst=$this->crdb_model->get_by_id($no)->row();
 				if($rst){
 				  	$this->sysvar->autonumber_inc($key);
@@ -52,7 +52,7 @@ class Purchase_DbMemo extends CI_Controller {
 		
 		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
-		$faa[]=criteria("Nomor BUkti","sid_number");
+		$faa[]=criteria("Nomor Bukti","sid_number");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -75,7 +75,7 @@ class Purchase_DbMemo extends CI_Controller {
 		$data['amount']=0;
 		$data['keterangan']="";
 		$data['mode']='add';
-		$this->template->display_form_input('purchase/debit_memo',$data,'');			
+		$this->template->display_form_input('sales/debit_memo',$data,'');			
 		
 	}
 	function save()
@@ -100,7 +100,7 @@ class Purchase_DbMemo extends CI_Controller {
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
 		 $data['mode']='view';
-         $this->template->display('purchase/debit_memo',$data);                 
+         $this->template->display('sales/debit_memo',$data);                 
 	}
    
 	function set_defaults($record=NULL){

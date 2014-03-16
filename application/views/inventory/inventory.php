@@ -14,7 +14,7 @@
      <div class='box6x'>
          <h3>General Information</h3>
        <div id='box_section' class='section_show'>
-	     <table  width="100%">     
+	     <table>     
     <tr><td>Item Number</td>
         <td>:</td>
         <td>  
@@ -84,7 +84,7 @@
 
 	   <div id='box_section' class='section_hide'>
 	     <h3>General Ledger</h3>
-	     <table width="100%">
+	     <table>
        <tr>
          <td>Akun Persediaan </td>
          <td>:</td>
@@ -116,7 +116,7 @@
    </div>
  <div id='box_section' class='section_hide'>
    <h3>Lain-Lain</h3>
-   <table width="100%">
+   <table>
      <tr>
        <td>Kode Barang Supplier </td>
        <td>:</td>

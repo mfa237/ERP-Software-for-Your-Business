@@ -48,4 +48,14 @@ function browse($nomor)
 	$this->load->helper('browse_helper');
 	return browse_simple($sql,"Data Barang / Jasa",500,300,"dgItem");
 }
+function update_qty_received($line,$qty){
+	$sql="update purchase_order_lineitems set qty_recvd=IFNULL(qty_recvd,0)+$qty where line_number=$line";
+	$this->db->query($sql);
+	$sql="select quantity-IFNULL(qty_recvd,0) from purchase_order_lineitems 
+	where line_number=$line";
+	$sql="update purchase_order_lineitems set received=true 
+	where line_number=$line and ifnull(qty_recvd,0)>=quantity";
+	$this->db->query($sql);
+}
+
 }

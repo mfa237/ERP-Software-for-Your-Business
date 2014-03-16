@@ -26,7 +26,18 @@ class Delivery_order extends CI_Controller {
 		if($add){
 		  	$this->sysvar->autonumber_inc($key);
 		} else {			
-			return $this->sysvar->autonumber($key,0,'!SJ~$00001');
+			$no=$this->sysvar->autonumber($key,0,'!SJ~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!SJ~$00001');
+				$rst=$this->invoice_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
+			
 		}
 	}
 
@@ -56,8 +67,9 @@ class Delivery_order extends CI_Controller {
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			//$data=$this->get_posts(); 
+			$no=$this->nomor_bukti();
 			$datax['invoice_type']='D';
-			$datax['invoice_number']=$this->nomor_bukti();
+			$datax['invoice_number']=$no;
 			$datax['sold_to_customer']=$this->input->post('sold_to_customer');
 			$datax['invoice_date']=$this->input->post('invoice_date');
 			$datax['sales_order_number']=$this->input->post('sales_order_number');
@@ -67,11 +79,12 @@ class Delivery_order extends CI_Controller {
 			$this->load->model('invoice_model');
 			$this->invoice_model->save($datax);
 			$this->invoice_model->save_from_so_items($datax['invoice_number'],
-				$this->input->post('qty_order'),
-				$this->input->post('line_number'));
+			$this->input->post('qty_order'),
+			$this->input->post('line_number'));
 
 			$this->nomor_bukti(true);
-            redirect('/delivery_order/view/'.$datax['invoice_number'], 'refresh');
+//            redirect(base_url().'index.php/delivery_order/view/'.$datax['invoice_number'], 'refresh');
+			$this->view($no,$datax);			
 		} else {
 			$this->load->model('invoice_lineitems_model');        
 			$this->load->model('sales_order_model');               

@@ -3,7 +3,7 @@
 class sales_crmemo extends CI_Controller {
     private $limit=10;
     private $sql="select kodecrdb,tanggal,docnumber,amount,keterangan,c.account, c.account_description
-     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='SO CREDIT MEMO'";
+     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='SO-CREDIT MEMO'";
     private $controller='sales_crmemo';
     private $primary_key='kodecrdb';
     private $file_view='sales/credit_memo';
@@ -24,7 +24,17 @@ class sales_crmemo extends CI_Controller {
 		if($add){
 		  	$this->sysvar->autonumber_inc($key);
 		} else {			
-			return $this->sysvar->autonumber($key,0,'!CRDBS~$00001');
+			$no=$this->sysvar->autonumber($key,0,'!CRDBS~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!CRDBS~$00001');
+				$rst=$this->crdb_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
 		}
 	}
 	function index()
@@ -71,21 +81,33 @@ class sales_crmemo extends CI_Controller {
 	function save()
 	{
 		 
-		$docno=$this->input->post('docnumber');
-		if($docno)
+		$invoice_number=$this->input->post('docnumber');
+		if($invoice_number)
 		{
 			$data['kodecrdb']=$this->nomor_bukti();
 			$data['tanggal']=$this->input->post('tanggal');
 			$data['docnumber']=$invoice_number;
 			$data['amount']=$this->input->post('amount');
 			$data['keterangan']=$this->input->post('keterangan');
-			$data['transtype']='SO CREDIT MEMO';
+			$data['transtype']=$this->input->post('transtype');
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
-		} else {
-			echo 'Pilih nomor faktur !';
-		}
+		} else {echo 'Save: Invalid Invoice Number';}
 	
+	}
+	function view($id,$message=null){
+		 $data['id']=$id;
+		 $model=$this->crdb_model->get_by_id($id)->result_array();
+		 $data=$this->set_defaults($model[0]);
+		 $data['mode']='view';
+         $this->template->display('sales/credit_memo',$data);                 
+	}
+   
+	function set_defaults($record=NULL){
+            $data=data_table($this->table_name,$record);
+            $data['mode']='';
+            $data['message']='';
+			return $data;
 	}
 	
 }

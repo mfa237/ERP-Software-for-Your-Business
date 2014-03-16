@@ -16,16 +16,37 @@ class Cash_in extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form','mylib_helper'));
+        $this->load->library('sysvar');
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('check_writer_model');
 		$this->load->model('bank_accounts_model');
+	}
+	function nomor_bukti($add=false)
+	{
+		$key="Cash In Numbering";
+		if($add){
+		  	$this->sysvar->autonumber_inc($key);
+		} else {			
+			$no=$this->sysvar->autonumber($key,0,'!KM~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!KM~$00001');
+				$rst=$this->check_writer_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
+		}
 	}
 	function set_defaults($record=NULL){
             
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
+///			$data['voucher']=$this->nomor_bukti();
             $data['account_number_list']=$this->bank_accounts_model->account_number_list();
             return $data;
 	}
@@ -41,15 +62,19 @@ class Cash_in extends CI_Controller {
 	{
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-			$id=$this->check_writer_model->save($data);
-                        $message='update success';
-		} else {
-			$data['mode']='add';
-			$this->load->view($this->file_view,$data);			
-		}
+ 		 $data['mode']='add';
+		 $data['voucher']=$this->nomor_bukti();
+	     $this->template->display_form_input($this->file_view,$data,'');
 	}
+	function save(){
+		$data=$this->get_posts();
+		$data['voucher']=$this->nomor_bukti();
+		$id=$this->check_writer_model->save($data);
+        $message='update success';
+		$this->nomor_bukti(true);
+        header('location: '.base_url().'index.php/cash_in');
+	}
+	
 	function update()
 	{
 	 
@@ -59,13 +84,13 @@ class Cash_in extends CI_Controller {
  		 $id=$this->input->post($this->primary_key);
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                    
-                        unset($data['trans_id']);
-                        $this->check_writer_model->update($id,$data);
-                        $message='Update Success';
+            unset($data['trans_id']);
+            $this->check_writer_model->update($id,$data);
+            $message='Update Success';
 		} else {
 			$message='Error Update';
 		}	  
- 		$this->view($id,$message);		
+        header('location: '.base_url().'index.php/cash_in');
 	}
 	
 	function view($id,$message=null){
@@ -73,8 +98,8 @@ class Cash_in extends CI_Controller {
 		 $model=$this->check_writer_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
-                 $data['message']=$message;
-                 $this->template->display_form_input($this->file_view,$data,'');
+         $data['message']=$message;
+         $this->template->display_form_input($this->file_view,$data,'');
 
 	
 	}

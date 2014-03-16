@@ -61,7 +61,17 @@ class Purchase_order extends CI_Controller {
 		if($add){
 		  	$this->sysvar->autonumber_inc($key);
 		} else {			
-			return $this->sysvar->autonumber($key,0,'!PO~$00001');
+			$no=$this->sysvar->autonumber($key,0,'!PO~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!PO~$00001');
+				$rst=$this->purchase_order_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
 		}
 	}
 	function save(){
@@ -274,14 +284,43 @@ class Purchase_order extends CI_Controller {
             echo $s." ".browse_simple($sql,'',500,300,'dgPoList');
 
         }
+		function select_open_po($supplier){
+            $sql="select p.purchase_order_number,p.po_date,p.due_date,p.terms 
+            from purchase_order  p
+            where p.supplier_number='$supplier' and p.potype='O'";
+			echo datasource($sql);
+		}
         function list_item_receive($nomor){
             $this->load->model('purchase_order_lineitems_model');
             $data['po_item']=$this->purchase_order_lineitems_model->lineitems($nomor);
             $this->load->view('inventory/receive_po_item',$data);
             
         }
-        function view_receive($purchase_order_number)
-        {
+		function items_not_received($nomor){
+			if($nomor){
+				$sql="select item_number,description,quantity,unit,qty_recvd,line_number 
+				from purchase_order_lineitems where purchase_order_number='$nomor' and ifnull(received,false)=false";
+				$query=$this->db->query($sql);
+				$i=0;
+				$data='';
+				foreach($query->result() as $row){
+					$data[$i][]=$row->item_number;
+					$data[$i][]=$row->description;
+					$data[$i][]=$row->quantity;
+					$data[$i][]=$row->qty_recvd;
+					$data[$i][]=form_input('qty[]','','style="width:50px"');
+					$data[$i][]=form_hidden('line[]',$row->line_number);
+					$i++;
+				}
+				
+				$this->load->library('browse');
+				$header=array('Item Number','Description','Qty Order','Qty Recvd','Qty Receiv');
+				$this->browse->set_header($header);
+				$this->browse->data($data);
+				echo $this->browse->refresh();
+			}
+		}
+        function view_receive($purchase_order_number){
              
             $this->load->model('inventory_products_model');
             $sql="select distinct shipment_id,

@@ -3,7 +3,7 @@
 class Cash_mutasi extends CI_Controller {
     private $limit=10;
     private $table_name='check_writer';
-    private $sql="select voucher,check_date as tanggal,payment_amount
+    private $sql="select voucher,check_date,payment_amount
             ,account_number,payee,supplier_number
             ,trans_type,check_number,memo,trans_id
                 from check_writer
@@ -17,10 +17,30 @@ class Cash_mutasi extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form','mylib_helper'));
+        $this->load->library('sysvar');
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('check_writer_model');
 		$this->load->model('bank_accounts_model');
+	}
+	function nomor_bukti($add=false)
+	{
+		$key="Cash Trx Numbering";
+		if($add){
+		  	$this->sysvar->autonumber_inc($key);
+		} else {			
+			$no=$this->sysvar->autonumber($key,0,'!KT~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!KT~$00001');
+				$rst=$this->check_writer_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
+		}
 	}
 	function set_defaults($record=NULL){
             
@@ -42,16 +62,20 @@ class Cash_mutasi extends CI_Controller {
 	{
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-                        $data['deposit_amount']=$data['payment_amount'];
-			$id=$this->check_writer_model->save($data);
-                        $message='update success';
-		} else {
-			$data['mode']='add';
-			$this->load->view($this->file_view,$data);			
-		}
+ 		 $data['mode']='add';
+		 $data['voucher']=$this->nomor_bukti();
+	     $this->template->display_form_input($this->file_view,$data,'');
 	}
+	function save(){
+		$data=$this->get_posts();
+		$data['voucher']=$this->nomor_bukti();
+        $data['deposit_amount']=$data['payment_amount'];
+		$id=$this->check_writer_model->save($data);
+        $message='update success';
+		$this->nomor_bukti(true);
+        header('location: '.base_url().'index.php/cash_mutasi');
+	}
+	
 	function update()
 	{
 	 
@@ -61,14 +85,14 @@ class Cash_mutasi extends CI_Controller {
  		 $id=$this->input->post($this->primary_key);
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                    
-                        $data['deposit_amount']=$data['payment_amount'];
-                        unset($data['trans_id']);
-                        $this->check_writer_model->update($id,$data);
-                        $message='Update Success';
+            $data['deposit_amount']=$data['payment_amount'];
+            unset($data['trans_id']);
+            $this->check_writer_model->update($id,$data);
+            $message='Update Success';
 		} else {
 			$message='Error Update';
 		}	  
- 		$this->view($id,$message);		
+        header('location: '.base_url().'index.php/cash_mutasi');
 	}
 	
 	function view($id,$message=null){
@@ -98,7 +122,7 @@ class Cash_mutasi extends CI_Controller {
 	 	return true;
 	 }
 	}
-     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
+     function browse($offset=0,$limit=50,$order_column='voucher',$order_type='asc'){
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Rekening Sumber','Untuk'
 		,'Rekening Tujuan','Jenis Transaksi','Nomor Giro','Keterangan','Trans Id');

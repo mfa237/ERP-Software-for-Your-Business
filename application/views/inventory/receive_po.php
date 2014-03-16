@@ -3,16 +3,19 @@
 <h1>PENERIMAAN BARANG DARI PO</H1>
    <table>
        <tr>
-            <td>Supplier:</td><td><?=form_dropdown('supplier_number',
-            $supplier_list,$supplier_number,'id=supplier_number');?></td>
+            <td>Supplier:</td><td><?            
+            echo form_input('supplier_number',$supplier_number,'id=supplier_number');
+			echo link_button('','select_supplier()',"search","true"); 
+            ?></td>
+       </tr>
+       <tr>
             <td>Nomor PO:</td>
             <td>
             <?
                 echo form_input('purchase_order_number',$purchase_order_number,
                 "id=purchase_order_number");
+				echo link_button('','select_po()',"search","true"); 
             ?>                
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" plain='true'
-            onclick='list_po_number()'>&nbsp</a>
             </td>            
        </tr>
        <tr>
@@ -20,6 +23,8 @@
             <td><?=form_input('date_received',
                     $date_received,'id=date_received class="easyui-datetimebox" required');?>
             </td>
+       </tr>
+       <tr>
             <td>Gudang:</td><td><?php echo form_dropdown('warehouse_code',
                     $warehouse_list,$warehouse_code,'id=warehouse_code');?>
             </td>
@@ -38,23 +43,25 @@
            </td> 
        </tr>
        <tr>
-           <td colspan="4">
+            <td>Nomor Bukti:</td><td><?            
+            echo form_input('shipment_id',$shipment_id,'id=shipment_id');
+            ?></td>
+       </tr>
+       <tr>
+           <td colspan="6">
+				<div id='divItem'>ssss</div>	
+           </td>
+       </tr>
+       <tr>
+           <td colspan="6" align="right"><?=link_button('Simpan','simpan()','save','false');?>
            </td>
        </tr>
    </table>
-<?php 
-    echo form_hidden('shipment_id',$shipment_id);
-?>
-<div id='divPoListWrap'><div id='divPoList' style='display:none'><img src='../images/loading.gif'></div></div>
-<div id='divPoItemWrap' style='display:none'><div id='divPoItem'><img src='../images/loading.gif'></div></div>              
-<div id="divBtnProses" style="display:none">
-               <a href="#" class="easyui-linkbutton" 
-                    data-options="iconCls:'icon-save'"
-                    onclick='proses()'>Proses</a>
-                   *Isi kolom quantity terima terlebih dahulu dalam tabel dibawah ini, 
-                    klik tombol [PROSES] apabila sudah selesai.
-</div>
 </form>
+<?
+echo load_view('purchase/supplier_select');
+echo load_view('purchase/select_open_po');
+?>
 
 <script type="text/javascript">
     function cancel(){
@@ -65,48 +72,15 @@
         $('#myform').submit();
     }
 
-    function list_po_number()
-    {
-        supp=$('#supplier_number').val(); 
-        if(supp==''){alert('Pilih supplier !');return false;}        
-        //next_number('Receivement Numbering','shipment_id');
-        uri=CI_ROOT+'purchase_order/list_open_po/'+supp;
-        console.log(uri);
-        $('#divPoList').fadeIn();
-        get_this(uri,'','divPoList');
-        $('#divPoListWrap').dialog({  
-            title: 'Pilih Nomor PO',
-            url: uri, 
-            width: 500,height: 400,  closed: false, cache: false,
-             buttons: [{
-                             text:'Ok',iconCls:'icon-ok',
-                             handler:function(){
-                                select_po_number();
-                                $('#divPoListWrap').dialog('close');
-                             }
-                     },{text:'Cancel',iconCls:'icon-cancel',
-                     handler:function(){$('#divPoListWrap').dialog('close');}
-                     }],
-
-            modal: true  
-        });
-        $('#divPoListWrap').dialog('refresh');
-        
-    }
-    function select_po_number()
-    {
-        row = $('#dgPoList').datagrid('getSelected');
-        if (row){
-            $('#purchase_order_number').val(row['purchase_order_number']);
-        }
-         $('#divPoItemWrap').fadeIn('slow'); 
-         get_this(CI_ROOT+'purchase_order/list_item_receive/'+row['purchase_order_number']
-            ,'','divPoItem');
-         $('#divBtnProses').fadeIn('slow'); 
-    }
     function proses()
     {
         $('#myform').submit();
+    }
+    function load_po_items(){
+    	$po=$("#purchase_order_number").val();
+    	if($po!=""){
+    		
+    	}
     }
 </script>    
 

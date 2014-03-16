@@ -29,10 +29,22 @@ class Payment extends CI_Controller {
 		 $this->form_validation->set_rules('how_paid','Jenis Bayar','required');
 	}
 	function nomor_bukti($add=false){
+		$key="AR Payment Numbering";
 		if($add){
-			$this->sysvar->autonumber_inc("AR Payment Numbering");
+			$this->sysvar->autonumber_inc($key);
 		} else {
-			return $this->sysvar->autonumber("AR Payment Numbering",0,'!ARP~$00001');
+			$no=$this->sysvar->autonumber($key,0,'!ARP~$00001');
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!ARP~$00001');
+				$rst=$this->payment_model->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+			return $no;
+			
 		}
 	}
 	function add(){

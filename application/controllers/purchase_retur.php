@@ -65,8 +65,13 @@ class Purchase_retur extends CI_Controller {
             return $data;
 	}
 	function save(){
+		$mode=$this->input->post('mode');
         $data['potype']='R';
-        $id=$this->nomor_bukti();
+		if($mode=="add"){
+	        $id=$this->nomor_bukti();
+		} else {
+			$id=$this->input->post('purchase_order_number');			
+		}
 		$data['purchase_order_number']=$id;
 		$data['po_date']=$this->input->post('po_date');
         $data['supplier_number']=$this->input->post('supplier_number');
@@ -75,8 +80,14 @@ class Purchase_retur extends CI_Controller {
         $data['comments']=$this->input->post('comments');
         $data['po_ref']=$this->input->post('po_ref');
 
-		if ($this->purchase_order_model->save($data)){
-			$this->nomor_bukti(true);
+		if($mode=="add"){
+			$ok=$this->purchase_order_model->save($data);
+		} else {
+			$ok=$this->purchase_order_model->update($id,$data);			
+		}
+
+		if ($ok){
+			if($mode=="add") $this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
@@ -116,6 +127,7 @@ class Purchase_retur extends CI_Controller {
 	    $data=$this->set_defaults();
 		$this->_set_rules();
 		$data['mode']='add';
+        $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
 		$this->template->display_form_input('purchase/retur',$data,'');			
 	}
 	function add_single($nomor_faktur)
@@ -235,29 +247,26 @@ class Purchase_retur extends CI_Controller {
             return $this->purchase_order_lineitems_model->delete($id);
         }        
         function print_retur($nomor){
-            $this->load->helper('mylib_helper');
-            $this->load->model('suppliers_model');
+		    $this->load->helper('mylib');
+			$this->load->helper('pdf_helper');			
             $invoice=$this->purchase_order_model->get_by_id($nomor)->row();
-            $data['purchase_order_number']=$invoice->purchase_order_number;
-            $data['po_date']=$invoice->po_date;
-            $data['supplier_number']=$invoice->supplier_number;
-            $data['amount']=$invoice->amount;
-            $data['terms']=$invoice->terms;
-            $caption='';
-            $sql="select item_number,description,quantity,unit,price,amount 
-                from purchase_order_lineitems i
-                where purchase_order_number='".$nomor."'";
-            $caption='';$class='';$field_key='';$offset='0';$limit=100;
-            $order_column='';$order_type='asc';
-            $item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
-                        $order_column, $order_type,false);
-            $data['lineitems']=$item;
-            $data['supplier_info']=$this->suppliers_model->info($data['supllier_number']);
-            $data['header']=company_header();            
-            $this->load->view('purchase_invoice_print',$data);
+			$saldo=$this->purchase_order_model->recalc($nomor);
+			$data['po_number']=$invoice->purchase_order_number;
+			$data['tanggal']=$invoice->po_date;
+			$data['supplier']=$invoice->supplier_number;
+			$data['terms']=$invoice->terms;
+			$data['amount']=$invoice->amount;
+			$data['sub_total']=$invoice->subtotal;
+			$data['discount']=$invoice->discount;
+			$data['disc_amount']=$invoice->subtotal*$invoice->discount;
+			$data['freight']=$invoice->freight;
+			$data['others']=$invoice->other;
+			$data['tax']=$invoice->tax;
+			$data['tax_amount']=$invoice->tax*($data['sub_total']-$data['disc_amount']);
+			$data['comments']=$invoice->comments;
+			$this->load->view('purchase/print_retur',$data);
         }
-		function add_jurnal($purchase_order_number)
-		{
+		function add_jurnal($purchase_order_number)	{
 			
 		}
 }

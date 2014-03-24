@@ -1,5 +1,5 @@
 <?php
-class Group_model extends CI_Model {
+class Gl_report_groups_model extends CI_Model {
 
 private $primary_key='group_type';
 private $table_name='gl_report_groups';

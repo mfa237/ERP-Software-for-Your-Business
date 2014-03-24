@@ -1,5 +1,13 @@
-<h1>FAKTUR PEMBELIAN</H1>
+<h1>|| FAKTUR PEMBELIAN  || 
+	<?
+	echo link_button("Save","save_po()","save");
+	echo link_button("Print","print_faktur()","print");
+	
+	?>	
+</H1>
+	
 <form id='frmPo' method="post">	
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<table>
 	<tr>
 		<td>Nomor Faktur</td><td>
@@ -21,6 +29,7 @@
 			echo link_button('','select_supplier()',"search","true"); 
 			?>
             </td>
+            <td><?=$supplier_info?></td>
         </tr>	 
        <tr>
             <td>Termin</td><td><?php echo form_dropdown('terms'
@@ -39,13 +48,9 @@
    </table>
   </form>
 <H1></H1>
-<? if($mode=='add'){ ?>
-	<span id='cmdSavePo'><?=link_button("Save","save_po()","save","false")?></span>
-<? } ?>
-
 <!-- PURCASE_ORDER_LINEITEMS -->	
 <div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
-	<h1>PURCHASE ORDER - SELECT ITEMS</H1>
+	<h1>PURCHASE  - SELECT ITEMS</H1>
 	<div id='dgItem'>
 		<? include_once "purchase_order_items.php"; ?>
 	</div>
@@ -111,7 +116,7 @@
 						$('#divItem').show('slow');
 						$('#purchase_order_number').val(result.purchase_order_number);
 						var nomor=$('#purchase_order_number').val();
-						$('#cmdSavePo').hide();
+						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
 						$('#dg').datagrid('reload');
 						$.messager.show({
@@ -146,5 +151,11 @@
                 error: function(msg){alert(msg);}
 		    });			
 		}
+		function print_faktur(){
+			nomor=$("#purchase_order_number").val();
+			url="<?=base_url()?>index.php/purchase_invoice/print_faktur/"+nomor;
+			window.open(url,'_blank');
+		}
+		
 </script>
     

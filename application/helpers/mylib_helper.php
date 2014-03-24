@@ -68,9 +68,9 @@ if(!function_exists('company_header')){
          $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 		 $data='';
 		 if($model){
-         	$data='<div id="divHeader"><h1>'.$model->company_name."</h1><h2>".$model->street
+         	$data='<div id="divHeader"><h1>'.$model->company_name."</h1><h3>".$model->street
                  ."<br/>".$model->suite." ".$model->city_state_zip_code
-                 ." - Phone: ".$model->phone_number.'</h2>
+                 ." - Phone: ".$model->phone_number.'</h3>
                      </div>';
          };
         return $data;

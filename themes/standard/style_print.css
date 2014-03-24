@@ -16,28 +16,24 @@ a {
 table {
     font-size:11px;
     width:100%;
-  margin: 2px; 
+    margin: 2px; 
     text-align: left;
     border-collapse: collapse;
-    border:#95B8E7 1px solid;
-    background-color:#F4F4F4;
+    --border:#95B8E7 1px solid;
+    --background-color:#F4F4F4;
 }
-#divHeader{
-    border-bottom:  #000000 solid 1px;
-    
-    text-align:  center;
-} 
+ 
 
 
-thead td {
-    background-color:#999999;  
+.titem thead td {
+    --background-color:#999999;  
     border:#95B8E7 1px solid;
     font-weight: 900;
     padding-left:5px;
     height:28px;
     
 }
-thead th {
+.titem thead th {
     background-color: #E0ECFF; 
     border:#95B8E7 1px solid;
     font-weight: 900;
@@ -47,6 +43,6 @@ thead th {
         
 }
 
-tbody td {
+.titem tbody td {
     border:#95B8E7 1px solid;
 }

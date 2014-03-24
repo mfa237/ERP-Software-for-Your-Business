@@ -1,4 +1,3 @@
-<script src="<?=base_url();?>js/lib.js"></script>
 <?php echo validation_errors(); ?>
 <?php 
     if($mode=='view'){
@@ -30,13 +29,15 @@
             <td>Urutan:</td><td><?php echo form_input('sequence',$sequence);?></td>
        </tr>
        <tr>
-            <td>Tanggal Awal:</td><td><?php echo form_input('startdate',$startdate);?></td>
+            <td>Tanggal Awal:</td><td><?php echo form_input('startdate',$startdate,'id=date 
+             class="easyui-datetimebox" required style="width:150px"');?></td>
        </tr>
        <tr>
-            <td>Tanggal Akhir:</td><td><?php echo form_input('enddate',$enddate);?></td>
+            <td>Tanggal Akhir:</td><td><?php echo form_input('enddate',$enddate,'id=date 
+             class="easyui-datetimebox" required style="width:150px"');?></td>
        </tr>
        <tr>
-            <td>Status</td><td><?php echo form_radio('closed','No',$closed=='0'||$closed=='');?>No
+            <td>Closed</td><td><?php echo form_radio('closed','No',$closed=='0'||$closed=='');?>No
                 <?php echo form_radio('closed','Yes',!($closed=='0'||$closed==''));?>Yes
             </td>
        </tr>

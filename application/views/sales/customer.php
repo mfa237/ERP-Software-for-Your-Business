@@ -1,4 +1,3 @@
-<script src="<?=base_url();?>js/lib.js"></script>
 <?php echo validation_errors(); ?>
 <?php 
     if($mode=='view'){
@@ -129,6 +128,5 @@ Yes <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE);?>No </td>
    </table>
    </form>
    
-
-<script>
+ 
  

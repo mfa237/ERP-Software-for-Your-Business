@@ -1,4 +1,3 @@
- 
    <ul class="easyui-tree">
  	<li><span><strong>Operation</strong></span>
  		<ul>
@@ -16,6 +15,18 @@
  				<ul>
  					<li><?=anchor('coa/add','Tambah Perkiraan')?></li>
  					<li><?=anchor('coa','Cari Perkiraan')?></li>
+ 				</ul>				
+			</li>
+			<li><span>Kelompok Perkiraan</span>
+ 				<ul>
+ 					<li><?=anchor('coa_group/add','Tambah Kelompok Perkiraan')?></li>
+ 					<li><?=anchor('coa_group','Cari Kelompok Perkiraan')?></li>
+ 				</ul>				
+			</li>
+			<li><span>Periode Keuangan</span>
+ 				<ul>
+ 					<li><?=anchor('periode/add','Tambah Periode')?></li>
+ 					<li><?=anchor('periode','Cari Periode')?></li>
  				</ul>				
 			</li>
 		</ul>

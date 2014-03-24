@@ -33,9 +33,14 @@ function lineitems($po_number){
 }
 function sum_total_price($nomor)
 {
-	return (double)$this->db->query("select sum(total_price) as sum_total_price 
+	$rst=$this->db->query("select sum(total_price) as sum_total_price 
 		from purchase_order_lineitems 
-        where purchase_order_number='".$nomor."'")->row()->sum_total_price;
+        where purchase_order_number='".$nomor."'");
+    if($rst->num_rows()){    
+        return $rst->row()->sum_total_price;
+	} else {
+		return 0;
+	}
 }
 function browse($nomor)
 {

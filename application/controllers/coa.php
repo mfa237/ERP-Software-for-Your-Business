@@ -1,27 +1,29 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowd');
 
 class Coa extends CI_Controller {
-        private $sql="select account,account_description,jenis,db_or_cr,
-        saldo_awal,parent 
-        from qry_coa 
-        ";
-        private $file_view='gl/coa';
+    private $sql="select account_type,group_type,account,account_description,db_or_cr,
+    beginning_balance,id 
+    from chart_of_accounts
+    ";
+    private $file_view='gl/coa';
 	function __construct()
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form','mylib_helper'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
-                $this->load->model('chart_of_accounts_model');
+        $this->load->model('chart_of_accounts_model');
 	} 
 	function index()
 	{	
-            $this->browse();
+        $this->browse();
 	}
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']='coa';
-		$data['fields_caption']=array('Kode Akun','Nama Akun Perkiraan','H/D','Db/Cr','Saldo','Parent');
-		$data['fields']=array('account','account_description','jenis','db_or_cr','saldo_awal','parent');
+		$data['fields_caption']=array('Type Akun','Kelompk','Kode Akun','Nama Akun Perkiraan',
+			'Db/Cr','Sald Awal');
+		$data['fields']=array('account_type','group_type','account','account_description','db_or_cr'
+			,'beginning_balance');
 		$data['field_key']='account';
 		$data['caption']='DAFTAR KODE AKUN / COA / PERKIRAAN';
 
@@ -30,7 +32,7 @@ class Coa extends CI_Controller {
 		$faa[]=criteria("Nama Akun","sid_nama");
 		$faa[]=criteria("Kelompok","sid_kel");
 		$data['criteria']=$faa;
-        $this->template->display_browse2($data);            
+        $this->template->display_browse($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
 		$no=$this->input->get('sid_no');
@@ -38,11 +40,10 @@ class Coa extends CI_Controller {
 		if($no!=''){
 			$sql.=" and account='".$no."'";
 		} else {
-			if($this->input->get('sid_nama')!='')$sql.=" account_description like '".$this->input->get('sid_nama')."%'";
+			if($this->input->get('sid_nama')!='')$sql.=" and account_description like '".$this->input->get('sid_nama')."%'";
+			if($this->input->get('sid_kel')!='')$sql.=" and group_type like '".$this->input->get('sid_kel')."%'";
 		}
 		$sql.=" order by account";
-        //$sql.=" limit $offset,$limit";
-        //echo $sql;
         echo datasource($sql);
     }	      
     
@@ -52,26 +53,24 @@ class Coa extends CI_Controller {
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
-                        //var_dump($data);
 			$id=$this->chart_of_accounts_model->save($data);
-                         
-                        $data['message']='update success';
-                        $data['mode']='view';
-                        $this->browse();
+            $data['message']='update success';
+            $data['mode']='view';
+            $this->browse();
 		} else {
 			$data['mode']='add';
-                         $this->template->display_form_input($this->file_view,$data,'');
+	        $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
         
 	function set_defaults($record=NULL){
 		$data['mode']='';
 		$data['message']='';
-        	$data['account_type_list']=$this->chart_of_accounts_model->account_type_list();
+    	$data['account_type_list']=$this->chart_of_accounts_model->account_type_list();
 		$data['group_type_list']=$this->chart_of_accounts_model->group_type_list();
-                $data['account_type']='';
-                $data['group_type']='';
-                $data['h_or_d']='0';
+        $data['account_type']='';
+        $data['group_type']='';
+        $data['h_or_d']='0';
 		if($record==NULL){
 			$data['account']='';
 			$data['account_description']='';
@@ -82,10 +81,9 @@ class Coa extends CI_Controller {
 			$data['account']=$record->account;
 			$data['account_description']=$record->account_description;
 			$data['db_or_cr']=$record->db_or_cr;
-			 
 			$data['beginning_balance']=$record->beginning_balance;
-                        $data['account_type']=$record->account_type;
-                        $data['group_type']=$record->group_type;
+            $data['account_type']=$record->account_type;
+            $data['group_type']=$record->group_type;
 		}
 		return $data;
 	}
@@ -98,43 +96,14 @@ class Coa extends CI_Controller {
 		$data['db_or_cr']=$this->input->post('db_or_cr');
 		$data['h_or_d']=$this->input->post('h_or_d');
 		$data['beginning_balance']=$this->input->post('beginning_balance');
-                return $data;
+        return $data;
 	}        
-        function group($account_type,$parent='')
-        {
-            $data['account_type']=$account_type;
-            $data['group_type']='';
-            $data['group_name']='';
-            $data['message']='';
-            $data['parent_group_type']=$parent;
-            $this->load->view('gl/group',$data);
-        }
-	function group_save(){
-              $data['account_type']=$this->input->get('account_type');
-              $data['group_type']=$this->input->get('group_type');
-              $data['group_name']=$this->input->get('group_name');
-              $data['parent_group_type']=$this->input->get('parent_group_type');              
-              $this->_set_rules();
-              //if ($this->form_validation->run()=== TRUE){
-                  $this->load->model('group_model');
-                  $data['account_type']=substr($data['account_type'], 0,1);
-                  $this->group_model->save($data);
-                  echo "<script>$.messager.alert('Info','Update Success');
-                      $('#dlg').dialog('close');</script>";
-                  $message['message']='Success !';
-              //} else {
-              //    echo "<script>$.messager.alert('Info','Update Error');</script>";
-              //    $message['message']='Error insert record';
-              //};
-              
-                        
-        }
-        function _set_rules(){	
+    function _set_rules(){	
 		 $this->form_validation->set_rules('account_type','Account Type', 'required|trim');
-		 //$this->form_validation->set_rules('group_type','Group Type', 'required');
-		 //$this->form_validation->set_rules('group_name','Group Name', 'required|trim');
+		 $this->form_validation->set_rules('group_type','Group Type', 'required');
+		 $this->form_validation->set_rules('account','Account', 'required|trim');
 	}
-        function delete($id){
+    function delete($id){
 	 	$this->chart_of_accounts_model->delete($id);
 	 	$this->browse();
 	}
@@ -142,42 +111,30 @@ class Coa extends CI_Controller {
 		 $data['id']=$id;
 		 $rst=$this->chart_of_accounts_model->get_by_id($id)->row();
 		 if(count($rst)){
-                    $data=$this->set_defaults($rst);
-                    $data['db_or_cr']=$rst->db_or_cr;
-                    $data['h_or_d']='1';
-                     
-                 } else {
-                     $rst=$this->chart_of_accounts_model->get_group_by_id($id)->row();
-                     if(count($rst)){
-                        $data['account_type']=$rst->account_type;
-                        $data['group_type']=$rst->parent_group_type;
-                        $data['account']=$rst->group_type;
-                        $data['account_description']=$rst->group_name;
-                        $data['db_or_cr']='';
-                        $data['h_or_d']='';
-                        $data['beginning_balance']=0;
-                     }
-                 }
+            $data=$this->set_defaults($rst);
+            $data['db_or_cr']=$rst->db_or_cr;
+            $data['h_or_d']='1';
+         }
 		 $data['mode']='view';
-                 $data['message']=$message;
-                 $data['account_type_list']=$this->chart_of_accounts_model->account_type_list();
+         $data['message']=$message;
+         $data['account_type_list']=$this->chart_of_accounts_model->account_type_list();
 		 $data['group_type_list']=$this->chart_of_accounts_model->group_type_list();
-	         $this->template->display_form_input($this->file_view,$data,'');
+         $this->template->display_form_input($this->file_view,$data,'');
 	}        
 	function update()
 	{
 		 $data=$this->set_defaults();
- 
 		 $this->_set_rules();
  		 $id=$this->input->post('account');
 		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();                      
+			$data=$this->get_posts(); 
+			unset($data['h_or_d']);                     
 			$this->chart_of_accounts_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+            $message='Update Success';
+            $this->browse();
 		} else {
 			$message='Error Update';
-         		$this->view($id,$message);		
+     		$this->view($id,$message);		
 		}	  	
 	}        
 	function select($account=''){

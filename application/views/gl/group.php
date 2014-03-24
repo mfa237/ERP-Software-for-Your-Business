@@ -1,35 +1,43 @@
-<?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-?>
- 
-<div id='dlg_group' style='padding:10px'>
-    <?=$message?>
-<div>Account Type</div><div><input type='input' id='account_type' name="account_type" value="<?=$account_type?>"/></div>    
-<div>Group Type</div><div><input type='input' id='group_type' value="<?=$group_type?>"/></div>
-<div>Group Name</div><div><input type='input' id='group_name' value="<?=$group_name?>"/></div>
-<div>Parent Group Type</div><div><input type='input' id='parent_group_type' value="<?=$parent_group_type?>"/></div>
-<div><a onclick="save_group();" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">Save</a></div>
-</div>
-<div id="output" name="output"></div>
-<script>
- $(document).ready(function(){
-    
-     
- });
-
-    function save_group(){
-        xurl=CI_ROOT+'coa/group_save';
-        param='account_type='+$("#account_type").val()
-        +'&group_name='+$("#group_name").val()
-        +'&group_type='+$("#group_type").val()
-        +'&parent_group_type='+$("#parent_group_type").val();
-        console.log(param);
-     	console.log(xurl); 
-        divout='output';
-        get_this(xurl,param,divout);      
+<?php echo validation_errors(); ?>
+<?php 
+    if($mode=='view'){
+            echo form_open('coa_group/update','id=myform name=myform');
+            $disabled='disable';
+    } else {
+            $disabled='';
+            echo form_open('coa_group/add','id=myform name=myform'); 
     }
-</script>
+?>
+
+   <div><h1>KODE KELOMPOK PERKIRAAN</h1>
+   <table>
+	<tr>
+		<td>Kode Group</td><td>
+		<?php
+		if($mode=='view'){
+			echo $group_type;
+			echo form_hidden('group_type',$group_type);
+		} else { 
+			echo form_input('group_type',$group_type);
+		}		
+		?></td>
+	</tr>	 
+       <tr>
+            <td>Nama Kelompok Perkiraan</td><td><?php echo form_input('group_name',$group_name);?></td>
+       </tr>
+       <tr>
+            <td>Parent Kode Group</td><td><?php echo form_input('parent_group_type',$parent_group_type);?>
+            </td>
+       </tr>
+       <tr>
+            <td>Jenis</td><td><?php echo form_dropdown( 'account_type',$account_type_list,$account_type);?></td>
+       </tr>
+	 <tr><td>
+		 <input type="submit" value="Save" class="easyui-linkbutton" 
+         data-options="iconCls:'icon-save'" style="height:30px;width:60px"/>
+	 </td><td>&nbsp;</td></tr>
+   </table>
+</form>
+    
+
+ 

@@ -16,14 +16,14 @@ class Periode extends CI_Controller {
 		$this->load->model('periode_model');
 	}
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record); 
-            $data['mode']='';
-            $data['message']='';
-            return $data;
+        $data=data_table($this->table_name,$record); 
+        $data['mode']='';
+        $data['message']='';
+        return $data;
 	}
 	function index()
 	{	
-            $this->browse();
+        $this->browse();
 	}
 	function get_posts(){
 		$data=data_table_post($this->table_name);
@@ -35,13 +35,14 @@ class Periode extends CI_Controller {
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
+            $data['closed']=$data['closed']=='No'?'0':'1';
 			$id=$this->periode_model->save($data);
-                        $data['message']='update success';
-                        $data['mode']='view';
-                        $this->browse();
+            $data['message']='update success';
+            $data['mode']='view';
+            $this->browse();
 		} else {
 			$data['mode']='add';
-                         $this->template->display_form_input($this->file_view,$data,'');
+            $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
 	function update()
@@ -51,25 +52,24 @@ class Periode extends CI_Controller {
  		 $id=$this->input->post('period');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
-                        $data['closed']=$data['closed']=='No'?'0':'1';
-                        unset($data['id']);
+            $data['closed']=$data['closed']=='No'?'0':'1';
+            unset($data['id']);
 			$this->periode_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+            $message='Update Success';
+            $this->browse();
 		} else {
 			$message='Error Update';
-         		$this->view($id,$message);		
+     		$this->view($id,$message);		
 		}	  	
 	}
 	
-	function view($id,$message=null){
-           
+	function view($id,$message=null){           
 		 $data['period']=$id;
 		 $model=$this->periode_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
-                 $data['message']=$message;
-                $this->template->display_form_input($this->file_view,$data,'');
+         $data['message']=$message;
+         $this->template->display_form_input($this->file_view,$data,'');
 
 	
 	}
@@ -91,22 +91,20 @@ class Periode extends CI_Controller {
 	 	return true;
 	 }
 	}
-	function browse($offset=0,$limit=10,$order_column='period',$order_type='asc')
-	{
-            $caption="FINANCIAL PERIOD";
-            $data['_content']=browse($this->sql.'  order by year_id,sequence,period '
-                    ,$caption,'periode',$offset,$limit
-                    ,'period',500,400);
-            $url='';
-            $this->session->set_userdata('_right_menu', $url);             
-            $this->template->display_browse2($data);
-        }
-         
-        function browse_data($offset=0,$limit=10,$nama=''){
-            $sql=$this->sql." where period like '".$nama."%'  order by year_id,sequence,period";
-             echo datasource($sql);           
-        }
-	 
+    function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
+		$data['controller']='periode';
+		$data['fields_caption']=array('Tahun','Urut','Periode','Start','End','Closed');
+		$data['fields']=array('year_id','sequence','period','startdate','enddate','closed');
+		$data['field_key']='period';
+		$data['caption']='DAFTAR PERIODE AKUNTANSI';
+		$data['criteria']=array();
+
+        $this->template->display_browse($data);            
+    }
+    function browse_data($offset=0,$limit=100,$nama=''){
+		$sql=$this->sql." order by year_id,sequence";
+        echo datasource($sql);
+    }	      
 	function delete($id){
 	 	$this->periode_model->delete($id);
 	 	$this->browse();

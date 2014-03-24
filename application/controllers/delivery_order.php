@@ -259,29 +259,44 @@ class Delivery_order extends CI_Controller {
         echo browse_simple($sql);
    }
     function print_faktur($nomor){
+    	
         $this->load->helper('mylib');
+		$this->load->helper('pdf_helper');			
+        $this->load->model('customer_model');
         $invoice=$this->invoice_model->get_by_id($nomor)->row();
-        $data['invoice_number']=$invoice->invoice_number;
-        $data['invoice_date']=$invoice->invoice_date;
-        $data['sold_to_customer']=$invoice->sold_to_customer;
-        $data['amount']=$invoice->amount;
-		$data['salesman']=$invoice->salesman;
+		if(!$invoice){
+			echo "<h1>Nomor faktur tidak ditemukan.!</h1>";
+			return false;
+		}
+		$saldo=$this->invoice_model->recalc($nomor);
+		
+		$sum_info='Jumlah Faktur: Rp. '.  number_format($invoice->amount)
+        .'<br/>Jumlah Bayar : Rp. '.  number_format($this->invoice_model->amount_paid)
+        .'<br/>Jumlah Sisa  : Rp. '.  number_format($saldo);
+		
         $caption='';
-        $sql="select item_number,description,quantity,unit,price,amount 
-            from invoice_lineitems i
-            where invoice_number='".$nomor."'";
+		$sql="select item_number,description,quantity,unit,price,amount 
+			from invoice_lineitems where invoice_number='$nomor'";
         $caption='';$class='';$field_key='';$offset='0';$limit=100;
         $order_column='';$order_type='asc';
         $item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
                     $order_column, $order_type,false);
-        $data['lineitems']=$item;
-		
-        $this->load->model('customer_model');
-        $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
-        $data['header']=company_header();
-        
-        $this->load->view('sales/delivery_print',$data);
-    }
+        $data['supplier_info']=$this->customer_model->info($invoice->sold_to_customer);
+		$data['header']=company_header();
+		$data['caption']='';
+		$data['content']='
+			<table cellspacing="0" cellpadding="1" border="1" style="width:100%"> 
+			    <tr><td colspan="2"><h1>SURAT JALAN</H1></td></tr>
+			    <tr><td width="90">Nomor</td><td width="310">'.$invoice->invoice_number.'</td></tr>
+			     <tr><td>Tanggal</td><td>'.$invoice->invoice_date.'</td></tr>
+			     <tr><td>Customer</td><td>'.$this->customer_model->info($invoice->sold_to_customer).'</td></tr>
+			     <tr><td>Salesman</td><td>'.$invoice->salesman.'</td></tr>
+			     <tr><td colspan="2">'.$item.'</td></tr>
+			     
+			     <tr><td colspan="2">'.$sum_info.'</td></tr>
+			</table>';	        
+		$this->load->view('simple_print',$data);
+    }    
 	function items($nomor,$type='')
 	{
             $sql="select p.item_number,i.description,p.quantity 

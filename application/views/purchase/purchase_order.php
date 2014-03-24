@@ -1,13 +1,25 @@
-<script src="<?=base_url();?>js/lib.js"></script>
-<h1>PURCHASE ORDER</H1>
-<form id='frmPo' method="post">	
+<h1>|| PURCHASE ORDER  || 
+	<?
+	echo link_button("Save","save_po()","save");
+	echo link_button("Print","print_po()","print");
+	
+	?>	
+</H1>
+<form id='frmPo' method="post">
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
    <table>
 		<tr>
-			<td>Nomor PO</td><td><?php echo form_input('purchase_order_number',
-			$purchase_order_number,"id='purchase_order_number' 
-			class='easyui-validatebox' 
-			data-options='required:true,
-			validType:length[3,30]'"); 
+			<td>Nomor PO</td><td><?php
+			if($mode=="view"){
+				echo "<h2>$purchase_order_number</h2>";	
+				echo "<input type='hidden' name='purchase_order_number' id='purchase_order_number' value='$purchase_order_number'>";
+			} else {
+				 echo form_input('purchase_order_number',
+				$purchase_order_number,"id='purchase_order_number' 
+				class='easyui-validatebox' 
+				data-options='required:true,
+				validType:length[3,30]'"); 
+			}
 			?></td>
        </tr>	 
        <tr>
@@ -15,12 +27,14 @@
         	class="easyui-datetimebox" required:true');?></td>
        </tr>	 
        <tr>
-            <td>Supplier</td><td><?php 
+            <td>Supplier</td><td colspan=4><?php 
             echo form_input('supplier_number',$supplier_number,
             "id=supplier_number class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]'");
 			echo link_button('','select_supplier()',"search","true"); 
+			 
             ?></td>
+            <td><?=$supplier_info?></td>
        </tr>	 
        <tr>
             <td>Termin</td><td><?php echo form_dropdown('terms',$term_list,$terms,"id=terms 
@@ -45,10 +59,6 @@
    </table>
 </form>
 <H1></H1>
-<? if($mode=='add'){ ?>
-	<span id='cmdSavePo'><?=link_button("Save","save_po()","save","false")?></span>
-<? } ?>
-
 <!-- PURCASE_ORDER_LINEITEMS -->	
 <div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
 	<h1>PURCHASE ORDER - SELECT ITEMS</H1>
@@ -91,7 +101,6 @@
 				<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
 					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
              		   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
-             		
 				</td>
 			</tr>
 		</table>		
@@ -118,7 +127,7 @@
 						$('#divItem').show('slow');
 						$('#purchase_order_number').val(result.purchase_order_number);
 						var nomor=$('#purchase_order_number').val();
-						$('#cmdSavePo').hide();
+						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
 						$('#dg').datagrid('reload');
 						$.messager.show({
@@ -135,15 +144,28 @@
     }
 		function hitung_jumlah(){
 		    url=CI_ROOT+'purchase_order/sub_total/'+$('#purchase_order_number').val();
+
 		    if($('#disc_total_percent').val()=='')$('#disc_total_percent').val(0);
+		    disc_prc=$('#disc_total_percent').val();
+	        if(disc_prc>1){
+	        	disc_prc=disc_prc/100;
+	        	$('#disc_total_percent').val(disc_prc);
+	        }	
+
 		    if($('#po_tax_percent').val()=='')$('#po_tax_percent').val(0);
+		    tax_prc=$('#po_tax_percent').val();
+	        if(tax_prc>1){
+	        	tax_prc=tax_prc/100;
+	        	$('#po_tax_percent').val(tax_prc);
+	        }	
+		    
 		    if($('#freight').val()=='')$('#freight').val(0);
 		    if($('#others').val()=='')$('#others').val(0);
 		    $.ajax({
                 type: "GET",
                 url: url,
 				contentType: 'application/json; charset=utf-8',
-                data:{discount:$("#disc_total_percent").val(),tax:$("#po_tax_percent").val(),
+                data:{discount:disc_prc,tax:tax_prc,
                 others:$("#others").val(),freight:$("#freight").val()}, 
                 success: function(msg){
                     var obj=jQuery.parseJSON(msg);
@@ -152,6 +174,11 @@
                 },
                 error: function(msg){alert(msg);}
 		    });			
+		}
+		function print_po(){
+			po_number=$("#purchase_order_number").val();
+			url="<?=base_url()?>index.php/purchase_order/print_po/"+po_number;
+			window.open(url,'_blank');
 		}
 </script>
     

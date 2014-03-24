@@ -3,7 +3,7 @@
 class Salesman extends CI_Controller {
     private $limit=10;
     private $table_name='salesman';
-    private $sql="select salesman,salestype,commission_rate_1,commission_rate_2 from salesman";
+    private $sql="select salesman,salestype,commission_rate_1 from salesman";
 
 	function __construct()
 	{
@@ -106,7 +106,7 @@ class Salesman extends CI_Controller {
         $data['caption']="DAFTAR SALESMAN";
 		$data['controller']='salesman';
 		$data['fields_caption']=array('Salesman','Kelompok','Komisi');
-		$data['fields']=array('salesman','salestype','commission_rate_1',',commission_rate_2');
+		$data['fields']=array('salesman','salestype','commission_rate_1');
 		$data['field_key']='salesman';
 		
 		$this->load->library('search_criteria');

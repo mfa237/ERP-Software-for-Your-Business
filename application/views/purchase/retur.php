@@ -1,9 +1,16 @@
-<h1>RETUR PEMBELIAN</H1>
+<h1>|| RETUR PEMBELIAN  || 
+	<?
+	echo link_button("Save","save_retur()","save");
+	echo link_button("Print","print_retur()","print");
+	
+	?>	
+</H1>	
 <form id='frmRetur' method="POST" name="frmRetur"> 
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <table>
 	<tr>
 		<td>Nomor Retur</td><td class='field'>
-			<?="<input type='text' id='purchase_order_number' value='$purchase_order_number'>"?>
+			<?="<input type='text' id='purchase_order_number' name='purchase_order_number' value='$purchase_order_number'>"?>
 		</td>
     </tr>	 
     <tr>		
@@ -17,9 +24,11 @@
 			echo link_button('','select_supplier()',"search","true"); 
 			?>
         </td>
+        <td><?=$supplier_info?></td>
+        
     </tr>
     <tr>
-        <td>Nomor Faktur</td><td class='field'><?=$po_ref?>
+        <td>Nomor Faktur</td><td class='field'> 
         	<?
         	echo form_input("po_ref",$po_ref,"id='po_ref'");
         	echo link_button('','select_faktur()',"search","true"); 
@@ -35,9 +44,6 @@
 </form>
 
 <H1></H1>
-<? if($mode=='add'){ ?>
-	<span id='cmdSaveRetur'><?=link_button("Save","save_retur()","save","false")?></span>
-<? } ?>
 
 <!-- PURCASE_ORDER_LINEITEMS -->	
 <div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
@@ -109,7 +115,8 @@
 						$('#divItem').show('slow');
 						$('#purchase_order_number').val(result.purchase_order_number);
 						var nomor=$('#purchase_order_number').val();
-						$('#cmdSaveRetur').hide();
+						$('#mode').val('view');
+
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
 						$('#dg').datagrid('reload');
 						$.messager.show({
@@ -143,6 +150,11 @@
                 },
                 error: function(msg){alert(msg);}
 		    });			
+		}
+		function print_retur(){
+			nomor=$("#purchase_order_number").val();
+			url="<?=base_url()?>index.php/purchase_retur/print_retur/"+nomor;
+			window.open(url,'_blank');
 		}
 
 </script>

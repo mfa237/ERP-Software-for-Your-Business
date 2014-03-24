@@ -52,6 +52,7 @@ class Purchase_order extends CI_Controller {
 		$data['message']='';
         $data['supplier_number']='';
         $data['po_date']= date("Y-m-d");
+		$data['supplier_info']='';
         $data['term_list']=$this->type_of_payment_model->select_list();
 		$this->template->display_form_input($this->file_view,$data,'');			
 	}
@@ -75,17 +76,28 @@ class Purchase_order extends CI_Controller {
 		}
 	}
 	function save(){
+		$mode=$this->input->post('mode');
         $data['potype']='O';
-        $id=$this->nomor_bukti();
+		if($mode=="add"){
+	        $id=$this->nomor_bukti();
+		} else {
+			$id=$this->input->post('purchase_order_number');			
+		}
 		$data['purchase_order_number']=$id;
 		$data['po_date']=$this->input->post('po_date');
         $data['supplier_number']=$this->input->post('supplier_number');
         $data['terms']=$this->input->post('terms');
         $data['due_date']=$this->input->post('due_date');
         $data['comments']=$this->input->post('comments');
+		
+		if($mode=="add"){
+			$ok=$this->purchase_order_model->save($data);
+		} else {
+			$ok=$this->purchase_order_model->update($id,$data);			
+		}
 
-		if ($this->purchase_order_model->save($data)){
-			$this->nomor_bukti(true);
+		if ($ok){
+			if($mode=="add") $this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
@@ -229,39 +241,24 @@ class Purchase_order extends CI_Controller {
             return $this->purchase_order_lineitems_model->delete($id);
         }        
         function print_po($nomor){
-			 $this->load->helper('mylib');
+		    $this->load->helper('mylib');
 			$this->load->helper('pdf_helper');			
-            $this->load->model('supplier_model');
             $invoice=$this->purchase_order_model->get_by_id($nomor)->row();
-			
 			$saldo=$this->purchase_order_model->recalc($nomor);
-			
-			$sum_info='<H2>Jumlah : Rp. '.  number_format($this->purchase_order_model->amount).'</H2>';
-			
-            $caption='';
-            $sql="select item_number,description,quantity,unit,price,total_price 
-                from purchase_order_lineitems i
-                where purchase_order_number='".$nomor."'";
-            $caption='';$class='';$field_key='';$offset='0';$limit=100;
-            $order_column='';$order_type='asc';
-            $item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
-                        $order_column, $order_type,false);
-            $data['supplier_info']=$this->supplier_model->info($invoice->supplier_number);
-			$data['header']=company_header();
-			$data['caption']='';
-			$data['content']='
-				<table cellspacing="0" cellpadding="1" border="1" style="width:100%"> 
-				    <tr><td colspan="2"><h1>PURCHASE ORDER</H1></td></tr>
-				    <tr><td width="90">Nomor</td><td width="310">'.$invoice->purchase_order_number.'</td></tr>
-				     <tr><td>Tanggal</td><td>'.$invoice->po_date.'</td></tr>
-				     <tr><td>Supplier</td><td>'.$data['supplier_info'].'</td></tr>
-				     <tr><td>Termin</td><td>'.$invoice->terms.'</td></tr>
-				     <tr><td>Jumlah</td><td>'.$invoice->amount.'</td></tr>
-				     <tr><td colspan="2">'.$item.'</td></tr>
-				     
-				     <tr><td colspan="2" align="right">'.$sum_info.'</td></tr>
-				</table>';	        
-			$this->load->view('simple_print',$data);
+			$data['po_number']=$invoice->purchase_order_number;
+			$data['tanggal']=$invoice->po_date;
+			$data['supplier']=$invoice->supplier_number;
+			$data['terms']=$invoice->terms;
+			$data['amount']=$invoice->amount;
+			$data['sub_total']=$invoice->subtotal;
+			$data['discount']=$invoice->discount;
+			$data['disc_amount']=$invoice->subtotal*$invoice->discount;
+			$data['freight']=$invoice->freight;
+			$data['others']=$invoice->other;
+			$data['tax']=$invoice->tax;
+			$data['tax_amount']=$invoice->tax*($data['sub_total']-$data['disc_amount']);
+			$data['comments']=$invoice->comments;
+			$this->load->view('purchase/print_po',$data);
 		}
         function sum_info(){
             $nomor=$_GET['nomor'];
@@ -381,16 +378,16 @@ class Purchase_order extends CI_Controller {
             $data['purchase_order_number']=$nomor_po;
             $this->template->display('purchase/list_receive_not_invoiced',$data);            
 	}
-		function sub_total($nomor){
-			$sql="update purchase_order set discount=".$_GET['discount'].",tax=".$_GET['tax']
-			.",freight=".$_GET['freight'].",other=".$_GET['others']." where purchase_order_number='$nomor'";
-			$rs=mysql_query($sql);
-			$saldo=$this->purchase_order_model->recalc($nomor);
-			$sub_total=$this->purchase_order_model->sub_total;
-			$data=array('sub_total'=>$sub_total,'amount'=>$this->purchase_order_model->amount);
-			
-			echo json_encode($data);				
-		}
+	function sub_total($nomor){
+		$sql="update purchase_order set discount=".$_GET['discount'].",tax=".$_GET['tax']
+		.",freight=".$_GET['freight'].",other=".$_GET['others']." where purchase_order_number='$nomor'";
+		$rs=mysql_query($sql);
+		$saldo=$this->purchase_order_model->recalc($nomor);
+		$sub_total=$this->purchase_order_model->sub_total;
+		$data=array('sub_total'=>$sub_total,'amount'=>$this->purchase_order_model->amount);
+		
+		echo json_encode($data);				
+	}
     function save_item(){
     	 
         $item_no=$this->input->post('item_number');

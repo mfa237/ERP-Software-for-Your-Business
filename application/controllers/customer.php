@@ -43,11 +43,10 @@ class Customer extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$this->customer_model->save($data);
-                        $this->browse();
-			 
+            $this->browse();
 		} else {
 			$data['mode']='add';
-                        $this->template->display_form_input('sales/customer',$data);
+            $this->template->display_form_input('sales/customer',$data);
 		}
 	}
         

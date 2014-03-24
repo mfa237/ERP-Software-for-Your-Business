@@ -76,6 +76,7 @@ class Payables_payments extends CI_Controller {
    		$this->load->model('bank_accounts_model');
 		$this->load->model('supplier_model');
 		$this->load->model('purchase_order_model');
+		$this->load->model('payables_model');
 		
 		$faktur=$this->input->post("faktur");
    		$no_bukti=$this->nomor_bukti();
@@ -86,17 +87,17 @@ class Payables_payments extends CI_Controller {
 		$account_id=$bank->account_id;
 		$how_paid=strtolower($this->input->post('how_paid'));
 		$trtype='cash in';
-		$cust="";
-		$cust_name="";
+		$supplier_number="";
+		$supplier_name="";
 		switch ($how_paid) {
 			case 'trans in':
-				$trtype='trans in';
+				$trtype='trans out';
 				break;
 			case 'giro':
-				$trtype='cheque in';
+				$trtype='cheque out';
 				break;
 			default:
-				$trtype='cash in';
+				$trtype='cash out';
 				break;
 		}
 		for($i=0;$i<count($bayar);$i++){
@@ -104,18 +105,21 @@ class Payables_payments extends CI_Controller {
 				$amount_paid=$bayar[$i];
 				$no_faktur=$faktur[$i];
 				$rfaktur=$this->purchase_order_model->get_by_id($no_faktur)->row();
-				if($cust==""){
-					$rcust=$this->supplier_model->get_by_id($rfaktur->supplier_number)->row();		
-					$cust=$rcust->supplier_number;
-					$cust_name=$rcust->supplier_name;
+				if($supplier_number==""){
+					$rsupp=$this->supplier_model->get_by_id($rfaktur->supplier_number)->row();		
+					$supplier_number=$rsupp->supplier_number;
+					$supplier_name=$rsupp->supplier_name;
 				}
+				$bill_id=$this->payables_model->get_bill_id($no_faktur);
                 $data['no_bukti']=$no_bukti;
                 $data['date_paid']=$this->input->post('date_paid');
                 $data['how_paid']=$how_paid;
                 $data['amount_paid']=$amount_paid;
                 $data['purchase_order_number']=$no_faktur;
 				$data['how_paid_account_id']=$account_id;
-				 
+				//$data['supplier_number']=$supplier_number;
+				$data['bill_id']=$bill_id;
+								 
                 $this->payables_payments_model->save($data);
 				$total_paid=$total_paid+$amount_paid;
 			}	
@@ -127,9 +131,9 @@ class Payables_payments extends CI_Controller {
 		$rkas['payment_amount']=$total_paid;
 		$rkas['account_number']=$account;
 		$rkas['trans_type']=$trtype;
-		$rkas['payee']=$cust_name;
-		$rkas['supplier_number']=$cust;
-		$rkas['memo']="Pelunasan hutang supplier ".$cust_name;
+		$rkas['payee']=$supplier_name;
+		$rkas['supplier_number']=$supplier_number;
+		$rkas['memo']="Pelunasan hutang supplier ".$supplier_name;
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->save($rkas); 	 	
 		$this->nomor_bukti(true);

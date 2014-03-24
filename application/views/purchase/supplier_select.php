@@ -35,7 +35,7 @@
 		var row = $('#dgSelectSupp').datagrid('getSelected');
 		if (row){
 			$('#supplier_number').val(row.supplier_number);
-			//$('#company').val(row.company);
+			$('#supplier_name').val(row.supplier_name);
 			$('#dlgSelectSupp').dialog('close');
 		} else {
 			alert("Pilih salah satu nomor supplier !");

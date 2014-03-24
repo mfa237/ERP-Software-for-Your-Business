@@ -41,9 +41,6 @@
             <td>Kelompok</td><td><?php echo form_dropdown( 'group_type',$group_type_list,$group_type);?></td>
        </tr>
        <tr>
-            <td>Header/Detail</td><td><?php echo form_radio('h_or_d','H',$h_or_d=='0'||$h_or_d=='');?>Header
-                <?php echo form_radio('h_or_d','D',!($h_or_d=='0'||$h_or_d==''));?>Detail
-            </td>
        </tr>
  	 
 	 <tr><td>

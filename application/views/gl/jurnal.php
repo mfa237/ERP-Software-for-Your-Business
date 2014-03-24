@@ -14,7 +14,7 @@
             <td>Jenis Transaksi</td><td><?php echo form_input('operation',$operation,'id=operation');?></td>
        </tr>
        <tr>
-            <td>Keterangan</td><td><?php echo form_input('source',$source,'id=source');?></td>
+            <td>Keterangan</td><td><?php echo form_input('source',$source,'id=source style="width:400px"');?></td>
        </tr>
        <tr><td></td><td></td></tr>
        <tr>

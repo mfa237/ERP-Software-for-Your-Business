@@ -12,12 +12,24 @@ public $sub_total=0;
 	}
 	  
 	function recalc($nomor){
-	     
 	    $this->load->model('payables_payments_model');
 		$this->load->model('purchase_order_lineitems_model');
 	    $this->amount=$this->purchase_order_lineitems_model->sum_total_price($nomor);
 		$this->sub_total=$this->amount;
-		$this->update($nomor,array('amount'=>$this->amount));
+    	$po=$this->get_by_id($nomor)->row();
+		if(count($po)==0){
+			return 0;
+		}
+		$disc_amount=$po->discount*$this->sub_total;
+	    $this->amount=$this->sub_total-$disc_amount;
+		$tax_amount=$po->tax*$this->amount;
+		$this->amount=$this->amount+$tax_amount;
+		$this->amount=$this->amount+$po->freight;
+		$this->amount=$this->amount+$po->other;
+
+		$this->db->where($this->primary_key,$nomor);
+		$this->db->update($this->table_name,array('amount'=>$this->amount,'subtotal'=>$this->sub_total));
+		
 		$this->add_payables($nomor);
 	    $this->amount_paid=$this->payables_payments_model->total_amount($nomor);
 	    $this->saldo= $this->amount-$this->amount_paid;

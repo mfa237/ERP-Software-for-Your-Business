@@ -509,3 +509,6 @@ input[type=password] {
     padding-left:30px;
  
   }
+.icon-comments{
+	background:url('../../images/setup.png') no-repeat center center;
+}

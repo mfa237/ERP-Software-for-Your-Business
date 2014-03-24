@@ -7,7 +7,7 @@
 		<td>Nomor Bukti: </td><td><?=$voucher?></td>
 	</tr>
 	<tr>
-		<td>Pelanggan: </td><td><?=$supplier_info?></td>
+		<td>Supplier: </td><td><?=$supplier_info?></td>
 	</tr>
 	<tr>
 		<td>Tanggal Bayar: </td><td><?=$date_paid?></td>

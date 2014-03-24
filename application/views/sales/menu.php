@@ -34,7 +34,6 @@
  				<ul>
  					<li><?=anchor(base_url().'index.php/invoice/add','Tambah Faktur Penjualan','class="info_link"')?></li>
  					<li><?=anchor(base_url().'index.php/invoice','Cari Nomor Faktur','class="info_link"');?></li>
- 					<li><?=anchor('#','Cetak Faktur','onclick="cetak_faktur();return false;"');?></li>
  				</ul>
  			</li>
  			<li>

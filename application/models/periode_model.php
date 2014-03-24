@@ -20,10 +20,14 @@ function exist($id){
    return $this->db->count_all($this->table_name." where period='".$id."'")>0;
 }
 function save($data){
+	if(isset($data['startdate']))$data['startdate']= date('Y-m-d H:i:s', strtotime($data['startdate']));
+	if(isset($data['enddate']))$data['enddate']= date('Y-m-d H:i:s', strtotime($data['enddate']));
 	$this->db->insert($this->table_name,$data);
 	return $this->db->insert_id();
 }
 function update($id,$data){
+	if(isset($data['startdate']))$data['startdate']= date('Y-m-d H:i:s', strtotime($data['startdate']));
+	if(isset($data['enddate']))$data['enddate']= date('Y-m-d H:i:s', strtotime($data['enddate']));
 	$this->db->where($this->primary_key,$id);
 	$this->db->update($this->table_name,$data);
 }

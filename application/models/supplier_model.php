@@ -64,14 +64,14 @@ function select_list(){
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
-        function info($id){
-            $data=$this->get_by_id($id)->row();
-            if(count($data)){    
-                $ret='<br/><strong>'.$id.' - '.$data->supplier_name.'</strong><br/>'
-                        .$data->street.'<br/>'.$data->city;
-            } else $ret='';
-            return $ret;
-        }
+    function info($id){
+        $data=$this->get_by_id($id)->row();
+        if(count($data)){    
+            $ret='<strong>'.$id.' - '.$data->supplier_name.'</strong> - '
+                    .$data->street.' '.$data->city;
+        } else $ret='';
+        return $ret;
+    }
 	function saldo_hutang_summary()
 	{
 		$sql="select s.supplier_number,sum(p.amount) as sum_amount 

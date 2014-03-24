@@ -34,7 +34,7 @@ $table_head.="</tr></thead>";
 		<div>
 			<?=link_button("Add", "addnew_$controller()","add","true");?>
 			<?=link_button("Edit", "edit_$controller()","edit","true");?>
-			<?=link_button("Del", "del_$controller()","remove","true");?>
+			<?=link_button("Del", "del_row_$controller()","remove","true");?>
 		</div>
 		<div>
 			<form id='frmSearch_<?=$controller?>'>

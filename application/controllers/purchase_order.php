@@ -14,6 +14,9 @@ class Purchase_order extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		
+		if(!$this->access->is_login())redirect(base_url());
+		
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
         $this->load->library('sysvar');
         $this->load->library('javascript');
@@ -77,12 +80,12 @@ class Purchase_order extends CI_Controller {
 	}
 	function save(){
 		$mode=$this->input->post('mode');
-        $data['potype']='O';
 		if($mode=="add"){
 	        $id=$this->nomor_bukti();
 		} else {
 			$id=$this->input->post('purchase_order_number');			
 		}
+        $data['potype']='O';
 		$data['purchase_order_number']=$id;
 		$data['po_date']=$this->input->post('po_date');
         $data['supplier_number']=$this->input->post('supplier_number');

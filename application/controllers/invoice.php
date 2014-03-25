@@ -14,6 +14,7 @@ class Invoice extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
         $this->load->library('sysvar');
         $this->load->library('javascript');
@@ -95,27 +96,36 @@ class Invoice extends CI_Controller {
 	}
 	function save()
 	{
-			$data['invoice_date']=$this->input->post('invoice_date');
-			$data['sold_to_customer']=$this->input->post('sold_to_customer');
-			$data['salesman']=$this->input->post('salesman');
-			$data['payment_terms']=$this->input->post('payment_terms');
-			$data['due_date']=$this->input->post('due_date');
-			$data['comments']=$this->input->post('comments');			
-			$data['sales_order_number']=$this->input->post('sales_order_number');
-			$id=$this->nomor_bukti();
-			$data['invoice_number']=$id;
-			$data['invoice_type']='I';
-			$data['type_of_invoice']='Simple';
+		$mode=$this->input->post('mode');
+		if($mode=="add"){
+	        $id=$this->nomor_bukti();
+		} else {
+			$id=$this->input->post('invoice_number');			
+		}
+		$data['invoice_date']=$this->input->post('invoice_date');
+		$data['sold_to_customer']=$this->input->post('sold_to_customer');
+		$data['salesman']=$this->input->post('salesman');
+		$data['payment_terms']=$this->input->post('payment_terms');
+		$data['due_date']=$this->input->post('due_date');
+		$data['comments']=$this->input->post('comments');			
+		$data['sales_order_number']=$this->input->post('sales_order_number');
+		$data['invoice_number']=$id;
+		$data['invoice_type']='I';
+		$data['type_of_invoice']='Simple';
 
-	        $this->session->set_userdata('invoice_number',$id);
-			 
+        $this->session->set_userdata('invoice_number',$id);
+		 
+		if($mode=="add"){
 			$ok=$this->invoice_model->save($data);
+		} else {
+			$ok=$this->invoice_model->update($id,$data);			
+		}
+		if ($ok){
 			$this->nomor_bukti(true);
-			if ($ok){
-				echo json_encode(array('success'=>true,'invoice_number'=>$id));
-			} else {
-				echo json_encode(array('msg'=>'Some errors occured.'));
-			}
+			echo json_encode(array('success'=>true,'invoice_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
 	}
 	function update()
 	{
@@ -314,43 +324,23 @@ class Invoice extends CI_Controller {
 		
    }
     function print_faktur($nomor){
-    	
-        $this->load->helper('mylib');
-		$this->load->helper('pdf_helper');			
-        $this->load->model('customer_model');
         $invoice=$this->invoice_model->get_by_id($nomor)->row();
-		if(!$invoice){
-			echo "<h1>Nomor faktur tidak ditemukan.!</h1>";
-			return false;
-		}
 		$saldo=$this->invoice_model->recalc($nomor);
-		
-		$sum_info='Jumlah Faktur: Rp. '.  number_format($invoice->amount)
-        .'<br/>Jumlah Bayar : Rp. '.  number_format($this->invoice_model->amount_paid)
-        .'<br/>Jumlah Sisa  : Rp. '.  number_format($saldo);
-		
-        $caption='';
-		$sql="select item_number,description,quantity,unit,price,amount 
-			from invoice_lineitems where invoice_number='$nomor'";
-        $caption='';$class='';$field_key='';$offset='0';$limit=100;
-        $order_column='';$order_type='asc';
-        $item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
-                    $order_column, $order_type,false);
-        $data['supplier_info']=$this->customer_model->info($invoice->sold_to_customer);
-		$data['header']=company_header();
-		$data['caption']='';
-		$data['content']='
-			<table cellspacing="0" cellpadding="1" border="1" style="width:100%"> 
-			    <tr><td colspan="2"><h1>FAKTUR PENJUALAN</H1></td></tr>
-			    <tr><td width="90">Nomor</td><td width="310">'.$invoice->invoice_number.'</td></tr>
-			     <tr><td>Tanggal</td><td>'.$invoice->invoice_date.'</td></tr>
-			     <tr><td>Customer</td><td>'.$this->customer_model->info($invoice->sold_to_customer).'</td></tr>
-			     <tr><td>Salesman</td><td>'.$invoice->salesman.'</td></tr>
-			     <tr><td colspan="2">'.$item.'</td></tr>
-			     
-			     <tr><td colspan="2">'.$sum_info.'</td></tr>
-			</table>';	        
-		$this->load->view('simple_print',$data);
+		$data['invoice_number']=$invoice->invoice_number;
+		$data['invoice_date']=$invoice->invoice_date;
+		$data['sold_to_customer']=$invoice->sold_to_customer;
+		$data['comments']=$invoice->comments;
+		$data['sales_order_number']=$invoice->sales_order_number;
+		$data['due_date']=$invoice->due_date;
+		$data['amount']=$invoice->amount;
+		$data['sub_total']=$invoice->subtotal;
+		$data['discount']=$invoice->discount;
+		$data['disc_amount']=$invoice->subtotal*$invoice->discount;
+		$data['freight']=$invoice->freight;
+		$data['others']=$invoice->other;
+		$data['tax']=$invoice->sales_tax_percent;
+		$data['tax_amount']=$invoice->sales_tax_percent*($data['sub_total']-$data['disc_amount']);
+        $this->load->view('sales/rpt/print_faktur',$data);    	
     }
 	function select_list(){
 		

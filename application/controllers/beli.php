@@ -5,10 +5,11 @@ class Beli extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select'));
-                $this->load->library('sysvar');
-                $this->load->library('javascript');
-                $this->load->library('template');
+        $this->load->library('sysvar');
+        $this->load->library('javascript');
+        $this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('purchase_order_model');
 		$this->load->model('supplier_model');

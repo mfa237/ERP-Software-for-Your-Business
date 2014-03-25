@@ -9,6 +9,7 @@ class Delivery_order extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
         $this->load->library('sysvar');
         $this->load->library('javascript');
@@ -65,46 +66,57 @@ class Delivery_order extends CI_Controller {
 	{
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			//$data=$this->get_posts(); 
-			$no=$this->nomor_bukti();
-			$datax['invoice_type']='D';
-			$datax['invoice_number']=$no;
-			$datax['sold_to_customer']=$this->input->post('sold_to_customer');
-			$datax['invoice_date']=$this->input->post('invoice_date');
-			$datax['sales_order_number']=$this->input->post('sales_order_number');
-			$datax['due_date']=$this->input->post('due_date');
-			$datax['comments']=$this->input->post('comments');
-
-			$this->load->model('invoice_model');
-			$this->invoice_model->save($datax);
-			$this->invoice_model->save_from_so_items($datax['invoice_number'],
-			$this->input->post('qty_order'),
-			$this->input->post('line_number'));
-
-			$this->nomor_bukti(true);
-//            redirect(base_url().'index.php/delivery_order/view/'.$datax['invoice_number'], 'refresh');
-			$this->view($no,$datax);			
+		$this->load->model('invoice_lineitems_model');        
+		$this->load->model('sales_order_model');               
+		$data['mode']='add';
+		$data['message']='';
+        $data['customer_list']=$this->customer_model->select_list();
+		$data['salesman_list']=$this->salesman_model->select_list();
+		$data['so_list']=$this->sales_order_model->select_list_not_delivered();
+        $data['sold_to_customer']="";
+        $data['amount']=$this->input->post('amount');
+        $data['payment_terms_list']=$this->type_of_payment_model->select_list();
+         $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
+		$this->template->display_form_input($this->file_view,$data,'');			
+	}
+	function save()
+	{
+		$mode=$this->input->post('mode');
+		if($mode=="add"){
+	        $id=$this->nomor_bukti();
 		} else {
-			$this->load->model('invoice_lineitems_model');        
-			$this->load->model('sales_order_model');               
-			$data['mode']='add';
-			$data['message']='';
-            $data['sold_to_customer']=$this->input->post('sold_to_customer');
-            $data['customer_list']=$this->customer_model->select_list();
-			$data['salesman_list']=$this->salesman_model->select_list();
-			$data['so_list']=$this->sales_order_model->select_list_not_delivered();
-            $data['amount']=$this->input->post('amount');
-            $data['payment_terms_list']=$this->type_of_payment_model->select_list();
-			$this->template->display_form_input($this->file_view,$data,'');			
+			$id=$this->input->post('invoice_number');			
 		}
-	}	
+		$data['invoice_type']='D';
+		$data['invoice_number']=$id;
+		$data['sold_to_customer']=$this->input->post('sold_to_customer');
+		$data['invoice_date']=$this->input->post('invoice_date');
+		$data['sales_order_number']=$this->input->post('sales_order_number');
+		$data['due_date']=$this->input->post('due_date');
+		$data['comments']=$this->input->post('comments');
+			 
+		if($mode=="add"){
+			$ok=$this->invoice_model->save($data);
+			$this->invoice_model->save_from_so_items($data['invoice_number'],
+				$this->input->post('qty_order'),
+				$this->input->post('line_number'));
+		} else {
+			$ok=$this->invoice_model->update($id,$data);			
+		}
+		if ($ok){
+			if($mode=="add") $this->nomor_bukti(true);
+			echo json_encode(array('success'=>true,'invoice_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+	}
+	
 	function sales_order_not_delivered(){
 		$this->load->model('sales_order_model');
 		var_dump($this->sales_order_model->select_list_not_delivered());
 		return true;
 	}
-	function update()
+	function updatex()
 	{
 		 $data=$this->set_defaults();              
 		 $this->_set_rules();
@@ -166,9 +178,13 @@ class Delivery_order extends CI_Controller {
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
          $data['message']=$message;
-//         $data['customer_list']=$this->customer_model->select_list();  
+		 $cst=$this->invoice_model->get_by_id($data['sold_to_customer'])->row();
+		 if($cst){
+		 	
+		 } else {
+		 	
+		 }
          $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
-//		 $data['salesman_list']=$this->salesman_model->select_list();
          $menu='';
 		 $this->session->set_userdata('_right_menu',$menu);
          $this->session->set_userdata('invoice_number',$id);
@@ -259,43 +275,15 @@ class Delivery_order extends CI_Controller {
         echo browse_simple($sql);
    }
     function print_faktur($nomor){
-    	
-        $this->load->helper('mylib');
-		$this->load->helper('pdf_helper');			
-        $this->load->model('customer_model');
         $invoice=$this->invoice_model->get_by_id($nomor)->row();
-		if(!$invoice){
-			echo "<h1>Nomor faktur tidak ditemukan.!</h1>";
-			return false;
-		}
 		$saldo=$this->invoice_model->recalc($nomor);
-		
-		$sum_info='Jumlah Faktur: Rp. '.  number_format($invoice->amount)
-        .'<br/>Jumlah Bayar : Rp. '.  number_format($this->invoice_model->amount_paid)
-        .'<br/>Jumlah Sisa  : Rp. '.  number_format($saldo);
-		
-        $caption='';
-		$sql="select item_number,description,quantity,unit,price,amount 
-			from invoice_lineitems where invoice_number='$nomor'";
-        $caption='';$class='';$field_key='';$offset='0';$limit=100;
-        $order_column='';$order_type='asc';
-        $item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
-                    $order_column, $order_type,false);
-        $data['supplier_info']=$this->customer_model->info($invoice->sold_to_customer);
-		$data['header']=company_header();
-		$data['caption']='';
-		$data['content']='
-			<table cellspacing="0" cellpadding="1" border="1" style="width:100%"> 
-			    <tr><td colspan="2"><h1>SURAT JALAN</H1></td></tr>
-			    <tr><td width="90">Nomor</td><td width="310">'.$invoice->invoice_number.'</td></tr>
-			     <tr><td>Tanggal</td><td>'.$invoice->invoice_date.'</td></tr>
-			     <tr><td>Customer</td><td>'.$this->customer_model->info($invoice->sold_to_customer).'</td></tr>
-			     <tr><td>Salesman</td><td>'.$invoice->salesman.'</td></tr>
-			     <tr><td colspan="2">'.$item.'</td></tr>
-			     
-			     <tr><td colspan="2">'.$sum_info.'</td></tr>
-			</table>';	        
-		$this->load->view('simple_print',$data);
+		$data['invoice_number']=$invoice->invoice_number;
+		$data['invoice_date']=$invoice->invoice_date;
+		$data['sold_to_customer']=$invoice->sold_to_customer;
+		$data['comments']=$invoice->comments;
+		$data['sales_order_number']=$invoice->sales_order_number;
+		$data['due_date']=$invoice->due_date;
+        $this->load->view('sales/rpt/print_do',$data);
     }    
 	function items($nomor,$type='')
 	{

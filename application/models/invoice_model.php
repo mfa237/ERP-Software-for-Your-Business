@@ -104,7 +104,7 @@ function update($id,$data){
 	$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
 	$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
 	$this->db->where($this->primary_key,$id);
-	$this->db->update($this->table_name,$data);
+	return $this->db->update($this->table_name,$data);
 }
 function delete($id){
     	$this->db->where($this->primary_key,$id);

@@ -5,7 +5,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-class Gl extends CI_Controller {
+class Sales extends CI_Controller {
                 
 
 	function __construct()
@@ -21,29 +21,19 @@ class Gl extends CI_Controller {
     function index(){	
 	}
     function rpt($id){
+		 $data['date_from']=date('Y-m-d 00:00:00');
+		 $data['date_to']=date('Y-m-d 23:59:59');
+		 $data['select_date']=true;		 
     	 switch ($id) {
-			 case 'cards':
-				 $data['date_from']=date('Y-m-d 00:00:00');
-				 $data['date_to']=date('Y-m-d 23:59:59');
-				 $data['select_date']=true;
+			 case 'ar_dtl':
 				 $data['criteria1']=true;
-				 $data['label1']='Dari Kode Perkiraan';
+				 $data['label1']='Kode Pelanggan';
 				 $data['text1']='';
-				 $data['criteria2']=true;
-				 $data['label2']='Sampai Kode Perkiraan';
-				 $data['text2']='';
-				 break;
-			 case 'jurnal' or 'neraca_saldo':
-				 $data['date_from']=date('Y-m-d 00:00:00');
-				 $data['date_to']=date('Y-m-d 23:59:59');
-				 $data['select_date']=true;
-				 break;
-			 
+				 break;			 
 			 default:
-				 
 				 break;
 		 }
-		 $rpt='gl/rpt/'.$id;
+		 $rpt='sales/rpt/'.$id;
 		 $data['rpt_controller']=$rpt;
 		 
 		if(!$this->input->post('cmdPrint')){

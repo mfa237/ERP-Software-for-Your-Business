@@ -5,9 +5,10 @@ class Run extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form'));
 		$this->load->library('template');
-                $this->load->model('table_model');
+        $this->load->model('table_model');
 	}
 	function index()
 	{	

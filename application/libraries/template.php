@@ -7,6 +7,9 @@ class Template {
  function __construct()
  {
     $this->_ci =&get_instance();
+
+
+
     $this->_ci->load->library('javascript');
 	$this->library_src=$this->_ci->jquery->script(base_url().'js/jquery/jquery-1.8.0.min.js',true);
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/jquery-ui/jquery.easyui.min.js',true);
@@ -22,6 +25,7 @@ class Template {
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/demo.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'/themes/standard/style.css">
 	';
+
 
 }
 

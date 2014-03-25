@@ -12,6 +12,7 @@ class Sales_order extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
         $this->load->library('sysvar');
         $this->load->library('javascript');
@@ -87,31 +88,33 @@ class Sales_order extends CI_Controller {
 	}
 	function save()
 	{
-		 //$data=$this->set_defaults();
-		 //$this->_set_rules();
-		 //if ($this->form_validation->run()=== TRUE){
-///			$data['sales_order_number']=$this->input->get('sales_order_number');
+		$mode=$this->input->post('mode');
+		if($mode=="add"){
+	        $id=$this->nomor_bukti();
+		} else {
+			$id=$this->input->post('sales_order_number');			
+		}
 			$data['sales_date']=$this->input->post('sales_date');
 			$data['sold_to_customer']=$this->input->post('sold_to_customer');
 			$data['salesman']=$this->input->post('salesman');
 			$data['payment_terms']=$this->input->post('payment_terms');
 			$data['due_date']=$this->input->post('due_date');
 			$data['comments']=$this->input->post('comments');			
-			$id=$this->nomor_bukti();
 			$data['sales_order_number']=$id;
 
 	        $this->session->set_userdata('sales_order_number',$id);
 			 
+		if($mode=="add"){
 			$ok=$this->sales_order_model->save($data);
-			$this->nomor_bukti(true);
-			if ($ok){
-				echo json_encode(array('success'=>true,'sales_order_number'=>$id));
-			} else {
-				echo json_encode(array('msg'=>'Some errors occured.'));
-			}
-		//} else {
-		//		echo json_encode(array('msg'=>'Some errors occured.'));			
-		//} 
+		} else {
+			$ok=$this->sales_order_model->update($id,$data);			
+		}
+		if ($ok){
+			if($mode=="add") $this->nomor_bukti(true);
+			echo json_encode(array('success'=>true,'sales_order_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
 	}
 	function update()
 	{
@@ -311,42 +314,23 @@ class Sales_order extends CI_Controller {
 		}
     }        
     function print_so($nomor){
-        $this->load->helper('mylib');
-		$this->load->helper('pdf_helper');
-
-        $so=$this->sales_order_model->get_by_id($nomor)->row();
-
-		$query=$this->db->query("select item_number,description,quantity,unit,price,amount 
-			from sales_order_lineitems where sales_order_number='$nomor'");
-
-		$items='<table cellspacing="0" cellpadding="1" border="1" >
-			<tr><td>Item No</td><td>Description</td><td>Qty</td><td>Unit</td><td>Price</td><td>Amount</td></tr>';
-		foreach($query->result() as $row){
-			$items.='<tr><td>'.$row->item_number.'</td><td>'.$row->description.'</td>
-				<td>'.$row->quantity.'</td><td>'.$row->unit.'</td><td align="right">'.number_format($row->price)
-				.'</td><td align="right">'.number_format($row->amount).'</td></tr>
-				
-			';		
-		}	
-		$items.='</table>';
-
-        $this->load->model('customer_model');
-
-        $content='<table cellspacing="0" cellpadding="0" border="0" style="width:400px"> 
-			    <tr><td colspan="2" align="center"><h1>SALES ORDER</H1></td></tr>
-			    <tr><td width="90">Nomor</td><td width="310">'.$so->sales_order_number.'</td></tr>
-			     <tr><td>Tanggal</td><td>'.$so->sales_date.'</td></tr>
-			     <tr><td>Customer</td><td>'.$this->customer_model->info($so->sold_to_customer).'</td></tr>
-			     <tr><td>Salesman</td><td>'.$so->salesman.'</td></tr>
-			     <tr><td>Renc. Kirim</td><td>'.$so->due_date.'</td></tr>
-  			     <tr><td colspan="2">'.$items.'</td></tr>
-  			     <tr><td><h2>Total</h2></td><td><h2>'.number_format($so->amount).'</h2></td></tr>
-		</table>
-		';
-		$data['header']='PT. TalagaSoft Indonesia';	
-        $data['content']=$content;
-        $this->load->view('pdf_print',$data);
-    	}
+        $invoice=$this->sales_order_model->get_by_id($nomor)->row();
+		$saldo=$this->sales_order_model->recalc($nomor);
+		$data['sales_order_number']=$invoice->sales_order_number;
+		$data['sales_date']=$invoice->sales_date;
+		$data['sold_to_customer']=$invoice->sold_to_customer;
+		$data['payment_terms']=$invoice->payment_terms;
+		$data['amount']=$invoice->amount;
+		$data['sub_total']=$invoice->subtotal;
+		$data['discount']=$invoice->discount;
+		$data['disc_amount']=$invoice->subtotal*$invoice->discount;
+		$data['freight']=$invoice->freight;
+		$data['others']=$invoice->other;
+		$data['tax']=$invoice->sales_tax_percent;
+		$data['tax_amount']=$invoice->sales_tax_percent*($data['sub_total']-$data['disc_amount']);
+		$data['comments']=$invoice->comments;
+        $this->load->view('sales/rpt/print_so',$data);
+   	}
         function list_open_so($customer)
         {
             $sql="select p.sales_order_number,p.sales_date,p.due_date,p.payment_terms,p.salesman 

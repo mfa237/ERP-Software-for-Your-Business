@@ -11,10 +11,11 @@ class Purchase extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-                $this->load->helper(array('url','form','browse_select'));
-                $this->load->library('sysvar');
-                $this->load->library('javascript');
-                $this->load->library('template');
+		if(!$this->access->is_login())redirect(base_url());
+        $this->load->helper(array('url','form','browse_select'));
+        $this->load->library('sysvar');
+        $this->load->library('javascript');
+        $this->load->library('template');
 		$this->load->library('form_validation');
 	}
     function index(){	

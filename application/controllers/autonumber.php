@@ -4,7 +4,8 @@ class Autonumber extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-                $this->load->library('sysvar');
+        $this->load->library('sysvar');
+		if(!$this->access->is_login())redirect(base_url());
 	}
 	function index()
 	{

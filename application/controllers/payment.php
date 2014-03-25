@@ -11,6 +11,7 @@ class Payment extends CI_Controller {
     function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select'));
 		$this->load->library(array('form_validation','sysvar','template'));
 		$this->load->model('payment_model');

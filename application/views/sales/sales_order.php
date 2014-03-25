@@ -1,13 +1,11 @@
+<h1>|| SALES ORDER - GENERAL ||
 <?
-if($mode=='view'){
-	echo link_button('Print', 'print_so()','print','false');		
-	echo link_button('Delete', 'delete()','remove','false');		
-	echo link_button('Edit', 'edit()','edit','false');		
-}
-?>
-
-<h1>SALES ORDER - GENERAL</H1>
+	echo link_button("Save","save_so()","save");
+	echo link_button('Print', 'print_so()','print');		
+?>	
+</H1>
 <form id="frmSo"  method="post">
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
    <table>
 	<tr>
 		<td>Nomor Bukti SO</td>
@@ -44,14 +42,7 @@ if($mode=='view'){
             <td>        
             </td>
        </tr>
-       <tr><td colspan="4">
-       	<? if($mode=='add'){ ?>      		
-			<div id='cmdSaveSo'>
-		            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-		            plain='true' onclick='save_so()'>Simpan</a>
-            </div>        
-		<? } ?>
-       </td></tr>
+       <tr><td colspan="4"> </td></tr>
    </table>
 </form>
 
@@ -182,7 +173,7 @@ if($mode=='view'){
 					if (result.success){
 						$('#sales_order_number').val(result.sales_order_number);
 						var so=$('#sales_order_number').val();
-						$('#cmdSaveSo').hide();
+						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/sales_order/items/'+so+'/json'});
 						$('#dg').datagrid('reload');
 						$.messager.show({
@@ -229,13 +220,25 @@ if($mode=='view'){
 	        }	
 	        disc_amt=Math.round(gross*disc_prc,2);
 	        $('#amount').val(gross-disc_amt);			
+	        hitung_jumlah();
 		}
 		function hitung_jumlah(){
 		    url=CI_ROOT+'sales_order/sub_total/'+$('#sales_order_number').val();
 		    if($('#disc_total_percent').val()=='')$('#disc_total_percent').val(0);
+		    disc_prc=$('#disc_total_percent').val();
+	        if(disc_prc>1){
+	        	disc_prc=disc_prc/100;
+	        	$('#disc_total_percent').val(disc_prc);
+	        }	
 		    if($('#sales_tax_percent').val()=='')$('#sales_tax_percent').val(0);
+		    tax_prc=$('#sales_tax_percent').val();
+	        if(tax_prc>1){
+	        	tax_prc=tax_prc/100;
+	        	$('#sales_tax_percent').val(tax_prc);
+	        }	
 		    if($('#freight').val()=='')$('#freight').val(0);
 		    if($('#others').val()=='')$('#others').val(0);
+		    
 		    $.ajax({
                 type: "GET",
                 url: url,

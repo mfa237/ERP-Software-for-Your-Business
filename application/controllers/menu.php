@@ -5,6 +5,7 @@ class Menu extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','mylib_helper'));
 		$this->load->library('template');
              
@@ -12,10 +13,6 @@ class Menu extends CI_Controller {
 	function index(){
     }
         function load($m){
-			if(!$this->access->is_login()){
-			    redirect(base_url());
-				exit;
-			}				
             $url=$m.'/menu';
 			$this->session->set_userdata('_left_menu_caption',$m);
             $this->session->set_userdata('_left_menu', $url);

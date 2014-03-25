@@ -1,40 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-   <title>Transaksi Surat Jalan</title>
- </head>
- <body>
- <div>
-   <div>
+<h1>SURAT JALAN - [
 	<?
-	if($mode=='view'){
-		echo link_button('Print', 'print()','print','false');		
-		echo link_button('Delete', 'delete()','remove','false');		
-		echo link_button('Edit', 'edit()','edit','false');		
-	}
+	echo link_button('Save', 'save()','save');		
+	echo link_button('Print', 'print()','print');		
 	?>
-   	
-   	<h1>SURAT JALAN</H1>
-   <?php echo validation_errors(); ?>
-   <?php 
-        if($mode=='view') 
-        {
-                echo form_open(base_url().'index.php/delivery_order/update',"id=myform");
-                $disabled='disable';
-        } else {
-                $disabled='';
-                echo form_open(base_url().'index.php/delivery_order/add',"id=myform"); 
-        }
-		
-   ?>
-<table>     
+]</H1>
+<form id="frmDo"  method="post">
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+	<table>     
 	<tr><td>Nomor</td>
         <td>  
             <?php
-             echo form_input('invoice_number',$invoice_number);
+             echo form_input('invoice_number',$invoice_number,"id='invoice_number'");
             		
             ?>
-        </td>        
+        </td> 
+        <td rowspan="4" style="vertical-align: top">
+        	Alamat Pengiriman: </br><?=$customer_info?>
+        </td>       
     </tr>
      <tr>
 	     <td>Pelanggan</td><td><?
@@ -77,7 +59,6 @@
 		</table>
 		<h1>SELECT ITEMS</h1>
 		<div id='divItem'>
-			<? if($mode=='view'){ ?>
 				<table id="dgItem" class="easyui-datagrid"  
 					data-options="
 						iconCls: 'icon-edit',
@@ -95,11 +76,7 @@
 						</tr>
 					</thead>
 				</table>
-			<? } ?>
 		</div>
-         <? if($mode=='add'){ ?>
-				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick='save()'>Simpan</a>
-		 <? } ?>			
 	   </form>
     </div>
     
@@ -157,19 +134,34 @@
 </div>
 
  <script language='javascript'>
-	$(document).ready(function(){
-
-//       	void refresh_items();
-
-//		$('#sales_order_number').blur(function() {
-//  			void selected_so();
-//		});
-	})		
   	function save(){
   		if($('#invoice_number').val()==''){alert('Isi nomor bukti !');return false;}
   		if($('#sold_to_customer').val()==''){alert('Isi pelanggan !');return false;}
-  		$("#myform").submit();
-  		return false;
+		url='<?=base_url()?>index.php/delivery_order/save';
+			$('#frmDo').form('submit',{
+				url: url,
+				onSubmit: function(){
+					return $(this).form('validate');
+				},
+				success: function(result){
+					var result = eval('('+result+')');
+					if (result.success){
+						$('#invoice_number').val(result.invoice_number);
+						var nomor=$('#invoice_number').val();
+						$('#mode').val('view');
+						$('#dgItem').datagrid({url:'<?=base_url()?>index.php/delivery_order/items/'+nomor+'/json'});
+						$('#dgItem').datagrid('reload');
+						$.messager.show({
+							title:'Success',msg:'Data sudah tersimpan. '
+						});
+					} else {
+						$.messager.show({
+							title: 'Error',
+							msg: result.msg
+						});
+					}
+				}
+			});
   	}
   	function print(){
             txtNo='<?=$invoice_number?>'; 
@@ -307,7 +299,3 @@
 	};
 
  </script>
-     
- </body>
-</html>
-

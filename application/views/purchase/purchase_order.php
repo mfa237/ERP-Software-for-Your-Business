@@ -1,8 +1,7 @@
 <h1>|| PURCHASE ORDER  || 
 	<?
 	echo link_button("Save","save_po()","save");
-	echo link_button("Print","print_po()","print");
-	
+	echo link_button("Print","print_po()","print");	
 	?>	
 </H1>
 <form id='frmPo' method="post">

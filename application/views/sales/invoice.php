@@ -1,35 +1,13 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-   <title>Transaksi Penjualan</title>
- </head>
- <body>
- <div>
-   <div>
-	<? if($mode=='add') {
-    	echo "<span id='cmdSave'>";	
-    	echo link_button('Simpan', 'save()','save','false');     
-		echo "</span>";
-	} 
-	?>     
-   	
-   <?php echo validation_errors(); ?>
-   <?php 
-        if($mode=='view') 
-        {
-                echo form_open('invoice/update',"id=myform");
-                $disabled='disable';
-        } else {
-                $disabled='';
-                echo form_open('invoice/add',"id=myform"); 
-        }
-		
-   ?>
+<h1>FAKTUR PENJUALAN - [
+	<?
+	echo link_button('Save', 'save()','save');		
+	echo link_button('Print', 'print()','print');		
+	?>
+]</H1>
+<form id="frmInvoice"  method="post">
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <table>
-	<tr><td colspan="6"><h1>FAKTUR PENJUALAN</h1></td><td></td>
-	</tr>
     <tr>
-    	
      	<td>Pelanggan</td><td><?
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
         ?>
@@ -80,11 +58,8 @@
 		</td>
     </tr>
 	</table>	
+</form>
 
-
-
-   </form>
-    </div>
 <div id='divItem' style='display:<?=$mode=='add'?"none":"";?>'>
 <h1>SELECT ITEMS</H1>
 	<div id='dgItem'>
@@ -151,8 +126,6 @@
 
  <script language='javascript'>
 	var url;	
-    $(document).ready(function(){
-    });
  
   	function save(){
   		if($('#invoice_number').val()==''){alert('Isi nomor bukti !');return false;}
@@ -160,7 +133,7 @@
   		if($('#salesman').val()==''){alert('Isi salesman; !');return false;}
   		if($('#payment_terms').val()==''){alert('Isi termin pembayaran !');return false;}
 		url='<?=base_url()?>index.php/invoice/save';
-			$('#myform').form('submit',{
+			$('#frmInvoice').form('submit',{
 				url: url,
 				onSubmit: function(){
 					return $(this).form('validate');
@@ -170,7 +143,7 @@
 					if (result.success){
 						$('#invoice_number').val(result.invoice_number);
 						var invoice=$('#invoice_number').val();
-						$('#cmdSave').hide();
+						$('#mode').val('view');
 						$('#divItem').show('slow');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/invoice/items/'+invoice+'/json'});
 						$('#dg').datagrid('reload');

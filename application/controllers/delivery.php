@@ -16,6 +16,7 @@ class Delivery extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','mylib_helper','browse_select'));
         $this->load->library('sysvar');
 		$this->load->library('template');

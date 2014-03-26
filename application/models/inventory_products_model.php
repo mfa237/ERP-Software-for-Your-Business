@@ -35,7 +35,7 @@ function __construct(){
 	}
 	function delete_item($id){
 		$this->db->where('id',$id);
-		$this->db->delete($this->table_name);
+		return $this->db->delete($this->table_name);
 	}
         function list_receive($purchase_order_number)
         {

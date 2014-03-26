@@ -44,7 +44,7 @@
      			$sql="select s.sales_date,s.sales_order_number,s.sold_to_customer,
      			c.company,s.due_date,s.payment_terms,s.salesman,s.amount
      			 from sales_order s left join customers c on c.customer_number=s.sold_to_customer
-	            where s.delivered=false and s.sales_date between '$date1' and '$date2'  ";
+	            where (s.delivered=false or s.delivered is null) and s.sales_date between '$date1' and '$date2'  ";
      			$rst_so=$CI->db->query($sql);
      			$tbl="";
                  foreach($rst_so->result() as $row){

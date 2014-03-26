@@ -1,5 +1,18 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+if(!function_exists('account')){	
+	function account($account_id){
+        $CI =& get_instance();
+        $query=$CI->db->query("select account,account_description from chart_of_accounts 
+        where id='$account_id'")->row();
+		if($query){
+			return $query->account." - ".$query->account_description;
+		} else {
+			return "";
+		}
+	}
+}
+
 if(!function_exists('criteria')){	
 	function criteria($capt,$fld,$cls='easyui-input'){
 		$fnc=new search_criteria();

@@ -1,6 +1,4 @@
-
- 
-<h1>PENERIMAAN BARANG DARI PO</H1>
+<h1>PENERIMAAN BARANG DARI PO - [<?=link_button('Print','print_receive()','print');?>]</H1>
 
    <table >
        <tr>
@@ -22,8 +20,7 @@
             <td>Gudang:</td><td><?=$warehouse_code?></td>
        </tr>
        <tr>
-            
-            <td colspan='4'><?=$supplier_info?></td>            
+            <td>Supplier:</td><td colspan='4'><?=$supplier_info?></td>            
        </tr>
        <tr>
             <td>Keterangan</td>
@@ -52,3 +49,11 @@
 				</tr>
 			</thead>
 		</table>
+		
+<script language='javascript'>
+	function print_receive(){
+		url="<?=base_url()?>index.php/receive_po/print_bukti/<?=$shipment_id?>";
+		window.open(url,'_blank');
+	}
+		
+</script>		

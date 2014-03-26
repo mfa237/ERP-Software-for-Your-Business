@@ -101,23 +101,13 @@ class Jurnal extends CI_Controller {
             $this->db->where('gl_id',$gl_id);
             $this->db->limit(1);
             $query=$this->db->get();
-            //var_dump($gl_id);
-            $param='';
             foreach($query->result_array() as $r){
-                $param="gl_id=".$gl_id."&date=".$r['date']."&source=".$r['source']
-                        ."&operation=".$r['operation'];
                 $data['gl_id']=$r['gl_id'];
                 $data['date']=$r['date'];
                 $data['source']=$r['source'];
                 $data['operation']=$r['operation'];
             }
-            //var_dump($param);
-           
-          
-            $xurl=base_url().'index.php/jurnal/next?'.$param;
-            //$this->template->display('gl/jurnal_next',$data);
-           // header('location: '.$xurl);
-            echo "<script>window.open('".$xurl."','_self')</script>";
+	    $this->template->display_form_input($this->file_view,$data,'');
 	}
 	function update()
 	{

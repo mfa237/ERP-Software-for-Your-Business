@@ -1,6 +1,8 @@
-<script src="<?=base_url();?>js/lib.js"></script>
+<h1>PENERIMAAN BARANG DARI PO -[  
+<?=link_button('Simpan','simpan()','save');?>
+]</H1>
+
 <form id='myform' method='post' action='<?=base_url()?>index.php/receive_po/proses'>
-<h1>PENERIMAAN BARANG DARI PO</H1>
    <table>
        <tr>
             <td>Supplier:</td><td><?            
@@ -49,11 +51,12 @@
        </tr>
        <tr>
            <td colspan="6">
-				<div id='divItem'>ssss</div>	
+				<div id='divItem'>
+				</div>	
            </td>
        </tr>
        <tr>
-           <td colspan="6" align="right"><?=link_button('Simpan','simpan()','save','false');?>
+           <td colspan="6" align="right">
            </td>
        </tr>
    </table>

@@ -4,9 +4,9 @@ class Inventory_model extends CI_Model {
 private $primary_key='item_number';
 private $table_name='inventory';
 
-function __construct(){
-	parent::__construct();
-}
+	function __construct(){
+		parent::__construct();
+	}
     function lookup($offset=0,$limit=20,$order_column='item_number',$order_type='asc'){
         $search='';
         if(isset($_GET['search']))$search=$_GET['search'];
@@ -160,7 +160,6 @@ function delete($id){
 			if($qty==null)$qty=0;
 			$data[$item]=$qty;
 		}
-		//var_dump($data);
 		return $data;
 	}
 	function po_not_received()
@@ -176,7 +175,6 @@ function delete($id){
 			if($qty==null)$qty=0;
 			$data[$item]=$qty;
 		}
-		//var_dump($data);
 		return $data;
 	}
 	
@@ -193,17 +191,10 @@ function delete($id){
 			if($qty==null)$qty=0;
 			$data[$item]=$qty;
 		}
-		//var_dump($data);
 		return $data;
 	}
-		//        function cost($item_no){
-//            $this->db->select('cost');
-//            $this->db->where('item_number',$item_no);
-//            $query=$this->db->get('inventory');
-//            $row=$query->result();
-//            return $row->cost;            
-//            
-//        }
+	
+	 
 
 
 }

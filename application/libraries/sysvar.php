@@ -14,10 +14,17 @@ private $table_name='system_variables';
      $this->CI->load->helper('mylib');
 	 
  }
+function count_all(){
+	return $this->db->count_all($this->table_name);
+}
+function get_by_id($id){
+	$this->db->where($this->primary_key,$id);
+	return $this->db->get($this->table_name);
+} 
 function getvar($varname,$varvalue=null){
 	$var=$this->_var($varname);
 	if($var==null){
-		$this->save($varname,$varvalue);
+		$this->insert($varname,$varvalue,'auto');
 		$var=$varvalue;
 	}
 	return $var;
@@ -40,9 +47,11 @@ function insert($varname,$varvalue,$vardesc=''){
 function _var($sKey) {
 	$this->CI->db->where($this->primary_key,$sKey);
 	$this->CI->db->where('varvalue !=','');
-	$rows=$this->CI->db->get($this->table_name);
-	foreach($rows->result() as $row){
+	$row=$this->CI->db->get($this->table_name)->row();
+	if($row){
 		return $row->varvalue;
+	} else {
+		return null;
 	}
 }
 function autonumber($varname,$step=0,$default=''){

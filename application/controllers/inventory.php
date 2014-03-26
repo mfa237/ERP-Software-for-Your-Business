@@ -230,5 +230,26 @@ class Inventory extends CI_Controller {
 		 echo  $s;
 		
 	}
-
+    function rpt($id){
+		 $data['date_from']=date('Y-m-d 00:00:00');
+		 $data['date_to']=date('Y-m-d 23:59:59');
+		 $data['select_date']=true;		 
+    	 switch ($id) {
+			 case 'ar_dtl':
+				 $data['criteria1']=true;
+				 $data['label1']='Kode Pelanggan';
+				 $data['text1']='';
+				 break;			 
+			 default:
+				 break;
+		 }
+		 $rpt='inventory/rpt/'.$id;
+		 $data['rpt_controller']=$rpt;
+		 
+		if(!$this->input->post('cmdPrint')){
+			$this->template->display_form_input('criteria',$data,'');
+		} else {
+			$this->load->view($rpt);
+		}
+   }
 }

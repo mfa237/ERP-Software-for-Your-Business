@@ -126,5 +126,14 @@ public $sub_total=0;
         $query=$this->db->query("delete from purchase_order_lineitems
             where line_number=".$line);
     }
+	function update_received($nomor){
+		$po=$this->db->query("select sum(quantity) as z_qty, sum(ifnull(qty_recvd,0)) as z_rcv 
+		from purchase_order_lineitems where purchase_order_number='$nomor'")->row();
+		if($po){
+			if($po->z_qty<=$po->z_rcv){
+				$this->db->query("update purchase_order set received=true where purchase_order_number='$nomor'");
+			}
+		}
+	}
   	 
 }	 

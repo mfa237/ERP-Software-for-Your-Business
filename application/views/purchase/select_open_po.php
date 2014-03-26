@@ -45,5 +45,5 @@
 	}	
 	
 </SCRIPT>
-<!-- END PILIH PELANGGAN -->
+<!-- END PILIH FAKTUR -->
 

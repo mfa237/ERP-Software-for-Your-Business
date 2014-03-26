@@ -21,8 +21,11 @@ closed="true"
 	onclick="search_coa()"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="select_coa()">Select</a>
 </div>
+
 <script type="text/javascript">
-	function lookup_coa() {
+	var idd='';
+	function lookup_coa(id) {
+		idd=id;
 		$('#dlgCoa').dialog('open').dialog('setTitle','Cari kode perkiraan');
 		coa=$('#search_coa').val();
 		$('#dgCoa').datagrid({url:'<?=base_url()?>index.php/coa/select/'+coa});
@@ -31,10 +34,14 @@ closed="true"
 	function select_coa() {
 		var row = $('#dgCoa').datagrid('getSelected');
 		if (row){
-			$('#account').val(row.account);
-			$('#description').val(row.account_description);
+			$('#'+idd).val(row.account+' - '+row.account_description);
 			$('#dlgCoa').dialog('close');
 		}			
+	}
+	function search_coa(){
+		coa=$('#search_coa').val();
+		$('#dgCoa').datagrid({url:'<?=base_url()?>index.php/coa/select/'+coa});
+		$('#dgCoa').datagrid('reload');		
 	}
 </script>
 <!-- END DIALOG KODE PERKIRAAN -->

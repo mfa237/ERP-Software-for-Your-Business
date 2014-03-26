@@ -1,28 +1,29 @@
-<h1>|| ADJUSTMENT STOCK || 
-	<?
-	echo link_button("Print","print_adjust()","print");	
-	?>	
-</H1>
+<h1>MUTASI STOCK ANTAR LOKASI - [ 
+	<?echo link_button("Print","print_mutasi()","print");?>	
+]</H1>
 <form id="frmItem" method='post' >
    <table>
 	<tr>
 		<td>Nomor</td><td><?php 
-                echo form_input('shipment_id',$shipment_id,'id=shipment_id');
+                echo form_input('transfer_id',$transfer_id,'id=transfer_id');
         ?></td>
 	</tr>
        <tr>
 		<td>Tanggal</td><td><?php  
-                echo form_input('date_received',$date_received
-				,"id='date_received' class='easyui-datetimebox' required");
+                echo form_input('date_trans',$date_trans
+				,"id='date_trans' class='easyui-datetimebox' required");
                 
         ?></td>
        </tr>
 	<tr>
-		<td>Gudang</td><td><?php 
-                echo form_dropdown('warehouse_code',
-                    $warehouse_list,$warehouse_code,'id=warehouse_code');
-                
-                ?></td>
+		<td>Gudang Sumber</td><td><?php 
+                echo form_dropdown('from_location',$warehouse_list,$from_location,'id=from_location');
+        ?></td>
+	</tr>
+	<tr>
+		<td>Gudang Tujuan</td><td><?php 
+                echo form_dropdown('to_location',$warehouse_list,$to_location,'id=to_location');
+        ?></td>
 	</tr>
     <tr>
 		<td>Catatan</td>
@@ -52,7 +53,7 @@
 			<tr>
 				<th data-options="field:'item_number',width:80">Kode Barang</th>
 				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'quantity_received',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+				<th data-options="field:'from_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
 				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
 				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 			</tr>
@@ -63,18 +64,18 @@
 
  <script language='javascript'>
  	var grid_output="dg";
-	var url_save_item = '<?=base_url()?>index.php/stock_adjust/save_item';
+	var url_save_item = '<?=base_url()?>index.php/stock_mutasi/save_item';
 	var url_load_item = url_detail();
-	var url_del_item  = '<?=base_url()?>index.php/stock_adjust/del_item';
+	var url_del_item  = '<?=base_url()?>index.php/stock_mutasi/del_item';
 
     function url_detail(){
-	 	var nomor=$('#shipment_id').val();
+	 	var nomor=$('#transfer_id').val();
     	$('#ref_number').val(nomor);
-    	return ('<?=base_url()?>index.php/stock_adjust/items/'+nomor+'/json');
+    	return ('<?=base_url()?>index.php/stock_mutasi/items/'+nomor+'/json');
     }
-	function print_adjust(){
-		nomor=$("#shipment_id").val();
-		url="<?=base_url()?>index.php/stock_adjust/print_adjust/"+nomor;
+	function print_mutasi(){
+		nomor=$("#transfer_id").val();
+		url="<?=base_url()?>index.php/stock_mutasi/print_bukti/"+nomor;
 		window.open(url,'_blank');
 	}
     

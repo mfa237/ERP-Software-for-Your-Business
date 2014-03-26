@@ -287,7 +287,7 @@ class Purchase_order extends CI_Controller {
 		function select_open_po($supplier){
             $sql="select p.purchase_order_number,p.po_date,p.due_date,p.terms 
             from purchase_order  p
-            where p.supplier_number='$supplier' and p.potype='O'";
+            where p.supplier_number='$supplier' and p.potype='O'  and ifnull(received,false)=false";
 			echo datasource($sql);
 		}
         function list_item_receive($nomor){
@@ -312,7 +312,10 @@ class Purchase_order extends CI_Controller {
 					$data[$i][]=form_hidden('line[]',$row->line_number);
 					$i++;
 				}
-				
+				if($i==0){
+					$this->db->query("update purchase_order set received=true 
+					where purchase_order_number='$nomor'");
+				}
 				$this->load->library('browse');
 				$header=array('Item Number','Description','Qty Order','Qty Recvd','Qty Receiv');
 				$this->browse->set_header($header);

@@ -15,8 +15,20 @@
 		</li>
 		<li ><span>Pengeluaran Barang Lainnya</span>
 			<ul>
-				<li><?=anchor('delivery/add','Pengeluaran Barang Lainnya');?></li>
+				<li><?=anchor('delivery/add','Tambah Pengeluaran Barang Lainnya');?></li>
 				<li><?=anchor('delivery','Cari Pengeluaran Barang');?></li>
+			</ul>
+		</li>
+		<li ><span>Mutasi Stock antar lokasi</span>
+			<ul>
+				<li><?=anchor('stock_mutasi/add','Tambah Mutasi Stock');?></li>
+				<li><?=anchor('stock_mutasi','Cari Mutasi Stock');?></li>
+			</ul>
+		</li>
+		<li ><span>Penyesuaian / Adjustment Stock</span>
+			<ul>
+				<li><?=anchor('stock_adjust/add','Tambah Adjustment Stock');?></li>
+				<li><?=anchor('stock_adjust','Cari Adjustment Stock');?></li>
 			</ul>
 		</li>
 	</ul>
@@ -55,4 +67,6 @@
 	<li><?=anchor('inventory/rpt/cards_detail','Laporan Kartu Stock Detail')?></li>
 	<li><?=anchor('inventory/rpt/cards_gudang','Laporan Kartu Stock Per Gudang')?></li>
 	<li><?=anchor('inventory/rpt/min_stock','Laporan Stock Minimum')?></li>
+	<li><?=anchor('inventory/rpt/max_stock','Laporan Stock Maximum')?></li>
+	<li><?=anchor('inventory/rpt/stock_value','Penilaian Persediaan')?></li>
 </ul></li>

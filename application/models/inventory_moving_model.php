@@ -21,49 +21,17 @@ function __construct(){
 		return $this->db->count_all($this->table_name);
 	}
 	function get_by_id($id){
-                $this->transfer_id=$id;
-                $this->recalc();
+        $this->transfer_id=$id;
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
-        function recalc($id=''){
-        
-            if($id!='')$this->transfer_id=$id;
-            $this->db->where('shipment_id',$this->transfer_id);
-            $query=$this->db->get('inventory_card_header');
-            $stock_card=$query->result();
-            $this->db->where($this->primary_key,$this->transfer_id);
-            $query=$this->db->get('inventory_moving');
-            $this->amount=0;
-            foreach ($query->result() as $row)
-            {
-               if($row->cost==0){
-                    $this->db->where('item_number',$row->item_number);
-                    $q=$this->db->get('inventory');
-                    $stock=$q->result();
-                    if(count($stock)){
-                        $row->cost=$stock[0]->cost;
-                        if($row->cost==0)$row->cost=$stock[0]->cost_from_mfg;
-                        $row->unit=$stock[0]->unit_of_measure;
-                    };
-               }
-               $row->total_amount=$row->from_qty*$row->cost;
-               $row->date_trans=$stock_card[0]->date_received;
-               
-                $this->db->where('id',$row->id);
-                $this->db->update('inventory_moving',$row);
-                $this->amount=$this->amount+$row->total_amount;
-            };
-            $this->db->query("update inventory_card_header set amount="
-                    .$this->amount." where shipment_id='".$id."'"); 
-            return $this->amount;
-        }
-        
 	function save($data){
+		$data['date_trans']= date( 'Y-m-d H:i:s', strtotime($data['date_trans']));
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
+		$data['date_trans']= date( 'Y-m-d H:i:s', strtotime($data['date_trans']));
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 	}

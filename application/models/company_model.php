@@ -7,14 +7,12 @@ private $table_name='preferences';
 function __construct(){
 	parent::__construct();
 }
-	function get_paged_list($limit=10,$offset=0,
-	$order_column='',$order_type='asc')
-	{
-                $nama='';
-                if(isset($_GET['nama'])){
-                    $nama=$_GET['nama'];
-                }
-                if($nama!='')$this->db->where("company_name like '%$nama%'");
+	function get_paged_list($limit=10,$offset=0,$order_column='',$order_type='asc')	{
+        $nama='';
+        if(isset($_GET['nama'])){
+            $nama=$_GET['nama'];
+        }
+        if($nama!='')$this->db->where("company_name like '%$nama%'");
 
 		if (empty($order_column)||empty($order_type))
 		$this->db->order_by($this->primary_key,'asc');
@@ -29,14 +27,14 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
-        function info($id){
-            $data=$this->get_by_id($id)->row();
-            if(count($data)){    
-                $ret='<br/><strong>'.$id.' - '.$data->company_name.'</strong><br/>'
-                        .$data->street.'<br/>'.$data->phone;
-            } else $ret='';
-            return $ret;
-        }
+    function info($id){
+        $data=$this->get_by_id($id)->row();
+        if(count($data)){    
+            $ret='<br/><strong>'.$id.' - '.$data->company_name.'</strong><br/>'
+                    .$data->street.'<br/>'.$data->phone;
+        } else $ret='';
+        return $ret;
+    }
 	function save($data){
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();

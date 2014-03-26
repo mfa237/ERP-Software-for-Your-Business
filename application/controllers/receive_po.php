@@ -114,16 +114,8 @@ class Receive_po extends CI_Controller {
             $data['mode']='view';
             $data['message']=$message;
             $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
-//            $data['detail']=$this->receive_items($id);    
- 
-//	         $left='inventory/menu_receive_po';
-//			 $this->session->set_userdata('_right_menu',$left);
-//	         $this->session->set_userdata('shipment_id',$id);
-           $this->template->display('inventory/receive_po_view',$data);
-			
-			
-			
-       }
+            $this->template->display('inventory/receive_po_view',$data);
+    }
          
     function receive_items($id){
         $sql="select i.item_number,s.description,i.quantity_received,
@@ -209,34 +201,16 @@ class Receive_po extends CI_Controller {
 		$this->db->delete('inventory_products');
                 echo $this->receive_items($recv_id);
 	}	
- 
         function print_bukti($nomor){
-   	        $this->load->helper('mylib');
-			$this->load->helper('pdf_helper');			
-            $this->load->model('supplier_model');
-			$this->load->model('inventory_products_model');
-            $invoice=$this->inventory_products_model->get_by_id($nomor)->row();
-            $caption='';
-            $sql="select ipm.item_number,i.description,ipm.quantity_received,ipm.unit,ipm.cost
-                from inventory_products ipm left join inventory i on i.item_number=ipm.item_number
-                where shipment_id='".$nomor."'";
-            $caption='';$class='';$field_key='';$offset='0';$limit=100;
-            $order_column='';$order_type='asc';
-            $item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
-                        $order_column, $order_type,false);
-            $data['supplier_info']=$this->supplier_model->info($invoice->supplier_number);
-			$data['header']=company_header();
-			$data['caption']='';
-			$data['content']='
-				<table cellspacing="0" cellpadding="1" border="1" style="width:100%"> 
-				    <tr><td colspan="2"><h1>BUKTI TERIMA BARANG</H1></td></tr>
-				    <tr><td width="90">Nomor</td><td width="310">'.$invoice->purchase_order_number.'</td></tr>
-				     <tr><td>Tanggal</td><td>'.$invoice->date_received.'</td></tr>
-				     <tr><td>Supplier</td><td>'.$data['supplier_info'].'</td></tr>
-				     <tr><td colspan="2">'.$item.'</td></tr>
-				</table>';	        
-			$this->load->view('simple_print',$data);
-        }        
+            $rcv=$this->inventory_products_model->get_by_id($nomor)->row();
+			$data['shipment_id']=$rcv->shipment_id;
+			$data['date_received']=$rcv->date_received;
+			$data['warehouse_code']=$rcv->warehouse_code;
+			$data['comments']=$rcv->comments;
+			$data['purchase_order_number']=$rcv->purchase_order_number;
+			$this->load->view('inventory/rpt/print_receive',$data);
+        }
+ 
         function proses()
         {
             $this->load->model('inventory_products_model');
@@ -275,6 +249,7 @@ class Receive_po extends CI_Controller {
 					$this->purchase_order_lineitems_model->update_qty_received($line[$i],$qty[$i]);
                 }
             }
+			$this->purchase_order_model->update_received($po_number);
 			$this->nomor_bukti(true);
             header('location: '.base_url().'index.php/receive_po/view/'.$data['shipment_id']);
         }

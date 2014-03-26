@@ -7,10 +7,10 @@ class Receive extends CI_Controller {
         ,date_received,quantity_received,ip.unit,ip.cost,ip.warehouse_code
                 from inventory_products ip left join inventory i
                 on ip.item_number=i.item_number
-                where receipt_type='etc_in' 
+                where receipt_type='ETC_IN' 
                 ";
     private $file_view='inventory/receive';
-    private $primary_key='nomor_bukti';
+    private $primary_key='shipment_id';
     private $controller='receive';
     
 	function __construct()
@@ -22,6 +22,7 @@ class Receive extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('inventory_products_model');
 		$this->load->model('inventory_model');
+		$this->load->model('shipping_locations_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -75,6 +76,7 @@ class Receive extends CI_Controller {
             $this->browse();
 		} else {
 			$data['mode']='add';
+            $data['warehouse_list']=$this->shipping_locations_model->select_list();
             $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
@@ -98,12 +100,12 @@ class Receive extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
-		 $data['id']=$id;
-		 $model=$this->inventory_products_model->get_by_id($id)->row();
+		 $data['shipment_id']=$id;
+		 $model=$this->inventory_products_model->get_by_id($id)->row();	
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
-         $data['message']=$message;
-         $this->template->display('inventory/receive_detail',$data);
+         $data['warehouse_list']=$this->shipping_locations_model->select_list();
+		$this->template->display_form_input('inventory/receive',$data);
 	}
 	 // validation rules
 	function _set_rules(){	
@@ -125,11 +127,11 @@ class Receive extends CI_Controller {
 	function browse($offset=0,$limit=10,$order_column='shipment_id',$order_type='asc')
 	{
         $data['caption']='DAFTAR PENERIMAAN BARANG NON PURCHASE ORDER';
-		$data['controller']='receive_po';		
+		$data['controller']=$this->controller;		
 		$data['fields_caption']=array('Nomor Bukti','Kode Barang','Nama Barang','Tanggal',
-		'Qty','Unit','Cost','Gudang','');
-		$data['fields']=array('shipment_id','item_number','description'
-        ,'date_received','quantity_received','unit','cost','warehouse_code');
+		'Qty','Unit','Cost','Gudang');
+		$data['fields']=array('shipment_id','item_number','description','date_received',
+		'quantity_received','unit','cost','warehouse_code');
 		$data['field_key']='shipment_id';
 		$this->load->library('search_criteria');
 		
@@ -183,38 +185,70 @@ class Receive extends CI_Controller {
         ";
         echo $s." ".browse_simple($sql);
     }
-    function add_item(){            
-        if(isset($_GET)){
-            $data['shipment_id']=$_GET['shipment_id'];
-            $data['date_received']=$_GET['date_received'];
-            $data['supplier_number']=$_GET['supplier_number'];
-            $data['comments']=$_GET['comments'];
-        } else {
-            $data['shipment_id']='';
-            $data['date_received']=date('YY-mm-dd');
-            $data['supplier_number']='';
-            $data['comments']='';                
-        }
-         
-       $this->load->model('inventory_model');
-       $data['item_lookup']=$this->inventory_model->item_list();
-        $this->load->view('inventory/receive_add_item',$data);
-    }   
-    function save_item(){ 
+    function save_item(){
         $item_no=$this->input->post('item_number');
-        $data['shipment_id']=$this->input->post('shipment_id');
-        $data['date_received']=$this->input->post('date_received');
-        $data['supplier_number']=$this->input->post('supplier_number');
-        $data['comments']=$this->input->post('comments');
+		$id=$this->input->post('shipment_id');
         $data['item_number']=$item_no;
-        $data['quantity_received']=$this->input->post('quantity_received');
-        $data['unit']='pcs'; //$this->input->post('unit');
-        $data['receipt_type']='etc_in';
-        $rst=$this->inventory_model->get_by_id($item_no)->row();
-        $data['cost']=$rst->cost;
-        $this->inventory_products_model->save($data);
+        $data['quantity_received']=$this->input->post('quantity');
+        $item=$this->inventory_model->get_by_id($data['item_number'])->row();
+        if($item){
+        	$cost=$item->cost;
+        } else {
+        	$cost=0;
+        }
+        $data['cost']=$cost;
+        $data['unit']=$this->input->post('unit');
+        $data['shipment_id']=$id;
+        $data['warehouse_code']=$this->input->post('warehouse_code');
+        $data['total_amount']=$data['quantity_received']*$data['cost'];
+		$data['receipt_type']='ETC_IN';
+		$data['date_received']=$this->input->post('date_received');;
+		$data['comments']=$this->input->post('comments');;
+		
+		$ok=$this->inventory_products_model->save($data);
+		if ($ok){
+			echo json_encode(array('success'=>true,'shipment_id'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+            
+        
+        
+	}         
+    function print_bukti($nomor){
+        $adj=$this->inventory_products_model->get_by_id($nomor)->row();
+		$data['shipment_id']=$adj->shipment_id;
+		$data['date_received']=$adj->date_received;
+		$data['warehouse_code']=$adj->warehouse_code;
+		$data['comments']=$adj->comments;
+		$this->load->view('inventory/rpt/print_receive_etc',$data);
+
+    }
+    function del_item(){
+    	$id=$this->input->post('line_number');
+        $ok=$this->inventory_products_model->delete_item($id);
+		if ($ok){
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
     }        
-    function delete_item($id){
-        return $this->inventory_products_model->delete_item($id);
-    }        
+	
+	function items($nomor,$type='')
+	{
+            $sql="select p.item_number,i.description,p.quantity_received, 
+            p.unit,p.cost,p.id as line_number
+            from inventory_products p
+            left join inventory i on i.item_number=p.item_number
+            where shipment_id='$nomor'";
+			 
+			echo datasource($sql);
+	}
+	
+	
+	
+	
+	
+	
+	
 }

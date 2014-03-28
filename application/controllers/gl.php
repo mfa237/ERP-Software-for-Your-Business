@@ -52,5 +52,39 @@ class Gl extends CI_Controller {
 			$this->load->view($rpt);
 		}
    }
+	function grafik_saldo_akun(){
+		$phpgraph = $this->load->library('PhpGraph');		
+		$cfg['width'] = '80%';
+		$cfg['height'] = 200;
+		$cfg['compare'] = false;
+		$cfg['disable-values']=1;
+		$chart_type='vertical-line-graph';
+		$data=$this->saldo_akun();
+		//var_dump($data);
+		$file="tmp/".$chart_type.".png";
+		$this->phpgraph->create_graph($cfg, $data,$chart_type,'Saldo Perkiraan',$file);
+		echo '<img src="'.base_url().'/'.$file.'"/>';
+		echo '';
+	}
+	function saldo_akun()
+	{
+       $sql="select account,account_description,sum(g.debit)-(g.credit) as saldo 
+        from gl_transactions g left join chart_of_accounts c on c.id=g.account_id 
+        group by account,account_description"; 
+		$query=$this->db->query($sql);
+		$data["Kode"]=0;
+		foreach($query->result() as $row){
+			$data[$row->account]=$row->saldo;
+		}
+		return $data;
+	}
+	function neraca_saldo(){
+		 $rpt='gl/rpt/neraca_saldo';
+		 $data['rpt_controller']=$rpt;
+		 $data['date_from']=date('Y-m-d 00:00:00');
+		 $data['date_to']=date('Y-m-d 23:59:59');
+ 		 $this->load->view($rpt,$data);
+	}
+	
 }
 ?>

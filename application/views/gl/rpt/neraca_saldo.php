@@ -5,12 +5,20 @@
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
-	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
-	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
+	 if(isset($date_from)){
+		 $date1=$date_from;
+		 $date2=$date_to;
+		 $with_header=false;	 	
+	 } else {
+		$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
+		$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
+		$with_header=true;
+	 }
     $CI->load->model('chart_of_accounts_model');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
+<? if($with_header) { ?>	
      <tr>
      	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>NERACA SALDO</h2></td>     	
      </tr>
@@ -30,6 +38,7 @@
      		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>
      	</td>
      </tr>
+<? } ?>     
      <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
      <tr>
      	<td colspan="8">
@@ -77,25 +86,27 @@
 						$mut_db=0;
 						$mut_cr=0;
 					}
-	     			$tbl="";
-                    $tbl.="<tr>";
-                    $tbl.="<td>".$row_coa->account."</td>";
-                    $tbl.="<td>".$row_coa->account_description."</td>";
-                    $tbl.="<td align='right'>".number_format($sld_db)."</td>";
-                    $tbl.="<td align='right'>".number_format($sld_cr)."</td>";
-                    $tbl.="<td align='right'>".number_format($sld_db-$sld_cr)."</td>";
-
-                    $tbl.="<td align='right'>".number_format($mut_db)."</td>";
-                    $tbl.="<td align='right'>".number_format($mut_cr)."</td>";
-                    $tbl.="<td align='right'>".number_format($mut_db-$mut_cr)."</td>";
-
-                    $tbl.="<td align='right'>".number_format($sld_db+$mut_db)."</td>";
-                    $tbl.="<td align='right'>".number_format($sld_cr+$mut_cr)."</td>";
-                    $tbl.="<td align='right'>".number_format(($sld_db+$mut_db)-($sld_cr+$mut_cr))."</td>";
-
-                    $tbl.="</tr>";
-                    $tbl.="<tr>";
-				   				   
+					$saldo=($sld_db+$mut_db)-($sld_cr+$mut_cr);
+		     		$tbl="";
+					if($saldo!=0){
+	                    $tbl.="<tr>";
+	                    $tbl.="<td>".$row_coa->account."</td>";
+	                    $tbl.="<td>".$row_coa->account_description."</td>";
+	                    $tbl.="<td align='right'>".number_format($sld_db)."</td>";
+	                    $tbl.="<td align='right'>".number_format($sld_cr)."</td>";
+	                    $tbl.="<td align='right'>".number_format($sld_db-$sld_cr)."</td>";
+	
+	                    $tbl.="<td align='right'>".number_format($mut_db)."</td>";
+	                    $tbl.="<td align='right'>".number_format($mut_cr)."</td>";
+	                    $tbl.="<td align='right'>".number_format($mut_db-$mut_cr)."</td>";
+	
+	                    $tbl.="<td align='right'>".number_format($sld_db+$mut_db)."</td>";
+	                    $tbl.="<td align='right'>".number_format($sld_cr+$mut_cr)."</td>";
+	                    $tbl.="<td align='right'>".number_format($saldo)."</td>";
+	
+	                    $tbl.="</tr>";
+	                    $tbl.="<tr>";
+                    }				   
 				   echo $tbl;
 					
 				};

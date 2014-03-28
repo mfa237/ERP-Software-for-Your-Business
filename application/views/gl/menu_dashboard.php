@@ -21,27 +21,22 @@
 <div class="box1">
 <div id="p" class="easyui-panel box2" title="Saldo Akun"  style='width:900px'
 	data-options="iconCls:'icon-help'" >
-	<div id='divCustomer'><img src="<?=base_url()?>images/loading.gif"></div>
+	<div id='divAkun'><img src="<?=base_url()?>images/loading.gif"></div>
 </div>
 </div>
 
 <div class="box1" >
-<div id="p" class="easyui-panel box2" title="Neraca"  style='width:900px'
+<div id="p" class="easyui-panel box2" title="Neraca Saldo"  style='width:900px'
 	data-options="iconCls:'icon-help'" >
-	<div id='divSales'><img src="<?=base_url()?>images/loading.gif"></div>
-</div>
-</div>
-<div  class="box1">
-<div id="p" class="easyui-panel box2" title="Rugi Laba Bulanan" style='width:900px'
-	data-options="iconCls:'icon-help'">
-	<div id='divFaktur'><img src="<?=base_url()?>images/loading.gif"></div>
+	<div id='divNeraca'><img src="<?=base_url()?>images/loading.gif"></div>
 </div>
 </div>
 <script src="<?=base_url();?>js/jquery/jquery-1.8.0.min.js"></script>
 
 <script  language="javascript">
 $().ready(function(){
-	//void get_this(CI_ROOT+'purchase_invoice/daftar_kartu_gl','','divGL');
+	void get_this(CI_ROOT+'gl/grafik_saldo_akun','','divAkun');
+	void get_this(CI_ROOT+'gl/neraca_saldo','','divNeraca');
 });
 	
 	

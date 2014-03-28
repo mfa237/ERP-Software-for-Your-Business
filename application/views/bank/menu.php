@@ -32,7 +32,11 @@
  				</ul>				
 			</li>
 		</ul>
+		
  	</li>
  	
- 	<li><span><strong>Reports</strong></span><ul>
- 	</ul></li>
+ 	<li><span><strong>Reports</strong></span>
+ 				<ul>
+ 					<li><?=anchor('banks/rpt/mutasi','Mutasi Transaksi Rekening')?></li>
+ 				</ul>				
+ 	</li>

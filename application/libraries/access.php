@@ -66,7 +66,7 @@ class Access
    }
     function print_info(){
     	echo "<img src='".base_url()."images/administrator.png'
-    	 width='30' height='30' align='left'>"; 
+    	 width='30' height='20' align='left'>"; 
         echo 'Selamant Datang: '.$this->username;
 		echo '<a href="'.base_url().'index.php/login/logout"
 		class="easyui-linkbutton" style="color:white"

@@ -31,6 +31,16 @@ class Login extends CI_Controller {
  }
 
  function index() {
+ 	// cek file maxon_installed.php
+ 	
+	$filename="./application/config/maxon_installed.php";
+	$handle = fopen($filename, "r");
+	$contents = fread($handle, filesize($filename));
+    fclose($handle);
+ 	if($contents==""){
+ 		header("location:install");
+		exit;
+ 	} 	
     $data['message']='';
 	$user_id = $this->input->post('user_id');
 	if($user_id) {

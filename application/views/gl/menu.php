@@ -7,6 +7,20 @@
  					<li><?=anchor('jurnal','Cari Jurnal Umum');?></li>
  				</ul>
  			</li>
+ 			<li ><span>Posting Transaksi</span>
+ 				<ul>
+ 					<li><?=anchor('posting/sales_invoice','Faktur Penjualan');?></li>
+ 					<li><?=anchor('posting/sales_retur','Retur Penjualan');?></li>
+ 					<li><?=anchor('posting/sales_memo','Kredit Memo Penjualan');?></li>
+ 					<li><?=anchor('posting/purchase_invoice','Faktur Pembelian');?></li>
+ 					<li><?=anchor('posting/purchase_retur','Retur Pembelian');?></li>
+ 					<li><?=anchor('posting/purchase_memo','Kredit Memo Pembelian');?></li>
+ 					<li><?=anchor('posting/cash','Kas Masuk/Keluar');?></li>
+ 					<li><?=anchor('posting/inventory','Persediaan');?></li>
+ 					<li><?=anchor('posting/asset','Aktiva Tetap');?></li>
+ 					<li><?=anchor('posting/all','Semua Transaksi');?></li>
+ 				</ul>
+ 			</li>
  		</ul>
  	</li>
  	<li><span><strong>Setting</strong></span>
@@ -27,6 +41,7 @@
  				<ul>
  					<li><?=anchor('periode/add','Tambah Periode')?></li>
  					<li><?=anchor('periode','Cari Periode')?></li>
+ 					<li><?=anchor('periode/close','Closing Periode')?></li>
  				</ul>				
 			</li>
 		</ul>

@@ -1,11 +1,18 @@
+<?
+if(!isset($target_window)){
+	$target_window=" target='_blank_$rpt_controller'";
+} else {
+	$target_window="_self";
+}
+?>
 <form id='frmPrint' method='post' 
-action="<?=base_url()?>index.php/<?=$rpt_controller?>" target="_blank_<?=$rpt_controller?>">
+action="<?=base_url()?>index.php/<?=$rpt_controller?>" <?=$target_window?>">
 <?php
 if(!isset($select_date))$select_date=false;
 if(!isset($criteria1))$criteria1=false;
 if(!isset($criteria2))$criteria2=false;
 if(!isset($criteria3))$criteria3=false;
-
+if(!isset($module))$module="";
 if($select_date){
     echo "<p>Dari Tanggal :</p>
       <p>".form_input('txtDateFrom',$date_from,'id=date 
@@ -29,6 +36,12 @@ if($criteria3){
     echo "<p>".form_input('text3',$text3)."</p>";
     
 }
-echo "<input type='submit' name='cmdPrint' value='Print'>";
+if($module==""){
+	echo "<input type='submit' name='cmdPrint' value='Print'>";
+} 
+if($module=="posting"){
+	echo "<input type='submit' name='cmdPosting' value='Posting'>";
+	echo "<input type='submit' name='cmdUnPosting' value='UnPosting'>";	
+}
 echo form_close();
 ?>

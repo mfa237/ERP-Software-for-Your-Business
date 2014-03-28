@@ -188,7 +188,7 @@ class Jurnal extends CI_Controller {
 			if($this->input->get('sid_opr')!='')$sql.=" operation like '".$this->input->get('sid_opr')."%'";
 		}
         //$sql.=" limit $offset,$limit";
-        ///echo $sql;
+        //echo $sql;
         echo datasource($sql);
     }	      
 	function delete($id){

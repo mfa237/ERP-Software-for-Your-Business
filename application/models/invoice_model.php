@@ -107,9 +107,9 @@ function update($id,$data){
 	return $this->db->update($this->table_name,$data);
 }
 function delete($id){
-    	$this->db->where($this->primary_key,$id);
+   	$this->db->where($this->primary_key,$id);
 	$this->db->delete('invoice_lineitems');
-        
+	        
 	$this->db->where($this->primary_key,$id);
 	$this->db->delete($this->table_name);
 }
@@ -156,6 +156,115 @@ function delete($id){
 			}
 		}
 	}
-	
-	
+	function un_posting($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select invoice_number,invoice_date,account_id,amount,comments,disc_amount,tax,freight,other 
+		from invoice where invoice_type='I' 
+		and invoice_date between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		order by invoice_number";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				$this->jurnal_model->del_jurnal($r_inv_hdr->invoice_number);
+				echo "<br>Delete Jurnal: ".$r_inv_hdr->invoice_number;
+			}
+		}
+		echo "<br>Finish. Please back when ready."; 
+	}
+	function posting($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('company_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select invoice_number,invoice_date,account_id,amount,comments,disc_amount,tax,freight,other 
+		from invoice where invoice_type='I' 
+		and invoice_date between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		order by invoice_number";
+		$cid=$this->access->cid;
+		$set=$this->company_model->get_by_id($cid)->row();
+		$coa_sales=$set->inventory_sales;
+		$coa_hpp=$set->inventory_cogs;
+		$coa_stock=$set->inventory;
+		$coa_tax=$set->so_tax;
+		$coa_freight=$set->so_freight;
+		$coa_other=$set->so_other;
+		$coa_ar=$set->accounts_receivable;
+		$coa_disc=$set->so_discounts_given;
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				
+				echo "<br>Posting...".$r_inv_hdr->invoice_number;
+				$coa_ar=$r_inv_hdr->account_id>0?$r_inv_hdr->account_id:$coa_ar;
+				
+				$s="select item_number,ifnull(revenue_acct_id,0) as coa_sales,quantity,price,
+					cost,discount from invoice_lineitems 
+					where invoice_number='".$r_inv_hdr->invoice_number."'";
+				$rst_inv_dtl=$this->db->query($s);
+				if($rst_inv_dtl){
+					foreach ($rst_inv_dtl->result() as $r_inv_dtl) {
+						//-- posting invoice_lineitems
+						//-- ambil akun dari master barang
+						$r_stok=$this->db->query("select sales_account,inventory_account,cogs_account 
+							from inventory where item_number='".$r_inv_dtl->item_number."'")->row();
+						if($r_stok){
+							$coa_sales=$r_stok->sales_account>0?$r_stok->sales_account:$coa_sales;
+							$coa_stock=$r_stok->inventory_account>0?$r_stok->inventory_account:$coa_stock;
+							$coa_hpp=$r_stok->cogs_account>0?$r_stok->cogs_account:$coa_hpp;
+						}
+						
+						$coa_sales=$r_inv_dtl->coa_sales>0?$r_inv_dtl->coa_sales:$coa_sales;
+						
+						$sales_amt=$r_inv_dtl->price*$r_inv_dtl->quantity;
+						$disc_amt=$r_inv_dtl->discount*$sales_amt;
+						$hpp_amt=$r_inv_dtl->cost*$r_inv_dtl->quantity;
+						if($hpp_amt>0){
+							//-- posting persediaan
+							$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_stock, 
+								$r_inv_hdr->invoice_date,0,$hpp_amt,"Inventory",$r_inv_hdr->comments,$cid);
+							//-- posting hpp
+							$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_hpp, 
+								$r_inv_hdr->invoice_date,$hpp_amt,0,"Cogs",$r_inv_hdr->comments,$cid);
+						}
+						//-- posting penjualan
+						if($sales_amt>0){
+							$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_sales, 
+								$r_inv_hdr->invoice_date,0,$sales_amt,"Sales",$r_inv_hdr->comments,$cid);
+						}
+						//-- posting discount item
+						if($disc_amt>0){
+							$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_disc, 
+								$r_inv_hdr->invoice_date,$disc_amt,0,"Sales Discount",$r_inv_hdr->comments,$cid);
+							
+						}						
+					} //foreach rst_inv_dtl
+				} // if rst_inv_dtl
+				//-- posting piutang
+				$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_ar, 
+					$r_inv_hdr->invoice_date,$r_inv_hdr->amount,0,"Account Receivable",$r_inv_hdr->comments,$cid);
+				if($r_inv_hdr->disc_amount>0){
+					$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_disc, 
+						$r_inv_hdr->invoice_date,$r_inv_hdr->disc_amount,0,"Sales Discount",$r_inv_hdr->comments,$cid);
+				}
+				if($r_inv_hdr->tax>0){
+					$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_tax, 
+						$r_inv_hdr->invoice_date,$r_inv_hdr->tax,0,"Sales Tax",$r_inv_hdr->comments,$cid);					
+				}
+				if($r_inv_hdr->freight!=0){
+					$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_freight, 
+						$r_inv_hdr->invoice_date,0,$r_inv_hdr->freight,"Sales Freight",$r_inv_hdr->comments,$cid);					
+				}
+				if($r_inv_hdr->other!=0){
+					$this->jurnal_model->add_jurnal($r_inv_hdr->invoice_number,$coa_other, 
+						$r_inv_hdr->invoice_date,0,$r_inv_hdr->other,"Sales Other",$r_inv_hdr->comments,$cid);					
+				}
+						
+			} // foreach rst_inv_hdr
+		} // if rst_inv_hdr
+		echo "<br>Finish. Please back when ready."; 
+			
+	} // posting
 }

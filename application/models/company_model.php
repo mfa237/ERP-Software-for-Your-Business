@@ -47,5 +47,12 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
+	function setting($key){
+		//echo "CID: ".$this->access->cid;
+		$retval=$this->get_by_id($this->access->cid)->result_array();
+		//echo "company_model: setting: ";
+		//var_dump($retval);
+		return $retval[$key];
+	}
 
 }

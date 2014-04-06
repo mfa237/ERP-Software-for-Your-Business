@@ -1,42 +1,17 @@
- 
-   <ul class="easyui-tree">
- 	<li><span><strong>Operation</strong></span>
- 		<ul>
- 			<li ><span>Kas/Bank Masuk</span>
- 				<ul>
- 					<li><?=anchor('cash_in/add','Tambah Kas/Bank Masuk');?></li>
- 					<li><?=anchor('cash_in','Cari Kas/Bank Masuk');?></li>
- 				</ul>
- 			</li>
- 			<li><span>Kas/Bank Keluar</span>
- 				<ul>
- 					<li><?=anchor('cash_out/add','Tambah Kas/Bank Keluar')?></li>
- 					<li><?=anchor('cash_out','Cari Kas/Bank Keluar');?></li>
- 				</ul>
- 			</li>
- 			<li><span>Mutasi Antar Rekening</span>
- 				<ul>
- 					<li><?=anchor('cash_mutasi/add','Tambah Mutasi Rekening')?></li>
- 					<li><?=anchor('cash_mutasi','Cari Mutasi Rekening');?></li>
- 				</ul>
- 			</li>
- 		</ul>
- 		
- 	</li>
- 	<li><span><strong>Setting</strong></span>
- 		<ul>
-			<li ><span>Rekening Kas/Bank</span>
- 				<ul>
- 					<li><?=anchor('banks/add','Tambah Nomor Rekeing Kas/Bank')?></li>
- 					<li><?=anchor('banks','Cari Nomor Rekeing Kas/Bank')?></li>
- 				</ul>				
-			</li>
-		</ul>
-		
- 	</li>
- 	
- 	<li><span><strong>Reports</strong></span>
- 				<ul>
- 					<li><?=anchor('banks/rpt/mutasi','Mutasi Transaksi Rekening')?></li>
- 				</ul>				
- 	</li>
+    <div class="col-sm-6 col-md-4"><h2>Operation</h2>
+ 		<div class="thumbnail">
+			<p><?=anchor('cash_in','Kas/Bank Masuk');?></p>
+			<p><?=anchor('cash_out','Kas/Bank Keluar');?></p>
+			<p><?=anchor('cash_mutasi','Mutasi Rekening');?></p>
+ 		</div>
+    </div>
+    <div class="col-sm-6 col-md-4"><h2>Setting</h2>
+ 		<div class="thumbnail"> 
+			<p><?=anchor('banks','Nomor Rekeing Kas/Bank')?></p>
+ 		</div>
+    </div>
+    <div class="col-sm-6 col-md-4"><h2>Reports</h2>
+ 		<div class="thumbnail">
+			<p><?=anchor('banks/rpt/mutasi','Mutasi Transaksi Rekening')?></p>
+ 		</div>
+    </div>

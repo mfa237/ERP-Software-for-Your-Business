@@ -101,7 +101,7 @@ if(!function_exists('browse_simple')){
             $fld=$flds[$i];
             $fld=str_replace('_',' ',$fld);
             $fld=ucfirst($fld);
-            $thead.='<th data-options="field:\''.$fld.'\'">'.$fld.'</th>';
+            $thead.='<th data-options="field:\''.$flds[$i].'\'">'.$fld.'</th>';
         }
         $thead.='</tr>';
         $tbl='<table id="'.$id.'" class="easyui-datagrid", title="'.$caption.'"
@@ -129,7 +129,7 @@ if(!function_exists('browse_simple')){
                 <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
                 <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
             ";
-        return $s.$tbl;
+        return $tbl;
     }
 }
 

@@ -1,5 +1,17 @@
-<h1>PROSES DEBIT MEMO - HEADER  </H1>
+<div class="col-sm-6 col-md-8">
+	<h1>DEBIT MEMO<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save_db_memo()','save');		
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/sales_dbmemo/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/sales_dbmemo');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">		
 <form id="frmCrDb"  method="post">
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>	
+<input type='hidden' name='trans_type' id='trans_type'	value='Sales'>	
    <table>
 		<tr>
 		<td>Nomor Bukti</td>
@@ -33,12 +45,8 @@
        </td></tr>
    </table>
 </form>
-<? if($mode=='add'){ ?>
-	<span id='cmdSaveDbMemo'><?=link_button("Save","save_db_memo()","save","false")?></span>
-<? } ?>
-
-<div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
-<h1>DEBIT MEMO - PILIH KODE PERKIRAAN</H1>
+<div id='divItem'>
+<h4>KODE PERKIRAAN</H4>
 	<div id='dgItem'>
 		<table>
 			<tr>
@@ -63,7 +71,7 @@
 		</table>		
 	</div>
 	<table id="dgItemMemo" class="easyui-datagrid"  		
-		style="width:800px;min-height:800px"
+		style="width:500px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -80,6 +88,7 @@
 		</thead>
 	</table>
 </div>
+</DIV>
 <div id="tb" style="height:auto">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
@@ -106,7 +115,7 @@
 					$('#divItem').show('slow');
 					$('#kodecrdb').val(result.kodecrdb);
 					var nomor=$('#kodecrdb').val();
-					$('#cmdSaveDbMemo').hide();
+					$('#mode').val('view');
 					url='<?=base_url()?>index.php/crdb/items/'+nomor+'/json';
 					$('#dgItemMemo').datagrid({url:url});
 					$('#dgItemMemo').datagrid('reload');

@@ -56,13 +56,30 @@ class Supplier extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$id=$this->supplier_model->save($data);
-                        $data['mode']='view';
-                        $this->browse();
+            $data['mode']='view';
+            $this->browse();
 		} else {
 			$data['mode']='add';
             $this->template->display_form_input($this->file_view,$data,'');
 		
 		}
+	}
+	function save(){
+		$data=$this->input->post();
+		$id=$this->input->post("supplier_number");
+		$mode=$data["mode"];
+	 	unset($data['mode']);
+		if($mode=="add"){ 
+			$ok=$this->supplier_model->save($data);
+		} else {
+			$ok=$this->supplier_model->update($id,$data);				
+		}
+		if($ok){
+			echo json_encode(array("success"=>true));
+		} else {
+			echo json_encode(array("msg"=>"Error ".mysql_error()));
+		}
+		
 	}
 	function update()
 	{
@@ -72,11 +89,11 @@ class Supplier extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$this->supplier_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+            $message='Update Success';
+            $this->browse();
 		} else {
 			$message='Error Update';
-         		$this->view($id,$message);		
+     		$this->view($id,$message);		
 		}	  
 	}
 	

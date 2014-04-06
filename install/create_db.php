@@ -6154,7 +6154,14 @@ $sql="DROP TABLE IF EXISTS `qry_coa`;
 ";
 if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 $sql="
-CREATE  VIEW `qry_coa` AS select `chart_of_accounts`.`account` AS `account`,`chart_of_accounts`.`account_description` AS `account_description`,_utf8'D' AS `jenis`,`chart_of_accounts`.`db_or_cr` AS `db_or_cr`,`chart_of_accounts`.`beginning_balance` AS `saldo_awal`,`chart_of_accounts`.`group_type` AS `parent` from `chart_of_accounts` union all select `gl_report_groups`.`group_type` AS `group_type`,`gl_report_groups`.`group_name` AS `group_name`,_utf8'H' AS `jenis`,_utf8'' AS ``,NULL AS `0`,`gl_report_groups`.`parent_group_type` AS `parent_group_type` from `gl_report_groups`;
+CREATE  VIEW `qry_coa` AS select `chart_of_accounts`.`account` AS `account`,
+`chart_of_accounts`.`account_description` AS `account_description`,_utf8'D' AS `jenis`,
+`chart_of_accounts`.`db_or_cr` AS `db_or_cr`,`chart_of_accounts`.`beginning_balance` AS `saldo_awal`,
+`chart_of_accounts`.`group_type` AS `parent` from `chart_of_accounts` 
+union all 
+select `gl_report_groups`.`group_type` AS `group_type`,`gl_report_groups`.`group_name` AS `group_name`,
+_utf8'H' AS `jenis`,_utf8'' AS `db_or_cr`,NULL AS `0`,`gl_report_groups`.`parent_group_type` AS `parent_group_type` 
+from `gl_report_groups`;
 ";
 if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 
@@ -6276,6 +6283,88 @@ if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<b
 $sql="CREATE VIEW `qry_kartustock_union` AS select `i`.`tanggal` AS `tanggal`,`i`.`jenis` AS `jenis`,`i`.`no_sumber` AS `no_sumber`,`i`.`item_number` AS `item_number`,`i`.`description` AS `description`,`i`.`qty_masuk` AS `qty_masuk`,`i`.`qty_keluar` AS `qty_keluar`,`i`.`price` AS `price`,`i`.`cost` AS `cost`,if((`i`.`qty_masuk` > 0),(`i`.`cost` * `i`.`qty_masuk`),0) AS `amount_masuk`,if((`i`.`qty_masuk` > 0),0,(`i`.`cost` * `i`.`qty_keluar`)) AS `amount_keluar`,`i`.`gudang` AS `gudang`,`i`.`comments` AS `comments` from `qry_kartustock_invoice` `i` where (`i`.`item_number` is not null) union all select `r`.`tanggal` AS `tanggal`,`r`.`jenis` AS `jenis`,`r`.`no_sumber` AS `no_sumber`,`r`.`item_number` AS `item_number`,`r`.`description` AS `description`,`r`.`qty_masuk` AS `qty_masuk`,`r`.`qty_keluar` AS `qty_keluar`,`r`.`price` AS `price`,`r`.`cost` AS `cost`,if((`r`.`qty_masuk` > 0),(`r`.`cost` * `r`.`qty_masuk`),0) AS `amount_masuk`,if((`r`.`qty_masuk` > 0),0,(`r`.`cost` * `r`.`qty_keluar`)) AS `amount_keluar`,`r`.`gudang` AS `gudang`,`r`.`comments` AS `comments` from `qry_kartustock_receipt` `r` union all select `r`.`tanggal` AS `tanggal`,`r`.`jenis` AS `jenis`,`r`.`no_sumber` AS `no_sumber`,`r`.`item_number` AS `item_number`,`r`.`description` AS `description`,`r`.`qty_masuk` AS `qty_masuk`,`r`.`qty_keluar` AS `qty_keluar`,`r`.`price` AS `price`,`r`.`cost` AS `cost`,if((`r`.`qty_masuk` > 0),(`r`.`cost` * `r`.`qty_masuk`),0) AS `amount_masuk`,if((`r`.`qty_masuk` > 0),0,(`r`.`cost` * `r`.`qty_keluar`)) AS `amount_keluar`,`r`.`gudang` AS `gudang`,`r`.`comments` AS `comments` from `qry_kartustock_etc_out` `r` union all select `p`.`tanggal` AS `tanggal`,`p`.`jenis` AS `jenis`,`p`.`no_sumber` AS `no_sumber`,`p`.`item_number` AS `item_number`,`p`.`description` AS `description`,`p`.`qty_masuk` AS `qty_masuk`,`p`.`qty_keluar` AS `qty_keluar`,`p`.`price` AS `price`,`p`.`cost` AS `cost`,`p`.`amount_masuk` AS `amount_masuk`,`p`.`amount_keluar` AS `amount_keluar`,`p`.`gudang` AS `gudang`,`p`.`comments` AS `comments` from `qry_kartustock_purchase` `p` union all select `qry_kartustock_adj`.`tanggal` AS `tanggal`,`qry_kartustock_adj`.`jenis` AS `jenis`,`qry_kartustock_adj`.`no_sumber` AS `no_sumber`,`qry_kartustock_adj`.`item_number` AS `item_number`,`qry_kartustock_adj`.`description` AS `description`,`qry_kartustock_adj`.`qty_masuk` AS `qty_masuk`,`qry_kartustock_adj`.`qty_keluar` AS `qty_keluar`,`qry_kartustock_adj`.`price` AS `price`,`qry_kartustock_adj`.`cost` AS `cost`,`qry_kartustock_adj`.`amount_masuk` AS `amount_masuk`,`qry_kartustock_adj`.`amount_keluar` AS `amount_keluar`,`qry_kartustock_adj`.`gudang` AS `gudang`,`qry_kartustock_adj`.`comments` AS `comments` from `qry_kartustock_adj` union all select `qry_kartustock_transfer`.`tanggal` AS `tanggal`,`qry_kartustock_transfer`.`jenis` AS `jenis`,`qry_kartustock_transfer`.`no_sumber` AS `no_sumber`,`qry_kartustock_transfer`.`item_number` AS `item_number`,`qry_kartustock_transfer`.`description` AS `description`,`qry_kartustock_transfer`.`qty_masuk` AS `qty_masuk`,`qry_kartustock_transfer`.`qty_keluar` AS `qty_keluar`,`qry_kartustock_transfer`.`price` AS `price`,`qry_kartustock_transfer`.`cost` AS `cost`,`qry_kartustock_transfer`.`amount_masuk` AS `amount_masuk`,`qry_kartustock_transfer`.`amount_keluar` AS `amount_keluar`,`qry_kartustock_transfer`.`gudang` AS `gudang`,`qry_kartustock_transfer`.`comments` AS `comments` from `qry_kartustock_transfer`;
 ";
 if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+
+echo "
+--
+-- Structure for view `qry_kartu_piutang`
+--
+";
+$sql="CREATE  VIEW qry_kartu_piutang AS
+   select invoice_type as jenis, sales_order_number as ref,invoice_number as no_bukti
+  ,invoice_date as tanggal,amount as jumlah,sold_to_customer as customer_number
+   From invoice
+  where invoice_type='I'
+
+  Union All
+  select invoice_type, your_order__,invoice_number, invoice_date,-1*abs(amount),sold_to_customer
+  From invoice
+  where invoice_type='R'
+
+  Union All
+  select 'P' as jenis,p.invoice_number,no_bukti, date_paid, amount_paid*-1, i.sold_to_customer
+  from payments p
+  left join invoice i on p.invoice_number=i.invoice_number
+
+  Union All
+  select 'C' as jenis,docnumber,kodecrdb,tanggal,-1*c.amount,i.sold_to_customer
+  from crdb_memo c
+  left join invoice i on i.invoice_number=c.docnumber
+  where transtype='SO-CREDIT MEMO' and invoice_type='I'
+
+  Union All
+  select 'C' as jenis,docnumber,kodecrdb,tanggal,-1*c.amount,i.sold_to_customer
+  from crdb_memo c
+  left join invoice i on i.invoice_number=c.docnumber
+  where transtype='SO-DEBIT MEMO' and invoice_type='I'
+";
+if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+
+echo "
+--
+-- Structure for view `qry_kartu_hutang`
+--
+";
+
+$sql="create view qry_kartu_hutang as 
+
+select invoice_date as tanggal,case when purchase_order<>0 then purchase_order_number
+else bill_id end as no_bukti,
+bill_id as ref1,invoice_number as ref2,'Hutang' as jenis,supplier_number,amount
+from payables
+
+UNION ALL
+select pp.date_paid,cw.voucher,
+pp.bill_id,pp.trans_id,'Bayar',p.supplier_number,-1*amount_paid
+from payables_payments pp
+left join payables p on p.bill_id=pp.bill_id
+left join check_writer cw on cw.trans_id=pp.trans_id
+
+UNION ALL
+select po_date,purchase_order_number,po_ref,'','Retur',supplier_number,
+-1*abs(saldo_invoice)
+from purchase_order 
+where potype='R'
+
+UNION ALL
+select c.tanggal,c.kodecrdb,c.docnumber,'','Debit Memo', p.supplier_number,
+-1*abs(c.amount)
+from crdb_memo c
+left join purchase_order p on p.purchase_order_number=c.docnumber 
+where c.transtype='PO-DEBIT MEMO'
+
+UNION ALL
+select c.tanggal,c.kodecrdb,c.docnumber,'','Debit Memo', p.supplier_number,
+-1*abs(c.amount)
+from crdb_memo c
+left join purchase_order p on p.purchase_order_number=c.docnumber 
+where c.transtype='PO-CREDIT MEMO'
+
+";
+if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+
+  
+  
+
 	 header("location: install_finish.php");
 	?>
 </div>

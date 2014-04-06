@@ -1,111 +1,43 @@
-<script language="javascript">
-///--- gak jalan kalao pakai .info_link.on cuma klik pertama kali, klik kedua gak jalan
-//     ubha menjadi clickme
-//$(function(){
-//$(document).on('click', '.info_link', function(){
-//$('.info_link').on('click',function(e){
-	function cetak_faktur(){
-		faktur=$('#invoice_number').val();
-		if(faktur!='undefined'){
-			window.open('<?=base_url()?>index.php/invoice/print_faktur/'+faktur,"_new");
-		}
-	}
-</script>
-
-
- <ul class="easyui-tree">
- 	<li><span><strong>Operation</strong></span>
- 		<ul>
- 			<li ><span>Sales Order</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/sales_order/add','Tambah Nomor SO','class="info_link"');?></li>
- 					<li><?=anchor(base_url().'index.php/sales_order','Cari Nomor SO','class="info_link"');?></li>
- 				</ul>
- 			</li>
- 			<li  >
- 				<span>Delivery Order</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/delivery_order/add','Tambah Nomor DO','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/delivery_order','Cari Nomor DO','class="info_link"');?></li>
- 				</ul>
- 			</li>
- 			<li  >
- 				<span>Faktur Penjualan</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/invoice/add','Tambah Faktur Penjualan','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/invoice','Cari Nomor Faktur','class="info_link"');?></li>
- 				</ul>
- 			</li>
- 			<li>
- 				<span>Payments</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/payment/add','Terima Piutang Pelanggan','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/payment','Cari Penerimaan Piutang','class="info_link"');?></li>
- 				</ul>
- 			</li>
- 			<li>
- 				<span>Retur</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/sales_retur/add','Tambah Retur Penjualan','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/sales_retur','Cari Retur Penjualan','class="info_link"');?></li>
- 				</ul>
- 			</li>
- 			<li>
- 				<span>Credit Memo</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/sales_crmemo/add','Tambah Kredit Memo','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/sales_crmemo','Cari Kredit Memo','class="info_link"');?></li>
- 				</ul>
- 			</li>
- 			<li>
- 				<span>Debit Memo</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/sales_dbmemo/add','Tambah Debit Memo','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/sales_dbmemo','Cari Debit Memo','class="info_link"');?></li>
- 				</ul>
- 			</li>
- 		</ul>
- 		
- 	</li>
- 	<li><span><strong>Setting</strong></span>
- 		<ul>
-			<li ><span>Customers</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/customer/add','Create New Customer','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/customer','Search Customer Number','class="info_link"');?></li>
- 				</ul>				
-			</li>
-			<li ><span>Salesmans</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/salesman/add','Create New Salesman','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/salesman','Search Salesman Number','class="info_link"');?></li>
- 				</ul>				
-			</li>
-			<li ><span>Payment Terms</span>
- 				<ul>
- 					<li><?=anchor(base_url().'index.php/type_of_payment/add','Create New Terms','class="info_link"')?></li>
- 					<li><?=anchor(base_url().'index.php/type_of_payment','Search Payment Terms','class="info_link"');?></li>
- 				</ul>				
-			</li>
-		</ul>
- 	</li>
- 	
- 	<li><span><strong>Reports</strong></span><ul>
-		<li><?=anchor('sales/rpt/so_otstand','Open Sales Order')?></li>
-		<li><?=anchor('sales/rpt/do_list','Daftar Pengiriman')?></li>
-		<li><?=anchor('sales/rpt/faktur_sum','Penjualan Summary')?></li>
-		<li><?=anchor('sales/rpt/faktur_slsman','Penjualan Per Salesman')?></li>
-		<li><?=anchor('sales/rpt/faktur_cust','Penjualan per Pelanggan')?></li>
-		<li><?=anchor('sales/rpt/ar_sum','Kartu Piutang Summary')?></li>
-		<li><?=anchor('sales/rpt/ar_dtl','Kartu Piutang Detail')?></li>
-		<li><?=anchor('sales/rpt/age_sum','Umur Piutang Summary')?></li>
-		<li><?=anchor('sales/rpt/age_dtl','Umur Piutang Detail')?></li>
-		<li><?=anchor('sales/rpt/retur_list','Daftar Retur Penjualan')?></li>
-		<li><?=anchor('sales/rpt/memo_list','Daftar Kredit/Debit Memo')?></li>
-		<li><?=anchor('sales/rpt/pay_list','Daftar Pembayaran')?></li>
-		<li><?=anchor('sales/rpt/pay_type','Pembayaran Per Jenis Bayar')?></li>
-		<li><?=anchor('sales/rpt/sls_item','Penjualan per Item')?></li>
-		<li><?=anchor('sales/rpt/sls_cat','Penjualan per Item Kategori')?></li>
-		<li><?=anchor('sales/rpt/cust_list','Daftar Pelanggan')?></li>
-		<li><?=anchor('sales/rpt/slsman_list','Daftar Salesman')?></li>
- 	</ul></li>
+ 
+	   <div class="col-sm-6 col-md-4"><h2>Operation</h2>
+ 		<div class="thumbnail">
+ 			<li><?=anchor(base_url().'index.php/sales_order','Sales Order','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/delivery_order','Surat Jalan','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/invoice','Faktur Penjualan','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/payment','Pembayaran Piutang','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/sales_retur','Retur Penjualan','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/sales_crmemo','Kredit Memo','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/sales_dbmemo','Debit Memo','class="info_link"');?></li>
+ 		</div>
+        </div>
+        <div class="col-sm-6 col-md-4"><h2>Master</h2>
+ 		<div class="thumbnail">
+			<li><?=anchor(base_url().'index.php/customer','Pelanggan','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/salesman','Salesman','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/type_of_payment','Termin','class="info_link"');?></li>
+		</div>        	
+        </div>
+        <div class="col-sm-6 col-md-4"><h2>Reports</h2>
+	 	<div class="thumbnail">
+			<li><?=anchor('sales/rpt/so_otstand','Open Sales Order')?></li>
+			<li><?=anchor('sales/rpt/do_list','Daftar Pengiriman')?></li>
+			<li><?=anchor('sales/rpt/faktur_sum','Penjualan Summary')?></li>
+			<li><?=anchor('sales/rpt/faktur_slsman','Penjualan Per Salesman')?></li>
+			<li><?=anchor('sales/rpt/faktur_cust','Penjualan per Pelanggan')?></li>
+			<li><?=anchor('sales/rpt/sls_item','Penjualan per Item')?></li>
+			<li><?=anchor('sales/rpt/sls_cat','Penjualan per Item Kategori')?></li>
+			<li><?=anchor('sales/rpt/ar_sum','Kartu Piutang Summary')?></li>
+			<li><?=anchor('sales/rpt/ar_dtl','Kartu Piutang Detail')?></li>
+			<li><?=anchor('sales/rpt/age_sum','Umur Piutang Summary')?></li>
+			<li><?=anchor('sales/rpt/age_dtl','Umur Piutang Detail')?></li>
+			<li><?=anchor('sales/rpt/retur_list','Daftar Retur Penjualan')?></li>
+			<li><?=anchor('sales/rpt/memo_list','Daftar Kredit/Debit Memo')?></li>
+			<li><?=anchor('sales/rpt/pay_list','Daftar Pembayaran')?></li>
+			<li><?=anchor('sales/rpt/pay_type','Pembayaran Per Jenis Bayar')?></li>
+			<li><?=anchor('sales/rpt/cust_list','Daftar Pelanggan')?></li>
+			<li><?=anchor('sales/rpt/slsman_list','Daftar Salesman')?></li>
+	 	</div>
+        	
+        	
+        </div>
+ 

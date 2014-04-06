@@ -1,6 +1,5 @@
 <?
-    if(!$this->access->is_login())redirect(base_url());
-     
+    if(!$this->access->is_login())redirect(base_url());     
 ?>
 
 <script type="text/javascript">
@@ -89,7 +88,6 @@
     }
     
 </script>
-
 <div id="dlg" style="padding:5px;height:auto">
     
 </div>

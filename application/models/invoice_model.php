@@ -10,7 +10,7 @@ public $crdb_amount=0;
 public $saldo=0;
 public $amount=0;
 public $sub_total=0;
-
+public $warehouse_code='';
 function __construct(){
 	parent::__construct();
 }
@@ -90,6 +90,12 @@ function count_all(){
 }
 function get_by_id($id){
 	$this->db->where($this->primary_key,$id);
+	$r_item=$this->db->query("select warehouse_code from invoice_lineitems 
+		where invoice_number='$id' limit 1")->row();
+	 
+	if($r_item){
+		$this->warehouse_code=$r_item->warehouse_code;
+	}
 	return $this->db->get($this->table_name);
 }
 function save($data){
@@ -101,6 +107,10 @@ function save($data){
 	return $this->db->insert($this->table_name,$data);
 }
 function update($id,$data){
+	$gudang=$data['warehouse_code'];	
+	$this->db->query("update invoice_lineitems set warehouse_code='$gudang' 
+	where invoice_number='$id'");			
+	unset($data['warehouse_code']);
 	$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
 	$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
 	$this->db->where($this->primary_key,$id);
@@ -134,7 +144,7 @@ function delete($id){
         $query=$this->db->query("delete from invoice_lineitems
             where line_number=".$line);
     }
-	function save_from_so_items($faktur,$qty_order,$from_so_line){
+	function save_from_so_items($faktur,$qty_order,$from_so_line,$gudang){
 		$this->load->model('sales_order_lineitems_model');
 		$this->load->model('inventory_model');
 		$this->load->model('invoice_lineitems_model');
@@ -152,6 +162,7 @@ function delete($id){
 				$data['price']=$so->price;
 				$data['discount']=$so->discount;
 		        $data['amount']=$data['quantity']*$data['price'];
+				$data['warehouse_code']=$gudang;
 				$this->invoice_lineitems_model->save($data);
 			}
 		}

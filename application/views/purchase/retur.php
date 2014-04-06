@@ -1,12 +1,15 @@
-<h1>|| RETUR PEMBELIAN  || 
+<div class="col-sm-6 col-md-8"><h1>RETUR PEMBELIAN  <div class="thumbnail">
 	<?
-	echo link_button("Save","save_retur()","save");
-	echo link_button("Print","print_retur()","print");
+	echo link_button('Save', 'save_retur()','save');		
+	echo link_button('Print', 'print_retur()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/purchase_retur/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/purchase_retur');		
 	
-	?>	
-</H1>	
-<form id='frmRetur' method="POST" name="frmRetur"> 
-	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+	?>
+</div></H1>
+<div class="thumbnail">	
+<form id='frmRetur' method="post">
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <table>
 	<tr>
 		<td>Nomor Retur</td><td class='field'>
@@ -42,17 +45,17 @@
     </tr>	  
 </table>
 </form>
-
+</div>
 <H1></H1>
 
 <!-- PURCASE_ORDER_LINEITEMS -->	
-<div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
-	<h1>PURCHASE ORDER - SELECT ITEMS</H1>
+<div id='divItem'>
+	<h5>ITEMS</H5>
 	<div id='dgItem'>
 		<? include_once "purchase_order_items.php"; ?>
 	</div>
 	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
+		style="width:600px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -73,7 +76,7 @@
 		</thead>
 	</table>
 <!-- END PURCHASE_ORDER_LINEITEMS -->
-	<h1>PURCHASE ORDER - TOTAL</H1>
+	<h5>TOTAL</H5>
 	<div id='divTotal'> 
 		<table>
 			<tr>

@@ -79,9 +79,9 @@ function save($data){
 	$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
 	$data['multiple_pricing']=='1'?$data['multiple_pricing']=true:$data['multiple_pricing']=false;
 	$data['style']=='1'?$data['style']=true:$data['style']=false;
-
-	$this->db->insert($this->table_name,$data);
-	return $this->db->insert_id();
+    if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
+    if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
+	return $this->db->insert($this->table_name,$data);
 }
 function update($id,$data){
 	$data['active']=='1'?$data['active']=true:$data['active']=false;
@@ -89,8 +89,10 @@ function update($id,$data){
 	$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
 	$data['multiple_pricing']=='1'?$data['multiple_pricing']=true:$data['multiple_pricing']=false;
 	$data['style']=='1'?$data['style']=true:$data['style']=false;
+    if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
+    if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
 	$this->db->where($this->primary_key,$id);
-	$this->db->update($this->table_name,$data);
+	return $this->db->update($this->table_name,$data);
 }
 function delete($id){
 	$this->db->where($this->primary_key,$id);

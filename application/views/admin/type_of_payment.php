@@ -1,23 +1,23 @@
-<script src="<?=base_url();?>js/lib.js"></script>
+<div class="col-sm-6 col-md-8"><h1>TERMIN PEMBAYARAN<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save_this()','save');		
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/type_of_payment/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/type_of_payment');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">	
+<form id="myform"  method="post" action="<?=base_url()?>index.php/type_of_payment/save">
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-<?php 
-    if($mode=='view'){
-            echo form_open('type_of_payment/update','id=myform name=myform');
-            $disabled='disable';
-    } else {
-            $disabled='';
-            echo form_open('type_of_payment/add','id=myform name=myform'); 
-    }
-?>
-
-     <div class='box6x'><h1>KODE TERMIN PEMBAYARAN</H1>
      <table >
 	<tr>
 		<td>Termin Pembayaran</td>
 		<td>
 		<?php
 		if($mode=='view'){
-			echo "<h2>".$type_of_payment."</h2>";
+			echo "<strong>".$type_of_payment."</strong>";
 			echo form_hidden('type_of_payment',$type_of_payment);
 		} else { 
 			echo form_input('type_of_payment',$type_of_payment);
@@ -38,38 +38,18 @@
          <td>Day</td>
          <td><?php echo form_input('days',$days);?></td>
 	   </tr>
- 	 <tr>
-	   <td>	<input name="submit" type="submit" class="easyui-linkbutton" style="height:30px;width:60px" value="Save" 
-                   data-options="iconCls:'icon-save'"/></td>
-	   </tr>
-	 <tr>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   </tr>
-	 <tr>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   </tr>
-	 <tr>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   </tr>
-	 <tr>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   </tr>
-	 <tr>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   </tr>
+
    </table>
    </form>
-   
+    
+</div>   
+<script type="text/javascript">
+    function save_this(){
+        if($('#bank_account_number').val()===''){alert('Isi dulu kode bank !');return false;};
+        if($('#bank_name').val()===''){alert('Isi dulu nama bank !');return false;};
+        $('#myform').submit();
+    }
+</script>  
 
-<script>
+ 
  

@@ -5,10 +5,10 @@
     <table>
         <?=form_hidden('invoice_number',$invoice_number,'id=invoice_number')?>
         <tr><td>Nama Barang</td><td><?=form_dropdown('item_number',$item_lookup
-                ,'','id=item_number  onblur="find()"');?></td></tr>
-        <tr><td>Quantity</td><td><?=form_input('quantity','1','id=quantity')?></td></tr>
-        <tr><td>Satuan</td><td><?=form_input('unit','','id=unit')?></td></tr>
-        <tr><td>Price</td><td><?=form_input('price','0','id=price')?></td></tr>        
+                ,'','id=item_number  onblur="find()" style="width:30px"');?></td></tr>
+        <tr><td>Quantity</td><td><?=form_input('quantity','1','id=quantity style="width:30px"')?></td></tr>
+        <tr><td>Satuan</td><td><?=form_input('unit','','id=unit style="width:30px"')?></td></tr>
+        <tr><td>Price</td><td><?=form_input('price','0','id=price  style="width:30px"')?></td></tr>        
         <tr><td></td><td><?=form_hidden('cost',0)?></td></tr>        
     </table>
 </form>

@@ -1,33 +1,31 @@
-<script src="<?=base_url();?>js/lib.js"></script>
+<div class="col-sm-6 col-md-8"><h1>MASTER SUPPLIER<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save()','save');		
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/supplier/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/supplier');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">	
+<form id="myform"  method="post">
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-<?php 
-    if($mode=='view'){
-            echo form_open('supplier/update','id=myform name=myform');
-            $disabled='disable';
-    } else {
-            $disabled='';
-            echo form_open('supplier/add','id=myform name=myform'); 
-    }
-?>
-   <h1>MASTER SUPPLIER</H1>
-
-   <table width="100%">
+<table>
 	<tr>
 		<td >Supplier Number</td><td >
 		<?php
 		if($mode=='view'){
 			echo $supplier_number;
-			echo form_hidden('supplier_number',$supplier_number);
+			echo form_hidden('supplier_number',$supplier_number,"id=supplier_number");
 		} else { 
-			echo form_input('supplier_number',$supplier_number);
+			echo form_input('supplier_number',$supplier_number,"id=supplier_number");
 		}		
 		?></td>
 	</tr>	 
 	<tr>
 	  <td>Supplier Name</td>
-	  <td><?php echo form_input('supplier_name',$supplier_name,
-		'style="width:150px"');?></td>
-	 
+	  <td><?php echo form_input('supplier_name',$supplier_name,'style="width:150px"');?></td>
 	</tr>
 	<tr>
 	  <td>Alamat</td>
@@ -75,12 +73,36 @@
 	  <td>Termin</td>
 	  <td><?php echo form_dropdown('payment_terms',$terms_list,$payment_terms);?></td>
 	</tr>	 
-	 <tr><td> 
-	   <input name="submit" type="submit" class="easyui-linkbutton" style="height:30px;width:60px" value="Save" 
-                   data-options="iconCls:'icon-save'"/>
-	 </a></td><td>&nbsp;</td></tr>
    </table>
    </form>
-  
+</div>  
    
-  
+<script>
+  	function save(){  		 
+		event.preventDefault(); 
+  		if($('#supplier_number').val()==''){alert('Isi kode supplier !');return false;}
+  		if($('#supplier_name').val()==''){alert('Isi nama supplier !');return false;}
+		url='<?=base_url()?>index.php/supplier/save';
+			$('#myform').form('submit',{
+				url: url,
+				onSubmit: function(){
+					return $(this).form('validate');
+				},
+				success: function(result){
+					var result = eval('('+result+')');
+					if (result.success){
+						$("#mode").val("view");
+						$.messager.show({
+							title:'Success',msg:'Data sudah tersimpan.'
+						});
+					} else {
+						$.messager.show({
+							title: 'Error',
+							msg: result.msg
+						});
+					}
+				}
+			});
+  	}	
+</script>	
+     

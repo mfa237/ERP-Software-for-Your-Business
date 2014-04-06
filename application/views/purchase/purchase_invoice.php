@@ -1,12 +1,14 @@
-<h1>|| FAKTUR PEMBELIAN  || 
+<div class="col-sm-6 col-md-8"><h1>FAKTUR PEMBELIAN<div class="thumbnail">
 	<?
-	echo link_button("Save","save_po()","save");
-	echo link_button("Print","print_faktur()","print");
+	echo link_button('Save', 'save_po()','save');		
+	echo link_button('Print', 'print_faktur()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/purchase_invoice/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/purchase_invoice');		
 	
-	?>	
-</H1>
-	
-<form id='frmPo' method="post">	
+	?>
+</div></H1>
+<div class="thumbnail">	
+	<form id='frmPo' method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<table>
 	<tr>
@@ -47,10 +49,11 @@
        </tr>	  
    </table>
   </form>
+</div>  
 <H1></H1>
 <!-- PURCASE_ORDER_LINEITEMS -->	
-<div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
-	<h1>PURCHASE  - SELECT ITEMS</H1>
+<div id='divItem'>
+	<h5>ITEMS</H5>
 	<div id='dgItem'>
 		<? include_once "purchase_order_items.php"; ?>
 	</div>
@@ -76,7 +79,7 @@
 		</thead>
 	</table>
 <!-- END PURCHASE_ORDER_LINEITEMS -->
-	<h1>PURCHASE ORDER - TOTAL</H1>
+	<h5>TOTAL</H5>
 	<div id='divTotal'> 
 		<table>
 			<tr>

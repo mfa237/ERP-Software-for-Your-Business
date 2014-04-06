@@ -53,16 +53,15 @@ function select_list(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
-		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		return $this->db->update($this->table_name,$data);
 	}
 	function delete($id){
 		$this->db->where($this->primary_key,$id);
-		$this->db->delete($this->table_name);
+		return $this->db->delete($this->table_name);
 	}
     function info($id){
         $data=$this->get_by_id($id)->row();

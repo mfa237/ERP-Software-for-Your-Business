@@ -36,9 +36,10 @@ private $table_name='crdb_memo';
 		$faktur=$data['docnumber'];
 		if(isset($data['tanggal']))$data['tanggal']= date('Y-m-d H:i:s', strtotime($data['tanggal']));
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		$ok=$this->db->update($this->table_name,$data);
 		$this->load->model('invoice_model');
 		$this->invoice_model->recalc($faktur);
+		return $ok;
 	}
 	function delete($id){
 		$faktur=$data['docnumber'];

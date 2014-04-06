@@ -23,10 +23,16 @@ if(!function_exists('criteria')){
 	}
 }
 if(!function_exists('link_button')){
-    function link_button($caption,$func,$icon='',$plain='true'){
-        return '<a href="#" class="easyui-linkbutton" 
-        data-options="iconCls:\'icon-'.$icon.'\', 
-        plain: '.$plain.'" onclick="'.$func.'">'.$caption.'</a>';
+    function link_button($caption,$func,$icon='',$plain='true',$url=''){
+    	if($url==''){
+	        return '<a href="#" class="easyui-linkbutton" 
+	        data-options="iconCls:\'icon-'.$icon.'\', 
+	        plain: '.$plain.'" onclick="'.$func.'">'.$caption.'</a>';
+		} else {
+	        return '<a href="'.$url.'" class="easyui-linkbutton" 
+	        data-options="iconCls:\'icon-'.$icon.'\', 
+	        plain: '.$plain.'" >'.$caption.'</a>';			
+		}
     }
 }
 

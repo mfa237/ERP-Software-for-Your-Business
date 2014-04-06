@@ -68,6 +68,7 @@ class Delivery_order extends CI_Controller {
 		 $this->_set_rules();
 		$this->load->model('invoice_lineitems_model');        
 		$this->load->model('sales_order_model');               
+		$this->load->model('shipping_locations_model');
 		$data['mode']='add';
 		$data['message']='';
         $data['customer_list']=$this->customer_model->select_list();
@@ -76,7 +77,9 @@ class Delivery_order extends CI_Controller {
         $data['sold_to_customer']="";
         $data['amount']=$this->input->post('amount');
         $data['payment_terms_list']=$this->type_of_payment_model->select_list();
-         $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
+        $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
+        $data['warehouse_list']=$this->shipping_locations_model->select_list();
+		 
 		$this->template->display_form_input($this->file_view,$data,'');			
 	}
 	function save()
@@ -94,14 +97,14 @@ class Delivery_order extends CI_Controller {
 		$data['sales_order_number']=$this->input->post('sales_order_number');
 		$data['due_date']=$this->input->post('due_date');
 		$data['comments']=$this->input->post('comments');
-			 
+		$data['warehouse_code']=$this->input->post('warehouse_code');	 
 		if($mode=="add"){
 			$ok=$this->invoice_model->save($data);
 			$this->invoice_model->save_from_so_items($data['invoice_number'],
 				$this->input->post('qty_order'),
-				$this->input->post('line_number'));
+				$this->input->post('line_number'),$this->input->post('warehouse_code'));
 		} else {
-			$ok=$this->invoice_model->update($id,$data);			
+			$ok=$this->invoice_model->update($id,$data);
 		}
 		if ($ok){
 			if($mode=="add") $this->nomor_bukti(true);
@@ -146,6 +149,7 @@ class Delivery_order extends CI_Controller {
     function save_item(){ 
         $item_no=$this->input->post('item_number');
 		$faktur=$this->input->post('invoice_number');
+		$data['warehouse_code']=$this->input->post('warehouse_code');
         if(!($item_no||$faktur)){
         	$data['message']='Kode barang atau nomor faktur tidak diisi !';
         	echo $data['message'];
@@ -173,9 +177,11 @@ class Delivery_order extends CI_Controller {
     }        
 	function view($id,$message=null){
 		$this->load->model('invoice_lineitems_model');
+		$this->load->model('shipping_locations_model');
 		 $data['id']=$id;
 		 $model=$this->invoice_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
+		 $data['warehouse_code']=$this->invoice_model->warehouse_code;
 		 $data['mode']='view';
          $data['message']=$message;
 		 $cst=$this->invoice_model->get_by_id($data['sold_to_customer'])->row();
@@ -185,6 +191,7 @@ class Delivery_order extends CI_Controller {
 		 	
 		 }
          $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
+        $data['warehouse_list']=$this->shipping_locations_model->select_list();
          $menu='';
 		 $this->session->set_userdata('_right_menu',$menu);
          $this->session->set_userdata('invoice_number',$id);

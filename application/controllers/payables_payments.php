@@ -206,7 +206,7 @@ class Payables_payments extends CI_Controller {
 		if($rcek){
 			$data['voucher']=$rcek->voucher;
 			$data['date_paid']=$rcek->check_date;
-			$data['amount_paid']=$rcek->deposit_amount;
+			$data['amount_paid']=number_format($rcek->payment_amount);
 			$data['account_number']=$rcek->account_number;
 			$data['trans_type']=$rcek->trans_type;
 			$data['supplier_info']=$rcek->supplier_number.' - '.$rcek->payee;

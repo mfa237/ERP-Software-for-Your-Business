@@ -1,19 +1,19 @@
-<script src="<?=base_url();?>js/lib.js"></script>
+<div class="col-sm-6 col-md-8"><h1>MASTER REKENING<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save_this()','save');		
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/banks/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/banks');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">	
+<form id="myform"  method="post" action="<?=base_url()?>index.php/banks/save">
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-<?php 
-    if($mode=='view'){
-            echo form_open('banks/update','id=myform name=myform');
-            $disabled='disable';
-    } else {
-            $disabled='';
-            echo form_open('banks/add','id=myform name=myform'); 
-    }
-?>
-
-   <div class='box6x'><h1>BANK ACCOUNTS</h1>
-   <table>
+<table>
 	<tr>
-		<td>Rekening</td><td>
+		<td>Kode/Nomor Rekening Bank</td><td>
 		<?php
 		if($mode=='view'){
 			echo $bank_account_number;
@@ -27,10 +27,10 @@
             <td>Nama Bank</td><td><?php echo form_input('bank_name',$bank_name);?></td>
        </tr>
        <tr>
-            <td>Jenis_bank</td><td><?php echo form_input('type_bank',$type_bank);?></td>
+            <td>Jenis Bank</td><td><?php echo form_dropdown('type_bank',array("Bank","Kas"),$type_bank);?></td>
        </tr>
        <tr>
-            <td>Alamat</td><td><?php echo form_input('street',$street);?></td>
+            <td>Alamat</td><td><?php echo form_input('street',$street,"style='width:400px;'");?></td>
        </tr>
        <tr>
             <td>Kota</td><td><?php echo form_input('city',$city);?></td>
@@ -38,17 +38,10 @@
        <tr>
             <td>Telp</td><td><?php echo form_input('phone_number',$phone_number);?></td>
        </tr>
- 	 
-	 <tr><td>
-            <a href="#" class="easyui-linkbutton" 
-                  data-options="iconCls:'icon-save'"
-                  onclick='save_this()'
-                  >Save</a>	 
-	 </td><td>&nbsp;</td></tr>
+
    </table>
-<?
-echo form_close();
-?>
+</form>
+</div>   
 <script type="text/javascript">
     function save_this(){
         if($('#bank_account_number').val()===''){alert('Isi dulu kode bank !');return false;};

@@ -1,9 +1,12 @@
-<h1>SURAT JALAN - [
+<div class="col-sm-6 col-md-8"><h1>SURAT JALAN <div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
-	echo link_button('Print', 'print()','print');		
+	echo link_button('Print', 'print()','print');
+	echo link_button('Add','','add','true',base_url().'index.php/delivery_order/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/delivery_order');		
 	?>
-]</H1>
+</div></H1>
+<div class="thumbnail">	
 <form id="frmDo"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<table>     
@@ -48,6 +51,9 @@
 	     </td>
          
      </tr>
+	 <tr><td>Gudang</td><td><? 
+	     echo form_dropdown('warehouse_code',$warehouse_list,$warehouse_code,'id=warehouse_code');
+	    ?></td></tr>
 	 <tr><td>Tanggal Kirim</td><td><? 
 	     echo form_input('due_date',$due_date,'id=due_date  class="easyui-datetimebox"  ');
 	    ?></td></tr>
@@ -56,8 +62,9 @@
 		?>
 		</td>
        </tr>
+       
 		</table>
-		<h1>SELECT ITEMS</h1>
+		<h5>SELECT ITEMS</h5>
 		<div id='divItem'>
 				<table id="dgItem" class="easyui-datagrid"  
 					data-options="
@@ -69,7 +76,7 @@
 					<thead>
 						<tr>
 							<th data-options="field:'item_number',width:80">Kode Barang</th>
-							<th data-options="field:'description',width:150">Nama Barang</th>
+							<th data-options="field:'description',width:100">Nama Barang</th>
 							<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
 							<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
 							<th data-options="field:'line_number',width:30,align:'right'">Line</th>
@@ -78,7 +85,7 @@
 				</table>
 		</div>
 	   </form>
-    </div>
+</div> 
     
 
 <div id='dlgSelectSo'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"

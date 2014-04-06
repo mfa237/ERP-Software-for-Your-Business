@@ -1,5 +1,17 @@
-<h1>PROSES CREDIT MEMO - HEADER  </H1>
+<div class="col-sm-6 col-md-8">
+	<h1>CREDIT MEMO<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save_db_memo()','save');		
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/purchase_crmemo/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/purchase_crmemo');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">		
 <form id="frmCrDb"  method="post">
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>	
+<input type='hidden' name='trans_type' id='trans_type'	value='Purchase'>	
    <table>
 		<tr>
 		<td>Nomor Bukti</td>
@@ -33,12 +45,9 @@
        </td></tr>
    </table>
 </form>
-<? if($mode=='add'){ ?>
-	<span id='cmdSaveDbMemo'><?=link_button("Save","save_db_memo()","save","false")?></span>
-<? } ?>
 
-<div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
-<h1>DEBIT MEMO - PILIH KODE PERKIRAAN</H1>
+<div id='divItem' >
+<h5>DEBIT MEMO - PILIH KODE PERKIRAAN</H5>
 	<div id='dgItem'>
 		<table>
 			<tr>
@@ -46,13 +55,13 @@
 			</tr>
 			<tr>
 			    <form id="frmItem" method='post' >
-			         <td><input id="account" style='width:80' 
+			         <td><input id="account" style='width:80px' 
 			         	name="account"   class="easyui-validatebox" required="true">
 						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 						onclick="lookup_coa()"></a>
 			         </td>
-			         <td><input id="description" name="description" style='width:280'></td>
-			        <td><input id="amount" name="amount"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
+			         <td><input id="description" name="description" style='width:280px'></td>
+			        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
 			        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
              		   plain='true'	onclick='save_item()'></a>
 					</td>
@@ -63,7 +72,7 @@
 		</table>		
 	</div>
 	<table id="dgItemMemo" class="easyui-datagrid"  		
-		style="width:800px;min-height:800px"
+		style="width:600px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -79,6 +88,7 @@
 			</tr>
 		</thead>
 	</table>
+</div>
 </div>
 <div id="tb" style="height:auto">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
@@ -106,7 +116,7 @@
 					$('#divItem').show('slow');
 					$('#kodecrdb').val(result.kodecrdb);
 					var nomor=$('#kodecrdb').val();
-					$('#cmdSaveDbMemo').hide();
+					$('#mode').val('view');
 					url='<?=base_url()?>index.php/crdb/items/'+nomor+'/json';
 					$('#dgItemMemo').datagrid({url:url});
 					$('#dgItemMemo').datagrid('reload');

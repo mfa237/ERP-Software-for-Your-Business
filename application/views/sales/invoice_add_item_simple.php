@@ -6,19 +6,19 @@
 	</tr>
 	<tr>
 	    <form id="frmItem" method='post' >
-	         <td><input onblur='find()' id="item_number" style='width:80' 
+	         <td><input onblur='find()' id="item_number" style='width:80px' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 				onclick="searchItem()"></a>
 	         </td>
-	         <td><input id="description" name="description" style='width:280'></td>
-	         <td><input id="quantity"  style='width:30'  name="quantity" onblur="hitung()"></td>
-	         <td><input id="unit" name="unit"  style='width:30' ></td>
-	         <td><input id="price" name="price"  style='width:80'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-	        <td><input id="discount" name="discount"  style='width:30'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-	        <td><input id="amount" name="amount"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
+	         <td><input id="description" name="description" style='width:180px'></td>
+	         <td><input id="quantity"  style='width:30px'  name="quantity" onblur="hitung()"></td>
+	         <td><input id="unit" name="unit"  style='width:30px' ></td>
+	         <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+	        <td><input id="discount" name="discount"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+	        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
 	        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-     		   plain='true'	onclick='save_item()'></a>
+     		   plain='true'	onclick='save_item()'>AddItem</a>
 			</td>
 	        <input type='hidden' id='invoice_number_item' name='invoice_number_item'>
 	        <input type='hidden' id='line_number' name='line_number'>
@@ -38,7 +38,7 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
 </div>
 
-<div id='dlgSearchItem'class="easyui-dialog" style="width:400px;height:380px;padding:10px 20px"
+<div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
         closed="true" buttons="#dlg-buttons">
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  

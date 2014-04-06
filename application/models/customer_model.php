@@ -50,12 +50,12 @@ function select_list(){return $this->customer_list();}
             return $ret;
         }
 	function save($data){           
-		$this->db->insert($this->table_name,$data);            
-		return $this->db->insert_id();
+		return $this->db->insert($this->table_name,$data);            
+		//return $this->db->insert_id();
 	}
 	function update($id,$data){
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		return  $this->db->update($this->table_name,$data);
 	}
 	function delete($id){
 		$this->db->where($this->primary_key,$id);
@@ -82,4 +82,13 @@ function select_list(){return $this->customer_list();}
 		}
 		return $data;
 	}
+	function shipto_add($data){           
+		return $this->db->insert("customer_shipto",$data);            
+	}
+	
+	function shipto_del($id){           
+		$this->db->where("id",$id);
+		return $this->db->delete("customer_shipto");
+	}
+		
 }

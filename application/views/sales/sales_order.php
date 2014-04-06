@@ -1,9 +1,17 @@
-<h1>|| SALES ORDER - GENERAL ||
-<?
-	echo link_button("Save","save_so()","save");
-	echo link_button('Print', 'print_so()','print');		
-?>	
-</H1>
+<div class="col-sm-6 col-md-8"><h2>SALES ORDER
+	<div class="thumbnail">
+		<?
+			echo link_button("Save","save_so()","save");
+			echo link_button('Print', 'print_so()','print');
+			echo link_button('Add','','add','true',base_url().'index.php/sales_order/add');		
+			echo link_button('Search','','search','true',base_url().'index.php/sales_order');		
+					
+		?>	
+	</div>
+</h2>	
+
+<div class="thumbnail">
+
 <form id="frmSo"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
    <table>
@@ -46,9 +54,10 @@
    </table>
 </form>
 
+
 <!-- SALES_ORDER_LINEITEMS -->	
-<h1>SALES ORDER - SELECT ITEMS</H1>
-<div id='divItem' style=''>
+<h5>ITEMS</H5>
+<div id='divItem'>
 	<div id='dgItem'>
 		<table>
 			<tr>
@@ -57,19 +66,18 @@
 			</tr>
 			<tr>
 			    <form id="frmItem" method='post' >
-			         <td><input onblur='find()' id="item_number" style='width:80' 
+			         <td><input onblur='find()' id="item_number" style='width:80px' 
 			         	name="item_number"   class="easyui-validatebox" required="true">
-						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-						onclick="searchItem()"></a>
+						<?=link_button('','searchItem()','search');?>
 			         </td>
-			         <td><input id="description" name="description" style='width:280'></td>
-			         <td><input id="quantity"  style='width:30'  name="quantity" onblur="hitung()"></td>
-			         <td><input id="unit" name="unit"  style='width:30' ></td>
-			         <td><input id="price" name="price"  style='width:80'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-			        <td><input id="discount" name="discount"  style='width:30'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-			        <td><input id="amount" name="amount"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
-			        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-             		   plain='true'	onclick='save_item()'></a>
+			         <td><input id="description" name="description" style='width:180px'></td>
+			         <td><input id="quantity"  style='width:20px'  name="quantity" onblur="hitung()"></td>
+			         <td><input id="unit" name="unit"  style='width:30px' ></td>
+			         <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+			        <td><input id="discount" name="discount"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+			        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
+			        <td>
+			        	<?=link_button('Add Item','save_item()','save');?>
 					</td>
 			        <input type='hidden' id='so_number' name='so_number'>
 			        <input type='hidden' id='line_number' name='line_number'>
@@ -80,7 +88,7 @@
 		
 	</div>
 	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
+		style="width:auto;min-height:auto"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -102,7 +110,7 @@
 	</table>
 <!-- END SALES_ORDER_LINEITEMS -->
 	
-	<h1>SALES ORDER - TOTAL</H1>
+	<h5>TOTAL</H5>
 	<div id='divTotal'> 
 				<table>
 					<tr>
@@ -123,7 +131,7 @@
 </div>
 
 
-<h1>SALES ORDER - PAYMENTS</H1>
+<h5>PAYMENTS</H5>
 
 
 <div id="tb" style="height:auto">
@@ -138,7 +146,7 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
 </div>
 
-<div id='dlgSearchItem'class="easyui-dialog" style="width:400px;height:380px;padding:10px 20px"
+<div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;"
         closed="true" buttons="#dlg-buttons">
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  
@@ -156,6 +164,8 @@
 		</table>
     </div>   
 </div>
+
+</DIV></div>
 <script type="text/javascript">
 	var url;	
     function save_so(){

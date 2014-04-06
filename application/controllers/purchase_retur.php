@@ -166,6 +166,8 @@ class Purchase_retur extends CI_Controller {
 		 $data['id']=$id;
 		 $model=$this->purchase_order_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
+		 $data['id']=$id;
+		 $data['purchase_order_number']=$id;
 		 $data['mode']='view';
          $data['message']=$message;
          $data['supplier_list']=$this->supplier_model->select_list();  

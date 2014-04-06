@@ -46,27 +46,32 @@ class Banks extends CI_Controller {
             $this->browse();
 		} else {
 			$data['mode']='add';
-                         $this->template->display_form_input($this->file_view,$data,'');
+            $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
 	function update()
 	{
-	 
 		 $data=$this->set_defaults();
- 
 		 $this->_set_rules();
  		 $id=$this->input->post($this->primary_key);
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
-                        $this->bank_accounts_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+            $this->bank_accounts_model->update($id,$data);
+            $message='Update Success';
+            $this->browse();
 		} else {
 			$message='Error Update';
-         		$this->view($id,$message);		
+     		$this->view($id,$message);		
 		}	  
 	}
-	
+	function save(){
+		$mode=$this->input->post("mode");
+		if($mode=="add"){
+			$this->add();
+		} else {
+			$this->update();
+		}
+	}
 	function view($id,$message=null){
 		 $data['id']=$id;
 		 $model=$this->bank_accounts_model->get_by_id($id)->row();

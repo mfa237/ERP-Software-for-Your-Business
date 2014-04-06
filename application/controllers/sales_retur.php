@@ -21,6 +21,7 @@ class Sales_retur extends CI_Controller {
         $this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('invoice_model');
+		$this->load->model('invoice_lineitems_model');
 		$this->load->model('customer_model');
         $this->load->model('inventory_model');
         $this->load->model('type_of_payment_model');
@@ -141,24 +142,32 @@ class Sales_retur extends CI_Controller {
 	
 	function save()
 	{
-			$this->load->model('invoice_lineitems_model');
-			$this->load->model('invoice_model');
-			$data['invoice_number']=$this->nomor_bukti();
-			$data['invoice_date']=$this->input->post('invoice_date');
-			$data['your_order__']=$this->input->post('your_order__');
-			$data['invoice_type']='R';
-			$data['sold_to_customer']=$this->input->post('sold_to_customer');
-			$data['due_date']=$this->input->post('invoice_date');
-			$data['comments']=$this->input->post('comments');
-			 
+		
+		$mode=$this->input->post('mode');
+		if($mode=="add"){
+	        $id=$this->nomor_bukti();
+		} else {
+			$id=$this->input->post('invoice_number');			
+		}
+		$data['invoice_number']=$id;
+		$data['invoice_date']=$this->input->post('invoice_date');
+		$data['your_order__']=$this->input->post('your_order__');
+		$data['invoice_type']='R';
+		$data['sold_to_customer']=$this->input->post('sold_to_customer');
+		$data['due_date']=$this->input->post('invoice_date');
+		$data['comments']=$this->input->post('comments');
+		$data['warehouse_code']="";
+		if($mode=="add"){
 			$ok=$this->invoice_model->save($data);
-			$this->nomor_bukti(true);
-			$id=$data['invoice_number'];
-			if ($ok){
-				echo json_encode(array('success'=>true,'invoice_number'=>$id));
-			} else {
-				echo json_encode(array('msg'=>'Some errors occured.'));
-			}
+		} else {
+			$ok=$this->invoice_model->update($id,$data);			
+		}
+		if ($ok){
+			if($mode=="add")$this->nomor_bukti(true);
+			echo json_encode(array('success'=>true,'invoice_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
 	}
 	function delete($id){
 		$this->load->model('invoice_model');

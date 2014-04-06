@@ -1,35 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-   <title>Transaksi Penjualan</title>
- </head>
- <body>
- <div>
-   <div>
-	<? if($mode=='add') {
-    	echo "<span id='cmdSave'>";	
-    	echo link_button('Simpan', 'save()','save','false');     
-		echo "</span>";
-	} 
-	?>     
-   	
+<div class="col-sm-6 col-md-8"><h1>RETUR PENJUALAN <div class="thumbnail">
+	<?
+	echo link_button('Save', 'save()','save');		
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/sales_retur/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/sales_retur');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">	
+
    <?php echo validation_errors(); ?>
-   <?php 
-        if($mode=='view') 
-        {
-                echo form_open('invoice/update',"id=myform");
-                $disabled='disable';
-        } else {
-                $disabled='';
-                echo form_open('invoice/add',"id=myform"); 
-        }
-		
-   ?>
+<form id="myform"  method="post">
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+
 <table>
-	<tr><td colspan="6"><h1>RETUR PENJUALAN</h1></td><td></td>
-	</tr>
     <tr>
-    	
      	<td>Pelanggan</td><td><?
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
         ?>
@@ -76,7 +61,9 @@
 <h1>SELECT ITEMS</H1>
 	<div id='dgItem'>
 		<?
-		include_once "retur_items.php"; ?>
+		include_once "invoice_add_item_simple.php"; 
+		?>
+		
 	</div>
     
 	<table id="dg" class="easyui-datagrid"  
@@ -101,7 +88,7 @@
 		</thead>
 	</table>
 </div>
-
+</div>
 <? include_once 'customer_select.php' ?>
 <? include_once 'invoice_select.php' ?>
 
@@ -125,7 +112,7 @@
 					if (result.success){
 						$('#invoice_number').val(result.invoice_number);
 						var invoice=$('#invoice_number').val();
-						$('#cmdSave').hide();
+						$('#mode').val('view');
 						$('#divItem').show('slow');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/invoice/items/'+invoice+'/json'});
 						$('#dg').datagrid('reload');

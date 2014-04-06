@@ -121,7 +121,7 @@ class Invoice extends CI_Controller {
 			$ok=$this->invoice_model->update($id,$data);			
 		}
 		if ($ok){
-			$this->nomor_bukti(true);
+			if($mode=="add")$this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'invoice_number'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));

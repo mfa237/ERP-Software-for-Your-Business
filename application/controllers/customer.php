@@ -12,7 +12,7 @@ class Customer extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		if(!$this->access->is_login())redirect(base_url());
+		if(!$this->access->is_login())header("location:".base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
@@ -22,10 +22,9 @@ class Customer extends CI_Controller {
 
 	}
 	function set_defaults($record=NULL){
-        $data=data_table($this->sql,$record,true); 
+        $data=data_table("select * from customers limit 1",$record,true); 
 		$data['mode']='';
 		$data['message']='';
-        $data['akun_list']=$this->chart_of_accounts_model->select_list();
         $data['termin_list']=$this->type_of_payment_model->select_list();
 		return $data;
 	}
@@ -40,14 +39,34 @@ class Customer extends CI_Controller {
 	function add()
 	{
 		$data=$this->set_defaults();           
-		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-			$this->customer_model->save($data);
-            $this->browse();
+	 	$this->_set_rules();
+		$data['mode']='add';
+        $this->template->display_form_input('sales/customer',$data);
+	}
+	function save(){
+		$data=$this->input->post();
+		$id=$this->input->post("customer_number");
+		$mode=$data["mode"];
+	 	unset($data['mode']);
+		$data['finance_charge_acct']=$this->acc_id($data['finance_charge_acct']);	
+		if($mode=="add"){ 
+			$ok=$this->customer_model->save($data);
 		} else {
-			$data['mode']='add';
-            $this->template->display_form_input('sales/customer',$data);
+			$ok=$this->customer_model->update($id,$data);				
+		}
+		if($ok){
+			echo json_encode(array("success"=>true));
+		} else {
+			echo json_encode(array("msg"=>"Error ".mysql_error()));
+		}
+	}
+	function acc_id($account){
+		$data=explode(" - ", $account);
+		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();
+		if($coa){
+			return $coa->id;
+		} else {
+			return 0;
 		}
 	}
         
@@ -56,14 +75,15 @@ class Customer extends CI_Controller {
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
  		 $id=$this->input->post('customer_number');
+		$data['finance_charge_acct']=$this->acc_id($data['finance_charge_acct']);	
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$this->customer_model->update($id,$data);
-                        $message='Success';
-                        $this->browse();
+            $message='Success';
+            $this->browse();
 		} else {
-                        $message='Error';
-         		$this->view($id,$message);		
+            $message='Error';
+     		$this->view($id,$message);		
 		}
 	}
 	
@@ -73,10 +93,9 @@ class Customer extends CI_Controller {
 		 $data=$this->set_defaults($model);
 		 $data['id']=$id;
 		 $data['mode']='view';
-                 $data['message']=$message;
-        	 $this->template->display_form_input('sales/customer',$data);
-               
-                 
+		 $data['message']=$message;
+		 $data['finance_charge_acct']=account($data['finance_charge_acct']);
+		 $this->template->display_form_input('sales/customer',$data);
 	}
 	 // validation rules
 	function _set_rules(){	
@@ -115,7 +134,7 @@ class Customer extends CI_Controller {
 	}
 	function grafik_saldo(){
 		$phpgraph = $this->load->library('PhpGraph');		
-		$cfg['width'] = 300;
+		$cfg['width'] = 800;
 		$cfg['height'] = 200;
 		$cfg['compare'] = false;
 		$cfg['disable-values']=1;
@@ -135,7 +154,28 @@ class Customer extends CI_Controller {
 		$rs = mysql_query($sql); $result = array();
 		while($row = mysql_fetch_object($rs)){array_push($result, $row);}			 
 		echo json_encode($result);
-		
+	}
+	function list_shipto($search=''){
+		$sql="select *	from customer_shipto 
+		where customer_code='$search'";
+		echo datasource($sql);
+	}
+	function shipto_add($cust){
+		$data=$this->input->post();
+		$data['customer_code']=$cust;
+		if($this->customer_model->shipto_add($data)){
+			echo json_encode(array("success"=>true));
+		} else {
+			echo json_encode(array("msg"=>"Error ".mysql_error()));
+		}
+	}
+	function shipto_del(){
+		$id=$this->input->post('line_number');
+		if($this->customer_model->shipto_del($id)){
+			echo json_encode(array("success"=>true));
+		} else {
+			echo json_encode(array("msg"=>"Error ".mysql_error()));
+		}
 	}
 	
 }

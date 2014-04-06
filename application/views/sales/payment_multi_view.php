@@ -1,7 +1,7 @@
 <form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
-<table>
+<table style="width:600px">
 	<tr>
-		<td colspan='4'><strong><h1>PEMBAYARAN BANYAK FAKTUR</h1></strong></td>
+		<td colspan='4'><strong><h1>PEMBAYARAN FAKTUR</h1></strong></td>
 	</tr>
 	<tr>
 		<td>Nomor Bukti: </td><td><?=$voucher?></td>
@@ -21,10 +21,8 @@
 	<tr>
 		<td>Jumlah Bayar: </td><td><?=$amount_paid;?></td>
 	</tr>
-	 
-</table>
-
-	<table id="dgItems" class="easyui-datagrid"  
+	<tr><td colspan="5">
+	<table id="dgItems" class="easyui-datagrid" 
 		data-options="
 			toolbar: '#tbItems',singleSelect: true,
 			url: '<?=base_url()?>index.php/payment/load_nomor/<?=$voucher?>'
@@ -39,6 +37,9 @@
 			</tr>
 		</thead>
 	</table>
+	 </td></tr>
+</table>
+
 
 </form>
 <script language='javascript'></script>

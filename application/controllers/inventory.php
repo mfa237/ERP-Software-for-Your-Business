@@ -22,10 +22,10 @@ class Inventory extends CI_Controller {
         $this->load->model('supplier_model');
 	}
 	function set_defaults($record=NULL){          
-                $data=data_table('inventory',$record); 
+        $data=data_table('inventory',$record); 
 		$data['mode']='';
 		$data['message']='';
-                $data['akun_list']=$this->chart_of_accounts_model->select_list();
+        $data['akun_list']=$this->chart_of_accounts_model->select_list();
 		$data['supplier_list']=$this->supplier_model->select_list();
 		$data['category_list']=$this->inventory_model->category_list();
 		$data['class_list']=$this->inventory_model->class_list();
@@ -38,45 +38,59 @@ class Inventory extends CI_Controller {
             $this->browse();
 	}
 	function get_posts(){
-                $data=data_table_post('inventory');
+        $data=data_table_post('inventory');
 		return $data;
 	}
 	function add()
 	{
-		 $data=$this->set_defaults();
-		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-			$id=$this->inventory_model->save($data);
-            $data['message']='update success';
-            $data['mode']='view';
-            $this->browse();
-		} else {
-			$data['mode']='add';
-            $this->template->display_form_input($this->file_view,$data,'');
-		}
-        }        
+		$data=$this->set_defaults();
+		$this->_set_rules();
+		$data['mode']='add';
+        $this->template->display_form_input($this->file_view,$data,'');
+   }        
 	function delete($id){
 	 	$this->inventory_model->delete($id);
 	 	$this->browse();
 	}
 
-	function update()
+	function save()
 	{   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
  		 $id=$this->input->post('item_number');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
-            if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
-            if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
-			$this->inventory_model->update($id,$data);
-            $message='Update Success';
-            $this->browse();
+			$mode=$this->input->post("mode");
+			unset($data["mode"]);
+			
+			$data['sales_account']=$this->acc_id($data['sales_account']);
+			$data['inventory_account']=$this->acc_id($data['inventory_account']);
+			$data['cogs_account']=$this->acc_id($data['cogs_account']);
+			$data['tax_account']=$this->acc_id($data['tax_account']);
+			
+			if($mode=="view"){
+				$ok=$this->inventory_model->update($id,$data);			
+			} else {
+				$ok=$this->inventory_model->save($data);
+			}
 		} else {
-			$message='Error Update';
-     		$this->view($id,$message);		
-		}	  
+			$ok=false;
+		}	
+		if ($ok){
+			echo json_encode(array('success'=>true,'item_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>"Ada kesalahan input, cek kode barang atau satuan."));
+		}
+		  
+	}
+	function acc_id($account){
+		$data=explode(" - ", $account);
+		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();
+		if($coa){
+			return $coa->id;
+		} else {
+			return 0;
+		}
 	}
 	
 	function view($id,$message=null){
@@ -85,13 +99,22 @@ class Inventory extends CI_Controller {
 		 $data['id']=$id;
 		 $data['mode']='view';
          $data['message']=$message;
+		 $sql="select q.item_number,i.description,q.gudang,sum(q.qty_masuk)-sum(q.qty_keluar) as quantity 
+   		from qry_kartustock_union q left join inventory i on i.item_number=q.item_number 
+		where q.item_number='$id'   		
+   		group by q.item_number,i.description,q.gudang ";
+		 $data['qty_gudang']=browse_simple($sql);
+		 $data['inventory_account']=account($data['inventory_account']);
+		 $data['sales_account']=account($data['sales_account']);
+		 $data['cogs_account']=account($data['cogs_account']);
+		 $data['tax_account']=account($data['tax_account']);
+		 
          $this->session->set_userdata('_right_menu', 'inventory/inventory_menu');
          $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
 	function _set_rules(){	
-		 $this->form_validation->set_rules('item_number','Item Number', 
-                         'required|trim|callback_exist');
+		 $this->form_validation->set_rules('item_number','Item Number','required|trim|callback_exist');
 		 $this->form_validation->set_rules('description','Description',	 'required');
 		 $this->form_validation->set_rules('class','Class', 'required');
 		 $this->form_validation->set_rules('category','Category', 'required');
@@ -252,4 +275,103 @@ class Inventory extends CI_Controller {
 			$this->load->view($rpt);
 		}
    }
+   function unit_price($id){
+   		$id=htmlspecialchars_decode($id);
+		 $inventory=$this->inventory_model->get_by_id($id)->row();
+		 $data['item_number']=$inventory->item_number;
+		 $data['description']=$inventory->description;
+         $this->template->display_form_input("inventory/unit_price",$data);
+   }   
+   function unit_price_add($id){
+   		$id=htmlspecialchars_decode($id);
+			$this->load->model('inventory_prices_model');
+			$data = $this->input->post(NULL, TRUE); //getallpost			
+			if($data['date_from']==""){unset($data['date_from']);} else {$data['date_from']=date('Y-m-d H:i:s', strtotime($data['date_from']));}
+			if($data['date_to']==""){unset($data['date_to']);} else {$data['date_to']=date('Y-m-d H:i:s', strtotime($data['date_to']));}
+			$data['item_number']=$id;
+			$ok=$this->inventory_prices_model->save($data);
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function delete_price($item_number,$unit_price){
+   		$item_number=htmlspecialchars_decode($item_number);
+   		$unit_price=htmlspecialchars_decode($unit_price);
+		$this->load->model('inventory_prices_model');
+		$ok=$this->inventory_prices_model->delete($item_number,$unit_price);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function assembly($id){
+   		$id=htmlspecialchars_decode($id);
+		 $barang=$this->inventory_model->get_by_id($id)->row();
+		 $data['item_number']=$barang->item_number;
+		 $data['description']=$barang->description;
+         $this->template->display_form_input("inventory/assembly",$data);
+   }   
+   function assembly_add($id){
+   		$id=htmlspecialchars_decode($id);
+			$this->load->model('inventory_assembly_model');
+			$data = $this->input->post(NULL, TRUE); //getallpost			
+			$data['item_number']=$id;
+			$ok=$this->inventory_assembly_model->save($data);
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function assembly_delete($item_number,$kode){
+   		$item_number=htmlspecialchars_decode($item_number);
+   		$kode=htmlspecialchars_decode($kode);
+		$this->load->model('inventory_assembly_model');
+		$ok=$this->inventory_assembly_model->delete($item_number,$kode);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function supplier($id){
+   		$id=htmlspecialchars_decode($id);
+		 $barang=$this->inventory_model->get_by_id($id)->row();
+		 $data['item_number']=$barang->item_number;
+		 $data['description']=$barang->description;
+         $this->template->display_form_input("inventory/supplier",$data);
+   }   
+   function supplier_add($id){
+   		$id=htmlspecialchars_decode($id);
+			$this->load->model('inventory_suppliers_model');
+			$data = $this->input->post(NULL, TRUE); //getallpost			
+			$data['item_number']=$id;
+			$ok=$this->inventory_suppliers_model->save($data);
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function supplier_delete($item_number,$kode){
+   		$item_number=htmlspecialchars_decode($item_number);
+   		$kode=htmlspecialchars_decode($kode);
+		$this->load->model('inventory_suppliers_model');
+		$ok=$this->inventory_suppliers_model->delete($item_number,$kode);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function qty_gudang($item_number){
+   		$item_number=htmlspecialchars_decode($item_number);
+   		$sql="select q.item_number,i.description,q.gudang,sum(q.qty_masuk)-sum(q.qty_keluar) as quantity 
+   		from qry_kartustock_union q left join inventory i on i.item_number=q.item_number 
+		where q.item_number='$item_number'   		
+   		group by q.item_number,i.description,q.gudang ";
+		$this->template->browse_sql($sql);
+   }
+	function do_upload_picture()
+	{
+		$config['upload_path'] = '../../tmp/';
+		$config['allowed_types'] = 'gif|jpg|png';
+		$config['max_size']	= '100';
+		$config['max_width']  = '1024';
+		$config['max_height']  = '768';
+
+		$this->load->library('upload', $config);
+
+		if ( ! $this->upload->do_upload())
+		{
+			$error = array('error' => $this->upload->display_errors());
+
+		    echo json_encode($error);
+		}
+		else
+		{
+			$data = array('success'=>'Sukses','upload_data' => $this->upload->data());
+
+			echo json_encode($data);
+		}
+	}
 }

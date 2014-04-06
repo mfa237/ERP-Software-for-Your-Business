@@ -137,6 +137,8 @@ class Purchase_order extends CI_Controller {
 		 $data['id']=$id;
 		 $model=$this->purchase_order_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
+		 $data['purchase_order_number']=$id;
+		 $data['id']=$id;
 		 $data['mode']='view';
          $data['message']=$message;
          $data['supplier_list']=$this->supplier_model->select_list();  

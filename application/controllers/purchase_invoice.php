@@ -140,6 +140,8 @@ class Purchase_invoice extends CI_Controller {
 		 $this->purchase_order_model->recalc($id);
 		 $model=$this->purchase_order_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
+		 $data['id']=$id;
+		 $data['purchase_order_number']=$id;
 		 $data['mode']='view';
          $data['message']=$message;
          $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
@@ -442,15 +444,17 @@ class Purchase_invoice extends CI_Controller {
 				$data='';
 				foreach($query->result() as $row){
 					$saldo=$this->purchase_order_model->recalc($row->purchase_order_number);
-					$data[$i][]=$row->purchase_order_number;
-					$data[$i][]=$row->po_date;
-					$data[$i][]=$row->due_date;
-					$data[$i][]=$row->terms;
-					$data[$i][]=$row->amount;
-					$data[$i][]=$saldo;
-					$data[$i][]=form_input('bayar[]');
-					$data[$i][]=form_hidden('faktur[]',$row->purchase_order_number);
-					$i++;
+					if($saldo!=0){
+						$data[$i][]=$row->purchase_order_number;
+						$data[$i][]=$row->po_date;
+						$data[$i][]=$row->due_date;
+						$data[$i][]=$row->terms;
+						$data[$i][]=number_format($row->amount);
+						$data[$i][]=number_format($saldo);
+						$data[$i][]=form_input('bayar[]');
+						$data[$i][]=form_hidden('faktur[]',$row->purchase_order_number);
+						$i++;
+					}
 				}
 				
 				$this->load->library('browse');

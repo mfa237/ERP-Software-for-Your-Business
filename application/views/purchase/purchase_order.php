@@ -1,11 +1,16 @@
-<h1>|| PURCHASE ORDER  || 
+<div class="col-sm-6 col-md-8"><h1>PURCHASE ORDER <div class="thumbnail">
 	<?
-	echo link_button("Save","save_po()","save");
-	echo link_button("Print","print_po()","print");	
-	?>	
-</H1>
+	echo link_button('Save', 'save_po()','save');		
+	echo link_button('Print', 'print_po()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/purchase_order/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/purchase_order');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">	
 <form id='frmPo' method="post">
-	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+<?php echo validation_errors(); ?>
    <table>
 		<tr>
 			<td>Nomor PO</td><td><?php
@@ -57,10 +62,10 @@
 	 </td><td>&nbsp;</td></tr>
    </table>
 </form>
-<H1></H1>
+</div> 
 <!-- PURCASE_ORDER_LINEITEMS -->	
-<div id='divItem' style='display:<?=$mode=="add"?"none":""?>'>
-	<h1>PURCHASE ORDER - SELECT ITEMS</H1>
+<div id='divItem'>
+	<h5>ITEMS</H5>
 	<div id='dgItem'>
 		<? include_once "purchase_order_items.php"; ?>
 	</div>
@@ -86,7 +91,7 @@
 		</thead>
 	</table>
 <!-- END PURCHASE_ORDER_LINEITEMS -->
-	<h1>PURCHASE ORDER - TOTAL</H1>
+	<h5>TOTAL</H5>
 	<div id='divTotal'> 
 		<table>
 			<tr>

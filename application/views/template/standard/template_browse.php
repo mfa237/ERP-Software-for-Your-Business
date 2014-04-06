@@ -1,3 +1,4 @@
+
 <?
 $width=isset($width)?$width." px":"auto";
 $height=isset($height)?$height." px":"auto";
@@ -29,7 +30,7 @@ $table_head.="</tr></thead>";
       <?=$table_head?>
       
 </table>
-         
+       
  <div id="tb_<?=$controller?>" style="padding:5px;height:auto">
 		<div>
 			<?=link_button("Add", "addnew_$controller()","add","true");?>
@@ -53,10 +54,14 @@ $table_head.="</tr></thead>";
 			}
 			
 			?>
-			<a href="#" onclick="cari_<?=$controller?>();return false;" class="easyui-linkbutton" iconCls="icon-search">Search</a>
+				<?=link_button('Cari','cari_'.$controller."();return false;",'search');?>
 			</form>
 		</div>
 </div>
+
+</div>
+
+
 <script type="text/javascript">
     function pagerFilter_<?=$controller?>(data){
             if (typeof data.length == 'number' && typeof data.splice == 'function'){	// is array
@@ -96,7 +101,7 @@ $table_head.="</tr></thead>";
         var row = $('#dg_<?=$controller?>').datagrid('getSelected');
         if (row){
             xurl=CI_ROOT+CI_CONTROL+'/view/'+row[FIELD_KEY];
-        	window.open(xurl,"_self");
+	        window.open(xurl,"_self");
         }
     }
     function del_row_<?=$controller?>(){
@@ -123,5 +128,5 @@ $table_head.="</tr></thead>";
         $('#dg_<?=$controller?>').datagrid({url:xurl});
         $('#dg_<?=$controller?>').datagrid('reload');
     }
-    
+
 </script>

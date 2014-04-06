@@ -1,11 +1,15 @@
-<h1>FAKTUR PENJUALAN - [
+<div class="col-sm-6 col-md-8"><h1>FAKTUR PENJUALAN  <div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/invoice/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/invoice');		
+	
 	?>
-]</H1>
+</div></H1>
+<div class="thumbnail">	
 <form id="frmInvoice"  method="post">
-	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <table>
     <tr>
      	<td>Pelanggan</td><td><?
@@ -59,15 +63,15 @@
     </tr>
 	</table>	
 </form>
-
-<div id='divItem' style='display:<?=$mode=='add'?"none":"";?>'>
-<h1>SELECT ITEMS</H1>
+    
+<div id='divItem' >
+<h5>SELECT ITEMS</H5>
 	<div id='dgItem'>
 		<? include_once "invoice_add_item_simple.php"; ?>
 	</div>
     
 	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
+		style="width:600px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -76,19 +80,19 @@
 		">
 		<thead>
 			<tr>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
-				<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
-				<th data-options="field:'amount',width:60,align:'right',editor:'numberbox'">Jumlah</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+				<th data-options="field:'item_number'">Kode Barang</th>
+				<th data-options="field:'description'">Nama Barang</th>
+				<th data-options="field:'quantity',align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+				<th data-options="field:'unit',align:'left',editor:'text'">Satuan</th>
+				<th data-options="field:'price',align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
+				<th data-options="field:'discount',editor:'numberbox'">Disc%</th>
+				<th data-options="field:'amount',align:'right',editor:'numberbox'">Jumlah</th>
+				<th data-options="field:'line_number',align:'right'">Line</th>
 			</tr>
 		</thead>
 	</table>
 	
-			<h1>INVOICE - TOTAL</H1>
+			<h5>INVOICE - TOTAL</H5>
 			<div id='divTotal'> 
 				<table>
 					<tr>
@@ -117,12 +121,15 @@
 </div>
 
 <div id='divPay' style='display:none'>
-<h1>PAYMENTS</H1>
+<h5>PAYMENTS</H5>
 <?
 	include_once "payment_list.php";
 ?>
 </div>
 <? include_once 'customer_select.php' ?>
+
+
+</div> 
 
  <script language='javascript'>
 	var url;	

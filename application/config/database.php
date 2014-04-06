@@ -5,7 +5,7 @@
 	$db['default']['hostname'] = 'localhost';
 	$db['default']['username'] = 'root';
  	$db['default']['password'] = 'simak';
-	$db['default']['database'] = 'maxon22222';
+	$db['default']['database'] = 'simak';
 	$db['default']['dbdriver'] = 'mysql';
 	$db['default']['dbprefix'] = '';
 	$db['default']['pconnect'] = TRUE;

@@ -1,8 +1,16 @@
+<div class="col-sm-6 col-md-8"><h1>PEMBAYARAN HUTANG<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save_pay()','save');		
+	echo link_button('Print', 'print_pay()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/payables_payments/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/payables_payments');		
+	
+	?>
+</div></H1>
+<div class="thumbnail">	
+
 <form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
 <table>
-	<tr>
-		<td colspan='4'><strong><h1>PEMBAYARAN BANYAK FAKTUR</h1></strong></td>
-	</tr>
 	<tr>
 		<td>Nomor Bukti: </td><td><?=$voucher?></td>
 	</tr>
@@ -34,12 +42,22 @@
 				<th data-options="field:'purchase_order_number'">Nomor Faktur</th>
 				<th data-options="field:'po_date'">Tanggal Faktur</th>
 				<th data-options="field:'date_paid'">Tanggal Bayar</th>
-				<th data-options="field:'amount'">Jumlah Faktur</th>
-				<th data-options="field:'amount_paid'">Jumlah Bayar</th>
+				<th data-options="field:'amount', align:'right',editor:'numberbox',
+				formatter: function(value,row,index){
+					return number_format(value,2,'.',',');
+				}">Jumlah Faktur</th>
+				<th data-options="field:'amount_paid', align:'right',editor:'numberbox',
+				formatter: function(value,row,index){
+					return number_format(value,2,'.',',');
+				}">Jumlah Bayar</th>
 			</tr>
 		</thead>
 	</table>
 
 </form>
-<script language='javascript'></script>
+
+</div>
+<script language='javascript'>
+
+</script>
  	

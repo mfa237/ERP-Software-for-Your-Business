@@ -18,9 +18,13 @@ class CrDb extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('crdb_model');
 	}
-	function nomor_bukti($add=false)
+	function nomor_bukti($add=false,$type="")
 	{
+		if($type==""){
 		$key="CrDB Numbering";
+		} else {
+			$key=$type." CrDB Numbering";
+		}
 		if($add){
 		  	$this->sysvar->autonumber_inc($key);
 		} else {			
@@ -56,17 +60,30 @@ class CrDb extends CI_Controller {
 	function save()
 	{
 		$invoice_number=$this->input->post('docnumber');
+		$mode=$this->input->post('mode');
+		$type="";
+		if($this->input->post('trans_type'))$type=$this->input->post('trans_type');
 		if($invoice_number)
 		{
-			$id=$this->nomor_bukti();
+			if($mode=="add"){
+		        $id=$this->nomor_bukti(false,$type);
+			} else {
+				$id=$this->input->post('kodecrdb');			
+			}
 			$data['kodecrdb']=$id;
 			$data['tanggal']=$this->input->post('tanggal');
 			$data['docnumber']=$invoice_number;
 			$data['amount']=$this->input->post('amount');
+			if($data['amount']=="")$data["amount"]=0;
 			$data['keterangan']=$this->input->post('keterangan');
 			$data['transtype']=$this->input->post('transtype');
-			if ($this->crdb_model->save($data)){
-				$this->nomor_bukti(true);
+			if($mode=="add"){
+				$ok=$this->crdb_model->save($data);
+			} else {
+				$ok=$this->crdb_model->update($id,$data);
+			}
+			if ($ok){
+				if($mode=="add")$this->nomor_bukti(true,$type);
 				echo json_encode(array('success'=>true,'kodecrdb'=>$id));
 			} else {
 				echo json_encode(array('msg'=>'Some errors occured.'));

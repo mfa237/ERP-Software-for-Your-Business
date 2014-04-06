@@ -1,7 +1,7 @@
 <form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
-<table style="width:90%">
+<table style="width:600px">
 	<tr>
-		<td colspan=4><strong><h1>PROSES PEMBAYARAN BANYAK FAKTUR</h1></strong></td>
+		<td colspan=4><strong><h1>PEMBAYARAN FAKTUR</h1></strong></td>
 	</tr>
 	<tr>
 		<td>Rekening: </td><td><?=form_dropdown('how_paid_acct_id',$account_list,$how_paid_acct_id,"id=how_paid_acct_id");?></td>
@@ -27,8 +27,7 @@
 			<div id="divItem" style="display:none">
 				<div id="divItemTop"></div>
 				<div id="divItemBtm">
-					<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" 
-					onclick="process();">Proses</a>
+					<?=link_button('Proses','process()','save')?>
 				</div>
 			</div>
 		</td>

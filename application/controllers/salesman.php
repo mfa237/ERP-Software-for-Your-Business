@@ -73,7 +73,14 @@ class Salesman extends CI_Controller {
                         $this->view($id,$message);		
 		}	  
 	}
-	
+	function save(){
+		$mode=$this->input->post('mode');
+		if($mode=="add"){
+			$this->add();
+		} else {
+			$this->update();
+		}
+	}
 	function view($id,$message=null){
 		 $data['id']=$id;
 		 $model=$this->salesman_model->get_by_id($id)->row();

@@ -63,7 +63,14 @@ class Coa extends CI_Controller {
 	        $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
-        
+    function save(){
+    	$mode=$this->input->post('mode');
+		if($mode=="add"){
+			$this->add();
+		} else {
+			$this->update();
+		}
+    }    
 	function set_defaults($record=NULL){
 		$data['mode']='';
 		$data['message']='';

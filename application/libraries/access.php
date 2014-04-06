@@ -67,10 +67,10 @@ class Access
     function print_info(){
     	echo "<img src='".base_url()."images/administrator.png'
     	 width='30' height='20' align='left'>"; 
-        echo 'Selamant Datang: '.$this->username;
+        echo ' Welcome [<strong>'.$this->username.'</strong>]';
 		echo '<a href="'.base_url().'index.php/login/logout"
 		class="easyui-linkbutton" style="color:white"
-		data-options="iconCls:\'icon-help\',
+		data-options="iconCls:\'icon-no\',
 		plain:true">Logout</a>';
 //            .'<br/>CID: '.$this->cid; 
     }

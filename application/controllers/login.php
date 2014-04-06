@@ -6,33 +6,15 @@ class Login extends CI_Controller {
  function __construct()
  {
    parent::__construct();
-    $this->load->library('javascript');
     $this->load->library('template');
     $this->load->helper('form');
    $this->load->model('user','',TRUE);
    $this->load->library('form_validation');
 
-
-	$this->library_src=$this->jquery->script(base_url().'js/jquery/jquery-1.8.0.min.js',true);
-    $this->library_src.=$this->jquery->script(base_url().'js/jquery-ui/jquery.easyui.min.js',true);
-    $this->library_src.=$this->jquery->script(base_url().'js/lib.js',true);
-	
-    $this->script_head=$this->jquery->_compile();
-	$this->script_head.='
-	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/default/easyui.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/icon.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/demo.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'/themes/standard/style.css">"
-	';
-
-
-
-
  }
 
  function index() {
  	// cek file maxon_installed.php
- 	
 	$filename="./application/config/maxon_installed.php";
 	$handle = fopen($filename, "r");
 	$contents = fread($handle, filesize($filename));
@@ -41,27 +23,29 @@ class Login extends CI_Controller {
  		header("location:install");
 		exit;
  	} 	
-    $data['message']='';
-	$user_id = $this->input->post('user_id');
-	if($user_id) {
+	if($this->access->is_login()){
+		$this->welcome();		
+	} else {
+		$data['message']='';
+		$this->template->display_single('login_view',$data);
+	}
+ }
+function verify(){
 	   $this->form_validation->set_rules('user_id', 'User Id', 'trim|required|xss_clean');
 	   $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|callback_check_database');
 	   if($this->form_validation->run()) {
-			$data=$this->session->userdata('logged_in');
-		    $data['message']='welcome';
-		    $data['_content']='';
-		  	$data['library_src']=$this->library_src;
-		  	$data['script_head']=$this->script_head;
-		    $this->template->display('welcome_message',$data);
-			return true;
+			echo json_encode(array('success'=>true));
 	   } else {
-	   		$data['message']='<div style="color:red">User atau password salah !</div>';
+	   		echo json_encode(array('msg'=>'User atau password salah !'));
 	   }
-	}
-  $data['library_src']=$this->library_src;
-  $data['script_head']=$this->script_head;
-  $this->load->view('login_view',$data);
- }
+}
+function welcome(){
+		$data=$this->session->userdata('logged_in');
+	    $data['message']='welcome';
+	    $data['_content']='';
+	    $this->template->display('welcome_message',$data);
+}
+	
  function logout(){
  	$this->session->set_userdata('_left_menu','');
     $this->session->set_userdata('_right_menu','');

@@ -64,7 +64,14 @@ class Type_of_payment extends CI_Controller {
          	$this->view($id,$message);		
 		}	  
 	}
-	
+	function save(){
+		$mode=$this->input->post('mode');
+		if($mode=="add"){
+			$this->add();
+		} else {
+			$this->update();
+		}
+	}	
 	function view($id,$message=null){
 		 $id=urldecode($id);
 		 $data['id']=$id;

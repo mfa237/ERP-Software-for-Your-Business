@@ -7,7 +7,7 @@ class Login extends CI_Controller {
  {
    parent::__construct();
     $this->load->library('template');
-    $this->load->helper('form');
+ $this->load->helper(array('url','form','mylib_helper'));
    $this->load->model('user','',TRUE);
    $this->load->library('form_validation');
 
@@ -15,6 +15,7 @@ class Login extends CI_Controller {
 
  function index() {
  	// cek file maxon_installed.php
+ 	
 	$filename="./application/config/maxon_installed.php";
 	$handle = fopen($filename, "r");
 	$contents = fread($handle, filesize($filename));
@@ -30,6 +31,7 @@ class Login extends CI_Controller {
 		$this->template->display_single('login_view',$data);
 	}
  }
+ 
 function verify(){
 	   $this->form_validation->set_rules('user_id', 'User Id', 'trim|required|xss_clean');
 	   $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|callback_check_database');
@@ -43,6 +45,8 @@ function welcome(){
 		$data=$this->session->userdata('logged_in');
 	    $data['message']='welcome';
 	    $data['_content']='';
+		$data['visible_right']='';
+		$data['ajaxed']=false;
 	    $this->template->display('welcome_message',$data);
 }
 	

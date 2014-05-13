@@ -56,6 +56,7 @@ class Invoice extends CI_Controller {
 		$data['invoice_date']= date("Y-m-d");
 		if($record==NULL)$data['invoice_number']=$this->nomor_bukti();
         $data['invoice_type']='I';
+		 $data['summary_info']='';
 		return $data;
 	}
 	function index()
@@ -227,6 +228,7 @@ class Invoice extends CI_Controller {
 		 
 		$data['salesman_list']=$this->salesman_model->select_list();
         $data['payment_terms_list']=$this->type_of_payment_model->select_list();
+		 $data['summary_info']=$this->summary($id);
 			
          $menu='sales/menu_invoice';
 		 $this->session->set_userdata('_right_menu',$menu);
@@ -291,7 +293,44 @@ class Invoice extends CI_Controller {
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
+	function amount_paid($faktur){return $this->invoice_model->paid_amont($faktur);}
+	function amount_retur($faktur){return $this->invoice_model->retur_amount($faktur);}
+	function amount_crdb($faktur){return $this->invoice_model->crdb_amount($faktur);}
+	
 	function delete($id){
+		$this->load->model("periode_model");
+		$this->load->model("invoice_model");
+		$q=$this->invoice_model->get_by_id($id);
+		if($this->periode_model->closed($q->row()->invoice_date)){
+				$message="Periode sudah ditutup tidak bisa dihapus !";
+				$this->view($id,$message);
+				return false;
+		}
+		$this->load->model('jurnal_model');
+		 
+		if($this->jurnal_model->get_by_gl_id($id)->row()) {
+			$message="Sudah dijurnal tidak bisa dihapus !";
+			$this->view($id,$message);
+			return false;
+		}
+		
+		$cnt_pay=$this->db->query("select count(1) as cnt from payments where invoice_number='$id'")->row()->cnt;
+		if($cnt_pay){
+			$message="Faktur ini sudah ada pembayaran tidak bisa dihapus !";
+			$this->view($id,$message);
+			return false;
+		}
+
+		if ($this->amount_retur($id)>0){
+			$message="Faktur ini sudah ada retur tidak bisa dihapus !";
+			$this->view($id,$message);
+			return false;
+		}
+		if ($this->amount_crdb($id)>0){
+			$message="Faktur ini sudah ada credit memo tidak bisa dihapus !";
+			$this->view($id,$message);
+			return false;
+		}
 	 	$this->invoice_model->delete($id);
         $this->browse();
 	}
@@ -379,6 +418,37 @@ class Invoice extends CI_Controller {
 			}
 		}
 	}
+	function invoice_not_paid($customer_number){
+
+		$this->load->model('invoice_model');
+
+		$sql="select invoice_number,invoice_date,due_date,amount,payment_terms 
+		from invoice
+		where invoice_type='I' and (paid=false or isnull(paid))
+		and sold_to_customer='$customer_number'";
+ 
+		$query=$this->db->query($sql);
+		$i=0;
+		$rows[0]='';
+		if($query){ 
+			foreach($query->result_array() as $row){
+				$nomor=$row['invoice_number'];
+				$saldo=$this->invoice_model->recalc($nomor);
+				if($saldo!=0){
+					$row['amount']=number_format($row['amount']);
+					$row['saldo']=number_format($saldo);
+					$row['bayar']=form_input("bayar[]","","style='width:150px'");
+					$row['invoice_number']=$nomor.form_hidden("faktur[]",$nomor);
+					$rows[$i++]=$row;
+				}
+			};
+		}
+		$data['total']=$i;
+		$data['rows']=$rows;
+					
+		echo json_encode($data);
+	}
+		
 	function payment($cmd,$faktur){
 		//echo "cmd=".$cmd." faktur=".$faktur;
 		if($cmd=="list"){
@@ -397,7 +467,7 @@ class Invoice extends CI_Controller {
 		}
 			
 	}
-	function retur($cmd,$faktur){
+	function returx($cmd,$faktur){
 		if($cmd=="list"){
 	        $sql="select i.invoice_number as no_retur,i.invoice_date as tanggal,il.item_number,il.description,
 	        il.quantity,il.unit,il.line_number
@@ -413,6 +483,13 @@ class Invoice extends CI_Controller {
 			";
 			echo $btn.$table;
 		}
+	}
+	function retur($faktur) {
+		$sql="select i.invoice_number,invoice_date,item_number,description,quantity,unit,price,i.amount,il.warehouse_code 
+		from invoice i left join invoice_lineitems il on il.invoice_number=i.invoice_number where invoice_type='R'
+		and i.your_order__='$faktur' 
+		order by i.invoice_number,invoice_date";
+		echo datasource($sql);
 	}
 	function crdb($cmd,$faktur){
 		if($cmd=="list"){
@@ -437,24 +514,17 @@ class Invoice extends CI_Controller {
 		//echo "cmd=".$cmd." faktur=".$faktur;	
 		$this->load->model('invoice_model');
 		$this->invoice_model->recalc($faktur);
-		echo "<table><tr><td>Invoice Amount: </td><td>".number_format($this->invoice_model->amount)."</td></tr>"
+		return "<table><tr><td>Invoice Amount: </td><td>".number_format($this->invoice_model->amount)."</td></tr>"
 			."<tr><td>Payment Amount: </td><td>".number_format($this->invoice_model->amount_paid)."</td></tr>"
 			."<tr><td>Retur Amount: </td><td>".number_format($this->invoice_model->retur_amount)."</td></tr>"
 			."<tr><td>CrDb Amount: </td><td>".number_format($this->invoice_model->crdb_amount)."</td></tr>"
 			."<tr><td>Balance Amount: </td><td>".number_format($this->invoice_model->saldo)."</td></tr></table>"; 
 	}
-	function grafik_penjualam(){
-		$phpgraph = $this->load->library('PhpGraph');		
-		$cfg['width'] = 300;
-		$cfg['height'] = 200;
-		$cfg['compare'] = false;
-		$cfg['disable-values']=1;
-		$chart_type='vertical-line-graph';
-		$data=$this->trend_penjualan();
-		$file="tmp/".$chart_type.".png";
-		$this->phpgraph->create_graph($cfg, $data,$chart_type,'Trend Penjualan',$file);
-		echo '<img src="'.base_url().'/'.$file.'"/>';
-		echo '*Display only this year';
+	function grafik_penjualan(){
+		header('Content-type: application/json');
+		$data['label']="Sales By Month";
+		$data['data']=$this->trend_penjualan();
+		echo json_encode($data);
 	}
 	function trend_penjualan()
 	{
@@ -466,14 +536,14 @@ class Invoice extends CI_Controller {
 		order by p.invoice_date asc
 		limit 0,10";
 		$query=$this->db->query($sql);
-		$data[0]=0;
+//		$data[0]=0;
 		foreach($query->result() as $row){
 			$prd=$row->prd;
 			if($prd=="")$prd="00-00";
 			$amount=$row->sum_amount;
 			if($amount==null)$amount=0;
 			if($amount>0)$amount=round($amount/1000);
-			$data[$prd]=$amount;
+			$data[]=array(substr($prd,0,10),$amount);
 		}
 		return $data;
 	}
@@ -509,10 +579,11 @@ class Invoice extends CI_Controller {
 	}
 	function items($nomor,$type='')
 	{
-            $sql="select p.item_number,i.description,p.quantity 
-            ,p.unit,p.price,p.discount,p.amount,p.line_number
+            $sql="select p.item_number,i.description,p.quantity,p.cost 
+            ,p.unit,p.price,p.discount,p.amount,p.line_number,p.revenue_acct_id,coa.account,coa.account_description
             from invoice_lineitems p
             left join inventory i on i.item_number=p.item_number
+			left join chart_of_accounts coa on coa.id=p.revenue_acct_id
             where invoice_number='$nomor'";
 			 
 			echo datasource($sql);
@@ -545,6 +616,41 @@ class Invoice extends CI_Controller {
 	 
 		echo datasource($s);
 	}
+	function list_item($faktur) {
+		$s="select item_number,description,quantity,unit 
+		from invoice_lineitems 
+		where invoice_number='$faktur'";
+		echo datasource($s);
+	}
+	function unposting($nomor) {
+		$message=$this->invoice_model->unposting($nomor);		
+		$this->view($nomor);
+	}
+	function posting($nomor)
+	{
+		$message=$this->invoice_model->posting($nomor);
+		$this->view($nomor);
+	}
+	function find($nomor){
+		$this->load->model('invoice_model');
+		$saldo=$this->invoice_model->recalc($nomor);
+		$query=$this->invoice_model->get_by_id($nomor)->row();
+		$data['invoice_date']=$query->invoice_date;
+		$data['amount']=number_format($query->amount);
+		$data['saldo']=number_format($saldo);
+		
+		echo json_encode($data);
+		
+	}
+		function list_crdb($faktur)
+		{
+			$sql="select kodecrdb as nomor,tanggal, amount 
+                from crdb_memo i
+                where docnumber='$faktur'";
+			echo datasource($sql);				
+			
+		}
+
 		
 }	
 	

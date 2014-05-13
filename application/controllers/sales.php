@@ -42,5 +42,8 @@ class Sales extends CI_Controller {
 			$this->load->view($rpt);
 		}
    }
+	function reports(){
+		$this->template->display('sales/menu_reports');
+	}
 }
 ?>

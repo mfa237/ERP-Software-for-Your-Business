@@ -65,6 +65,23 @@ function __construct(){
 			if($item=="")$item="Unknown";
 			$qty=$row->sum_amount;
 			if($qty==null)$qty=0;
+			$data[]=array(substr($item,0,10),$qty);
+		}
+		return $data;
+	}
+	function saldo_rekening_old()
+	{
+		$sql="select b.bank_account_number,b.bank_name,sum(cw.deposit_amount-cw.payment_amount) as sum_amount 
+		from bank_accounts b left join check_writer cw on cw.account_number=b.bank_account_number
+		group by b.bank_account_number,b.bank_name
+		order by sum(cw.deposit_amount-cw.payment_amount)  desc
+		limit 0,10";
+		$query=$this->db->query($sql);
+		foreach($query->result() as $row){
+			$item=$row->bank_account_number;	//. ' - '.$row->bank_name;
+			if($item=="")$item="Unknown";
+			$qty=$row->sum_amount;
+			if($qty==null)$qty=0;
 			$data[$item]=$qty;
 		}
 		return $data;

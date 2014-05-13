@@ -92,7 +92,9 @@ class Category extends CI_Controller {
 	}
 	function browse($offset=0,$limit=10,$order_column='company',$order_type='asc')
 	{
-        $data['caption']='DAFTAR KELOMPOK BARANG DAN JASA';
+		 
+		
+        $data['caption']='';
 		$data['controller']='category';		
 		$data['fields_caption']=array('Kode','Nama Kelompok Barang/Jasa');
 		$data['fields']=array('kode','category');
@@ -101,6 +103,9 @@ class Category extends CI_Controller {
 		
 		$faa[]=criteria("Nama","sid_nama");
 		$data['criteria']=$faa;
+		
+		$data['_form']=$this->file_view;
+		
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){

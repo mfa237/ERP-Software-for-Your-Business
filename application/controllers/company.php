@@ -167,6 +167,7 @@ class Company extends CI_Controller {
 
 		}	
 		$set=$this->company_model->get_by_id($this->access->cid)->row();
+	 
 		$data['accounts_payable']=account($set->accounts_payable);
 		$data['po_freight']=account($set->po_freight);
 		$data['po_other']=account($set->po_other);
@@ -218,5 +219,39 @@ class Company extends CI_Controller {
 		$data['a']='';
         $this->template->display_form_input('admin/others',$data);		
 	}
+	function department(){
+		$data['caption']="DEPARTMENTS";		
+		$this->template->display("admin/department",$data);
+	}
+   function department_add(){
+		$this->load->model('department_model');
+		$data = $this->input->post(NULL, TRUE); //getallpost			
+		$ok=$this->department_model->save($data);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function department_delete($kode){
+   		$kode=htmlspecialchars_decode($kode);
+		$this->load->model('department_model');
+		$ok=$this->department_model->delete($kode);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+
+	function division(){
+		$data['caption']="DIVISI";		
+		$this->template->display("admin/division",$data);
+	}
+   function division_add(){
+		$this->load->model('division_model');
+		$data = $this->input->post(NULL, TRUE); //getallpost			
+		$ok=$this->division_model->save($data);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function division_delete($kode){
+   		$kode=htmlspecialchars_decode($kode);
+		$this->load->model('division_model');
+		$ok=$this->division_model->delete($kode);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+	
 }
 ?>

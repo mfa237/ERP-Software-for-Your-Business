@@ -51,6 +51,7 @@ class Jobs extends CI_Controller {
 		} else {
 			$data['mode']='add';
 			$data['message']='';
+			$data['modules']='';
             $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}

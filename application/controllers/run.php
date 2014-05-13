@@ -10,24 +10,71 @@ class Run extends CI_Controller {
 		$this->load->library('template');
         $this->load->model('table_model');
 	}
-	function index()
-	{	
-            echo 'Enter table name';
-	}
-        function table($table_name,$field_key='',$field_val=''){
-                 $caption=$table_name;
-                 $offset=1; $limit=50;
-                  
-                     $data['_content']=browse_table($table_name,$field_key,$field_val);
-                     $data['table_name']=$table_name;
-                     $data['field_key']=$field_key;
-                     $data['field_val']=$field_val;
-                     $this->load->view('template/standard/template_browse3',$data);
-//                 $data['table_name']=$table_name;
-//                 $data['field_key']=$field_key;
-//                 $data['field_val']=$field_val;
+	function index(){}
+    function table($table_name,$field_key='',$field_val=''){
+		$sql="select * from $table_name";
+        $query=$this->db->query($sql.' limit 1');
+        $flds=$query->list_fields();
+
+
+        $thead='';$fields_input="";
+        for($i=0;$i<count($flds);$i++){
+            $fld=$flds[$i];
+            $fld=str_replace('_',' ',$fld);
+            $fld=ucfirst($fld);
+            $thead.='<th data-options="field:\''.$flds[$i].'\'">'.$fld.'</th>';
+			
+			if(($i % 5)==0)$fields_input.="<div class='col-md-3'>";
+			$fields_input.="<div class='fitem '><label>" . $fld . ":</label> <input name='" . $flds[$i] . "'></div>";
+			if($i==4 or $i==9  or $i==14)$fields_input.="</div>";
+			
         }
-         function browse($table_name,$field_key='',$field_val=''){
+     	$offset=1; $limit=50;
+		$data['fields']=$thead;
+		$data['fields_input']=$fields_input;
+     	$data['caption']=$table_name;
+	     $data['table_name']=$table_name;
+	     $data['field_key']=$field_key;
+		 $data['field_key_name']=$field_key;
+	     $data['field_val']=$field_val;
+	     $this->template->display_table($data);
+    }
+	function data($table){
+		$sql="select * from ".$table;
+		echo datasource($sql);
+	}
+	function save($table){
+		$data=$this->input->post();
+		$mode=$data['mode'];
+		$id=$data['field_key'];unset($data['field_key']);
+		$field_key=$data['field_key_name'];unset($data['field_key_name']);
+		unset($data['mode']);
+		if($mode!='view'){
+			$ok=$this->db->insert($table,$data);
+		} else {
+			$id=$data[$id];
+			$this->db->where($field_key,$id);
+			$ok=$this->db->update($table,$data);
+		}
+		if($ok){
+			echo json_encode(array('errorMsg'=>""));
+		} else {
+			echo json_encode(array('errorMsg'=>$this->db->_error_message()));	
+		}
+	}
+	function delete($table){
+		$data=$this->input->post();
+		$id=$data['id'];
+		$field_key=$data['field_key_name'];
+		$this->db->where($field_key,$id);
+		$ok=$this->db->delete($table);
+		if($ok){
+			echo json_encode(array("success"=>"Sukses"));
+		} else {
+			echo json_encode(array("errorMsg"=>$this->db->_error_message()));
+		}
+	}
+         function browsex($table_name,$field_key='',$field_val=''){
             $sql="select * from ".$table_name;
            
             if($field_val<>"")$sql.=" where ".$field_key." like '%".$field_val."%'";

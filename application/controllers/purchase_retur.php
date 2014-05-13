@@ -25,6 +25,7 @@ class Purchase_retur extends CI_Controller {
 		$this->load->model('purchase_order_model');
 		$this->load->model('supplier_model');
 		$this->load->model('inventory_model');
+        $this->load->model('shipping_locations_model');
 		 
 	}
 	function set_defaults($record=NULL){
@@ -34,6 +35,9 @@ class Purchase_retur extends CI_Controller {
             if($record==NULL)$data['purchase_order_number']=$this->nomor_bukti();
 			$data['po_date']= date("Y-m-d");
             $data['potype']='R';
+			$data['closed']=0;
+			$data['posted']=0;
+			$data['warehouse_list']=$this->shipping_locations_model->select_list();
 			return $data;
 	}
 	function nomor_bukti($add=false)
@@ -79,7 +83,10 @@ class Purchase_retur extends CI_Controller {
         $data['due_date']=$this->input->post('due_date');
         $data['comments']=$this->input->post('comments');
         $data['po_ref']=$this->input->post('po_ref');
-
+		$data['warehouse_code']=$this->input->post('warehouse_code');
+		
+		$this->purchase_order_model->recalc($id);
+		
 		if($mode=="add"){
 			$ok=$this->purchase_order_model->save($data);
 		} else {
@@ -164,14 +171,23 @@ class Purchase_retur extends CI_Controller {
         
 	function view($id,$message=null){
 		 $data['id']=$id;
-		 $model=$this->purchase_order_model->get_by_id($id)->result_array();
-		 $data=$this->set_defaults($model[0]);
+		 $model=$this->purchase_order_model->get_by_id($id)->row();
+		 $data=$this->set_defaults($model);
 		 $data['id']=$id;
 		 $data['purchase_order_number']=$id;
 		 $data['mode']='view';
          $data['message']=$message;
          $data['supplier_list']=$this->supplier_model->select_list();  
          $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
+
+		 if($model) {
+			$data['posted']=$model->posted;
+		} else {
+			$data['posted']=false;
+		}
+		 $this->load->model('periode_model');
+		 $data['closed']=$this->periode_model->closed($data['po_date']);
+
 		 $this->session->set_userdata('_right_menu','');
          $this->session->set_userdata('purchase_order_number',$id);
          $this->template->display('purchase/retur',$data);                 
@@ -212,8 +228,16 @@ class Purchase_retur extends CI_Controller {
     }	 
   
 	function delete($id){
-	 	$this->purchase_order_model->delete($id);
-        $this->browse();
+		$this->load->model('jurnal_model');
+		if($q=$this->jurnal_model->get_by_gl_id($id)){
+			if($r=$q->row()){
+				$message="Tidak bisa hapus retur [$id] ! Karena sudah dijurnal.";
+				$this->view($id,$message);
+				return false;
+			}
+		}
+		$this->purchase_order_model->delete($id);
+		$this->browse();
 	}
 	function lineitems($nomor){
 		$this->load->model('purchase_order_lineitems_model');
@@ -268,7 +292,80 @@ class Purchase_retur extends CI_Controller {
 			$data['comments']=$invoice->comments;
 			$this->load->view('purchase/print_retur',$data);
         }
-		function add_jurnal($purchase_order_number)	{
+		function posting($nomor)	{
+
+			$this->purchase_order_model->recalc($nomor);
+			$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
+
+			$this->load->model("periode_model");
+			if($this->periode_model->closed($faktur->po_date)){
+				echo "ERR_PERIOD";
+				return false;
+			}
+			$this->load->model('purchase_order_lineitems_model');
+			$this->load->model('jurnal_model');
+			$this->load->model('chart_of_accounts_model');
+			$this->load->model('company_model');
+			$this->load->model('supplier_model');
+			$this->load->model('inventory_model');
 			
+			$date=$faktur->po_date;
+			$supplier=$this->supplier_model->get_by_id($faktur->supplier_number)->row();
+			$akun_hutang=$faktur->account_id;
+			$gl_id=$nomor;
+			$debit=0; $credit=0;$operation="";$source="";
+			// posting hutang / ap
+			if($akun_hutang=="")$akun_hutang=$supplier->supplier_account_number;
+			if($akun_hutang=="")$akun_hutang=$this->company_model->setting("accounts_payable");
+			
+			$account_id=$akun_hutang; $debit=$faktur->amount; $credit=0;
+			$operation="AP Posting"; $source=$faktur->comments;
+			
+			$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
+			
+			// posting persediaan
+			$items=$this->purchase_order_lineitems_model->get_by_nomor($nomor);
+			foreach($items->result() as $row) {
+				$item=$this->inventory_model->get_by_id($row->item_number)->row();
+				
+				$account_id=$item->inventory_account; 
+				if(!$account_id)$account_id=$this->company_model->setting('inventory');
+				
+				$debit=0; $credit=$row->total_price;
+				$operation="Inventory Posting"; $source=$row->description;
+				$custsuppbank=$row->item_number;
+				$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source,'',$custsuppbank);
+				
+			}
+			
+			// validate jurnal
+			if($this->jurnal_model->validate($nomor)) {
+				$data['posted']=true;
+			} else {
+				$data['posted']=false;
+			}
+			$this->purchase_order_model->update($nomor,$data);
+			
+			$this->view($nomor);
 		}
+	function unposting($nomor) {
+		$this->purchase_order_model->recalc($nomor);
+		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
+
+		$this->load->model("periode_model");
+		if($this->periode_model->closed($faktur->po_date)){
+			echo "ERR_PERIOD";
+			return false;
+		}
+		// validate jurnal
+		$this->load->model('jurnal_model');
+		if($this->jurnal_model->del_jurnal($nomor)) {
+			$data['posted']=false;
+		} else {
+			$data['posted']=true;
+		}
+		$this->purchase_order_model->update($nomor,$data);
+		
+		$this->view($nomor);
+	}		
 }

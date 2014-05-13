@@ -37,6 +37,7 @@ class Browse
 	function width($val=700){
 		$this->_width=$val;
 	}
+	
 	function refresh(){
 		
 		$width=$this->_width;
@@ -44,7 +45,6 @@ class Browse
 		$tbl="
 	    <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
 	    <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
-	    <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
 	    <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
 		
 		<table class=\"easyui-datagrid\" style=\"width:auto;height:auto\"

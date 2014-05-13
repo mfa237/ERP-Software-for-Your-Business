@@ -29,6 +29,7 @@ class Supplier extends CI_Controller {
 		where supplier_name like '$search%'
 		order by supplier_name limit 100";
 		echo datasource($sql);
+		//var_dump($sql);
 	}
 
 	function set_defaults($record=NULL){
@@ -39,6 +40,7 @@ class Supplier extends CI_Controller {
         $data['terms_list']=$this->type_of_payment_model->select_list();
 		$data['type_of_vendor_list']=$this->sysvar_model->value_list('type_of_vendor');
 		$data['active']='1';
+		$data['saldo']=0;
 		return $data;
 	}
 	function index()
@@ -97,13 +99,18 @@ class Supplier extends CI_Controller {
 		}	  
 	}
 	
-	function view($id,$message=null){
+	function view($id="",$message=null){
+		if($id=="") { 
+			echo "Supplier Number not found !";
+			return false;
+		}
 		 $model=$this->supplier_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
+		 $data['saldo']=$this->supplier_model->saldo($id);
 		 $data['id']=$id;
 		 $data['mode']='view';
-                 $data['message']=$message;
-                 $this->template->display_form_input($this->file_view,$data,'');
+		 $data['message']=$message;
+		 $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
 	function _set_rules(){	
@@ -131,10 +138,20 @@ class Supplier extends CI_Controller {
         echo datasource($sql);		
     }
 	function delete($id){
-	 	$this->supplier_model->delete($id);
-	 	$this->browse();
+	 	$cnt=$this->supplier_model->delete($id);
+		if($cnt){
+			echo json_encode(array("success"=>false,"msg"=>"Masih ada transaksi tidak bisa dihapus"));
+		} else {
+			echo json_encode(array("success"=>true,"msg"=>"Berhasil hapus supplier ini."));
+		}
 	}
 	function grafik_saldo_hutang(){
+		header('Content-type: application/json');
+		$data['label']="Saldo Hutang";
+		$data['data']=$this->supplier_model->saldo_hutang_summary();
+		echo json_encode($data);
+	}	
+	function grafik_saldo_hutang_old(){
 /* create_graph($konfigurasi_grafik, $data, $tipe_grafik, $judul_pd_grafik, $nama_berkas) */		
 		$phpgraph = $this->load->library('PhpGraph');		
 		$cfg['width'] = 300;
@@ -147,5 +164,37 @@ class Supplier extends CI_Controller {
 		$this->phpgraph->create_graph($cfg, $data,$chart_type,'Saldo Hutang Supplier',$file);
 		echo '<img src="'.base_url().'/'.$file.'"/>';
 		echo '*Display only top ten supplier';
+	}
+	function kartu_hutang($supplier_number)
+	{
+		$date_from= $this->input->get('d1');
+		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to= $this->input->get('d2');
+		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
+		
+		$sql="select sum(amount) as z_amt from qry_kartu_hutang where supplier_number='$supplier_number' 
+			and tanggal<'$date_from'";
+
+        $query=$this->db->query($sql);
+		$awal=$query->row()->z_amt;
+		$rows[0]=array("no_bukti"=>"SALDO","tanggal"=>"SALDO","jenis"=>"SALDO","amount"=>number_format($awal),"saldo"=>number_format($awal));
+
+		$sql="select no_bukti,tanggal,jenis,amount from qry_kartu_hutang where supplier_number='$supplier_number' 
+			and tanggal between '$date_from' and '$date_to' order by tanggal";
+
+        $query=$this->db->query($sql);
+		 
+        $i=1;
+		if($query)foreach($query->result_array() as $row) {
+			$awal=$awal+$row['amount'];
+			$row['amount']=number_format($row['amount']);
+			$row["saldo"]=number_format($awal);
+			$rows[$i++]=$row;
+		};	
+        $data['total']=$i;
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+
 	}
 }

@@ -49,13 +49,25 @@ class Receive_po extends CI_Controller {
 		}
 	}
 	        
-    function add()
+    function add($po_number='')
     {
         $this->_set_rules();
         $data=$this->set_defaults(); 
         $data['mode']='add';
         $data['supplier_number']='';
         $data['date_received']= date("Y-m-d");
+		if($po_number!="")
+		{
+			$this->load->model('purchase_order_model');
+			$po=$this->purchase_order_model->get_by_id($po_number);
+			if($po){
+				$data['supplier_number']=$po->row()->supplier_number;
+				$data['purchase_order_number']=$po_number;
+				
+			} else {
+				$data['message']='Po nomor $po_number tidak ditemukan !';
+			}
+		}
         $this->template->display_form_input($this->file_view,$data,''); 
     }
 	function save(){
@@ -68,25 +80,25 @@ class Receive_po extends CI_Controller {
         $data['due_date']=$this->input->post('due_date');
         $data['comments']=$this->input->post('comments');
 
-		if ($this->purchase_order_model->save($data)){
+	if ($this->purchase_order_model->save($data)){
 			$this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
 	}
-    	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
-            $data['mode']='';
-            $data['message']='';
-            $data['supplier_list']=$this->supplier_model->select_list();
-            $data['warehouse_list']=$this->shipping_locations_model->select_list();
-            if($record==NULL)  {
-                $data['date_received']= date("Y-m-d");
-                $data['receipt_type']='PO';
-                $data['shipment_id']=$this->sysvar->autonumber("Receivement Numbering",0,'!TRM~$00001');
-            } 
-            return $data;
+	function set_defaults($record=NULL){
+		$data=data_table($this->table_name,$record);
+		$data['mode']='';
+		$data['message']='';
+		$data['supplier_list']=$this->supplier_model->select_list();
+		$data['warehouse_list']=$this->shipping_locations_model->select_list();
+		if($record==NULL)  {
+			$data['date_received']= date("Y-m-d");
+			$data['receipt_type']='PO';
+			$data['shipment_id']=$this->sysvar->autonumber("Receivement Numbering",0,'!TRM~$00001');
+		} 
+		return $data;
 	}	
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -178,14 +190,24 @@ class Receive_po extends CI_Controller {
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }
-	 
 	function delete($id){
-	 	$this->inventory_products_model->delete($id);
-	 	$this->browse();
+		$nomor_po=$this->inventory_products_model->get_by_id($id)->row()->purchase_order_number;
+		if($this->inventory_products_model->validate_delete_receive_po($id) and $this->inventory_products_model->delete($id)){
+
+			$this->load->model('purchase_order_model');
+			$this->purchase_order_model->recalc_qty_recvd($nomor_po);
+			
+			echo json_encode(array("success"=>true,"msg"=>"Berhasil hapus nomor ini."));
+		} else {
+			echo json_encode(array("success"=>false,"msg"=>"Gagal hapus nomor ini. <br>Mungkin sudah dibuatkan faktur."));
+		};
 	}	
 	function delete_receive($shipment_id)
         {
+			$nomor_po=$this->inventory_products_model->get_by_id($shipment_id)->row()->purchase_order_number;
             $this->inventory_products_model->delete($shipment_id);
+			$this->load->model('purchase_order_model');
+			$this->purchase_order_model->recalc_qty_recvd($nomor_po);
         }
 	function add_item($recv_id){                
                 $data['shipment_id']=$recv_id;
@@ -197,77 +219,144 @@ class Receive_po extends CI_Controller {
                 echo $this->receive_items($recv_id);
 	}
 	function del_item($id,$recv_id){
-                $this->db->where('id',$id);
+        $this->db->where('id',$id);
 		$this->db->delete('inventory_products');
-                echo $this->receive_items($recv_id);
+        echo $this->receive_items($recv_id);
 	}	
-        function print_bukti($nomor){
-            $rcv=$this->inventory_products_model->get_by_id($nomor)->row();
-			$data['shipment_id']=$rcv->shipment_id;
-			$data['date_received']=$rcv->date_received;
-			$data['warehouse_code']=$rcv->warehouse_code;
-			$data['comments']=$rcv->comments;
-			$data['purchase_order_number']=$rcv->purchase_order_number;
-			$this->load->view('inventory/rpt/print_receive',$data);
-        }
- 
-        function proses()
-        {
-            $this->load->model('inventory_products_model');
-            $this->load->model('inventory_model');
-            $this->load->model('purchase_order_lineitems_model');
-            $this->load->model('purchase_order_model');
+	function print_bukti($nomor){
+		$rcv=$this->inventory_products_model->get_by_id($nomor)->row();
+		$data['shipment_id']=$rcv->shipment_id;
+		$data['date_received']=$rcv->date_received;
+		$data['warehouse_code']=$rcv->warehouse_code;
+		$data['comments']=$rcv->comments;
+		$data['purchase_order_number']=$rcv->purchase_order_number;
+		$this->load->view('inventory/rpt/print_receive',$data);
+	}
 
-			$po_number=$this->input->post('purchase_order_number');
-			$po=$this->purchase_order_model->get_by_id($po_number)->row();
-			
-            $data['purchase_order_number']=$po_number;
-            $data['shipment_id']=$this->nomor_bukti();
-			
-            $data['supplier_number']=$po->supplier_number;
-            $data['date_received']=$this->input->post('date_received');
-            $data['warehouse_code']=$this->input->post('warehouse_code');
-            $data['comments']=$this->input->post('comments');
-            $data['receipt_by']=$this->input->post('receipt_by');
-            $data['receipt_type']='PO';
-            
-            $qty=$this->input->post('qty');
-            $line=$this->input->post('line');
-            //var_dump(count($qty));
-            for($i=0;$i<count($qty);$i++){
-                if($qty[$i]>0){
-                    $poline=$this->purchase_order_lineitems_model->get_by_id($line[$i])->row();
-                    $itemno=$poline->item_number;
-                    $stock=$this->inventory_model->get_by_id($itemno)->row();
-					
-                    $data['item_number']=$stock->item_number;
-                    $data['cost']=$stock->cost;
-                    $data['quantity_received']=$qty[$i];
-                    $data['unit']=$stock->unit_of_measure;
-                    $data['total_amount']=$data['quantity_received']*$data['cost'];
-                    $this->inventory_products_model->save($data);
-					$this->purchase_order_lineitems_model->update_qty_received($line[$i],$qty[$i]);
-                }
-            }
-			$this->purchase_order_model->update_received($po_number);
-			$this->nomor_bukti(true);
-            header('location: '.base_url().'index.php/receive_po/view/'.$data['shipment_id']);
-        }
-        function add_with_po($purchase_order_number)
-        {
-            $this->load->model('purchase_order_model');
-            $this->load->model('purchase_order_lineitems_model');
-            $data=$this->set_defaults(); 
-            $data['message']='update error';
-            $data['mode']='add';
-            $data['purchase_order_number']=$purchase_order_number;
-            $po=$this->purchase_order_model->get_by_id($purchase_order_number)->row();
-            $data['supplier_number']=$po->supplier_number;
-            $data['supplier_info']=$this->supplier_model->info($po->supplier_number);
-            $data['po_item']=$this->purchase_order_lineitems_model->lineitems($purchase_order_number);
+	function proses()
+	{
+		$this->load->model('inventory_products_model');
+		$this->load->model('inventory_model');
+		$this->load->model('purchase_order_lineitems_model');
+		$this->load->model('purchase_order_model');
 
-            $this->template->display_form_input('inventory/receive_po_number',$data,''); 
-            
-        }
-        
+		$po_number=$this->input->post('purchase_order_number');
+		$po=$this->purchase_order_model->get_by_id($po_number)->row();
+		
+		$data['purchase_order_number']=$po_number;
+		$data['shipment_id']=$this->nomor_bukti();
+		
+		$data['supplier_number']=$po->supplier_number;
+		$data['date_received']=$this->input->post('date_received');
+		$data['warehouse_code']=$this->input->post('warehouse_code');
+		$data['comments']=$this->input->post('comments');
+		$data['receipt_by']=$this->input->post('receipt_by');
+		$data['receipt_type']='PO';
+		
+		$qty=$this->input->post('qty');
+		$line=$this->input->post('line');
+		//var_dump(count($qty));
+		for($i=0;$i<count($qty);$i++){
+			if($qty[$i]>0){
+				$poline=$this->purchase_order_lineitems_model->get_by_id($line[$i])->row();
+				$itemno=$poline->item_number;
+				$stock=$this->inventory_model->get_by_id($itemno)->row();
+				
+				$data['item_number']=$stock->item_number;
+				$data['cost']=$stock->cost;
+				$data['quantity_received']=$qty[$i];
+				$data['unit']=$stock->unit_of_measure;
+				$data['total_amount']=$data['quantity_received']*$data['cost'];
+				$data['from_line_number']=$line[$i];
+				$this->inventory_products_model->save($data);
+				$this->purchase_order_lineitems_model->update_qty_received($line[$i],$qty[$i]);
+			}
+		}
+		$this->purchase_order_model->update_received($po_number);
+		$this->nomor_bukti(true);
+		header('location: '.base_url().'index.php/receive_po/view/'.$data['shipment_id']);
+	}
+	function add_with_po($purchase_order_number)
+	{
+		$this->load->model('purchase_order_model');
+		$this->load->model('purchase_order_lineitems_model');
+		$data=$this->set_defaults(); 
+		$data['message']='update error';
+		$data['mode']='add';
+		$data['purchase_order_number']=$purchase_order_number;
+		$po=$this->purchase_order_model->get_by_id($purchase_order_number)->row();
+		$data['supplier_number']=$po->supplier_number;
+		$data['supplier_info']=$this->supplier_model->info($po->supplier_number);
+		$data['po_item']=$this->purchase_order_lineitems_model->lineitems($purchase_order_number);
+
+		$this->template->display_form_input('inventory/receive_po_number',$data,''); 
+		
+	}
+	function list_open($supplier_number)
+	{
+		$sql="select distinct shipment_id,date_received,warehouse_code
+		from inventory_products
+		where receipt_type='PO' and (selected=false or isnull(selected))
+		and supplier_number='$supplier_number'";
+		$query=$this->db->query($sql);
+		echo mysql_error();
+		$i=0;
+		$data="<table class='table'><thead><tr><td>Nomor Receive</td><td>Tanggal</td><td>Gudang</td></tr></thead><tbody>";
+		foreach($query->result() as $row){
+			$data.="<tr><td>".$row->shipment_id."</td><td>".$row->date_received."</td><td>".$row->warehouse_code."</td>";
+			$data.="<td><input type='checkbox' name='nomor[]' value='".$row->shipment_id."'></td>";
+			$data.="</tr>";
+			$i++;
+		}
+		$data.="</tbody></table>";
+		echo $data;
+	}
+	function create_new_invoice($invoice_number)
+	{
+		$nomor=$this->input->post('nomor');
+		for($i=0;$i<count($nomor);$i++)
+		{
+			$this->insert_invoice_items_receive($nomor[$i],$invoice_number);
+		}
+		echo json_encode(array('success'=>true,'purchase_order_number'=>$invoice_number));
+
+	}
+	
+	function insert_invoice_items_receive($shipment_id,$invoice_number)
+	{
+		$this->load->model('inventory_products_model');
+		$this->load->model('purchase_order_lineitems_model');
+		$query=$this->inventory_products_model->get_by_id($shipment_id);
+		foreach($query->result() as $row)
+		{
+			$item_name='';
+			$q=$this->db->query("select description from inventory where item_number='".$row->item_number."'");
+			if($q->row()){
+				$item_name=$q->row()->description;
+			}
+			$data['purchase_order_number']=$invoice_number;
+			$data['item_number']=$row->item_number;
+			$data['description']=$item_name;
+			$data['price']=$row->cost;
+			$data['quantity']=$row->quantity_received;
+			$data['unit']=$row->unit;
+			$data['warehouse_code']=$row->warehouse_code;
+			$data['from_line_number']=$row->id;
+			$data['from_line_doc']=$row->shipment_id;
+			$data['total_price']=$row->total_amount;
+			$data['from_line_type']="RCV";
+			$ok=$this->purchase_order_lineitems_model->save($data);
+		}
+		$this->db->query("update inventory_products set selected=1 where shipment_id='".$shipment_id."'");
+		
+	}
+	function list_by_po($nomor_po)
+	{
+		$sql="select shipment_id,date_received,warehouse_code,receipt_by,selected ,ip.item_number,
+		i.description,quantity_received
+		from inventory_products ip left join inventory i on i.item_number=ip.item_number 
+		where purchase_order_number='$nomor_po'";
+	 
+ 		echo datasource($sql);
+	}
 }

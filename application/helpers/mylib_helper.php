@@ -1,5 +1,20 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+if(!function_exists('add_log_run')){	
+	function add_log_run($url){
+        $CI =& get_instance();
+		$data['user_id']=$CI->access->user_id();
+		$data['url']=$url;
+		$data['controller']=$CI->uri->segment(1);
+		$data['method']=$CI->uri->segment(2);
+		$data['param1']=$CI->uri->segment(3);
+		$CI->db->insert("sys_log_run",$data);
+		//var_dump(mysql_error());
+	}
+}
+
+
+
 if(!function_exists('account')){	
 	function account($account_id){
         $CI =& get_instance();
@@ -23,15 +38,15 @@ if(!function_exists('criteria')){
 	}
 }
 if(!function_exists('link_button')){
-    function link_button($caption,$func,$icon='',$plain='true',$url=''){
+    function link_button($caption,$func,$icon='',$plain='true',$url='',$title=''){
     	if($url==''){
 	        return '<a href="#" class="easyui-linkbutton" 
 	        data-options="iconCls:\'icon-'.$icon.'\', 
-	        plain: '.$plain.'" onclick="'.$func.'">'.$caption.'</a>';
+	        plain: '.$plain.'" onclick="'.$func.'  ">'.$caption.'</a>';
 		} else {
 	        return '<a href="'.$url.'" class="easyui-linkbutton" 
 	        data-options="iconCls:\'icon-'.$icon.'\', 
-	        plain: '.$plain.'" >'.$caption.'</a>';			
+	        plain: '.$plain.'"  " >'.$caption.'</a>';			
 		}
     }
 }
@@ -40,13 +55,12 @@ if(!function_exists('datasource')){
     function datasource($sql){
         $CI =& get_instance();
         $query=$CI->db->query($sql);
-//		var_dump($sql);
-        $i=0;
-		$rows[0]=''; 
-        foreach($query->result_array() as $row){
-            $rows[$i++]=$row;
-        };
-        $data['total']=$i;
+		if($query){ 
+	        foreach($query->result_array() as $row){
+	            $rows[]=$row;
+	        };
+		}
+        $data['total']=count($rows);
         $data['rows']=$rows;
                     
         return json_encode($data);
@@ -95,40 +109,63 @@ if(!function_exists('company_header')){
         return $data;
     }
 }
+if(!function_exists('getColoumn')){
+function getColoumn($table) { 
+     $result = mysql_query("SHOW COLUMNS FROM ". $table); 
+      if (!$result) { 
+        echo 'Could not run query: ' . mysql_error(); 
+      } 
+      $fieldnames=array(); 
+      if (mysql_num_rows($result) > 0) { 
+        while ($row = mysql_fetch_assoc($result)) { 
+          $fieldnames[] = $row['Field']; 
+        } 
+      } 
+
+      return $fieldnames; 
+} 
+}
 if(!function_exists('data_table')){
 function data_table($table,$record=null,$is_sql=false){
     $CI =& get_instance();
+	$data='';
     if($record){
         foreach ($record as $key => $value) {
             $data[$key]=$value;
         }
     } else {
+		$result_id=0;
         if($is_sql){
-            $result_id=$CI->db->query($table)->result_id;
-                
+			$q=$CI->db->query($table);
+			if($q)$result_id=$q->result_id;
         } else {
-            $result_id=$CI->db->get($table,1)->result_id;
+//			$fields=getColoumn($table);
+//			var_dump($fields);
+			$q=$CI->db->get($table,1);
+			echo mysql_error();
+			if($q)$result_id=$q->result_id;
         }
-        
-        $count = mysql_num_fields($result_id);
-        for($i=0;$i<=$count-1;$i++){
-            $type=mysql_field_type($result_id, $i);
-            $name=mysql_field_name($result_id, $i);
-            $len=mysql_field_len($result_id, $i);
-    //            $flags = mysql_field_flags($result, $i);
-                switch ($type) {
-                    case 'datetime':
-                        $val=date('Y-m-d');
-                        break;
-                    case 'string':
-                        $val='';
-                        break;
-                    default:
-                        $val=0;
-                        break;
-                }
-            $data[$name]=$val;    
-        }   
+		if($result_id){	
+			$count = mysql_num_fields($result_id);
+			for($i=0;$i<=$count-1;$i++){
+				$type=mysql_field_type($result_id, $i);
+				$name=mysql_field_name($result_id, $i);
+				$len=mysql_field_len($result_id, $i);
+		//            $flags = mysql_field_flags($result, $i);
+					switch ($type) {
+						case 'datetime':
+							$val=date('Y-m-d');
+							break;
+						case 'string':
+							$val='';
+							break;
+						default:
+							$val=0;
+							break;
+					}
+				$data[$name]=$val;    
+			}   
+		}
     }
         
     return $data;

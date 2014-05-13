@@ -32,6 +32,7 @@ class Purchase_invoice extends CI_Controller {
             $data['message']='';
 			$data['purchase_order_number']=$this->nomor_bukti();
             $data['po_date']= date("Y-m-d");
+			$data['summary_info']='';
             return $data;
 	}
 	function index()
@@ -74,6 +75,8 @@ class Purchase_invoice extends CI_Controller {
         $data['po_date']= date("Y-m-d");
         $data['potype']='I';
         $data['amount']=0;
+		$data['posted']=false;
+		$data['closed']=false;
         $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
         $data['terms_list']=$this->type_of_payment_model->select_list();
 		$this->template->display_form_input($this->file_view,$data,'');			                 
@@ -100,9 +103,9 @@ class Purchase_invoice extends CI_Controller {
 
 		if ($ok){
 			if($mode=="add") $this->nomor_bukti(true);
-			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
+			echo json_encode(array('success'=>true,'purchase_order_number'=>$id,"msg"=>mysql_error()));
 		} else {
-			echo json_encode(array('msg'=>'Some errors occured.'));
+			echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));
 		}
 	}
 	function items($nomor,$type='')
@@ -146,6 +149,18 @@ class Purchase_invoice extends CI_Controller {
          $data['message']=$message;
          $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
          $data['terms_list']=$this->type_of_payment_model->select_list();
+		 $data['summary_info']=$this->summary_info($id);
+		 if($model) {
+			$data['posted']=$model->posted;
+		} else {
+			$data['posted']=false;
+		}
+		  
+		 
+		 $this->load->model('periode_model');
+		 $data['closed']=$this->periode_model->closed($data['po_date']);
+		 
+		 
          $left='purchase/menu_purchase_invoice';
 		 $this->session->set_userdata('_right_menu',$left);
          $this->session->set_userdata('purchase_order_number',$id);
@@ -198,21 +213,36 @@ class Purchase_invoice extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
-	 	$this->purchase_order_model->delete($id);
-        $this->browse();
+		$this->load->model('jurnal_model');
+		$bill=$this->purchase_order_model->get_bill_id($id);
+		$cnt_pay=$this->db->query("select count(1) as cnt from payables_payments where bill_id=".$bill)->row()->cnt;
+		if($cnt_pay){
+			echo json_encode(array("success"=>false,"msg"=>"Gagal hapus nomor ini. <br>Karena masih ada pembayaran."));
+		} elseif ($this->amount_retur($id)>0){
+			echo json_encode(array("success"=>false,"msg"=>"Gagal hapus nomor ini. <br>Karena masih ada nomor retur."));
+		} elseif ($this->amount_crdb($id)>0){
+			echo json_encode(array("success"=>false,"msg"=>"Gagal hapus nomor ini. <br>Karena masih ada nota kredit."));
+		} elseif ($this->jurnal_model->get_by_id($id)){
+			echo json_encode(array("success"=>false,"msg"=>"Gagal hapus nomor ini. <br>Karena sudah ada jurnal."));
+		} else {
+			$this->db->query("delete from payables_items where bill_id=".$bill);
+			$this->db->query("delete from payables where bill_id=".$bill);
+			$this->purchase_order_model->delete($id);
+			echo json_encode(array("success"=>true,"msg"=>"Berhasil hapus nomor ini."));
+		}
 	}
-        function detail(){
-            $data['purchase_order_number']=isset($_GET['purchase_order_number'])?$_GET['purchase_order_number']:'';
-            $data['po_date']=isset($_GET['po_date'])?$_GET['po_date']:'';
-            $data['supplier_number']=isset($_GET['supplier_number'])?$_GET['supplier_number']:'';
-            $data['comments']=isset($_GET['comments'])?$_GET['comments']:'';
-            $data['potype']='I';
-            $data['terms']=isset($_GET['terms'])?$_GET['terms']:'';
-            $this->purchase_order_model->save($data);
-            $this->sysvar->autonumber_inc("Purchase Invoice Numbering");
-            $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);            
-            $this->template->display('purchase/purchase_invoice_detail',$data);
-        }
+	function detail(){
+		$data['purchase_order_number']=isset($_GET['purchase_order_number'])?$_GET['purchase_order_number']:'';
+		$data['po_date']=isset($_GET['po_date'])?$_GET['po_date']:'';
+		$data['supplier_number']=isset($_GET['supplier_number'])?$_GET['supplier_number']:'';
+		$data['comments']=isset($_GET['comments'])?$_GET['comments']:'';
+		$data['potype']='I';
+		$data['terms']=isset($_GET['terms'])?$_GET['terms']:'';
+		$this->purchase_order_model->save($data);
+		$this->sysvar->autonumber_inc("Purchase Invoice Numbering");
+		$data['supplier_info']=$this->supplier_model->info($data['supplier_number']);            
+		$this->template->display('purchase/purchase_invoice_detail',$data);
+	}
 	function view_detail($nomor){
 		$this->load->model('purchase_order_lineitems_model');
 		echo $this->purchase_order_lineitems_model->browse($nomor);
@@ -264,11 +294,14 @@ class Purchase_invoice extends CI_Controller {
 			$this->load->view('purchase/print_faktur',$data);
         }
         function summary_info($nomor){
-            //$nomor=$_GET['nomor'];
             $saldo=$this->purchase_order_model->recalc($nomor);
-            echo 'Jumlah Faktur: Rp. '.  number_format($this->purchase_order_model->amount);
-            echo '<br/>Jumlah Bayar : Rp. '.  number_format($this->purchase_order_model->amount_paid);
-            echo '<br/>Jumlah Sisa  : Rp. '.  number_format($saldo);            
+            return "<table class='table'><tr><td>Jumlah Faktur: Rp. ".  number_format($this->purchase_order_model->amount)
+				."</td><tr><td>Jumlah Bayar : Rp. ".  number_format($this->purchase_order_model->amount_paid)
+				."</td><tr><td>Jumlah Retur  : Rp. ".  number_format($this->purchase_order_model->retur_amount($nomor))
+				."</td><tr><td>Jumlah CrDb Memo  : Rp. ".  number_format($this->purchase_order_model->crdb_amount($nomor))
+				."</td><tr><td>Jumlah Sisa  : Rp. ".  number_format($saldo) . "</td>
+				</table>
+				";            
         }
         function payments($purchase_order_number)
         {
@@ -299,15 +332,24 @@ class Purchase_invoice extends CI_Controller {
 		}
 		function list_payment($purchase_order_number)
 		{
-			$this->load->model('payables_payments_model');
-			echo $this->payables_payments_model->browse($purchase_order_number);				
+//			$this->load->model('payables_payments_model');
+//			echo $this->payables_payments_model->browse($purchase_order_number);	
+			
+			$bill=$this->purchase_order_model->get_bill_id($purchase_order_number);
+			$sql="select * from payables_payments where bill_id=".$bill;
+			 
+			echo datasource($sql);
+
 		}
-		function add_retur($purchase_order_number)
+		
+		function add_retur($nomor)
 		{
 			
 		}
-		function delete_retur($purchase_order_number)
+		function delete_retur($nomor)
 		{
+			$this->db->query("delete from purchase_order_lineitems where purchase_order_number='$nomor'");
+			$this->db->query("delete from purchase_order where purchase_order_number='$nomor'");
 			
 		}
 		function list_retur($purchase_order_number)
@@ -317,23 +359,29 @@ class Purchase_invoice extends CI_Controller {
                 from purchase_order i
                 left join suppliers c on c.supplier_number=i.supplier_number
                 where i.potype='R' and po_ref='$purchase_order_number'";
-			echo browse_simple($sql);				
+			echo datasource($sql);				
 			
 		}
 		function save_retur($purchase_order_number)
 		{
 			
 		}
-		function add_crdb($purchase_order_number)
+		function add_crdb($nomor)
 		{
 			
 		}
 		function delete_crdb($nomor_bukti)
 		{
+			$this->db->query("delete from crdb_memo_dtl where kodecrdb='$nomor_bukti'");
+			$this->db->query("delete from crdb_memo where kodecrdb='$nomor_bukti'");
 			
 		}
 		function list_crdb($purchase_order_number)
 		{
+			$sql="select kodecrdb as nomor,tanggal, amount 
+                from crdb_memo i
+                where docnumber='$purchase_order_number'";
+			echo datasource($sql);				
 			
 		}
 		function save_crdb($purchase_order_number)
@@ -423,11 +471,11 @@ class Purchase_invoice extends CI_Controller {
 		 
 		echo browse_data($data,$flds);
 	}
-	function amount_paid($faktur){return 0;}
-	function amount_retur($faktur){return 0;}
-	function amount_crdb($faktur){return 0;}
+	function amount_paid($faktur){return $this->purchase_order_model->paid_amont($faktur);}
+	function amount_retur($faktur){return $this->purchase_order_model->retur_amount($faktur);}
+	function amount_crdb($faktur){return $this->purchase_order_model->crdb_amount($faktur);}
 	
-	function select_list(){
+	function select_list_old(){
 		
 		$q=$this->input->get('q');
 		$cst=$this->input->get('supp');
@@ -465,6 +513,53 @@ class Purchase_invoice extends CI_Controller {
 			}
 		}
 	}
+	function find($nomor){
+		$this->load->model('purchase_order_model');
+
+		$sql="select purchase_order_number,po_date,due_date,amount,terms,paid,closed 
+		from purchase_order 
+		where purchase_order_number='$nomor'";
+		
+		$saldo=$this->purchase_order_model->recalc($nomor);
+		$query=$this->purchase_order_model->get_by_id($nomor)->row();
+		$data['po_date']=$query->po_date;
+		$data['amount']=number_format($query->amount);
+		$data['saldo']=number_format($saldo);
+		
+		echo json_encode($data);
+		
+	}
+	function invoice_not_paid($supplier_number){
+
+		$this->load->model('purchase_order_model');
+
+		$sql="select purchase_order_number,po_date,due_date,amount,terms 
+		from purchase_order 
+		where potype='I' and (paid=false or isnull(paid))
+		and supplier_number='$supplier_number'";
+ 
+		$query=$this->db->query($sql);
+		$i=0;
+		$rows[0]='';
+		if($query){ 
+			foreach($query->result_array() as $row){
+				$nomor=$row['purchase_order_number'];
+				$saldo=$this->purchase_order_model->recalc($nomor);
+				if($saldo!=0){
+					$row['amount']=number_format($row['amount']);
+					$row['saldo']=number_format($saldo);
+					$row['bayar']=form_input("bayar[]","","style='width:150px'");
+					$row['purchase_order_number']=$nomor.form_hidden("faktur[]",$nomor);
+					$rows[$i++]=$row;
+				}
+			};
+		}
+		$data['total']=$i;
+		$data['rows']=$rows;
+					
+		echo json_encode($data);
+	}
+	
 	function select($supplier=''){
 		$s="select purchase_order_number,po_date,terms from purchase_order 
 		where potype='I'";
@@ -472,5 +567,89 @@ class Purchase_invoice extends CI_Controller {
 	 
 		echo datasource($s);
 	}
+	function list_by_po($nomor_po){
+		$s="select  distinct p.purchase_order_number,p.po_date,p.terms,p.amount 
+			from purchase_order_lineitems pol
+			left join purchase_order p on p.purchase_order_number=pol.purchase_order_number
+			left join inventory_products ip on ip.id=pol.from_line_number
+			where ip.purchase_order_number='$nomor_po'";
+		echo datasource($s);
+	}
+	function unposting($nomor) {
+		$this->purchase_order_model->recalc($nomor);
+		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
 
+		$this->load->model("periode_model");
+		if($this->periode_model->closed($faktur->po_date)){
+			echo "ERR_PERIOD";
+			return false;
+		}
+		// validate jurnal
+		$this->load->model('jurnal_model');
+		if($this->jurnal_model->del_jurnal($nomor)) {
+			$data['posted']=false;
+		} else {
+			$data['posted']=true;
+		}
+		$this->purchase_order_model->update($nomor,$data);
+		
+		$this->view($nomor);
+	}
+	function posting($nomor)
+	{
+	
+		$this->purchase_order_model->recalc($nomor);
+		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
+
+		$this->load->model("periode_model");
+		if($this->periode_model->closed($faktur->po_date)){
+			echo "ERR_PERIOD";
+			return false;
+		}
+		$this->load->model('purchase_order_lineitems_model');
+		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('company_model');
+		$this->load->model('supplier_model');
+		$this->load->model('inventory_model');
+		
+		$date=$faktur->po_date;
+		$supplier=$this->supplier_model->get_by_id($faktur->supplier_number)->row();
+		$akun_hutang=$faktur->account_id;
+		$gl_id=$nomor;
+		$debit=0; $credit=0;$operation="";$source="";
+		// posting hutang / ap
+		if($akun_hutang=="")$akun_hutang=$supplier->supplier_account_number;
+		if($akun_hutang=="")$akun_hutang=$this->company_model->setting("accounts_payable");
+		
+		$account_id=$akun_hutang; $debit=0; $credit=$faktur->amount;
+		$operation="AP Posting"; $source=$faktur->comments;
+		
+		$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
+		
+		// posting persediaan
+		$items=$this->purchase_order_lineitems_model->get_by_nomor($nomor);
+		foreach($items->result() as $row) {
+			$item=$this->inventory_model->get_by_id($row->item_number)->row();
+			
+			$account_id=$item->inventory_account; 
+			if(!$account_id)$account_id=$this->company_model->setting('inventory');
+			
+			$debit=$row->total_price; $credit=0;
+			$operation="Inventory Posting"; $source=$row->description;
+			$custsuppbank=$row->item_number;
+			$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source,'',$custsuppbank);
+			
+		}
+		
+		// validate jurnal
+		if($this->jurnal_model->validate($nomor)) {
+			$data['posted']=true;
+		} else {
+			$data['posted']=false;
+		}
+		$this->purchase_order_model->update($nomor,$data);
+		
+		$this->view($nomor);
+	}
 }

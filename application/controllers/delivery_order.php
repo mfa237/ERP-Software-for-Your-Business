@@ -98,6 +98,8 @@ class Delivery_order extends CI_Controller {
 		$data['due_date']=$this->input->post('due_date');
 		$data['comments']=$this->input->post('comments');
 		$data['warehouse_code']=$this->input->post('warehouse_code');	 
+		
+		
 		if($mode=="add"){
 			$ok=$this->invoice_model->save($data);
 			$this->invoice_model->save_from_so_items($data['invoice_number'],
@@ -106,6 +108,10 @@ class Delivery_order extends CI_Controller {
 		} else {
 			$ok=$this->invoice_model->update($id,$data);
 		}
+		
+		$this->load->model('sales_order_model');
+		$this->sales_order_model->recalc_ship_qty($data['sales_order_number']);
+		
 		if ($ok){
 			if($mode=="add") $this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'invoice_number'=>$id));
@@ -259,8 +265,13 @@ class Delivery_order extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		$so=$this->invoice_model->get_by_id($id)->row()->sales_order_number;
 	 	$this->invoice_model->delete($id);
+
+		$this->load->model('sales_order_model');
+		$this->sales_order_model->recalc_ship_qty($so);
         $this->browse();
+
 	}
     function detail(){
         $data['invoice_date']=isset($_GET['invoice_date'])?$_GET['invoice_date']:'';
@@ -305,6 +316,26 @@ class Delivery_order extends CI_Controller {
 			    array_push($result, $row);
 			}
 			echo json_encode($result);
+	}
+	function select_do_open($cust) {
+		$sql="select invoice_number,invoice_date 
+		from invoice where invoice_type='D'
+		and sold_to_customer='$cust' and (do_invoiced is null or do_invoiced=0)";
+		echo datasource($sql);
+	}
+	function insert_invoice($nomor_do,$nomor_faktur) {
+		$sql="insert into invoice_lineitems(invoice_number,item_number,description,quantity,unit,
+		warehouse_code,from_line_number,from_line_type,from_line_doc,price,discount,cost,amount)
+		
+		select '$nomor_faktur',item_number,description,quantity,unit,
+		warehouse_code,line_number,'DO',invoice_number,price,discount,cost,amount 
+		from invoice_lineitems 
+		where invoice_number='$nomor_do'";
+		
+		echo $sql;
+		
+		$this->db->query($sql);
+		
 	}
 
 }

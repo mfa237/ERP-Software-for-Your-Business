@@ -192,8 +192,11 @@ class Jurnal extends CI_Controller {
         echo datasource($sql);
     }	      
 	function delete($id){
-	 	$this->jurnal_model->delete($id);
-	 	$this->browse();
+	 	if($this->jurnal_model->del_jurnal($id)){
+			$this->browse();
+		} else {
+			$this->view($id);
+		}
 	}
     function delete_item($id){
         if($this->jurnal_model->delete_item($id)){
@@ -240,10 +243,34 @@ class Jurnal extends CI_Controller {
         }
 	function items($kode){
 		$sql="select c.account,c.account_description,g.debit,g.credit,
-		g.source,g.operation,g.transaction_id 
+		g.source,g.operation,g.transaction_id,g.custsuppbank
 		from gl_transactions g left join chart_of_accounts c 
 		on c.id=g.account_id
 		 where gl_id='$kode'";
-		echo datasource($sql);
+        $query=$this->db->query($sql);
+		 
+        $i=0;
+		$rows[0]='';
+		if($query){ 
+	        foreach($query->result_array() as $row){
+				$row['debit']=number_format($row['debit']);
+				$row['credit']=number_format($row['credit']);
+	            $rows[$i++]=$row;
+	        };
+		}
+		$jurnal=$this->db->query("select sum(debit) as z_db,sum(credit) as z_cr 
+			from gl_transactions where gl_id='$kode'")->row();
+		$rows[$i++]=array("account"=>"<strong>TOTAL</strong>","account_description"=>"",
+			"debit"=>"<strong>".number_format($jurnal->z_db)."</strong>",
+			"credit"=>"<strong>".number_format($jurnal->z_cr)."</strong>",
+			"custsuppbank"=>"<strong>BALANCE</strong>",
+			"operation"=>"<strong>".number_format($jurnal->z_db-$jurnal->z_cr)."</strong>",
+			"transaction_id"=>"",
+			"source"=>"");
+        $data['total']=$i;
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+
 	}
 }

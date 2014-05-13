@@ -70,11 +70,13 @@ class sales_crmemo extends CI_Controller {
 	
 	function add()
 	{
+		$data=$this->set_defaults();
 		$data['kodecrdb']=$this->nomor_bukti();
 		$data['tanggal']=date('Y-m-d');
 		$data['docnumber']='';
 		$data['amount']=0;
 		$data['keterangan']="";
+		$data['posted']=false;
 		$data['mode']='add';
 		$this->template->display_form_input('sales/credit_memo',$data,'');			
 		
@@ -101,14 +103,38 @@ class sales_crmemo extends CI_Controller {
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
 		 $data['mode']='view';
+		$this->load->model('invoice_model');
+		$this->load->model("customer_model");
+		 $q=$this->invoice_model->get_by_id($data['docnumber'])->row();
+		 $data['customer_number']=$q->sold_to_customer;
+		 $data['faktur_info']=$q->invoice_date." Rp. ".number_format($q->amount);
+		 $q=$this->customer_model->get_by_id($data['customer_number'])->row();
+		 $data['customer_name']=$q->company;
+		 $data['customer_info']=$q->company." ".$q->street." ".$q->city;
+
          $this->template->display('sales/credit_memo',$data);                 
 	}
    
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
-            $data['mode']='';
-            $data['message']='';
-			return $data;
+		$data=data_table($this->table_name,$record);
+		$data['mode']='';
+		$data['message']='';
+		$data['customer_info']="";
+		$data['faktur_info']="";
+		$data['customer_number']="";
+			
+		return $data;
+	}
+	function posting($nomor) {
+		$this->crdb_model->posting($nomor);
+		$this->view($nomor);
+	}	
+	function unposting($nomor) {
+		$this->crdb_model->unposting($nomor);
+		$this->view($nomor);
+	}	
+	function delete($nomor) {
+		$this->crdb_model->delete($nomor);
 	}
 	
 }

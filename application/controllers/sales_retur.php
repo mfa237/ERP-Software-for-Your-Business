@@ -116,6 +116,8 @@ class Sales_retur extends CI_Controller {
 		$data['invoice_date']= date("Y-m-d");
 		if($record==NULL)$data['invoice_number']=$this->nomor_bukti();
         $data['invoice_type']='R';
+		$data['customer_info']='';
+		$data['posted']=0;
 		return $data;
 	}
 
@@ -170,6 +172,21 @@ class Sales_retur extends CI_Controller {
 		}
 	}
 	function delete($id){
+		$this->load->model("periode_model");
+		$q=$this->invoice_model->get_by_id($id);
+		if($this->periode_model->closed($q->row()->invoice_date)){
+				$message="Periode sudah ditutup tidak bisa dihapus !";
+				$this->view($id,$message);
+				return false;
+		}
+		$this->load->model('jurnal_model');
+		 
+		if($this->jurnal_model->get_by_gl_id($id)->row()) {
+			$message="Sudah dijurnal tidak bisa dihapus !";
+			$this->view($id,$message);
+			return false;
+		}
+
 		$this->load->model('invoice_model');
 	 	$this->invoice_model->delete($id);
 	}
@@ -183,8 +200,19 @@ class Sales_retur extends CI_Controller {
 		 $data['comments']=$model->comments;
 		 $data['invoice_number']=$id;
 		 $data['your_order__']=$model->your_order__;
+		 $data['posted']=$model->posted;
+		 
 		 $this->invoice_model->recalc($id);
          $this->template->display('sales/retur',$data);                 
 	}
+	function unposting($nomor) {
+		$message=$this->invoice_model->unposting($nomor);		
+		$this->view($nomor);
+	}
+	function posting($nomor)
+	{
+		$message=$this->invoice_model->posting_retur($nomor);
+		$this->view($nomor);
+	}		
 		
 }

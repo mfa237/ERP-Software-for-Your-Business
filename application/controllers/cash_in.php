@@ -49,6 +49,7 @@ class Cash_in extends CI_Controller {
             $data['message']='';
 ///			$data['voucher']=$this->nomor_bukti();
             $data['account_number_list']=$this->bank_accounts_model->account_number_list();
+			$data['closed']=0;
             return $data;
 	}
 	function index()
@@ -73,7 +74,7 @@ class Cash_in extends CI_Controller {
 		$id=$this->check_writer_model->save($data);
         $message='update success';
 		$this->nomor_bukti(true);
-        header('location: '.base_url().'index.php/cash_in');
+        header('location: '.base_url().'index.php/cash_in/view/'.$data['voucher']);
 	}
 	
 	function update()
@@ -156,4 +157,56 @@ class Cash_in extends CI_Controller {
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
+	function items($voucher) {
+		$sql="select cwi.account_id,coa.account,coa.account_description as description,
+			amount,comments,invoice_number,ref1,line_number	
+			from check_writer_items cwi
+			left join chart_of_accounts coa on coa.id=cwi.account_id
+			where trans_id in (
+			select trans_id from check_writer where voucher='$voucher')";
+		echo datasource($sql);
+	}
+	function save_item() {
+		$voucher=$this->input->post('voucher_item');
+		if($voucher=="") {
+			echo json_encode(array('success'=>false,'msg'=>'Nomor voucher tidak ada atau kosong.'));
+			return false;
+		}
+		$this->load->model('check_writer_model');
+		$trans_id=$this->check_writer_model->get_by_id($voucher)->row()->trans_id;
+		
+		$this->load->model('chart_of_accounts_model');
+		$account=$this->input->post('account');
+		$coa=$this->chart_of_accounts_model->get_by_id($account)->row();
+		$this->load->model('check_writer_items_model');
+		$data['trans_id']=$trans_id;
+		$data['account_id']=$coa->id;
+		$data['account']=$account;
+		$data['description']=$coa->account_description;
+		$data['amount']=$this->input->post('amount');
+		$data['comments']=$this->input->post('comments');
+		if($this->check_writer_items_model->save($data)){
+			echo json_encode(array('success'=>true,'msg'=>'Sukses tambah data.'));
+			return true;
+		} else {
+			echo json_encode(array('success'=>false,'msg'=>'Gagal menyimpan data.'));
+			return false;
+		}
+	}
+	function unposting($voucher) {
+		$message=$this->check_writer_model->unposting($voucher);
+		$this->view($voucher,$message);
+	}
+	function posting($voucher) {
+		$message=$this->check_writer_model->posting($voucher);
+		$this->view($voucher,$message);
+	}
+	function delete($voucher) {
+		$message=$this->check_writer_model->delete($voucher);
+		if($message!=""){
+			$this->view($voucher,$message);
+			return false;
+		} 
+		$this->browse();
+	}
 }

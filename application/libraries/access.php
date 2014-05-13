@@ -66,12 +66,15 @@ class Access
    }
     function print_info(){
     	echo "<img src='".base_url()."images/administrator.png'
-    	 width='30' height='20' align='left'>"; 
+    	align='left'>"; 
         echo ' Welcome [<strong>'.$this->username.'</strong>]';
 		echo '<a href="'.base_url().'index.php/login/logout"
-		class="easyui-linkbutton" style="color:white"
+		class="easyui-linkbutton" 
 		data-options="iconCls:\'icon-no\',
 		plain:true">Logout</a>';
 //            .'<br/>CID: '.$this->cid; 
     }
+	function user_id(){
+		return $this->user_id;		
+	}
 }

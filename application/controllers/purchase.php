@@ -49,5 +49,9 @@ class Purchase extends CI_Controller {
 			$this->load->view($rpt);
 		}
    }
+	function reports(){
+		$this->template->display('purchase/menu_reports');
+	}
+	
 }
 ?>

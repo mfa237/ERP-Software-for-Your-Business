@@ -53,6 +53,12 @@ class Gl extends CI_Controller {
 		}
    }
 	function grafik_saldo_akun(){
+		header('Content-type: application/json');
+		//$data['label']="SALDO AKUN";
+		$data['data']=$this->saldo_akun();
+		echo json_encode($data);
+	}
+	function grafik_saldo_akun_old(){
 		$phpgraph = $this->load->library('PhpGraph');		
 		$cfg['width'] = '80%';
 		$cfg['height'] = 200;
@@ -68,13 +74,13 @@ class Gl extends CI_Controller {
 	}
 	function saldo_akun()
 	{
-       $sql="select account,account_description,sum(g.debit)-(g.credit) as saldo 
+       $sql="select account,account_description,sum(g.debit)-sum(g.credit) as saldo 
         from gl_transactions g left join chart_of_accounts c on c.id=g.account_id 
-        group by account,account_description"; 
+        group by account,account_description
+		having sum(g.debit)-sum(g.credit)>0  limit 10"; 
 		$query=$this->db->query($sql);
-		$data["Kode"]=0;
 		foreach($query->result() as $row){
-			$data[$row->account]=$row->saldo;
+			$data[]=array(substr($row->account,0,10),$row->saldo);
 		}
 		return $data;
 	}
@@ -84,6 +90,9 @@ class Gl extends CI_Controller {
 		 $data['date_from']=date('Y-m-d 00:00:00');
 		 $data['date_to']=date('Y-m-d 23:59:59');
  		 $this->load->view($rpt,$data);
+	}
+	function reports(){
+		$this->template->display('gl/menu_reports');
 	}
 	
 }

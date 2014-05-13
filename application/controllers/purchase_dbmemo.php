@@ -18,6 +18,8 @@ class Purchase_DbMemo extends CI_Controller {
         $this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('crdb_model');
+		$this->load->model('supplier_model');
+		$this->load->model('purchase_order_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -70,12 +72,14 @@ class Purchase_DbMemo extends CI_Controller {
 	
 	function add()
 	{
+		$data=$this->set_defaults();
 		$data['kodecrdb']=$this->nomor_bukti();
 		$data['tanggal']=date('Y-m-d');
 		$data['docnumber']='';
 		$data['amount']=0;
 		$data['keterangan']="";
 		$data['mode']='add';
+		$data['posted']=false;
 		$this->template->display_form_input('purchase/debit_memo',$data,'');			
 		
 	}
@@ -101,14 +105,35 @@ class Purchase_DbMemo extends CI_Controller {
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
 		 $data['mode']='view';
+		 $q=$this->purchase_order_model->get_by_id($data['docnumber'])->row();
+		 $data['supplier_number']=$q->supplier_number;
+		 $data['faktur_info']=$q->po_date." Rp. ".number_format($q->amount);
+		 $q=$this->supplier_model->get_by_id($data['supplier_number'])->row();
+		 $data['supplier_name']=$q->supplier_name;
+		 $data['supplier_info']=$q->supplier_name." ".$q->street." ".$q->city;
+		 
          $this->template->display('purchase/debit_memo',$data);                 
 	}
    
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
-            $data['mode']='';
-            $data['message']='';
-			return $data;
+		$data=data_table($this->table_name,$record);
+		$data['mode']='';
+		$data['message']='';
+		$data['supplier_info']="";
+		$data['faktur_info']="";
+		$data['supplier_number']="";
+		return $data;
+	}
+	function posting($nomor) {
+		$this->crdb_model->posting($nomor);
+		$this->view($nomor);
+	}	
+	function unposting($nomor) {
+		$this->crdb_model->unposting($nomor);
+		$this->view($nomor);
+	}	
+	function delete($nomor) {
+		$this->crdb_model->delete($nomor);
 	}
 	
 }

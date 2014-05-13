@@ -61,8 +61,8 @@ class Inventory_class extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
 			$this->inventory_class_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+			$message='Update Success';
+			$this->browse();
 		} else {
 			$message='Error Update';
          		$this->view($id,$message);		
@@ -103,6 +103,7 @@ class Inventory_class extends CI_Controller {
 		$data['fields_caption']=array('Kode','Nama Kelas Barang/Jasa');
 		$data['fields']=array('kode','class');
 		$data['field_key']='kode';
+		$data['_form']=$this->file_view;
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Nama","sid_nama");

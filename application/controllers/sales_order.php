@@ -145,6 +145,7 @@ class Sales_order extends CI_Controller {
 		 $data['discount']=$model->discount;
 		 $data['sales_tax_percent']=$model->sales_tax_percent;
 
+		$this->sales_order_model->recalc_ship_qty($id);
 
          $menu='sales/menu_sales_order';
 		 $this->session->set_userdata('_right_menu',$menu);
@@ -170,6 +171,7 @@ class Sales_order extends CI_Controller {
 	 }
 	}
 	function search(){$this->browse();}
+	
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
 		$data['_left_menu_caption']='Search';
@@ -187,7 +189,7 @@ class Sales_order extends CI_Controller {
 		$faa[]=criteria("Pelanggan","sid_cust");
 		$faa[]=criteria("Salesman","sid_date_salesman");
 		$data['criteria']=$faa;
-        $this->template->display_browse2($data);            
+		$this->template->display_browse2($data);
     }
     function browse_data($offset=0,$limit=100,$nama=''){
     	$nama=$this->input->get('sid_cust');
@@ -230,25 +232,12 @@ class Sales_order extends CI_Controller {
     }
 	function items($nomor,$type='')
 	{
-            $sql="select p.item_number,i.description,p.quantity 
-            ,p.unit,p.price,p.discount,p.amount,p.line_number
-            from sales_order_lineitems p
-            left join inventory i on i.item_number=p.item_number
-            where sales_order_number='$nomor'";
-
-			$rs = mysql_query($sql);
-			$result = array();
-			while($row = mysql_fetch_object($rs)){
-			    array_push($result, $row);
-			}
-			 
-			echo json_encode($result);
-
-//			$q=$this->db->query($sql)->result_array();
-//			$s=json_encode($q);
-//			$s='{"total":'.count($q).',"rows":'.$s.'}';
-///			echo  $s;
-		
+		$sql="select p.item_number,i.description,p.quantity 
+		,p.unit,p.price,p.discount,p.amount,p.line_number,p.ship_qty,p.ship_date
+		from sales_order_lineitems p
+		left join inventory i on i.item_number=p.item_number
+		where sales_order_number='$nomor'";
+		echo datasource($sql);
 	}
     function add_item(){
     	$nomor=$this->input->get('sales_order_number');            
@@ -360,14 +349,19 @@ class Sales_order extends CI_Controller {
 				<th>Description</th>
 				<th>Qty Order</th>
 				<th>Unit</th>
+				<th>Qty Terkirim</th>
+				<th>Qty Sisa</th>
 				<th>Qty Kirim</th>
 			</tr></thead>";
 			
 			$table.="
 			<tbody>";
 			foreach($query->result() as $row){
+				$qty_sisa=$row->quantity-$row->ship_qty;
+				
 				$table.="<tr><td>".$row->item_number."</td><td>".$row->description."</td><td>"
 				.$row->quantity."</td><td>".$row->unit."</td>
+				<td>".$row->ship_qty."</td><td>".$qty_sisa."</td>
 				<td><input type='text' name='qty_order[]' style='width:50px' value='0'</td>
 				<input type='hidden' name='line_number[]' value='".$row->line_number."'>
 				</tr>";
@@ -377,6 +371,14 @@ class Sales_order extends CI_Controller {
 			echo $table;			 
 
         }
+		function delivery($sales_order_number) {
+            $sql="select i.invoice_number,invoice_date,il.warehouse_code,il.item_number,il.description,il.quantity,il.unit
+                from invoice i left join invoice_lineitems il on il.invoice_number=i.invoice_number
+                where invoice_type='D' 
+                and sales_order_number='$sales_order_number'";
+			 
+ 			echo datasource($sql);
+		}
         function view_delivery($sales_order_number)
         {             
             $this->load->model('invoice_model');

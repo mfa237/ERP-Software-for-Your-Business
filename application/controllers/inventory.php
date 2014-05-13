@@ -108,6 +108,8 @@ class Inventory extends CI_Controller {
 		 $data['sales_account']=account($data['sales_account']);
 		 $data['cogs_account']=account($data['cogs_account']);
 		 $data['tax_account']=account($data['tax_account']);
+
+		 $data['quantity_in_stock']=$this->inventory_model->quantity_in_stock($id);
 		 
          $this->session->set_userdata('_right_menu', 'inventory/inventory_menu');
          $this->template->display_form_input($this->file_view,$data,'');
@@ -193,7 +195,7 @@ class Inventory extends CI_Controller {
 		unit_of_measure,cost from inventory where item_number='$item_number'");
 		echo json_encode($query->row_array());
  	}
-	function grafik_jual(){
+	function grafik_jual_old(){
 /* create_graph($konfigurasi_grafik, $data, $tipe_grafik, $judul_pd_grafik, $nama_berkas) */		
 		$phpgraph = $this->load->library('PhpGraph');		
 		$cfg['width'] = 300;
@@ -207,7 +209,14 @@ class Inventory extends CI_Controller {
 		echo '<img src="'.base_url().'/'.$file.'"/>';
 		echo '*Display only top ten sales items';
 	}
-	function grafik_stock_min(){
+	function grafik_jual(){
+		header('Content-type: application/json');
+		$data['label']="Top Ten Sales";
+		$data['data']=$this->inventory_model->paling_laku();
+		echo json_encode($data);
+	}
+
+	function grafik_stock_min_old(){
 /* create_graph($konfigurasi_grafik, $data, $tipe_grafik, $judul_pd_grafik, $nama_berkas) */		
 		$phpgraph = $this->load->library('PhpGraph');		
 		$cfg['width'] = 300;
@@ -220,6 +229,12 @@ class Inventory extends CI_Controller {
 		$this->phpgraph->create_graph($cfg, $data,$chart_type,'Grafik Minimum Stock',$file);
 		echo '<img src="'.base_url().'/'.$file.'"/>';
 		echo '*Display only top ten stock minimum';
+	}
+	function grafik_stock_min(){
+		header('Content-type: application/json');
+		$data['label']="Minimum Items";
+		$data['data']=$this->inventory_model->minimum_stock();
+		echo json_encode($data);
 	}
 	function daftar_po_receive(){
 		$sql="select pol.item_number,pol.description,pol.quantity,pol.qty_recvd,
@@ -353,25 +368,71 @@ class Inventory extends CI_Controller {
    }
 	function do_upload_picture()
 	{
-		$config['upload_path'] = '../../tmp/';
+		//var_dump($_POST);
+		//var_dump($_GET);
+		//var_dump($_FILES);
+		
+		$config['upload_path'] = './tmp/';
 		$config['allowed_types'] = 'gif|jpg|png';
 		$config['max_size']	= '100';
 		$config['max_width']  = '1024';
 		$config['max_height']  = '768';
+		$userfile=$this->input->get('userfile');
 
 		$this->load->library('upload', $config);
 
 		if ( ! $this->upload->do_upload())
 		{
-			$error = array('error' => $this->upload->display_errors());
-
+			$error = array('error' =>'Error upload !! Maximum size gambar 100kb');
 		    echo json_encode($error);
 		}
 		else
 		{
 			$data = array('success'=>'Sukses','upload_data' => $this->upload->data());
-
 			echo json_encode($data);
 		}
 	}
+	function reports(){
+		$this->template->display('inventory/menu_reports');
+	}
+	function kartu_stock($item_number)
+	{
+		$date_from= $this->input->get('d1');
+		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to= $this->input->get('d2');
+		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
+		$gudang= $this->input->get('gudang');
+		
+		$sql="select sum(qty_masuk)-sum(qty_keluar) as saldo from qry_kartustock_union 
+			where item_number='$item_number' 
+			and tanggal<'$date_from'";
+		if($gudang!="")$sql.=" and gudang='$gudang'";
+
+        $query=$this->db->query($sql);
+		$awal=$query->row()->saldo;
+		$rows[0]=array("no_sumber"=>"SALDO","tanggal"=>"SALDO","jenis"=>"SALDO","qty_masuk"=>0,"qty_keluar"=>0,
+			"saldo"=>number_format($awal),"gudang"=>"");
+
+		$sql="select no_sumber,tanggal,jenis,qty_masuk,qty_keluar,gudang
+			from qry_kartustock_union
+			where item_number='$item_number' 
+			and tanggal between '$date_from' and '$date_to' order by tanggal";
+
+        $query=$this->db->query($sql);
+		 
+        $i=1;
+		if($query)foreach($query->result_array() as $row) {
+			$awal=$awal+$row['qty_masuk']-$row['qty_keluar'];
+			$row['qty_masuk']=number_format($row['qty_masuk']);
+			$row['qty_keluar']=number_format($row['qty_keluar']);
+			$row["saldo"]=number_format($awal);
+			$rows[$i++]=$row;
+		};	
+        $data['total']=$i;
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+
+	}
+
 }

@@ -14,11 +14,14 @@ class Banks extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+
 		if(!$this->access->is_login())redirect(base_url());
+		
  		$this->load->helper(array('url','form','mylib_helper'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('bank_accounts_model');
+		$this->load->model('chart_of_accounts_model');
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
@@ -40,6 +43,7 @@ class Banks extends CI_Controller {
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
+			$data['account_id']=$this->acc_id($data['account_id']);
 			$id=$this->bank_accounts_model->save($data);
             $data['message']='update success';
             $data['mode']='view';
@@ -49,6 +53,16 @@ class Banks extends CI_Controller {
             $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
+	function acc_id($account){
+		$data=explode(" - ", $account);
+		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();
+		if($coa){
+			return $coa->id;
+		} else {
+			return 0;
+		}
+	}
+	
 	function update()
 	{
 		 $data=$this->set_defaults();
@@ -56,6 +70,7 @@ class Banks extends CI_Controller {
  		 $id=$this->input->post($this->primary_key);
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
+			$data['account_id']=$this->acc_id($data['account_id']);
             $this->bank_accounts_model->update($id,$data);
             $message='Update Success';
             $this->browse();
@@ -73,11 +88,14 @@ class Banks extends CI_Controller {
 		}
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->bank_accounts_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
          $data['message']=$message;
+		 $data['account_id']=account($data['account_id']);
+
          $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
@@ -130,6 +148,14 @@ class Banks extends CI_Controller {
  	}
 	function grafik_saldo()
 	{
+		header('Content-type: application/json');
+		$data['label']="SALDO REKENING";
+		$data['data']=$this->bank_accounts_model->saldo_rekening();
+		echo json_encode($data);
+		
+	}
+	function grafik_saldo_old()
+	{
 		/* create_graph($konfigurasi_grafik, $data, $tipe_grafik, $judul_pd_grafik, $nama_berkas) */		
 		$phpgraph = $this->load->library('PhpGraph');		
 		$cfg['width'] = 300;
@@ -176,4 +202,57 @@ class Banks extends CI_Controller {
 			$this->load->view('bank/rpt/'.$id);
 		}
    }	
+   function reports(){
+		$this->template->display('bank/menu_reports');
+	}
+	function list_trans($bank_account_number) {
+		$bank_account_number=urldecode($bank_account_number);
+		$date_from= $this->input->get('d1');
+		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to= $this->input->get('d2');
+		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
+
+		$sql="select sum(deposit_amount) as z_deposit, sum(payment_amount) as z_payment
+			from check_writer where account_number='$bank_account_number' 
+			and check_date<'$date_from'";
+		 
+		
+        $query=$this->db->query($sql)->row();
+		$awal=$query->z_deposit-$query->z_payment;
+		
+		$rows[0]=array("voucher"=>"SALDO","check_date"=>"SALDO","trans_type"=>"SALDO"
+			,"deposit_amount"=>number_format($query->z_deposit)
+			,"payment_amount"=>number_format($query->z_payment)
+			,"saldo"=>number_format($awal)
+			,"supplier_number"=>"","payee"=>"","memo"=>"");
+
+		$sql="select voucher,check_date,deposit_amount,payment_amount,supplier_number,
+			payee,memo,trans_type 
+			from check_writer 
+			where account_number='$bank_account_number' 
+			and check_date between '$date_from' and '$date_to' 
+			order by check_date
+			
+			";
+		
+
+
+        $query=$this->db->query($sql);
+		 
+        $i=1;
+		if($query)foreach($query->result_array() as $row) {
+			$awal=$awal+$row['deposit_amount']-$row['payment_amount'];
+			$row['deposit_amount']=number_format($row['deposit_amount']);
+			$row['payment_amount']=number_format($row['payment_amount']);
+			$row["saldo"]=number_format($awal);
+			$rows[$i++]=$row;
+		};	
+        $data['total']=$i;
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+
+	}
+ 
+
 }

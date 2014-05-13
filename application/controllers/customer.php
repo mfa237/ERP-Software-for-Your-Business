@@ -132,7 +132,26 @@ class Customer extends CI_Controller {
 	 	$this->customer_model->delete($id);
 	 	$this->browse();
 	}
+	function grafik_saldo2(){
+		header('Content-type: application/json');
+		$data['label']="Saldo Piutang";
+		$data['data']=$this->customer_model->saldo_piutang_summary();
+		echo json_encode($data);
+	}
+	function grafik_saldo3(){
+		header('Content-type: application/json');
+		$data['label']="Saldo Piutang";
+		$data=$this->customer_model->saldo_piutang_summary();
+		//$data2[]=null;
+		//for($i=0;$i<count($data);$i++){
+		//	$data2[]=array('label'=>$data[$i][0],'data'=>$data[$i][1]);
+		//}
+		echo json_encode($data);
+	
+	}
 	function grafik_saldo(){
+
+
 		$phpgraph = $this->load->library('PhpGraph');		
 		$cfg['width'] = 800;
 		$cfg['height'] = 200;
@@ -144,9 +163,12 @@ class Customer extends CI_Controller {
 		$this->phpgraph->create_graph($cfg, $data,$chart_type,'Saldo Piutang Pelanggan',$file);
 		echo '<img src="'.base_url().'/'.$file.'"/>';
 		echo '*Display only top ten customer';
+		
+		
+		
 	}	
 	function select($search=''){
-		$sql="select company,customer_number, city,region,country
+		$sql="select company,customer_number, city,region,country,street,suite
 		from customers 
 		where (company like '$search%' or customer_number like '$search%')
 		order by company
@@ -154,6 +176,9 @@ class Customer extends CI_Controller {
 		$rs = mysql_query($sql); $result = array();
 		while($row = mysql_fetch_object($rs)){array_push($result, $row);}			 
 		echo json_encode($result);
+	}
+	function filter($search=''){
+		echo datasource('select company,customer_number from customers');
 	}
 	function list_shipto($search=''){
 		$sql="select *	from customer_shipto 
@@ -177,5 +202,40 @@ class Customer extends CI_Controller {
 			echo json_encode(array("msg"=>"Error ".mysql_error()));
 		}
 	}
-	
+	function kartu_piutang($customer_number)
+	{
+		$date_from= $this->input->get('d1');
+		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to= $this->input->get('d2');
+		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
+		
+		$sql="select sum(jumlah) as saldo from qry_kartu_piutang 
+			where customer_number='$customer_number' 
+			and tanggal<'$date_from'";
+
+        $query=$this->db->query($sql);
+		$awal=$query->row()->saldo;
+		$rows[0]=array("no_bukti"=>"SALDO","tanggal"=>"SALDO","jenis"=>"SALDO","jumlah"=>0,
+			"saldo"=>number_format($awal));
+
+		$sql="select no_bukti,tanggal,jenis,jumlah
+			from qry_kartu_piutang
+			where customer_number='$customer_number' 
+			and tanggal between '$date_from' and '$date_to' order by tanggal";
+
+        $query=$this->db->query($sql);
+		 
+        $i=1;
+		if($query)foreach($query->result_array() as $row) {
+			$awal=$awal+$row['jumlah'];
+			$row['jumlah']=number_format($row['jumlah']);
+			$row["saldo"]=number_format($awal);
+			$rows[$i++]=$row;
+		};	
+        $data['total']=$i;
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+
+	}	
 }

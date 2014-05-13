@@ -24,9 +24,9 @@ class Payables_payments extends CI_Controller {
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Bukri','Tgl Bayar','Faktur','Tgl Faktur','Jenis','Jumlah Faktur',
-			'Jumlah Bayar','Kode Supplier','Nama Supplier','Kota');
+			'Jumlah Bayar','Kode Supplier','Nama Supplier','Kota','Line');
 		$data['fields']=array('no_bukti','date_paid','purchase_order_number','po_date','how_paid','amount',
-				'amount_paid', 'supplier_number','supplier_name','city');
+				'amount_paid', 'supplier_number','supplier_name','city','line_number');
 		$data['field_key']='no_bukti';
 		$data['caption']='DAFTAR PEMBAYARAN FAKTUR PEMBELIAN';
 
@@ -34,30 +34,34 @@ class Payables_payments extends CI_Controller {
 		
 		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
-		$faa[]=criteria("Nomor PO","sid_po_number");
+		$faa[]=criteria("Nomor","no_bukti");
+		$faa[]=criteria("Faktur","invoice_number");
 		$faa[]=criteria("Supplier","sid_supplier");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){
  		$sql="select p.no_bukti, p.date_paid,p.purchase_order_number,i.po_date,p.how_paid,
- 			i.amount,p.amount_paid,i.supplier_number,c.supplier_name,c.city
+ 			i.amount,p.amount_paid,i.supplier_number,c.supplier_name,c.city,p.line_number
  	 		from payables_payments p
  	 		left join purchase_order i on i.purchase_order_number=p.purchase_order_number 
  	 		left join suppliers c on c.supplier_number=i.supplier_number 
  	 		where  1=1";
-    	$nama=$this->input->get('sid_cust');
+    	$nama=$this->input->get('sid_supplier');
 		$no_bukti=$this->input->get('no_bukti');
 		$no_faktur=$this->input->get('invoice_number');
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
  		if($no_bukti!=''){
- 			$sql.=" and how_paid='$no_bukti'";	
+ 			$sql.=" and no_bukti='$no_bukti'";	
+		} elseif($no_faktur!="") {
+			$sql.=" and i.purchase_order_number='$no_faktur'";
 		} else {
  	 		$sql.=" and date_paid between'$d1' and '$d2'";
 			if($nama!='')$sql.=" and supplier_name like '$nama%'";	
 			if($no_faktur!='')$sql.=" and purchase_order_number='$no_faktur'";	
  	 	}
+		
         echo datasource($sql);
     }	 
 	
@@ -78,53 +82,42 @@ class Payables_payments extends CI_Controller {
 		$this->load->model('supplier_model');
 		$this->load->model('purchase_order_model');
 		$this->load->model('payables_model');
+		$this->load->model('check_writer_model');
+		$this->load->model('check_writer_items_model');
+		$this->load->model('company_model');
+		$this->load->model('chart_of_accounts_model');
+
+		
+   		$no_bukti=$this->nomor_bukti();
+
+		$supplier_number=$this->input->post('supplier_number');
+		$supplier_name='';
+		if($supplier_number!=""){
+			$supplier_name=$this->supplier_model->get_by_id($supplier_number)->row()->supplier_name;		
+		}
 		
 		$faktur=$this->input->post("faktur");
-   		$no_bukti=$this->nomor_bukti();
    		$bayar=$this->input->post("bayar");
 		$total_paid=0;
+		
 		$account=$this->input->post('how_paid_account_id');
 		$bank=$this->bank_accounts_model->get_by_id($account)->row();
 		$account_id=$bank->account_id;
+		
 		$how_paid=strtolower($this->input->post('how_paid'));
 		$trtype='cash in';
-		$supplier_number="";
-		$supplier_name="";
 		switch ($how_paid) {
-			case 'trans in':
+			case '2':
 				$trtype='trans out';
 				break;
-			case 'giro':
+			case '1':
 				$trtype='cheque out';
 				break;
 			default:
 				$trtype='cash out';
 				break;
 		}
-		for($i=0;$i<count($bayar);$i++){
-			if(intval($bayar[$i])<>0){
-				$amount_paid=$bayar[$i];
-				$no_faktur=$faktur[$i];
-				$rfaktur=$this->purchase_order_model->get_by_id($no_faktur)->row();
-				if($supplier_number==""){
-					$rsupp=$this->supplier_model->get_by_id($rfaktur->supplier_number)->row();		
-					$supplier_number=$rsupp->supplier_number;
-					$supplier_name=$rsupp->supplier_name;
-				}
-				$bill_id=$this->payables_model->get_bill_id($no_faktur);
-                $data['no_bukti']=$no_bukti;
-                $data['date_paid']=$this->input->post('date_paid');
-                $data['how_paid']=$how_paid;
-                $data['amount_paid']=$amount_paid;
-                $data['purchase_order_number']=$no_faktur;
-				$data['how_paid_account_id']=$account_id;
-				//$data['supplier_number']=$supplier_number;
-				$data['bill_id']=$bill_id;
-								 
-                $this->payables_payments_model->save($data);
-				$total_paid=$total_paid+$amount_paid;
-			}	
-		}
+
 		//-- simpan juga bukti pembayaran di module kas masuk
 		$rkas['voucher']=$no_bukti;
 		$rkas['check_date']=$this->input->post('date_paid');
@@ -135,9 +128,58 @@ class Payables_payments extends CI_Controller {
 		$rkas['payee']=$supplier_name;
 		$rkas['supplier_number']=$supplier_number;
 		$rkas['memo']="Pelunasan hutang supplier ".$supplier_name;
-		$this->load->model('check_writer_model');
-		$this->check_writer_model->save($rkas); 	 	
+		$rkas['bill_payment']=1; 	
+		
+		$trans_id=$this->check_writer_model->save($rkas); 	 
+		
+		$default_account_id=$this->company_model->setting("accounts_payable");
+
+		for($i=0;$i<count($bayar);$i++){
+			if(intval($bayar[$i])<>0){
+				$amount_paid=$bayar[$i];
+				$no_faktur=$faktur[$i];
+
+				$rfaktur=$this->purchase_order_model->get_by_id($no_faktur)->row();
+				$bill_id=$this->payables_model->get_bill_id($no_faktur);
+
+                $data['no_bukti']=$no_bukti;
+                $data['date_paid']=$this->input->post('date_paid');
+                $data['how_paid']=$how_paid;
+                $data['amount_paid']=$amount_paid;
+                $data['purchase_order_number']=$no_faktur;
+				$data['how_paid_account_id']=$account_id;
+				$data['bill_id']=$bill_id;
+								 
+                $this->payables_payments_model->save($data);
+				$total_paid=$total_paid+$amount_paid;
+				
+				$datacw['trans_id']=$trans_id;
+				$datacw['account_id']=$rfaktur->account_id;
+				if($datacw['account_id']=="")$datacw['account_id']=$default_account_id;
+				
+				$coa=$this->chart_of_accounts_model->get_by_account_id($datacw['account_id'])->row();
+				
+				$datacw['account']=$coa->account;
+				$datacw['description']=$coa->account_description;
+				
+				$datacw['amount']=$amount_paid;
+				$datacw['invoice_number']=$no_faktur;
+				
+				
+				$this->check_writer_items_model->save($datacw);
+
+				echo mysql_error();
+				
+			}	
+		}
+		
+		$this->check_writer_model->recalc($no_bukti);
+		
+		echo mysql_error();
+		
+		
 		$this->nomor_bukti(true);
+		
 		redirect(base_url().'index.php/payables_payments/view/'.$no_bukti);
 	}
     function add(){
@@ -182,7 +224,27 @@ class Payables_payments extends CI_Controller {
    }
    function delete_no_bukti($no_bukti)
    {
+		$this->load->model("periode_model");
+		$this->load->model("check_writer_model");
+
+		if($q=$this->check_writer_model->get_by_id($no_bukti)){
+			if($this->periode_model->closed($q->row()->check_date)){
+					$message="Periode sudah ditutup tidak bisa dihapus !";
+					$this->view($no_bukti,$message);
+					return false;
+			}
+			if($q->row()->posted) {
+				$message="Sudah dijurnal tidak bisa dihapus !";
+				$this->view($no_bukti,$message);
+				return false;
+			}
+		} else {
+			$message="Not Found !";
+			$this->view($no_bukti,$message);
+			return false;
+		}
    		$this->payables_payments_model->delete($no_bukti);
+		$this->browse();
    }
    function list_by_invoice($invoice)
    {
@@ -200,21 +262,58 @@ class Payables_payments extends CI_Controller {
    		amount_paid,line_number,bill_id from payables_payments where bill_id='.$bill_id);
    }
         
-   function view($no_bukti){
+   function view($no_bukti,$message=""){
    		$this->load->model('check_writer_model');
+   		$this->load->model('supplier_model');
 		$rcek=$this->check_writer_model->get_by_id($no_bukti)->row();
+		$data['posted']=$rcek->posted;
+		$data['closed']=0;
+		$data['message']=$message;
 		if($rcek){
 			$data['voucher']=$rcek->voucher;
 			$data['date_paid']=$rcek->check_date;
 			$data['amount_paid']=number_format($rcek->payment_amount);
 			$data['account_number']=$rcek->account_number;
 			$data['trans_type']=$rcek->trans_type;
-			$data['supplier_info']=$rcek->supplier_number.' - '.$rcek->payee;
+			$data['supplier_number']=$rcek->supplier_number;
+			$data['supplier_info']=$rcek->payee;
+			if($data['supplier_number']=="") { //???
+				$q=$this->db->query("select cwi.invoice_number,inv.supplier_number 
+					from check_writer_items cwi
+					left join purchase_order inv on inv.purchase_order_number=cwi.invoice_number
+					where cwi.trans_id=".$rcek->trans_id." and cwi.invoice_number<>''")->row();
+				if($q) {
+					$data['supplier_number']=$q->supplier_number;
+					$q=$this->supplier_model->get_by_id($data['supplier_number'])->row();
+					if($q)$data['supplier_info']=$q->supplier_name;
+					$this->db->query("update check_writer set supplier_number='".$data['supplier_number']."',
+						payee='".$data['supplier_info']."'
+						where voucher='".$rcek->voucher."'");
+				
+					echo mysql_error();
+				}
+			}
+			
   		
 			$this->template->display_form_input('purchase/payment_multi_view',$data,'');
 						
 		} else {
-			echo 'Nomor voucher tidak ditemukan ! </br>Atau tidak terdaftar di kas masuk ! </br>Nomor Bukti: '.$no_bukti;
+			 
+			$rcek=$this->payables_payments_model->get_by_id($no_bukti)->row();
+			if($rcek){
+				$data['voucher']=$no_bukti;
+				$data['date_paid']=$rcek->date_paid;
+				$data['amount_paid']=number_format($rcek->amount_paid);
+				$data['account_number']=$rcek->account_number;
+				$data['trans_type']=$rcek->how_paid;
+				$data['supplier_info']='';
+				$data['supplier_number']='';
+
+				
+				$this->template->display_form_input('purchase/payment_multi_view',$data,'');
+			} else {
+				echo 'Nomor voucher tidak ditemukan ! </br>Atau tidak terdaftar di kas masuk ! </br>Nomor Bukti: '.$no_bukti;
+			}
 		}
    }
     function load_nomor($voucher){
@@ -224,6 +323,17 @@ class Payables_payments extends CI_Controller {
 		where p.no_bukti='$voucher'";
         echo datasource($sql);
     }
+	
+	function posting($voucher) {
+		$this->load->model('check_writer_model');
+		$this->check_writer_model->posting($voucher);
+		$this->view($voucher);
+	}
+	function unposting($voucher) {
+		$this->load->model('check_writer_model');
+		$this->check_writer_model->unposting($voucher);
+		$this->view($voucher);
+	}
 
       
     

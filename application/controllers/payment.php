@@ -111,9 +111,12 @@ class Payment extends CI_Controller {
    function add_multi_save(){
     
     }
-   function view($no_bukti){
+   function view($no_bukti,$message=""){
    		$this->load->model('check_writer_model');
 		$rcek=$this->check_writer_model->get_by_id($no_bukti)->row();
+		$data['posted']=$rcek->posted;
+		$data['closed']=0;
+		$data['message']=$message;
 		if($rcek){
 			$data['voucher']=$rcek->voucher;
 			$data['date_paid']=$rcek->check_date;
@@ -154,6 +157,12 @@ class Payment extends CI_Controller {
    		$this->load->model('bank_accounts_model');
 		$this->load->model('customer_model');
 		$this->load->model('invoice_model');
+		$this->load->model('check_writer_items_model');
+		$this->load->model('company_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('check_writer_model');
+
+		
 		$faktur=$this->input->post("faktur");
    		$no_bukti=$this->nomor_bukti();
    		$bayar=$this->input->post("bayar");
@@ -163,19 +172,34 @@ class Payment extends CI_Controller {
 		$account_id=$bank->account_id;
 		$how_paid=strtolower($this->input->post('how_paid'));
 		$trtype='cash in';
-		$cust="";
-		$cust_name="";
+		
 		switch ($how_paid) {
-			case 'trans in':
+			case '2':
 				$trtype='trans in';
 				break;
-			case 'giro':
+			case '1':
 				$trtype='cheque in';
 				break;
 			default:
 				$trtype='cash in';
 				break;
 		}
+		$cust=$this->input->post('customer_number');
+		$cust_name=$this->customer_model->get_by_id($customer_number)->row()->company;		
+		//-- simpan juga bukti pembayaran di module kas masuk
+		$rkas['voucher']=$no_bukti;
+		$rkas['check_date']=$this->input->post('date_paid');
+		$rkas['deposit_amount']=$total_paid;
+		$rkas['payment_amount']=0;
+		$rkas['account_number']=$account;
+		$rkas['trans_type']=$trtype;
+		$rkas['payee']=$cust_name;
+		$rkas['supplier_number']=$cust;
+		$rkas['memo']="Pelunasan piutang pelangan ".$cust_name;
+
+		$trans_id=$this->check_writer_model->save($rkas); 	 
+		$default_account_id=$this->company_model->setting("accounts_receivables");
+
 		for($i=0;$i<count($bayar);$i++){
 			if(intval($bayar[$i])<>0){
 				$amount_paid=$bayar[$i];
@@ -195,20 +219,31 @@ class Payment extends CI_Controller {
 				 
                 $this->payment_model->save($data);
 				$total_paid=$total_paid+$amount_paid;
+
+				$datacw['trans_id']=$trans_id;
+				$datacw['account_id']=$rfaktur->account_id;
+				if($datacw['account_id']=="")$datacw['account_id']=$default_account_id;
+				
+				$coa=$this->chart_of_accounts_model->get_by_account_id($datacw['account_id'])->row();
+				
+				$datacw['account']=$coa->account;
+				$datacw['description']=$coa->account_description;
+				
+				$datacw['amount']=$amount_paid;
+				$datacw['invoice_number']=$no_faktur;
+				
+				
+				$this->check_writer_items_model->save($datacw);
+
+				echo mysql_error();
+
 			}	
 		}
-		//-- simpan juga bukti pembayaran di module kas masuk
-		$rkas['voucher']=$no_bukti;
-		$rkas['check_date']=$this->input->post('date_paid');
-		$rkas['deposit_amount']=$total_paid;
-		$rkas['payment_amount']=0;
-		$rkas['account_number']=$account;
-		$rkas['trans_type']=$trtype;
-		$rkas['payee']=$cust_name;
-		$rkas['supplier_number']=$cust;
-		$rkas['memo']="Pelunasan piutang pelangan ".$cust_name;
-		$this->load->model('check_writer_model');
-		$this->check_writer_model->save($rkas); 	 	
+
+		$this->check_writer_model->recalc($no_bukti,'deposit_amount');
+		
+		echo mysql_error();
+	
 		$this->nomor_bukti(true);
 		redirect('payment/view/'.$no_bukti);
    }
@@ -280,6 +315,30 @@ class Payment extends CI_Controller {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
     }        
+   function delete_no_bukti($no_bukti)
+   {
+		$this->load->model("periode_model");
+		$this->load->model("check_writer_model");
+
+		if($q=$this->check_writer_model->get_by_id($no_bukti)){
+			if($this->periode_model->closed($q->row()->check_date)){
+					$message="Periode sudah ditutup tidak bisa dihapus !";
+					$this->view($no_bukti,$message);
+					return false;
+			}
+			if($q->row()->posted) {
+				$message="Sudah dijurnal tidak bisa dihapus !";
+				$this->view($no_bukti,$message);
+				return false;
+			}
+		} else {
+			$message="Not Found !";
+			$this->view($no_bukti,$message);
+			return false;
+		}
+   		$this->payment_model->delete($no_bukti);
+		$this->browse();
+   }
     function load_nomor($voucher){
 		$sql="select i.invoice_number,i.invoice_date,p.date_paid,i.amount,
 		p.amount_paid from payments p left join invoice i on i.invoice_number=p.invoice_number
@@ -287,6 +346,16 @@ class Payment extends CI_Controller {
         echo datasource($sql);
     }
 
+	function posting($voucher) {
+		$this->load->model('check_writer_model');
+		$this->check_writer_model->posting($voucher);
+		$this->view($voucher);
+	}
+	function unposting($voucher) {
+		$this->load->model('check_writer_model');
+		$this->check_writer_model->unposting($voucher);
+		$this->view($voucher);
+	}
     
 }
  

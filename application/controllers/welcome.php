@@ -21,13 +21,16 @@ class Welcome extends CI_Controller {
 function __construct()
  {
  parent::__construct();
+ $this->load->helper(array('url','form','mylib_helper'));
+
  $this->load->library('template');
- $this->load->helper('url');
 }
 
 function index()
 {
- $this->template->display('welcome_message');
+    $this->session->set_userdata('use_iframe',true);
+	$this->template->display('welcome_messagex');
+    $this->session->unset_userdata('use_iframe');
 }
 
 }

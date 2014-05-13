@@ -37,6 +37,24 @@ class Nomor extends CI_Controller {
    		$sql.=" order by varname";
         echo datasource($sql);
     }	 
+    function add()	{
+    	if($this->input->post()){
+	    	$id=$this->input->post('varname');
+	    	$id=urldecode($id);
+	        $data['varname']=$id;
+	        $data['varvalue']=$this->input->post('varvalue');
+	        $data['keterangan']=$this->input->post('keterangan');
+	        $this->sysvar_model->save($data);
+	        $message='Update Success';
+	        $this->browse();
+    		
+		} else {
+			 $data=$this->set_defaults();
+	         $data['mode']='add';
+	        $this->template->display_form_input($this->file_view,$data);
+		}
+    }
+
     function view($id,$message=null)	{
     	 $id=urldecode($id);
          $data['id']=$id;

@@ -231,26 +231,59 @@ class Banks extends CI_Controller {
 			from check_writer 
 			where account_number='$bank_account_number' 
 			and check_date between '$date_from' and '$date_to' 
+			and trans_type not like '% trx'
 			order by check_date
 			
 			";
-		
-
-
         $query=$this->db->query($sql);
-		 
         $i=1;
 		if($query)foreach($query->result_array() as $row) {
 			$awal=$awal+$row['deposit_amount']-$row['payment_amount'];
 			$row['deposit_amount']=number_format($row['deposit_amount']);
 			$row['payment_amount']=number_format($row['payment_amount']);
 			$row["saldo"]=number_format($awal);
-			$rows[$i++]=$row;
+			$rows[]=$row;
 		};	
+		$sql="select voucher,check_date,deposit_amount,payment_amount,supplier_number,
+			payee,memo,trans_type ,account_number
+			from check_writer 
+			where check_date between '$date_from' and '$date_to' 
+			and trans_type like '% trx'
+			order by check_date
+			
+			";
+        $query=$this->db->query($sql);
+        $i=1;
+		if($query)foreach($query->result_array() as $row) {
+			$found=false;
+			$use_account=false;
+			if($row['account_number']==$bank_account_number) {
+				$found=true;
+				$use_account=true;
+			} else if($row['supplier_number']==$bank_account_number){
+				$found=true;
+				$use_account=false;
+			}
+			if($found) {
+				
+				if($use_account){
+					$row['payment_amount']=number_format($row['payment_amount']);
+					$awal=$awal-$row['payment_amount'];
+					$row['deposit_amount']=0;
+				} else {
+					$row['deposit_amount']=number_format($row['deposit_amount']);
+					$awal=$awal+$row['deposit_amount'];
+					$row['payment_amount']=0;
+				}
+				$row["saldo"]=number_format($awal);
+				$rows[]=$row;
+			}
+		};	
+
         $data['total']=$i;
         $data['rows']=$rows;
                     
-        echo json_encode($data);
+       echo json_encode($data);
 
 	}
  

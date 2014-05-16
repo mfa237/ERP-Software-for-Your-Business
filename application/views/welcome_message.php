@@ -1,14 +1,10 @@
-<head>
-</head>
-<body>
-	<div class="container">
-	<div class="row-fluid">
+
 		<h1 style="font-size: 50px">Selamat Datang</h1>
 		<p style="font-size:20px">
 		MaxOn adalah sebuah software yang dibuat untuk membantu anda 
         membuat transaksi-transaksi yang ada di perusahaan yang meliputi
         transaksi penjualan:</p>
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4" style="margin-top:5px" align="center">
 			<div class="thumbnail">
 				<img alt="..." src="<?=base_url()?>images/gear.png" 
 					style="margin-bottom: 10px;">			
@@ -27,7 +23,7 @@
 	       </div>
 	       </div>
         </div>
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4"  style="margin-top:5px" >
 			<div class="thumbnail">
 				<img alt="..." src="<?=base_url()?>images/rocket.png" 
 					style="margin-bottom: 10px;">			
@@ -45,7 +41,7 @@
 	       </div>
 	       </div>
         </div>
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4"  style="margin-top:5px" >
 			<div class="thumbnail">
 				<img alt="..." src="<?=base_url()?>images/profle.png" 
 					style="margin-bottom: 10px;">			
@@ -63,7 +59,7 @@
 	       </div>
 	       </div>
         </div>
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4"  style="margin-top:5px" >
 			<div class="thumbnail">
 				<img alt="..." src="<?=base_url()?>images/frames.png" 
 					style="margin-bottom: 10px;">			
@@ -79,7 +75,7 @@
 	       </div>
 	       </div>
         </div>
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4"  style="margin-top:5px" >
 			<div class="thumbnail">
 				<img alt="..." src="<?=base_url()?>images/rocket.png" 
 					style="margin-bottom: 10px;">			
@@ -91,7 +87,7 @@
 	       </div>
 	       </div>
         </div>
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4"  style="margin-top:5px" >
 			<div class="thumbnail">
 				<img alt="..." src="<?=base_url()?>images/flame.png" 
 					style="margin-bottom: 10px;">			
@@ -106,10 +102,5 @@
 	       </div>
 	       </div>
         </div>
-
-
-
-	</div>
-	</div>
-<footer>Powered by MAXON http://www.talagasoft.com</footer>		
-</body>
+ 
+ 

@@ -25,9 +25,19 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 	}
+	function validate_delete_receive_po($nomor_receive)
+	{
+		$cnt=$this->db->query("select count(1) as cnt from purchase_order_lineitems pol
+			join inventory_products ip on ip.id=pol.from_line_number
+			where ip.shipment_id='$nomor_receive'")->row()->cnt;
+		if($cnt) return false;
+	
+		return true;
+
+	}
 	function delete($id){
 		$this->db->where($this->primary_key,$id);
-		$this->db->delete($this->table_name);
+		return $this->db->delete($this->table_name);
 	}
 	function delete_by_id($id){
 		$this->db->where('id',$id);

@@ -1,12 +1,28 @@
-<div class="col-sm-6 col-md-8">
+<div>
 	<h1>CREDIT MEMO<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/purchase_crmemo/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/purchase_crmemo');		
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
+	
+		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/purchase_crmemo");
+		}
+	</script>
+
+
 </div></H1>
 <div class="thumbnail">		
 <form id="frmCrDb"  method="post">

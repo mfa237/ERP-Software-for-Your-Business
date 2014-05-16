@@ -1,4 +1,4 @@
-<div class="col-sm-6 col-md-8"><h1>TERMIN PEMBAYARAN<div class="thumbnail">
+<div><h1>TERMIN PEMBAYARAN<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		

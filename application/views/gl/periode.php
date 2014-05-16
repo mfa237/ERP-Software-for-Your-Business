@@ -1,4 +1,23 @@
-<?php echo validation_errors(); ?>
+<div><h1>FINANCIAL PERIODS<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save_periode()','save');		
+	echo link_button('Help', 'load_help()','help');		
+	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/periode");
+		}
+	</script>
+	
+</div></H1>
+<div class="thumbnail">	<?php echo validation_errors(); ?>
 <?php 
     if($mode=='view'){
             echo form_open('periode/update','id=myform name=myform');
@@ -9,7 +28,7 @@
     }
 ?>
 
-   <div class='box6x'><h1>FINANCIAL PERIODS</h1>
+   
    <table>
 	<tr>
 		<td>Periode:</td><td>
@@ -41,17 +60,12 @@
                 <?php echo form_radio('closed','Yes',!($closed=='0'||$closed==''));?>Yes
             </td>
        </tr>
- 	 
-	 <tr><td>
-            <a href="#" class="easyui-linkbutton" 
-                  data-options="iconCls:'icon-save'"
-                  onclick='save_periode()'
-                  >Save</a>	 
-	 </td><td>&nbsp;</td></tr>
+ 
    </table>
 <?
 echo form_close();
 ?>
+</div>
 <script type="text/javascript">
     function save_periode(){
         if($('#period').val()===''){alert('Isi dulu kode periode !');return false;};

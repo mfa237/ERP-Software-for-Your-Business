@@ -1,12 +1,27 @@
-<div class="col-sm-6 col-md-8"><h1>PEMBAYARAN HUTANG<div class="thumbnail">
+<div><h3>PEMBAYARAN HUTANG</H3><div class="thumbnail">
 	<?
 	echo link_button('Save', 'process()','save');		
 	echo link_button('Print', 'print_pay()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/payables_payments/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/payables_payments');		
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
-</div></H1>
+	
+		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/payables_payments");
+		}
+	</script>
+
+</div>
 <div class="thumbnail">	
 	<form id="myform" method="POST" action="<?=base_url()?>index.php/payables_payments/save">
 	<table>
@@ -35,13 +50,26 @@
 			</td>
 		</tr>	
 	</table>
-	
-	<h1></h1>
+
 	<div id="divItem" >
-		<div id="divItemTop"></div>
-		<div id="divItemBtm">
-			
-		</div>
+		<table id="dgInvoice" class="easyui-datagrid"  
+			data-options="
+				toolbar: '',
+				singleSelect: true,
+				url: ''
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'purchase_order_number',width:80">Faktur</th>
+					<th data-options="field:'po_date',width:80">Tanggal</th>
+					<th data-options="field:'terms',width:80">Termin</th>
+					<th data-options="field:'due_date',width:80">Tempo</th>
+					<th data-options="field:'amount',width:80,align:'right'">Jumlah</th>
+					<th data-options="field:'saldo',width:80,align:'right'">Saldo</th>
+					<th data-options="field:'bayar',width:'100'">Bayar</th>
+				</tr>
+			</thead>
+		</table>
 	</div>
 
 	
@@ -54,7 +82,7 @@
 			data-options="
 				toolbar: '#toolbar-search-cust',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/supplier/select'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -83,7 +111,7 @@
 			select_invoice();
 			
 		} else {
-			alert("Pilih salah satu nomor customer !");
+			alert("Pilih salah satu nomor supplier !");
 		}
 	}
 	
@@ -98,10 +126,8 @@
  		if($('#supplier_number').val()==''){alert('Pilih supplier !');return false;}
  		if($('#how_paid_account_id').val()==''){alert('Pilih rekening !');return false;}
  		if($('#how_paid').val()==''){alert('Pilih jenis pembayaran !');return false;}
- 		$("#divItem").fadeIn("fast");
- 		url=CI_ROOT+"purchase_invoice/select_list";
- 		param="q=not_paid&supp="+$('#supplier_number').val();
- 		void get_this(url,param,'divItemTop');
+		$('#dgInvoice').datagrid({url:'<?=base_url()?>index.php/purchase_invoice/invoice_not_paid/'+$('#supplier_number').val()});
+		$('#dgInvoice').datagrid('reload');
 	}
 	function process(){
 		if($('#amount_paid').val()=='0' || $('#amount_paid').val()==''){

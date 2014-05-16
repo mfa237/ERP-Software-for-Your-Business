@@ -55,6 +55,7 @@ if(!function_exists('datasource')){
     function datasource($sql){
         $CI =& get_instance();
         $query=$CI->db->query($sql);
+		$rows=null;
 		if($query){ 
 	        foreach($query->result_array() as $row){
 	            $rows[]=$row;

@@ -130,7 +130,7 @@ function delete($id){
 		}		 
 		return $ret;
 	}
-	function paling_laku()
+	function paling_laku_old()
 	{
 		$sql="select il.item_number,il.description,sum(il.quantity) as sum_qty 
 		from invoice_lineitems il left join invoice i on i.invoice_number=il.invoice_number
@@ -149,7 +149,42 @@ function delete($id){
 		//var_dump($data);
 		return $data;
 	}
+	function paling_laku()
+	{
+		$sql="select il.item_number,il.description,sum(il.quantity) as sum_qty 
+		from invoice_lineitems il left join invoice i on i.invoice_number=il.invoice_number
+		where i.invoice_type='I' 
+		group by il.item_number,il.description
+		order by sum(il.quantity) desc
+		limit 0,10";
+		$query=$this->db->query($sql);
+		foreach($query->result() as $row){
+			$item=$row->item_number;		//. ' - '.$row->description;
+			if($item=="")$item="Unknown";
+			$qty=$row->sum_qty;
+			if($qty==null)$qty=0;
+			$data[]=array(substr($item,0,10),$qty);
+		}
+		//var_dump($data);
+		return $data;
+	}
+
 	function minimum_stock()
+	{
+		$sql="select i.item_number,i.description,i.reorder_quantity,i.quantity_in_stock 
+		from inventory i
+		limit 0,10";
+		$query=$this->db->query($sql);
+		foreach($query->result() as $row){
+			$item=$row->item_number;	//. ' - '.$row->description;
+			if($item=="")$item="Unknown";
+			$qty=$row->quantity_in_stock;
+			if($qty==null)$qty=0;
+			$data[]=array(substr($item,0,10),$qty);
+		}
+		return $data;
+	}
+	function minimum_stock_old()
 	{
 		$sql="select i.item_number,i.description,i.reorder_quantity,i.quantity_in_stock 
 		from inventory i
@@ -195,7 +230,13 @@ function delete($id){
 		}
 		return $data;
 	}
-	
+	function quantity_in_stock($item_number)
+	{
+		$sql="select sum(qty_masuk)-sum(qty_keluar) as qty from qry_kartustock_union 
+		where item_number='$item_number'";
+		$query=$this->db->query($sql);		
+		return $query->row()->qty;
+	}
 	 
 
 

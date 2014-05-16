@@ -1,4 +1,8 @@
-<?
+<div>
+	<h1>KRITERIA<div class="thumbnail">
+</div></H1>
+<div class="thumbnail">		
+	<?
 if(!isset($target_window)){
 	$target_window=" target='_blank_$rpt_controller'";
 } else {
@@ -45,3 +49,4 @@ if($module=="posting"){
 }
 echo form_close();
 ?>
+</div>

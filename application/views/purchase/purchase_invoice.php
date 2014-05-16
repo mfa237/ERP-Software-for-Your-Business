@@ -1,12 +1,33 @@
-<div class="col-sm-6 col-md-8"><h1>FAKTUR PEMBELIAN<div class="thumbnail">
+<div><h3>FAKTUR PEMBELIAN</H3>
+<div class="thumbnail">
 	<?
+	if($posted=="")$posted=0;
+	if($closed=="")$closed=0;
+	
 	echo link_button('Save', 'save_po()','save');		
 	echo link_button('Print', 'print_faktur()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/purchase_invoice/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/purchase_invoice');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
+	echo link_button('Delete', 'delete_nomor()','cut');
+	
+	if($posted) {
+		echo link_button('UnPosting','','cut','true',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
+	} else {
+		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
+	}
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
-</div></H1>
+	
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="select_receive()">Select Doc Receive</div>
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+	</div>
+	
+</div>
 <div class="thumbnail">	
 	<form id='frmPo' method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -16,6 +37,9 @@
 		<?php echo form_input('purchase_order_number',
                         $purchase_order_number,"id=purchase_order_number"); ?>
                 </td>
+			
+			<td rowspan='5' colspan='3'><div class='thumbnail' style='min-height:100px'>Nama Supplier : <br><?=$supplier_info?></div></td>				
+				
         </tr>	 
        <tr>
             <td>Tanggal</td><td><?php echo form_input('po_date',$po_date,'id=po_date   class="easyui-datetimebox" required');?>
@@ -29,9 +53,10 @@
             "id=supplier_number class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]'");
 			echo link_button('','select_supplier()',"search","true"); 
+			   
 			?>
             </td>
-            <td><?=$supplier_info?></td>
+            
         </tr>	 
        <tr>
             <td>Termin</td><td><?php echo form_dropdown('terms'
@@ -48,66 +73,175 @@
                     ,$comments,'id=comments style="width:300px"');?></td>
        </tr>	  
    </table>
+
+
+
   </form>
-</div>  
-<H1></H1>
-<!-- PURCASE_ORDER_LINEITEMS -->	
-<div id='divItem'>
-	<h5>ITEMS</H5>
-	<div id='dgItem'>
-		<? include_once "purchase_order_items.php"; ?>
+
+<div class="easyui-tabs" style="width:700px;height:550px">
+	<div title="Items" style="padding:10px">
+		<!-- PURCASE_ORDER_LINEITEMS -->	
+		<div id='divItem'>
+		<div id='dgItem'>
+			<? include_once "purchase_order_items.php"; ?>
+		</div>
+		<table id="dg" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tb',
+				url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'item_number',width:80">Kode Barang</th>
+					<th data-options="field:'description',width:150">Nama Barang</th>
+					<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+					<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
+					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
+					<th data-options="field:'total_price',width:60,align:'right',editor:'numberbox'">Jumlah</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+					<th data-options="field:'from_line_doc',width:100,align:'right'">Ref</th>
+					
+				</tr>
+			</thead>
+		</table>
+	<!-- END PURCHASE_ORDER_LINEITEMS -->
+		<h5>TOTAL</H5>
+		<div id='divTotal'> 
+			<table>
+				<tr>
+					<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
+					<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
+					<td>Pajak PPN %: </td><td><input id='po_tax_percent' value='<?=$tax?>' style='width:50px'></td>
+				</tr>
+				<tr>
+					<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
+					<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
+					<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
+						 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
+						   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>             		
+					</td>
+				</tr>
+			</table>		
+		</div>
+	</div>		
 	</div>
-	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',
-			url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
-				<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
-				<th data-options="field:'total_price',width:60,align:'right',editor:'numberbox'">Jumlah</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
-<!-- END PURCHASE_ORDER_LINEITEMS -->
-	<h5>TOTAL</H5>
-	<div id='divTotal'> 
-		<table>
-			<tr>
-				<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
-				<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
-				<td>Pajak PPN %: </td><td><input id='po_tax_percent' value='<?=$tax?>' style='width:50px'></td>
-			</tr>
-			<tr>
-				<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
-				<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
-				<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
-					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-             		   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>             		
-				</td>
-			</tr>
-		</table>		
+
+<!-- PAYMENTS -->
+	<div id='tbPay'>
+		<?=link_button('Delete','delete_payment()','remove');?>
 	</div>
+	<DIV title="Payments" style="padding:10px">
+		
+		<table id="dgPay" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true, toolbar: '#tbPay',
+				url: '<?=base_url()?>index.php/purchase_invoice/list_payment/<?=$purchase_order_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'no_bukti',width:80">Nomor</th>
+					<th data-options="field:'date_paid',width:150">Tanggal Bayar</th>
+					<th data-options="field:'how_paid',width:50,align:'left',editor:'text'">Jenis</th>
+					<th data-options="field:'amount_paid',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Jumlah</th>
+				</tr>
+			</thead>
+		</table>
+	
+	</DIV>
+	
+<!-- RETURN -->
+	<div id='tbRetur'>
+		<?=link_button('Delete','delete_retur()','remove');?>
+	</div>
+	<DIV title="Retur" style="padding:10px">
+	
+		<table id="dgRetur" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,toolbar: '#tbRetur',
+				url: '<?=base_url()?>index.php/purchase_invoice/list_retur/<?=$purchase_order_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'nomor',width:80">Nomor</th>
+					<th data-options="field:'tanggal',width:150">Tanggal</th>
+					<th data-options="field:'amount',width:150">Jumlah</th>
+				</tr>
+			</thead>
+		</table>
+	
+	</DIV>
+
+<!-- MEMO -->
+	<div id='tbCrdb'>
+		<?=link_button('Delete','delete_crdb()','remove');?>
+	</div>
+	<DIV title="Memo" style="padding:10px">
+	
+		<table id="dgCrdb" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,toolbar:'#tbCrdb',
+				url: '<?=base_url()?>index.php/purchase_invoice/list_crdb/<?=$purchase_order_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'nomor',width:80">Nomor</th>
+					<th data-options="field:'tanggal',width:150">Tanggal</th>
+					<th data-options="field:'amount',width:150">Jumlah</th>
+				</tr>
+			</thead>
+		</table>
+	
+	</DIV>
+	
+	<? 
+		$data['gl_id']=$purchase_order_number;
+		echo load_view("gl/jurnal_view",$data); 
+	?> 
+
+<!-- SUMMARY -->
+	<DIV title="Summary" style="padding:10px">
+		<div id='divSum' class='thumbnail'>
+		
+			<?=$summary_info?>
+		
+		</div>
+			
+	</DIV>
+
+
+</div>	
 	
 	
 <? include_once 'supplier_select.php' ?>
+<? include_once 'select_receive_po_supplier.php' ?>
 
 <script type="text/javascript">
 	var url;	
+	var posted=<?=$posted?>;
+	var closed=<?=$closed?>;
     function save_po(){
+
+		if(posted){alert("Nomor ini sudah di jurnal tidak bisa disiman ulang !");return false;}
+		if(closed){alert("Periode sudah ditutup tidak bisa disiman ulang !");	return false;}
+	
         if($('#purchase_order_number').val()==''){alert('Isi nomor purchase order !');return false;}
         if($('#supplier_number').val()==''){alert('Pilih kode supplier !');return false;}
         if($('#terms').val()==''){alert('Pilih termin !');return false;}        
+		
+		hitung_jumlah();
+		
 		url='<?=base_url()?>index.php/purchase_invoice/save';
+
 			$('#frmPo').form('submit',{
 				url: url,
 				onSubmit: function(){
@@ -159,6 +293,85 @@
 			url="<?=base_url()?>index.php/purchase_invoice/print_faktur/"+nomor;
 			window.open(url,'_blank');
 		}
-		
+	function delete_nomor()
+	{
+
+		if(posted){alert("Nomor ini sudah di jurnal tidak bisa dihapus !");return false;}
+		if(closed){alert("Periode sudah ditutup tidak bisa dihapus !");	return false;}
+
+		$.ajax({
+				type: "GET",
+				url: "<?=base_url()?>/index.php/purchase_invoice/delete/"+$('#purchase_order_number').val(),
+				data: "",
+				success: function(result){
+					var result = eval('('+result+')');
+					if(result.success){
+						$.messager.show({
+							title:'Success',msg:result.msg
+						});	
+						window.open('<?=base_url()?>index.php/purchase_invoice','_self');
+					} else {
+						$.messager.show({
+							title:'Error',msg:result.msg
+						});							
+					};
+				},
+				error: function(msg){alert(msg);}
+		}); 				
+	}		
+	function delete_payment() {
+	
+        row = $('#dgPay').datagrid('getSelected');
+        if (row){
+            xurl=CI_ROOT+'payables_payments/delete_no_bukti/'+row['no_bukti'];                             
+            console.log(xurl);xparam='';
+            $.ajax({
+                type: "GET",url: xurl,param: xparam,
+                success: function(msg){
+                	$('#dgPay').datagrid('reload');
+                },
+                error: function(msg){$.messager.alert('Info',msg);
+				}
+			});         
+		}
+	}
+	
+	function delete_retur() {
+        row = $('#dgRetur').datagrid('getSelected');
+        if (row){
+            xurl=CI_ROOT+'purchase_invoice/delete_retur/'+row['nomor'];                             
+            console.log(xurl);xparam='';
+            $.ajax({
+                type: "GET",url: xurl,param: xparam,
+                success: function(msg){
+                	$('#dgRetur').datagrid('reload');
+                },
+                error: function(msg){$.messager.alert('Info',msg);
+           }
+        });         
+		}
+	}	
+	function delete_crdb() {
+        row = $('#dgCrdb').datagrid('getSelected');
+        if (row){
+            xurl=CI_ROOT+'purchase_invoice/delete_crdb/'+row['nomor'];                             
+            console.log(xurl);xparam='';
+            $.ajax({
+                type: "GET",url: xurl,param: xparam,
+                success: function(msg){
+                	$('#dgCrdb').datagrid('reload');
+                },
+                error: function(msg){$.messager.alert('Info',msg);
+           }
+        });         
+		}
+	}
+	function load_help() {
+		window.parent.$("#help").load("<?=base_url()?>index.php/help/load/purchase_invoice");
+	}
+
+
+
+ 
 </script>
     

@@ -91,22 +91,26 @@ class Jurnal extends CI_Controller {
 		$id=$this->jurnal_model->save($data);
         $message='update success';		
 	}
-	function view($gl_id)
+	function view($gl_id,$message="")
 	{
-            $data=$this->set_defaults();
-            $this->_set_rules();
-            $data['mode']='view';
-            $this->db->select("gl_id,date,source,operation");
-            $this->db->from('gl_transactions');
-            $this->db->where('gl_id',$gl_id);
-            $this->db->limit(1);
-            $query=$this->db->get();
-            foreach($query->result_array() as $r){
-                $data['gl_id']=$r['gl_id'];
-                $data['date']=$r['date'];
-                $data['source']=$r['source'];
-                $data['operation']=$r['operation'];
-            }
+		$data=$this->set_defaults();
+		$this->_set_rules();
+		$data['mode']='view';
+		$this->db->select("gl_id,date,source,operation");
+		$this->db->from('gl_transactions');
+		$this->db->where('gl_id',$gl_id);
+		$this->db->limit(1);
+		$query=$this->db->get();
+		foreach($query->result_array() as $r){
+			$data['gl_id']=$r['gl_id'];
+			$data['date']=$r['date'];
+			$data['source']=$r['source'];
+			$data['operation']=$r['operation'];
+		}
+		$data['message']=$message;	
+		$this->load->model('periode_model');
+		$data['closed']=$this->periode_model->closed($data['date']);
+		
 	    $this->template->display_form_input($this->file_view,$data,'');
 	}
 	function update()
@@ -118,8 +122,11 @@ class Jurnal extends CI_Controller {
  		 $id=$this->input->post('gl_id');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
+			
+			unset($data['closed']);
+			
 			$this->jurnal_model->update($id,$data);
-                        $message='Update Success';
+            $message='Update Success';
 		} else {
 			$message='Error Update';
 		}	  
@@ -192,10 +199,17 @@ class Jurnal extends CI_Controller {
         echo datasource($sql);
     }	      
 	function delete($id){
+		$this->load->model("periode_model");
+		$q=$this->jurnal_model->get_by_gl_id($id);
+		if($this->periode_model->closed($q->row()->date)){
+			$message="Periode sudah ditutup tidak bisa dihapus !";
+			$this->view($id,$message);
+			return false;
+		}		
 	 	if($this->jurnal_model->del_jurnal($id)){
 			$this->browse();
 		} else {
-			$this->view($id);
+			$this->view($id,"Tidak bisa hapus jurnal ini");
 		}
 	}
     function delete_item($id){
@@ -206,41 +220,40 @@ class Jurnal extends CI_Controller {
 		}
     }
 	function add_item(){
-            
-            if(isset($_GET)){
-                $data['gl_id']=$_GET['gl_id'];
-                $data['date']=$_GET['date'];
-                $data['operation']=$_GET['operation'];
-                $data['source']=$_GET['source'];
-            } else {
-                $data['gl_id']='';
-                $data['date']='';
-                $data['operation']='';
-                $data['source']='';                
-            }
-             
-           $this->load->model('chart_of_accounts_model');
-           $data['account_lookup']=$this->chart_of_accounts_model->select_list();
-            $this->load->view('gl/add_account',$data);
-        }
-        function save_item(){
-			$account=$this->input->post('account');
-			$accid=$this->chart_of_accounts_model->get_by_id($account)->row()->id;
-            $data['gl_id']=$this->input->post('gl_id');
-            $data['date']=$this->input->post('date');
-            $data['account_id']=$accid;
-            $data['debit']=$this->input->post('debit');
-			if($data['debit']=='')$data['debit']='0';
-            $data['credit']=$this->input->post('credit');
-			if($data['credit']=='')$data['credit']='0';
-            $data['source']=$this->input->post('source');
-            $data['operation']=$this->input->post('operation');
-            if($this->jurnal_model->save($data)){
-				echo json_encode(array('success'=>true));
-			} else {
-				echo json_encode(array('msg'=>'Some errors occured.'));
-			}
-        }
+		if(isset($_GET)){
+			$data['gl_id']=$_GET['gl_id'];
+			$data['date']=$_GET['date'];
+			$data['operation']=$_GET['operation'];
+			$data['source']=$_GET['source'];
+		} else {
+			$data['gl_id']='';
+			$data['date']='';
+			$data['operation']='';
+			$data['source']='';                
+		}
+
+		$this->load->model('chart_of_accounts_model');
+		$data['account_lookup']=$this->chart_of_accounts_model->select_list();
+		$this->load->view('gl/add_account',$data);
+    }
+	function save_item(){
+		$account=$this->input->post('account');
+		$accid=$this->chart_of_accounts_model->get_by_id($account)->row()->id;
+		$data['gl_id']=$this->input->post('gl_id');
+		$data['date']=$this->input->post('date');
+		$data['account_id']=$accid;
+		$data['debit']=$this->input->post('debit');
+		if($data['debit']=='')$data['debit']='0';
+		$data['credit']=$this->input->post('credit');
+		if($data['credit']=='')$data['credit']='0';
+		$data['source']=$this->input->post('source');
+		$data['operation']=$this->input->post('operation');
+		if($this->jurnal_model->save($data)){
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+	}
 	function items($kode){
 		$sql="select c.account,c.account_description,g.debit,g.credit,
 		g.source,g.operation,g.transaction_id,g.custsuppbank

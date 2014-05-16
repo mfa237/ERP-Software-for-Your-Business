@@ -1,57 +1,77 @@
-<div class="col-sm-6 col-md-8"><h1>PURCHASE ORDER <div class="thumbnail">
+ 
+<div class="max-tool"><h1>PURCHASE ORDER</H1><div class="thumbnail tool">
 	<?
-	echo link_button('Save', 'save_po()','save');		
+	$disabled="";$disabled_edit="";
+	if(!($mode=="add" or $mode=="edit"))$disabled=" disabled";
+	if($mode=="edit")$disabled_edit=" disabled";
+	if($mode=="edit" or $mode=="add") echo link_button('Save', 'save_po()','save');		
+	
+	if($mode=="view") {
+		echo link_button('Edit', '','edit','true',base_url().'index.php/purchase_order/view/'.$purchase_order_number.'/edit');		
+		echo link_button('Add','','add','true',base_url().'index.php/purchase_order/add');		
+		echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_order/view/'.$purchase_order_number);		
+		echo link_button('Delete', 'delete_nomor()','cut');		
+	}
 	echo link_button('Print', 'print_po()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/purchase_order/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/purchase_order');		
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
-</div></H1>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/purchase_order");
+		}
+	</script>
+	
+</div>
 <div class="thumbnail">	
 <form id='frmPo' method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
    <table>
 		<tr>
-			<td>Nomor PO</td><td><?php
-			if($mode=="view"){
-				echo "<h2>$purchase_order_number</h2>";	
-				echo "<input type='hidden' name='purchase_order_number' id='purchase_order_number' value='$purchase_order_number'>";
-			} else {
+			<td>Nomor PO</td>
+			<td><?php
 				 echo form_input('purchase_order_number',
 				$purchase_order_number,"id='purchase_order_number' 
-				class='easyui-validatebox' 
-				data-options='required:true,
-				validType:length[3,30]'"); 
-			}
+				class='easyui-validatebox' data-options='required:true,	validType:length[3,30]' ".$disabled.$disabled_edit); 
 			?></td>
        </tr>	 
        <tr>
         	<td>Tanggal</td><td><?php echo form_input('po_date',$po_date,'id=po_date  
-        	class="easyui-datetimebox" required:true');?></td>
+        	class="easyui-datetimebox" required:true '.$disabled);?></td>
        </tr>	 
        <tr>
             <td>Supplier</td><td colspan=4><?php 
             echo form_input('supplier_number',$supplier_number,
             "id=supplier_number class='easyui-validatebox' data-options='required:true,
-			validType:length[3,30]'");
-			echo link_button('','select_supplier()',"search","true"); 
+			validType:length[3,30]'".$disabled.$disabled_edit);
+			if($mode=="add") echo link_button('','select_supplier()',"search","true"); 
 			 
-            ?></td>
-            <td><?=$supplier_info?></td>
+            ?>
+			<span id='supplier_name' name='supplier_name'><?=$supplier_info?></span>
+			</td>
+            
        </tr>	 
        <tr>
             <td>Termin</td><td><?php echo form_dropdown('terms',$term_list,$terms,"id=terms 
 			class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]'            
-            ");?></td>
+            ".$disabled);?></td>
        </tr>
        <tr>
             <td>Rencana Diterima</td>
-            <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" required');?></td>
+            <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" required'.$disabled);?></td>
        </tr>
        <tr>
-            <td>Keterangan</td><td colspan="3"><?php echo form_input('comments',$comments,'id=comments style="width:300px"');?></td>
+            <td>Keterangan</td><td colspan="3"><?php echo form_input('comments',$comments,'id=comments style="width:300px"'.$disabled);?></td>
        </tr>
        <tr><td></td><td></td></tr>
        <tr>
@@ -63,56 +83,112 @@
    </table>
 </form>
 </div> 
-<!-- PURCASE_ORDER_LINEITEMS -->	
-<div id='divItem'>
-	<h5>ITEMS</H5>
-	<div id='dgItem'>
-		<? include_once "purchase_order_items.php"; ?>
+ 
+<div class="easyui-tabs" style="width:700px;height:550px">
+	<div title="Items" style="padding:10px">
+	<!-- PURCASE_ORDER_LINEITEMS -->	
+	<div id='divItem'>
+		 
+		<div id='dgItem'>
+			<? include_once "purchase_order_items.php"; ?>
+		</div>
+		<table id="dg" class="easyui-datagrid"  
+			style="width:600px;min-height:800px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tb',
+				url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'item_number',width:80">Kode Barang</th>
+					<th data-options="field:'description',width:150">Nama Barang</th>
+					<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+					<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
+					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
+					<th data-options="field:'total_price',width:60,align:'right',editor:'numberbox'">Jumlah</th>
+					<th data-options="field:'qty_recvd',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty Recvd</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+				</tr>
+			</thead>
+		</table>
+	<!-- END PURCHASE_ORDER_LINEITEMS -->
+		<h5>TOTAL</H5>
+		<div id='divTotal'> 
+			<table>
+				<tr>
+					<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
+					<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
+					<td>Pajak PPN %: </td><td><input id='po_tax_percent' value='<?=$tax?>' style='width:50px'></td>
+				</tr>
+				<tr>
+					<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
+					<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
+					<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
+						 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
+						   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
+					</td>
+				</tr>
+			</table>		
+		</div>
+		
+	</div>	
 	</div>
-	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',
-			url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
-				<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
-				<th data-options="field:'total_price',width:60,align:'right',editor:'numberbox'">Jumlah</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
-<!-- END PURCHASE_ORDER_LINEITEMS -->
-	<h5>TOTAL</H5>
-	<div id='divTotal'> 
-		<table>
-			<tr>
-				<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
-				<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
-				<td>Pajak PPN %: </td><td><input id='po_tax_percent' value='<?=$tax?>' style='width:50px'></td>
-			</tr>
-			<tr>
-				<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
-				<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
-				<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
-					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-             		   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
-				</td>
-			</tr>
-		</table>		
+	<div title='Receive' style="padding:10px">
+		<table id="dgRcv" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true, toolbar: '#tbRcv',
+				url: '<?=base_url()?>index.php/receive_po/list_by_po/<?=$purchase_order_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'shipment_id',width:100">Nomor</th>
+					<th data-options="field:'date_received',width:100">Tanggal</th>
+					<th data-options="field:'warehouse_code',width:100">Gudang</th>
+					<th data-options="field:'item_number',width:100">Item Number</th>
+					<th data-options="field:'description',width:100">Description</th>
+					<th data-options="field:'quantity_received',width:100">Quantity</th>
+					<th data-options="field:'receipt_by',width:100">Petugas</th>
+					<th data-options="field:'selected',width:100">Invoiced</th>
+				</tr>
+			</thead>
+		</table>
+		
 	</div>
-	
-	
-<? include_once 'supplier_select.php' ?>
 
+	<div title='Invoice' style="padding:10px">
+		<table id="dgInvoice" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true, toolbar: '#tbInvoice',
+				url: '<?=base_url()?>index.php/purchase_invoice/list_by_po/<?=$purchase_order_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'purchase_order_number',width:100">Nomor</th>
+					<th data-options="field:'po_date',width:100">Tanggal</th>
+					<th data-options="field:'terms',width:100">Terms</th>
+					<th data-options="field:'amount',width:100">Amount</th>
+				</tr>
+			</thead>
+		</table>
+	
+	</div>
+
+</div>
+
+
+<? include_once 'supplier_select.php' ?>
+<div id="tbRcv">
+	<?=link_button('Add','','add','true',base_url().'index.php/receive_po/add/'.$purchase_order_number);	?>	
+	<?=link_button('Refresh','load_receive()','reload');	?>	
+	<?=link_button('View','view_receive()','edit');	?>	
+</div>
 <script type="text/javascript">
 	var url;	
     function save_po(){
@@ -184,5 +260,45 @@
 			url="<?=base_url()?>index.php/purchase_order/print_po/"+po_number;
 			window.open(url,'_blank');
 		}
+		
+	function delete_nomor()
+	{
+		$.ajax({
+				type: "GET",
+				url: "<?=base_url()?>/index.php/purchase_order/delete/"+$('#purchase_order_number').val(),
+				data: "",
+				success: function(result){
+					var result = eval('('+result+')');
+					if(result.success){
+						$.messager.show({
+							title:'Success',msg:result.msg
+						});	
+						//window.open('<?=base_url()?>index.php/purchase_order','_self');
+					} else {
+						$.messager.show({
+							title:'Error',msg:result.msg
+						});							
+					};
+				},
+				error: function(msg){alert(msg);}
+		}); 				
+	}		
+	function load_receive()
+	{
+		var url='<?=base_url()?>index.php/receive_po/list_by_po/<?=$purchase_order_number?>';
+		$('#dgRcv').datagrid({url:url});
+		$('#dgRcv').datagrid('reload');
+	}
+	function view_receive()
+	{
+        row = $('#dgRcv').datagrid('getSelected');
+        if (row){
+			shipment_id=row['shipment_id'];
+			url="<?=base_url()?>index.php/receive_po/view/"+shipment_id;
+			window.open(url,"_self");
+		}
+	
+	}
+		
 </script>
     

@@ -1,5 +1,47 @@
-<script src="<?=base_url();?>js/lib.js"></script>
-<?php echo validation_errors(); ?>
+<div><h4>MUTASI ANTAR REKENING</h4>
+	<div class="thumbnail">
+	<?
+	echo link_button('Save', 'save_this()','save');		
+	echo link_button('Print', 'print_voucher()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/cash_mutasi/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/cash_mutasi');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/cash_mutasi/view/'.$voucher);		
+	echo link_button('Delete','','remove','true',base_url().'index.php/cash_mutasi/delete/'.$voucher);		
+	
+	if($posted) {
+		echo link_button('UnPosting','','cut','true',base_url().'index.php/cash_mutasi/unposting/'.$voucher);		
+	} else {
+		echo link_button('Posting','','ok','true',base_url().'index.php/cash_mutasi/posting/'.$voucher);		
+	}
+	echo link_button('Help', 'load_help()','help');		
+	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/cash_mutasi");
+		}
+	</script>
+	
+</div>
+<div class="thumbnail">
+
+<?php if (validation_errors()) { ?>
+	<div class="alert alert-error">
+	<button type="button" class="close" data-dismiss="alert">x</button>
+	<h4>Terjadi Kesalahan!</h4> 
+	<?php echo validation_errors(); ?>
+	</div>
+<?php } ?>
+ <?php if($message!="") { ?>
+	<div class="alert alert-success"><? echo $message;?></div>
+<? } ?>
+
 <?php 
     if($mode=='view'){
             echo form_open('cash_mutasi/update','id=myform name=myform');
@@ -10,13 +52,15 @@
     }
 ?>
 
-   <div class='box6x'><h1>MUTASI ANTAR REKENING</h1>
+   
    <table>
        <tr>
             <td>Jenis</td><td>
-                <?php echo form_radio('trans_type','cash trx',$trans_type=='cash trx');?>Cash
-                <?php echo form_radio('trans_type','cheque trx',$trans_type=='cheque trx');?>Giro/Cek
-                <?php echo form_radio('trans_type','trans trx',$trans_type=='trans trx');?>Transfer
+				<div class='thumbnail'>
+                <?php echo form_radio('trans_type','cash trx',$trans_type=='cash trx');?>Cash  &nbsp; &nbsp;
+                <?php echo form_radio('trans_type','cheque trx',$trans_type=='cheque trx');?>Giro/Cek  &nbsp; &nbsp;
+                <?php echo form_radio('trans_type','trans trx',$trans_type=='trans trx',' checked ');?>Transfer  &nbsp; &nbsp;
+				</div>
             </td>
        </tr>
        <tr>
@@ -42,6 +86,7 @@
        </tr>
 	<tr>
 		<td>Voucher</td><td>
+		<h3>
 		<?php
 		echo form_hidden('mode',$mode);
 		if($mode=='view'){
@@ -50,19 +95,17 @@
 		} else { 
 			echo form_input('voucher',$voucher);
 		}		
-		?></td>
+		?>
+		</h3>
+		</td>
 	</tr>	 
- 	 
-	 <tr><td>
-            <a href="#" class="easyui-linkbutton" 
-                  data-options="iconCls:'icon-save'"
-                  onclick='save_this()'
-                  >Save</a>	 
-	 </td><td>&nbsp;</td></tr>
+
    </table>
 <?
 echo form_close();
 ?>
+</div></div>
+
 <script type="text/javascript">
     function save_this(){
         if($('#voucher').val()===''){alert('Isi kode voucher !');return false;};

@@ -1,13 +1,6 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-   <title>Data Nama Perusahaan</title>
- 
- </head>
- <body>
- <div id='container'>
-  
+<div >
+	<div class="thumbnail"><h1>PERUSAHAAN</H1></div>
+<div class="thumbnail">	
    <?php echo validation_errors(); ?>
    <?php 
    		if($mode=='view'){
@@ -19,7 +12,7 @@
    		}
 		
    ?> 
-     <div class='box6'><h1>DATA MASTER PERUSAHAAN</H1>
+   
    <table>
 	<tr>
 		<td>Kode</td><td>
@@ -31,9 +24,12 @@
 			echo form_input('company_code',$company_code);
 		}		
 		?></td>
+		
+		<td><input type="submit" value="Save"/></td>
+		
 	</tr>	 
        <tr>
-            <td>Nama</td><td><?php echo form_input('company_name',$company_name,
+            <td>Nama Perusahaan</td><td><?php echo form_input('company_name',$company_name,
             'style="width:200px"');?></td>
 
        </tr>
@@ -50,10 +46,8 @@
 	<tr><td>Email</td><td><?php echo form_input('email',
                         $email);?></td></tr>
       	
-	 <tr><td><input type="submit" value="Save"/></td><td>&nbsp;</td></tr>
+	 <tr><td>&nbsp;</td></tr>
    </table>
    </form>
-   </div>
- </body>
-</html>
-
+ </div>
+ </div>  

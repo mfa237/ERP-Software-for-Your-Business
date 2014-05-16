@@ -1,11 +1,25 @@
-<div class="col-sm-6 col-md-8"><h1>SALESMAN<div class="thumbnail">
+<div><h1>SALESMAN<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/coa/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/coa');		
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/salesman");
+		}
+	</script>
+	
 </div></H1>
 <div class="thumbnail">	
 <form id="myform"  method="post" action="<?=base_url()?>index.php/salesman/save">

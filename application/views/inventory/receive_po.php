@@ -1,7 +1,25 @@
-<h1>PENERIMAAN BARANG DARI PO -[  
-<?=link_button('Simpan','simpan()','save');?>
-]</H1>
+<div><h1>PO RECEIVE<div class="thumbnail">
+	<?
+	echo link_button('Save', 'simpan()','save');		
+	echo link_button('Help', 'load_help()','help');		
+	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/receive_po");
+		}
+	</script>
+	
+</div></H1>
 
+
+<div class="thumbnail">	
 <form id='myform' method='post' action='<?=base_url()?>index.php/receive_po/proses'>
    <table>
        <tr>
@@ -17,7 +35,12 @@
                 echo form_input('purchase_order_number',$purchase_order_number,
                 "id=purchase_order_number");
 				echo link_button('','select_po()',"search","true"); 
-            ?>                
+				if($purchase_order_number!=""){
+				echo link_button('',"po_items('".$purchase_order_number."')",'reload');
+				echo "<i>*bila item PO tidak tampil tekan tombol reload ini.</i>";
+				}
+            ?>
+				
             </td>            
        </tr>
        <tr>
@@ -51,8 +74,29 @@
        </tr>
        <tr>
            <td colspan="6">
-				<div id='divItem'>
-				</div>	
+				<div title='Items' style="padding:10px">
+					<table id="dgRcv" class="easyui-datagrid"  
+						style="width:700px;min-height:700px"
+						data-options="
+							iconCls: 'icon-edit',
+							singleSelect: true, toolbar: '#tbRcv',
+							url: ''
+						">
+						<thead>
+							<tr>
+								<th data-options="field:'item_number',width:100">Item</th>
+								<th data-options="field:'description',width:200">Description</th>
+								<th data-options="field:'quantity',width:80">Qty Order</th>
+								<th data-options="field:'unit',width:50">Unit</th>
+								<th data-options="field:'qty_recvd',width:50">Recvd</th>
+								<th data-options="field:'qty',width:80">Qty Recv</th>
+								<th data-options="field:'line',width:50">Line</th>
+							</tr>
+						</thead>
+					</table>
+					
+				</div>
+
            </td>
        </tr>
        <tr>
@@ -61,6 +105,7 @@
        </tr>
    </table>
 </form>
+</div>
 <?
 echo load_view('purchase/supplier_select');
 echo load_view('purchase/select_open_po');
@@ -85,6 +130,7 @@ echo load_view('purchase/select_open_po');
     		
     	}
     }
+	
 </script>    
 
 

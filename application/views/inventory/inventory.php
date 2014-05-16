@@ -1,17 +1,36 @@
-<div class="col-sm-6 col-md-8"><h1>MASTER BARANG<div class="thumbnail">
+<div class=""><h4>MASTER BARANG</h4><div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print_item()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/inventory/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/inventory');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/inventory/view/'.$item_number);		
+	echo link_button('Gambar', 'upload_gambar()','save');		
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
-</div></H1>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/inventory");
+		}
+	</script>
+	
+</div>
+		
+
+
 <div class="thumbnail">	
 	<form id="frmBarang"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 
-	     <div class='box6'>
+	     <div class='boxx6'>
 	       <div id='box_section' class='section_show'>
 		     <table>     
 	    <tr><td>Item Number</td>
@@ -21,7 +40,7 @@
 	            if($mode=='add'){
 	                    echo form_input('item_number',$item_number,"id=item_number");
 	            } else { 
-	                    echo $item_number;
+	                    echo "<strong>".$item_number."</strong>";
 	                    echo "<input type='hidden' name='item_number' id='item_number' value='".$item_number."'>";
 	            }		
 	            ?>        
@@ -61,6 +80,9 @@
 	       <td>:</td>
 	       <td><?php echo form_dropdown('sub_category',$category_list,$sub_category);?> </td>
 	      </tr>
+		  <tr>
+			<td></td>
+		  </tr>
 	</table>	
 		</div>
 			<div  class="easyui-tabs" style="width:auto;height:auto;min-height: 500px">
@@ -84,10 +106,6 @@
 					       <td>:</td>
 					       <td><?php echo form_input('unit_of_measure',$unit_of_measure);?> </td>
 
-					       <td>Multi Unit </td>
-					       <td>:</td>
-					       <td><?=form_radio('multiple_pricing',1,$multiple_pricing=='1'?TRUE:FALSE);?>
-					         Yes <?php echo form_radio('multiple_pricing',0,$multiple_pricing=='0'?TRUE:FALSE);?>No </td>
 
 				      </tr>
 				     <tr>
@@ -98,10 +116,7 @@
 					       <td>Model</td>
 					       <td>:</td>
 					       <td><?php echo form_input('model',$model);?> </td>
-					       <td>Multiple Style </td>
-					       <td>:</td>
-					       <td><?=form_radio('style',1,$style=='1'?TRUE:FALSE);?>
-					         Yes <?php echo form_radio('style',0,$style=='0'?TRUE:FALSE);?>No </td>
+					       
 				      </tr>
 				     <tr>
 					       <td>Maximum Qty</td>
@@ -121,20 +136,31 @@
 					       <td>:</td>
 					       <td><?php echo form_input('quantity_on_order',$quantity_on_order);?> </td>
 				      </tr>
-				      <tr><td colspan="6">-</td></tr>
-				      <tr><td colspan="6"><h3>Proses lainnya terhadap barang yang bersangkutan</h3></td></tr>
+						<tr>
+					       <td>Multi Unit </td>
+					       <td>:</td>
+					       <td colspan="5"><?=form_radio('multiple_pricing',1,$multiple_pricing=='1'?TRUE:FALSE);?>
+					         Yes <?php echo form_radio('multiple_pricing',0,$multiple_pricing=='0'?TRUE:FALSE);?>No 
+							 
+							 <a href="#" onclick="unit_price()">  Multi Satuan (Unit Pricing)</a></td> 
+					    </tr>
+						<tr>
+						   <td>Item Assembly </td>
+						   <td>:</td>
+						   <td colspan="5"><?=form_radio('assembly',1,$assembly=='1'?TRUE:FALSE);?>
+							 Yes <?php echo form_radio('assembly',0,$assembly=='0'?TRUE:FALSE);?>No 
+							 <a href="#" onclick="item_assembly()">  Seting Assembly (Item Part)</a></td>
+						
+						</tr>
+						
 				      <tr>
-				      		<td><a href="#" onclick="unit_price()">Multi Satuan (Unit Pricing)</a></td>
-				      </tr>
-				      <tr>
-				      		<td><a href="#" onclick="item_assembly()">Seting Assembly (Item Part)</a></td>
-				      </tr>
-				      <tr>
-				      		<td><a href="#" onclick="others_supplier()">Supplier lain (Supplier Alternate)</a></td>
-				      </tr>
-				      <tr>
-				      		<td><a href="#" onclick="stock_movement()">Transaksi keluar masuk barang</a></td>
-				      </tr>
+							<td>Multiple Style </td>
+					       <td>:</td>
+					       <td><?=form_radio('style',1,$style=='1'?TRUE:FALSE);?>
+					         Yes <?php echo form_radio('style',0,$style=='0'?TRUE:FALSE);?>No </td>					  
+					  </tr>
+				       
+				     
 
 					</table>
 				</div>
@@ -193,18 +219,7 @@
 			     <tr>
 			       <td>Gambar Barang </td>
 			       <td>:</td>
-			       <td><?php echo form_input('item_picture',$item_picture,"style='width:200px'");?></td>
-			       <td>
-			       	
-						<?php echo form_open_multipart('inventory/do_upload_picture');?>
-						
-						<input type="file" name="userfile" size="20" /><br>
-						<input type="submit" value="upload" />
-						
-						</form>
-			       	
-			       	
-			       </td>
+			       <td><?php echo form_input('item_picture',$item_picture,"style='width:200px' id='item_picture'");?></td>
 			      </tr>
 			     <tr>
 			     <tr>
@@ -213,15 +228,13 @@
 			       <td><?=form_radio('serialized',1,$serialized=='1'?TRUE:FALSE);?>
 			         Yes <?php echo form_radio('serialized',0,$serialized=='0'?TRUE:FALSE);?>No </td>
 			         
-			       <td rowspan="6">
-			       		<img src="" style="width:200px;height:200px;border:1px solid lightgray">
+			       <td rowspan="8">
+			       		<img id="imgBarang" src="<?=base_url()."/tmp/".$item_picture?>" style="width:200px;height:200px;border:1px solid lightgray">
 			       </td>  
 			      </tr>
 			     <tr>
-			       <td>Item Assembly </td>
-			       <td>:</td>
-			       <td><?=form_radio('assembly',1,$assembly=='1'?TRUE:FALSE);?>
-			         Yes <?php echo form_radio('assembly',0,$assembly=='0'?TRUE:FALSE);?>No </td>
+					 
+					 
 			      </tr>
 			     <tr>
 			      </tr>
@@ -240,9 +253,7 @@
 			       <td><?php echo form_input('case_pack',$case_pack);?></td>
 			      </tr>
 			     <tr>
-			       <td>&nbsp;</td>
-			       <td>&nbsp;</td>
-			       <td>&nbsp;</td>
+					<td><a href="#" onclick="others_supplier()">Supplier lain (Supplier Alternate)</a></td>
 			      </tr>
 			     <tr>
 			       <td>&nbsp;</td>
@@ -261,17 +272,71 @@
 			      </tr>
 			   </table>
 			 </div>
+<!-- QUANTITY -->				
 				<div title="Quantity" style="padding:10px">
 						<?
 						if(isset($qty_gudang))echo $qty_gudang;
 						?>
+						
+					<div>
+						<a href="#" onclick="stock_movement()">Transaksi keluar masuk barang</a>					
+					</div>
 				</div>
+<!-- CARDS -->				
+	<div title="Cards" style="padding:10px">
+		<div class='thumbnail'>
+			<form method="post">
+			<table>
+			<tr><td>Date From</td>
+			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" ');?></td>
+			<td>Date To</td>
+			<td><?=form_input('date_to',date("Y-m-d"),'id=date_to  class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('gudang','','id=gudang');?></td>
+			<td><?=link_button('Search','search_cards()','search');?></td>
+			</tr>
+			</table>
+			</form>
+		</div>
+		<table id="dgCard" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,  
+				url: '',toolbar:'',
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'no_sumber',width:80">Nomor</th>
+					<th data-options="field:'tanggal',width:80">Tanggal</th>
+					<th data-options="field:'jenis',width:80,align:'left',editor:'text'">Jenis</th>
+					<th data-options="field:'qty_masuk',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty Masuk</th>
+					<th data-options="field:'qty_keluar',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty Keluar</th>
+					<th data-options="field:'saldo',width:80,align:'right'">Saldo</th>
+					<th data-options="field:'gudang',width:80,align:'right'">Gudang</th>
+				</tr>
+			</thead>
+		</table>
+		
+	</div>
 			</div>
 		</div>  
 	</form>
 </div>	
 
+						
 <?=load_view('gl/select_coa_link')?>   	
+<div id="dlgGambar" class="easyui-dialog"  
+ style="width:300px;height:200px;padding:5px 5px" closed="true" >
+	<div class="thumbnail">
+	<?php 
+		echo form_open_multipart(base_url()."index.php/inventory/do_upload_picture","id='frmUpload'");
+	?>
+		<input type="file" name="userfile" id="userfile" size="20" title="Pilih Gambar" stye="float:left" />
+		<input type="button" value="Submit" onclick="do_upload()">  
+		</form>
+	</div>
+	<div id='error_upload'></div>
+</div>
 
  <script language='javascript'>
 	var url;	
@@ -321,6 +386,50 @@
             txtNo=$("#item_number").val(); 
             window.open("<?=base_url().'index.php/inventory/qty_gudang/'?>"+txtNo,"_self");  		
   	}
-  	
+  	function do_upload()
+	{
+		var xurl='<?=base_url()?>index.php/inventory/do_upload_picture';
+			$('#frmUpload').form('submit',{
+				url: url,
+				onSubmit: function(){
+					return $(this).form('validate');
+				},
+				success: function(result){
+					console.log(result);
+					var result = eval('('+result+')');
+					if (result.success){
+						
+						//$.messager.show({
+						//	title:'Success',msg:'Data sudah tersimpan. Silahkan simpan formulir ini.'
+						//});
+						
+						var upload_data=result.upload_data;
+						$('#item_picture').val(upload_data['file_name']);
+						$('#dlgGambar').dialog('close');
+						save();
+						
+					} else {
+						$('#error_upload').html(result.error);
+					}
+				}
+			});
+		 
+
+	}
+	function upload_gambar()
+	{
+		$('#dlgGambar').dialog('open').dialog('setTitle','Upload Gambar');
+	}
+	function search_cards()
+	{
+		var d1=$("#date_from").datebox('getValue');
+		var d2=$("#date_to").datebox('getValue');
+	 
+		var xurl='<?=base_url()?>index.php/inventory/kartu_stock/<?=$item_number?>?d1='+d1+'&d2='+d2;
+		console.log(xurl);
+		$('#dgCard').datagrid({url:xurl});
+		$('#dgCard').datagrid('reload');
+	}
+	
 
 </script>

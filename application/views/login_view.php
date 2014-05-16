@@ -9,6 +9,9 @@ echo $script_head;
 ?>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>themes/standard/style_login.css" />
 <script languange="javascript">
+
+	if(top != self) top.location.replace(location);	//detect if run iframe
+
     function login(){
     	$("#lblMessage").html("Please wait...");
 		url='<?=base_url()?>index.php/login/verify';
@@ -40,11 +43,9 @@ echo $script_head;
 			            <div class="clear"></div>
 			            <label for="password">Password:</label>
 			            <input type="password" size="20" id="passowrd" name="password"/>
-			            <div class="clear"></div>
+			            <div class="clear"><i>*Untuk mencoba gunakan login </i></div>
 			            
-			            <div class="clear"></div>
-			            
-			            <br>
+			            <i>user : admin, password: admin</i>
 			            <input type="button" value="Submit" onclick="login()" style="margin: -20px 0 0 287px;" class="button" >
 			            
 					    <div id="lblMessage" style="color:red"></div>

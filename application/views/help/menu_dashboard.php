@@ -1,30 +1,25 @@
-<style type="text/css">
-<!--
-.box1z {
-	font-family: "Arial Narrow";
-	font-size: 9px;
-	width:360px;
-	height:200px;
-	float:left;
-	margin:5px;
-	padding:5px;
-}
+ <?
+  $CI =& get_instance();
+ ?>
+<div class="easyui-tabs" id="tt">	 
+	<div title="DASHBOARD" style="padding:10px">
+		<div class="col-md-12 thumbnail">
+
  
-.box2 {
-	width:200px;
-	height:200px;
-	margin:5px;
-	padding:5px;
-}
--->
- </style>
 <div class="box1">
 <div id="p" class="easyui-panel box2" title="Online Documentation"  style='width:900px'
 	data-options="iconCls:'icon-help'" >
 	<div id='divCustomer'><img src="<?=base_url()?>images/loading.gif"></div>
 </div>
 </div>
-<script src="<?=base_url();?>js/jquery/jquery-1.8.0.min.js"></script>
+
+
+		</div>
+	</div>
+</div>
+
+
+
 
 <script  language="javascript">
 $().ready(function(){

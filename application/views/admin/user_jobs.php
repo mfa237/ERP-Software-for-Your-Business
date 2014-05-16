@@ -1,17 +1,21 @@
-<h1>KELOMPOK USER</h1> 
-<?php
-		error_reporting(E_ALL);
+<div><h1>KELOMPOK USER<div class="thumbnail">
+	<?=link_button('Save', 'simpan()','save');?>
+</div></H1>
+<div class="thumbnail">
+	<?php	
+		echo form_open(base_url().'index.php/jobs/add',"id='myform'");
+	?>
+	<table>	
+	<tr><td>Group Id</td><td><?=form_input('user_group_id',$user_group_id,"id='user_group_id'")?></td></tr>
+	<tr><td>Group Name</td><td><?=form_input('user_group_name',$user_group_name,"id='user_group_name'")?></td></tr>
+	<tr><td>Description</td><td><?=form_input('description',$description,"id='description'")?></td></tr>
+	</table>
 
-echo form_open(base_url().'index.php/jobs/add',"id='myform'");
-echo "<div class='fld'><div class='label'>Group Id</div>".form_input('user_group_id',$user_group_id,"id='user_group_id'")."</div>";
-echo "<div class='fld'><div class='label'>Group Name</div>".form_input('user_group_name',$user_group_name)."</div>";
-echo "<div class='fld'><div class='label'>Description</div>".form_input('description',$description,'style=\'width:300px\'')."</div>";
-echo "<div>";
-echo link_button("Simpan", "simpan()","save");
-echo "<div id='divDetail'>$modules</div>";
-echo "</div>";
-echo form_close();           
-?>
+	<div id='divDetail'><?=$modules?></div>
+
+	<?=form_close();?>
+
+</div>	
 <script>
 	function simpan(){
 		$('#myform').submit();

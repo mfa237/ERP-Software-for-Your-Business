@@ -1,6 +1,11 @@
 ::selection{ background-color: #E13300; color: white; }
 ::moz-selection{ background-color: #E13300; color: white; }
 ::webkit-selection{ background-color: #E13300; color: white; }
+
+ 
+a.l-btn span.l-btn-left {
+  height: 24px;
+}
 *{
 	font-size:12px;
 }
@@ -480,4 +485,18 @@ p.footer{
 	background:url('../../images/setup.png') no-repeat center center;
 }
 
-
+.max-tool h1 {
+	font-size:12px;
+	font-weight:900;
+	 
+}
+.max-tool .tool {
+	background-color: #cdcdcd;
+}
+.widget-help {
+	background:#FBEC88;;
+	padding:5px;
+}
+.widget-help li,p {
+	font-size:9px;
+}

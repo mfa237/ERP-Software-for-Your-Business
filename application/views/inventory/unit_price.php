@@ -1,5 +1,5 @@
-<h1>UNIT PRICE</h1>
-<table class="table1x" style="width:500px">
+<div><h1>UNIT PRICE</h1>
+<table class="table1" style="width:500px">
 	<tr>
 		<td>Kode Barang</td><td><?=$item_number?></td>
 	</tr>
@@ -41,7 +41,7 @@
 		</div>
 		<div>
 			<form id="frmNew" method="POST" class="box6">
-				<h3>Silahkan input data untuk kode unit baru dibawah ini kemudian tekan tombol simpan</h3>
+				<h5>Silahkan input data untuk kode unit baru dibawah ini kemudian tekan tombol simpan</h5>
 				<table id="tbl">
 					<tr>	<td>Kode</td><td><input type="text" name="customer_pricing_code" id="customer_pricing_code"></td>
 						<td>Harga Jual</td><td><input type="text" name="retail" id="retail"></td>
@@ -60,6 +60,8 @@
 		</div>
 	</td></tr>
 </table>
+
+</div>
 <script language="JavaScript">
 	function add_unit(){
 		url='<?=base_url()?>index.php/inventory/unit_price_add/<?=$item_number?>';

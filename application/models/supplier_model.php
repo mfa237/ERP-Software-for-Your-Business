@@ -60,8 +60,19 @@ function select_list(){
 		return $this->db->update($this->table_name,$data);
 	}
 	function delete($id){
-		$this->db->where($this->primary_key,$id);
-		return $this->db->delete($this->table_name);
+		$cnt=0;
+		$sql="select supplier_number from qry_kartu_hutang 
+			where supplier_number='$id' limit 1";
+		 
+		if($row=$this->db->query($sql)->row()){
+			 
+			$cnt=$row->supplier_number!=""?1:0;
+		} 
+		if($cnt==0){
+			$this->db->where($this->primary_key,$id);
+			$this->db->delete($this->table_name);
+		} 
+		return $cnt;
 	}
     function info($id){
         $data=$this->get_by_id($id)->row();
@@ -71,7 +82,7 @@ function select_list(){
         } else $ret='';
         return $ret;
     }
-	function saldo_hutang_summary()
+	function saldo_hutang_summary_old()
 	{
 		$sql="select s.supplier_number,sum(p.amount) as sum_amount 
 		from purchase_order p
@@ -92,4 +103,29 @@ function select_list(){
 		//var_dump($data);
 		return $data;
 	}
+	function saldo_hutang_summary()
+	{
+		$sql="select s.supplier_number,sum(p.amount) as sum_amount 
+		from purchase_order p
+		left join suppliers s on s.supplier_number=p.supplier_number
+		where potype='I' 
+		group by p.supplier_number
+		order by sum(p.amount) desc
+		limit 0,10";
+		$query=$this->db->query($sql);
+		foreach($query->result() as $row){
+			$supp=$row->supplier_number;
+			if($supp=="")$supp="Unknown";
+			$amount=$row->sum_amount;
+			if($amount==null)$amount=0;
+			if($amount>0)$amount=round($amount/1000);
+			$data[]=array(substr($supp,0,10),$amount);
+		}
+		return $data;
+	}
+	function saldo($supplier_number){
+		$sql="select sum(amount) as z_amt from qry_kartu_hutang where supplier_number='$supplier_number'";
+		return $this->db->query($sql)->row()->z_amt;
+	}
+
 }

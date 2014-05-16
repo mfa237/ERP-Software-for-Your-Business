@@ -78,7 +78,7 @@ function select_list(){return $this->customer_list();}
 			$amount=$row->sum_amount;
 			if($amount==null)$amount=0;
 			if($amount>0)$amount=round($amount/1000);
-			$data[$supp]=$amount;
+			$data[]=array(substr($supp,0,10),$amount);
 		}
 		return $data;
 	}

@@ -1,11 +1,26 @@
-<div class="col-sm-6 col-md-8"><h1>PEMBAYARAN HUTANG<div class="thumbnail">
+<div><h1>PEMBAYARAN HUTANG<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_pay()','save');		
 	echo link_button('Print', 'print_pay()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/payables_payments/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/payables_payments');		
+	echo link_button('Delete','','cut','true',base_url().'index.php/payables_payments/delete/'.$no_bukti);		
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/payables_payments");
+		}
+	</script>
+	
 </div></H1>
 <div class="thumbnail">	
 	<form id='frmAddPay' method="post">

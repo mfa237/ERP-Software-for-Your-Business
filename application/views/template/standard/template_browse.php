@@ -1,5 +1,12 @@
-
+<script type="text/javascript">
+   		CI_ROOT = "<?=base_url()?>index.php/";
+		CI_BASE = "<?=base_url()?>"; 		
+</script>
+<div id='__section_left_content' class="col-md-9">
 <?
+echo $library_src;
+echo $script_head;
+
 $width=isset($width)?$width." px":"auto";
 $height=isset($height)?$height." px":"auto";
 $caption=isset($caption)?$caption:$controller;
@@ -10,6 +17,11 @@ for($i=0;$i<count($fields);$i++){
     $table_head.='<th data-options="field:\''.$fields[$i].'\'">'.$fields_caption[$i].'</th>';
 }
 $table_head.="</tr></thead>";
+
+if(isset($_form)){
+	echo load_view($_form,array('mode'=>'add'));
+}
+
 ?>
 <script type="text/javascript">    
     CI_CONTROL='<?=$controller?>';
@@ -24,44 +36,48 @@ $table_head.="</tr></thead>";
       data-options="rownumbers:true,pagination:true,pageSize:100,
       loadFilter:pagerFilter_<?=$controller?>,
       singleSelect:true,collapsible:true,
-      url:'<?=site_url()?>/<?=$controller?>/browse_data',
+      url:'',
       toolbar:'#tb_<?=$controller?>'">
       
       <?=$table_head?>
       
 </table>
        
- <div id="tb_<?=$controller?>" style="padding:5px;height:auto">
-		<div>
-			<?=link_button("Add", "addnew_$controller()","add","true");?>
-			<?=link_button("Edit", "edit_$controller()","edit","true");?>
-			<?=link_button("Del", "del_row_$controller()","remove","true");?>
+ <div id="tb_<?=$controller?>" style="padding:5px;height:auto" class='thumbnail'>
+		<div class='thumbnail'>
+			<?=link_button("Add", "addnew_$controller();return false;","add","true");?>
+			<?=link_button("Edit", "edit_$controller();return false;","edit","true");?>
+			<?=link_button("Del", "del_row_$controller();return false;","remove","true");?>
+			<?=link_button('Cari','cari_'.$controller."();return false;",'search');?>
 		</div>
 		<div>
 			<form id='frmSearch_<?=$controller?>'>
 			<?
 //			var_dump($faa);
-
+			$i=0;
+			 
 			foreach($criteria as $fa){
+			 
 				if($fa->field_class=="easyui-datetimebox"){
 					$val=date("Y-m-d 00:00:00");
 					if(strpos($fa->field_id,"date_to"))$val=date("Y-m-d 23:59:59");
 				} else {
 					$val="";
 				}
-				echo $fa->caption.' : <input value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" class="'.$fa->field_class.'">';
+				echo " ".$fa->caption.' </td><td><input value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" class="'.$fa->field_class.'" style="width:80px">';
+				echo " ";
+				 
 				$i++;
 			}
-			
 			?>
-				<?=link_button('Cari','cari_'.$controller."();return false;",'search');?>
+			 
 			</form>
 		</div>
 </div>
 
 </div>
 
-
+	
 <script type="text/javascript">
     function pagerFilter_<?=$controller?>(data){
             if (typeof data.length == 'number' && typeof data.splice == 'function'){	// is array
@@ -96,6 +112,8 @@ $table_head.="</tr></thead>";
     function addnew_<?=$controller?>(){
         xurl=CI_ROOT+CI_CONTROL+'/add';
         window.open(xurl,"_self");
+		
+
     };
     function edit_<?=$controller?>(){
         var row = $('#dg_<?=$controller?>').datagrid('getSelected');
@@ -114,8 +132,23 @@ $table_head.="</tr></thead>";
 	                        type: "GET",
 	                        url: xurl,
 	                        param: xparam,
-	                        success: function(msg){
-								$('#dg_<?=$controller?>').datagrid('reload');	// reload the user data
+	                        success: function(result){
+							try {
+									var result = eval('('+result+')');
+									if(result.success){
+										$.messager.show({
+											title:'Success',msg:result.msg
+										});
+										$('#dg_<?=$controller?>').datagrid('reload');	 
+									} else {
+										$.messager.show({
+											title:'Error',msg:result.msg
+										});
+									};
+								} catch (exception) {		
+									// reload kalau output bukan json
+									$('#dg_<?=$controller?>').datagrid('reload');	 
+								}
 	                        },
 	                        error: function(msg){$.messager.alert('Info',msg);}
 	                });         
@@ -128,5 +161,6 @@ $table_head.="</tr></thead>";
         $('#dg_<?=$controller?>').datagrid({url:xurl});
         $('#dg_<?=$controller?>').datagrid('reload');
     }
+		
 
 </script>

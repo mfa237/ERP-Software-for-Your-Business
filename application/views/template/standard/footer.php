@@ -6,6 +6,10 @@
     <?php
         $this->load->library('access');
         $this->access->print_info();
+		$url=base_url()."/index.php/".$this->uri->segment(1).'/'.$this->uri->segment(2).'/'.$this->uri->segment(3);
+///		add_log_run($url);
+		echo "<br>Controller: ".$url; 
+		
     ?>
 </p>
 </div>

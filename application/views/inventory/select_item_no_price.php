@@ -3,17 +3,17 @@
 		<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
 	</tr>
 	<tr>
-	         <td><input onblur='find()' id="item_number" style='width:80' 
+	         <td><input onblur='find()' id="item_number" style='width:80px' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 				onclick="searchItem()"></a>
 	         </td>
-	         <td><input id="description" name="description" style='width:280'></td>
-	         <td><input id="quantity"  style='width:30'  name="quantity"  ></td>
-	         <td><input id="unit" name="unit"  style='width:30' ></td>
+	         <td><input id="description" name="description" style='width:280px'></td>
+	         <td><input id="quantity"  style='width:30px'  name="quantity"  ></td>
+	         <td><input id="unit" name="unit"  style='width:30px' ></td>
 
 	        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-     		   plain='true'	onclick='save_item()'></a>
+     		   plain='true'	onclick='save_item()'>Add Item</a>
 			</td>
 	        <input type='hidden' id='ref_number' name='ref_number'>
 	        <input type='hidden' id='line_number' name='line_number'>
@@ -25,7 +25,7 @@
 </div>
 
 <div id="tb_search" style="height:auto">
-	Enter Text: <input  id="search_item" style='width:180' 
+	Enter Text: <input  id="search_item" style='width:180px' 
  	name="search_item">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 	onclick="searchItem()"></a>        

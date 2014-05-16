@@ -1,3 +1,5 @@
+<div>
+<div class="thumbnail">
 <?php echo validation_errors(); ?>
 <?php 
 if($mode=='view'){
@@ -32,3 +34,4 @@ if($mode=='view'){
 	 <tr><td><input type="submit" value="Save"/></td><td>&nbsp;</td></tr>
    </table>
 </form>
+</div></div>

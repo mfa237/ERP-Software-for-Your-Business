@@ -1,32 +1,23 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-   <title>Data Master Gudang</title>
- 
- </head>
- <body>
-     <script>
-//$(document).ready(function(){
-//  $('#myform').submit(function(event) {
-//    var form = $(this);
-//    $.ajax({
-//      type: form.attr('method'),
-//      url: form.attr('action'),
-//      data: form.serialize()
-//    }).done(function(msg) {     
-//      //$('#main_content').html(msg);
-//      $('#dlg').dialog('close');
-//      $.messager.alert('Info','Success !')
-//    }).fail(function(jqXHR, textStatus, errorThrown) {
-//        console.log(jqXHR.responseText);
-//        $.messager.alert('Info','Error !')
-//    });
-//    event.preventDefault(); // Prevent the form from submitting via the browser.
-//  });
-//});         
- </script>
- <div id='containerx'>
+<div><h1>MASTER GUDANG<div class="thumbnail">
+	<?
+	echo link_button('Save', 'simpan()','save');		
+	echo link_button('Help', 'load_help()','help');		
+	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/shipping_locations");
+		}
+	</script>
+	
+</div></H1>
+<div class="thumbnail">	
    <?php echo validation_errors(); ?>
    <?php 
    		if($mode=='view'){
@@ -38,16 +29,16 @@
    		}
 		
    ?>
-   <div class='box6x'><h1>KODE GUDANG</h1>
+ 
    <table>
 	<tr>
 		<td>Gudang</td><td>
 		<?php
 		if($mode=='view'){
 			echo $location_number;
-			echo form_hidden('location_number',$location_number);
+			echo form_hidden('location_number',$location_number,"id=location_number");
 		} else { 
-			echo form_input('location_number',$location_number);
+			echo form_input('location_number',$location_number,"id=location_number");
 		}		
 		?></td>
 	</tr>	 
@@ -55,7 +46,7 @@
             <td>Jenis Gudang</td><td><?php echo form_input('address_type',$address_type);?></td>
        </tr>
        <tr>
-            <td>Alamat</td><td><?php echo form_input('street',$street);?></td>
+            <td>Alamat</td><td><?php echo form_input('street',$street,"style='width:400px'");?></td>
        </tr>
        <tr>
             <td>Kota</td><td><?php echo form_input('city',$city);?></td>
@@ -64,15 +55,14 @@
             <td>Kontak Person</td><td><?php echo form_input('attention_name',$attention_name);?></td>
        </tr>
 	 
-        
-	 <tr><td>
-	 <input type="submit" value="Save" class="easyui-linkbutton" 
-                   data-options="iconCls:'icon-save'" style="height:30px;width:60px"/>
-	 
-	 </td><td>&nbsp;</td></tr>
    </table>
-   </form>
-   </div>
- </body>
-</html>
-
+ </div>
+ 
+ <script language="JavaScript">
+ 	function simpan(){
+ 		if($("#location_number")=="")alert("Isi kode gudang !");
+ 		$("#myform").submit();
+ 		
+ 	}
+ </script>
+ 

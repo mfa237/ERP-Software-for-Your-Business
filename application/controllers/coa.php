@@ -150,4 +150,49 @@ class Coa extends CI_Controller {
 		if($account!="")$sql.=" and account like '$account%'";
 		echo datasource($sql);	
 	}
+	function card($account_id) {
+	{
+		$account_id=$this->chart_of_accounts_model->get_by_id($account_id)->row()->id;
+		$date_from= $this->input->get('d1');
+		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to= $this->input->get('d2');
+		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
+		
+		$sql="select sum(debit)-sum(credit) as saldo  
+			from gl_transactions 
+			where account_id='$account_id' 
+			and date<'$date_from'";
+
+        $query=$this->db->query($sql);
+		$awal=$query->row()->saldo;
+		$rows[0]=array("gl_id"=>"SALDO","date"=>"SALDO","source"=>"SALDO","debit"=>0,"credit"=>0,
+			"operation"=>'SALDO',"saldo"=>number_format($awal));
+
+		$sql="select gl_id,date,source,debit,credit,operation 
+			from gl_transactions 
+			where account_id='$account_id' 
+			and date between '$date_from' and '$date_to' order by date";
+		
+	 
+		
+        $query=$this->db->query($sql);
+		 
+        $i=1;
+		if($query)foreach($query->result_array() as $row) {
+			$awal=$awal+$row['debit']-$row['credit'];
+			$row['debit']=number_format($row['debit']);
+			$row['credit']=number_format($row['credit']);
+			$row["saldo"]=number_format($awal);
+			$rows[]=$row;
+		};	
+        $data['total']=count($rows);
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+
+	}
+
+	
+	
+	}
 }

@@ -44,4 +44,38 @@ function dropdown(){
         }		 
         return $ret;
 }
+function current_periode(){
+	$this->db->where("closed=0");
+	$this->db->order_by("period","desc");
+	$q=$this->db->get($this->table_name);
+	if($q){
+		return $q->row()->period;
+	} else {
+		return '';
+	}
+}
+	function closed($date_trans)
+	{
+		$retval=false;
+		$sql="select closed from financial_periods where '".$date_trans."' 
+			between startdate and enddate";
+		 
+		
+		$q=$this->db->query($sql);
+		if($q){
+			if($q->row())$retval=$q->row()->closed;
+		}
+		return $retval;
+	}
+	function loadlist() {
+		$rows=null;
+		$this->db->order_by("period");
+		if($q=$this->db->get($this->table_name)){
+			foreach($q->result() as $r) {
+				$rows[]=$r;
+			}
+		}
+		return $rows;
+	}
+	
 }

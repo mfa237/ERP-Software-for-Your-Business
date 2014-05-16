@@ -10,7 +10,25 @@ public $sub_total=0;
 	function __construct(){
 		parent::__construct();
 	}
-	  
+	function retur_amount($purchase_order_number) {
+		$sql="select sum(amount) as z_amount 
+			from purchase_order i
+			where i.potype='R' and po_ref='$purchase_order_number'";
+		return $this->db->query($sql)->row()->z_amount;
+	}
+	function crdb_amount($purchase_order_number) {
+		$sql="select (case transtype 
+				when 'PO-DEBIT MEMO' then -1*sum(amount) 
+				else sum(amount) end) as z_amount 
+			from crdb_memo i
+			where docnumber='$purchase_order_number'";
+		return $this->db->query($sql)->row()->z_amount;
+	}
+	function paid_amount($nomor){
+	    $this->load->model('payables_payments_model');
+		return $this->payables_payments_model->total_amount($nomor);
+	}
+
 	function recalc($nomor){
 	    $this->load->model('payables_payments_model');
 		$this->load->model('purchase_order_lineitems_model');
@@ -32,9 +50,12 @@ public $sub_total=0;
 		
 		$this->add_payables($nomor);
 	    $this->amount_paid=$this->payables_payments_model->total_amount($nomor);
-	    $this->saldo= $this->amount-$this->amount_paid;
+		
+	    $this->saldo= $this->amount-$this->amount_paid+$this->retur_amount($nomor)+$this->crdb_amount($nomor);
+
 	    return $this->saldo;
 	}
+	
 	function add_payables($nomor)
 	{
 		$this->load->model('payables_model');
@@ -97,12 +118,30 @@ public $sub_total=0;
 	function update($id,$data){
 		if(isset($data['po_date']))$data['po_date']= date('Y-m-d H:i:s', strtotime($data['po_date']));
 		if(isset($data['due_date']))$data['due_date']= date('Y-m-d H:i:s', strtotime($data['due_date']));
+		if(isset($data['warehouse_code'])){
+			if($data['warehouse_code']!=""){
+				$this->db->query("update purchase_order_lineitems 
+					set warehouse_code='".$data['warehouse_code']."' 
+					where purchase_order_number='$id'");
+			}
+		}
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);
 	}
+	function validate_delete_po($po_number)
+	{
+		// check receive from po
+		$cnt=$this->db->query("select count(1) as cnt from inventory_products 
+			where purchase_order_number='$po_number'")->row()->cnt;
+		if($cnt) return false;
+	
+		return true;
+	}
 	function delete($id){
+	
 		$this->db->where($this->primary_key,$id);
-		$this->db->delete('purchase_order_lineitems');        
+		$this->db->delete('purchase_order_lineitems'); 
+       
 		$this->db->where($this->primary_key,$id);
 		return $this->db->delete($this->table_name);
 	}
@@ -132,8 +171,40 @@ public $sub_total=0;
 		if($po){
 			if($po->z_qty<=$po->z_rcv){
 				$this->db->query("update purchase_order set received=true where purchase_order_number='$nomor'");
+			} else {
+				$this->db->query("update purchase_order set received=false where purchase_order_number='$nomor'");
+			
 			}
 		}
 	}
-  	 
+	function get_bill_id($invoice)
+	{
+		$row=$this->db->query("select bill_id from payables where purchase_order_number='".$invoice."'");
+		if($row){
+			return $row->row()->bill_id;
+		} else {
+			return 0;
+		}
+	}
+	function recalc_qty_recvd($nomor_po)
+	{
+		$s="update  purchase_order_lineitems 
+			left join (
+
+			select purchase_order_number, from_line_number, 
+			sum(quantity_received) as z_qty from inventory_products
+			where purchase_order_number='$nomor_po' 
+			group by purchase_order_number,from_line_number
+
+			) ip
+			on ip.purchase_order_number=purchase_order_lineitems.purchase_order_number 
+			and ip.from_line_number=purchase_order_lineitems.line_number
+
+			set qty_recvd=z_qty 
+
+			where purchase_order_lineitems.purchase_order_number='$nomor_po'";
+		
+		$this->db->query($s);
+		$this->update_received($nomor_po); 
+	}
 }	 

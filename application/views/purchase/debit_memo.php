@@ -1,12 +1,33 @@
-<div class="col-sm-6 col-md-8">
+ 
 	<h1>DEBIT MEMO<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/purchase_dbmemo/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/purchase_dbmemo');		
+	echo link_button('Delete','delete_memo()','cut');		
+	if($posted) {
+		echo link_button('UnPosting','','cut','true',base_url().'index.php/purchase_dbmemo/unposting/'.$kodecrdb);		
+	} else {
+		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_dbmemo/posting/'.$kodecrdb);		
+	}
+	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_dbmemo/view/'.$kodecrdb);		
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/purchase_dbmemo");
+		}
+	</script>
+	
 </div></H1>
 <div class="thumbnail">		
 <form id="frmCrDb"  method="post">
@@ -14,39 +35,65 @@
 <input type='hidden' name='trans_type' id='trans_type'	value='Purchase'>	
    <table>
 		<tr>
-		<td>Nomor Bukti</td>
+			<td>Nomor Bukti</td>
 			<td>
 				<?php echo form_input('kodecrdb',$kodecrdb,"id=kodecrdb"); ?>
-            </td>
+			</td>
+			<td rowspan='2'>
+				<div id='supplier_name' class='thumbnail' style='height:50px;width:300px'>
+					Supplier Name.<?=$supplier_info?>
+				</div>
+			</td>
         </tr>	 
         <tr>
             <td>Tanggal</td><td><?php echo form_input('tanggal',$tanggal,'id=tanggal 
              class="easyui-datetimebox" required style="width:150px"');?>
             </td>
+			<td></td>
+			<td></td>
         </tr>
+       <tr>
+            <td>Supplier</td>
+            <td><?=form_input('supplier_number',$supplier_number,'id="supplier_number"');?>
+            	<?=link_button("",'select_supplier()','search','true')?>
+            </td>
+			<td rowspan="3">
+				<div id='faktur_info' name='faktur_info' class='thumbnail' style='height:50px;width:300px'>
+					Nomor Faktur.<?=$faktur_info?>
+				</div>
+			</td>
+			
+       </tr>
        <tr>
             <td>Faktur</td>
             <td><?=form_input('docnumber',$docnumber,'id="docnumber"');?>
             	<?=link_button("",'select_faktur()','search','true')?>
             </td>
+			<td></td>
        </tr>
        <tr>
        		<td>Jumlah: </td>
        		<td><?php echo form_input('amount',$amount,'id=amount');?></td>
+			<td></td>
       </tr>
        <tr>
             <td>Keterangan</td>
             <td colspan="6">
             	<?php echo form_input('keterangan',$keterangan,'id=keterangan style="width:300px"');?>
             </td>
+			<td></td>
        </tr>
-       <tr><td colspan="4">
+       <tr>
+			<td colspan="4">
 			        <input type='hidden' id='transtype' name='transtype' value='PO-DEBIT MEMO'>
-       </td></tr>
+			</td>
+			<td></td>
+	   </tr>
    </table>
 </form>
-<div id='divItem'>
-<h5>KODE PERKIRAAN</H5>
+<div class="easyui-tabs" style="width:700px;height:550px">
+	<div id="divItem" title="Kode Perkiraan" style="padding:10px">
+	
 	<div id='dgItem'>
 		<table>
 			<tr>
@@ -71,7 +118,7 @@
 		</table>		
 	</div>
 	<table id="dgItemMemo" class="easyui-datagrid"  		
-		style="width:800px;min-height:800px"
+		style="width:600px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -87,8 +134,38 @@
 			</tr>
 		</thead>
 	</table>
+
+	</div>
+	
+<!-- JURNAL -->
+	<DIV title="Jurnal" style="padding:10px">
+		<div id='divJurnal' class='thumbnail'>
+		<table id="dgCrdb" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,toolbar:'#tbCrdb',
+				url: '<?=base_url()?>index.php/jurnal/items/<?=$kodecrdb?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'account',width:80">Akun</th>
+					<th data-options="field:'account_description',width:150">Nama Akun</th>
+					<th data-options="field:'debit',width:80,align:'right'">Debit</th>
+					<th data-options="field:'credit',width:80,align:'right'">Credit</th>
+					<th data-options="field:'custsuppbank',width:50">Ref</th>
+					<th data-options="field:'operation',width:50">Operasi</th>
+					<th data-options="field:'source',width:50">Keterangan</th>
+					<th data-options="field:'transaction_id',width:50">Id</th>
+				</tr>
+			</thead>
+		</table>
+		</div>
+			
+	</DIV>
+	
 </div>
-</div>
+ 
 <div id="tb" style="height:auto">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
@@ -96,6 +173,7 @@
 
 <?=load_view('gl/select_coa')?>
 <? include_once 'faktur_select_crdb.php' ?>
+<? include_once 'supplier_select.php' ?>
 
 
 <script type="text/javascript">
@@ -148,7 +226,7 @@
 						$('#account').val('');
 						$('#description').val('');
 						$('#line_number').val('');
-						$('#amount').val('0');
+						//$('#amount').val('0');
 						$.messager.show({
 							title: 'Success',
 							msg: 'Success'
@@ -194,6 +272,24 @@
 				$('#line_number').val(row.line_number);
 				$('#kodecrdb_id').val(row.kodecrdb);
 			}
+		}
+		function delete_memo() {
+			var url='<?=base_url()?>index.php/purchase_dbmemo/delete/'+$("#kodecrdb").val();
+			$.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
+				if (r){
+					$.post(url,null,function(result){
+						if (result.success){
+							window.open('<?=base_url()?>index.php/purchase_dbmemo','_self');
+						} else {
+							$.messager.show({	// show error message
+								title: 'Error',
+								msg: result.msg
+							});
+						}
+					},'json');
+				}
+			});
+			
 		}
     
 </script>

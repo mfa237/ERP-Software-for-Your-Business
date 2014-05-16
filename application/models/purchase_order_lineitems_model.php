@@ -15,6 +15,10 @@ function get_by_id($id){
 	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 }
+function get_by_nomor($nomor) {
+	$this->db->where('purchase_order_number',$nomor);
+	return $this->db->get($this->table_name);
+}
 function save($data){
 	$this->db->insert($this->table_name,$data);
 	return $this->db->insert_id();

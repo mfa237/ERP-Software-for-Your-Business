@@ -1,14 +1,39 @@
-<h1>ASSEMBLY ITEM NUMBER</h1>
-<table class="table1x" style="width:500px">
-	<tr>
-		<td>Kode Barang</td><td><?=$item_number?></td>
-	</tr>
-	<tr>
-		<td>Nama Barang</td><td><?=$description?></td>		
-	</tr>
-	<tr><td colspan="4">
-		<div >
-			<table id="tbl_unit" class="table1" style="width:500px">
+<h4 class="thumbnail">ASSEMBLY ITEM NUMBER</h4>
+	<div class="thumbnail">
+		Kode Barang : <strong><?=$item_number?></strong>  Nama Barang Jadi: <strong><?=$description?></strong>
+	</div>
+
+	<div class="thumbnail">
+		<h5>Silahkan input data barang bahan/penyusun dibawah ini kemudian tekan tombol simpan</h5>
+		<form id="frmNew" method="POST" >
+			<table id="tbl">
+				<tr>	
+					<td>Kode Barang</td>
+					<td>
+						<input type="text" name="assembly_item_number" id="assembly_item_number" style="width:100px" placeholder="Item Number">
+							<?=link_button('','searchItem()','search');?>						
+					</td>
+					<td>
+						<?=link_button("Simpan","add_unit()","save")?>
+					</td>
+				</tr>
+				<tr>	
+					<td>Quantity</td> 
+					<td>
+						<input type="text" name="quantity" id="quantity" placeholder="Qty" style="width:50px">
+					</td>
+				</tr>
+				<tr>	
+					<td>Keterangan</td> 
+					<td>
+						<input type="text" name="comment" id="comment" style="width:200px" placeholder="Comment">
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+		<div class="thumbnail">
+			<table id="tbl_unit" class="table" >
 				<thead>
 					<tr>
 						<td>Kode Barang</td><td>Nama barang / bahan</td><td>Qty</td><td>Catatan</td>
@@ -34,33 +59,14 @@
 						";
 					}
 					?>
-					<tr></tr>
+					<tr>
+						
+						
+						
+					</tr>
 				</tbody>
 			</table>
 		</div>
-		<div>
-			<form id="frmNew" method="POST" class="box6">
-				<h3>Silahkan input data barang bahan/penyusun dibawah ini kemudian tekan tombol simpan</h3>
-				<table id="tbl">
-					<tr>	
-						<td>Kode Barang</td><td><input type="text" name="assembly_item_number" id="assembly_item_number">
-							<?=link_button('','searchItem()','search');?>
-						</td>
-					</tr>
-					<tr>	
-						<td>Quantity</td><td><input type="text" name="quantity" id="quantity"></td>
-					</tr>
-					<tr>	
-						<td>Keterangan</td><td><input type="text" name="comment" id="comment" style="width:400px"></td>
-					</tr>
-					<tr><td colspan="2"></td> </tr>
-					 
-				</table>
-				<?=link_button("Tambah","add_unit()","save")?>
-			</form>
-		</div>
-	</td></tr>
-</table>
 <?
 
 ?>

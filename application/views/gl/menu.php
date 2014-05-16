@@ -1,33 +1,44 @@
-    <div class="col-sm-6 col-md-4"><h2>Operation</h2>
- 		<div class="thumbnail"> 
-			<li><?=anchor('jurnal','Cari Jurnal Umum');?></li>
+<div style="margin:10px 0;"></div>
+	<ul class="easyui-tree">
+		<li>
+			<span>Accounting Modules</span>
+			<ul>
+				<li>
+					<span>Operation</span>
+					<ul>
+			<li><?=anchor('jurnal','Cari Jurnal Umum','class="info_link"');?></li>
  			<h4>Posting</h4>
-			<li><?=anchor('posting/sales_invoice','Faktur Penjualan');?></li>
-			<li><?=anchor('posting/sales_retur','Retur Penjualan');?></li>
-			<li><?=anchor('posting/sales_memo','Kredit Memo Penjualan');?></li>
-			<li><?=anchor('posting/purchase_invoice','Faktur Pembelian');?></li>
-			<li><?=anchor('posting/purchase_retur','Retur Pembelian');?></li>
-			<li><?=anchor('posting/purchase_memo','Kredit Memo Pembelian');?></li>
-			<li><?=anchor('posting/cash','Kas Masuk/Keluar');?></li>
-			<li><?=anchor('posting/inventory','Persediaan');?></li>
-			<li><?=anchor('posting/asset','Aktiva Tetap');?></li>
-			<li><?=anchor('posting/all','Semua Transaksi');?></li>
- 		</div>
- 	</div>	
-    <div class="col-sm-6 col-md-4"><h2>Master</h2>
- 		<div class="thumbnail"> 
-			<li><?=anchor('coa','Cari Perkiraan')?></li>
-			<li><?=anchor('coa_group','Cari Kelompok Perkiraan')?></li>
-			<li><?=anchor('periode','Cari Periode')?></li>
-			<li><?=anchor('periode/close','Closing Periode')?></li>
- 		</div>
- 	</div>			
-     <div class="col-sm-6 col-md-4"><h2>Reports</h2>
- 		<div class="thumbnail"> 
-			<li><?=anchor('gl/rpt/cards','Laporan Kartu GL')?></li>
-			<li><?=anchor('gl/rpt/jurnal','Laporan Jurnal Transaksi')?></li>
-			<li><?=anchor('gl/rpt/neraca','Laporan Neraca')?></li>
-			<li><?=anchor('gl/rpt/rugi_laba','Laporan Rugi Laba')?></li>
-			<li><?=anchor('gl/rpt/neraca_saldo','Laporan Neraca Saldo')?></li>
- 		</div>
- 	</div>	
+			<li><?=anchor('posting/sales_invoice','Faktur Penjualan','class="info_link"');?></li>
+			<li><?=anchor('posting/sales_retur','Retur Penjualan','class="info_link"');?></li>
+			<li><?=anchor('posting/sales_memo','Kredit Memo Penjualan','class="info_link"');?></li>
+			<li><?=anchor('posting/purchase_invoice','Faktur Pembelian','class="info_link"');?></li>
+			<li><?=anchor('posting/purchase_retur','Retur Pembelian','class="info_link"');?></li>
+			<li><?=anchor('posting/purchase_memo','Kredit Memo Pembelian','class="info_link"');?></li>
+			<li><?=anchor('posting/cash','Kas Masuk/Keluar','class="info_link"');?></li>
+			<li><?=anchor('posting/inventory','Persediaan','class="info_link"');?></li>
+			<li><?=anchor('posting/asset','Aktiva Tetap','class="info_link"');?></li>
+			<li><?=anchor('posting/all','Semua Transaksi','class="info_link"');?></li>
+					</ul>
+				</li>
+				<li   data-options="state:'closed'">
+					<span>Report</span>
+					<ul>
+			<li><?=anchor('gl/rpt/cards','Laporan Kartu GL','class="info_link"')?></li>
+			<li><?=anchor('gl/rpt/jurnal','Laporan Jurnal Transaksi','class="info_link"')?></li>
+			<li><?=anchor('gl/rpt/neraca','Laporan Neraca','class="info_link"')?></li>
+			<li><?=anchor('gl/rpt/rugi_laba','Laporan Rugi Laba','class="info_link"')?></li>
+			<li><?=anchor('gl/rpt/neraca_saldo','Laporan Neraca Saldo','class="info_link"')?></li>
+					</ul>
+				</li>
+				<li  data-options="state:'closed'">
+					<span>Master</span>
+					<ul>
+			<li><?=anchor('coa','Kode Perkiraan','class="info_link"')?></li>
+			<li><?=anchor('coa_group','Kelompok Perkiraan','class="info_link"')?></li>
+			<li><?=anchor('periode','Periode Akuntansi','class="info_link"')?></li>
+			<li><?=anchor('periode/close','Closing Periode','class="info_link"')?></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>

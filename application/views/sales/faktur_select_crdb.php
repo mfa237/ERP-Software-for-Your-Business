@@ -6,7 +6,7 @@
 			data-options="
 				toolbar: '#toolbar-search-faktur',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/invoice/select'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -25,8 +25,10 @@
 </div>
 <SCRIPT language="javascript">
 	function select_faktur(){
+		var cust=$("#customer_number").val();
+		if(cust==""){alert("Pilih kode pelanggan dulu !");return false;}
 			$('#dlgSelectFaktur').dialog('open').dialog('setTitle','Cari nomor faktur');
-			$('#dgSelectFaktur').datagrid({url:'<?=base_url()?>index.php/invoice/select'});
+			$('#dgSelectFaktur').datagrid({url:'<?=base_url()?>index.php/invoice/select/'+cust});
 			$('#dgSelectaktur').datagrid('reload');
 	};	
 	function selected_faktur(){
@@ -34,11 +36,28 @@
 		if (row){
 			$('#docnumber').val(row.invoice_number);
 			//$('#company').val(row.company);
+			find_faktur();
 			$('#dlgSelectFaktur').dialog('close');
 		} else {
 			alert("Pilih salah satu nomor faktur !");
 		}
 	}	
+	function find_faktur(){
+		var nomor=$('#docnumber').val();
+		if(nomor=="")return false;
+		xurl=CI_ROOT+'invoice/find/'+nomor;
+		$.ajax({
+					type: "GET",
+					url: xurl,
+					data:'invoice_number='+nomor,
+					success: function(msg){
+						var obj=jQuery.parseJSON(msg);
+						$('#faktur_info').html('Tanggal: '+obj.invoice_date+', Jumlah: '+obj.amount+', Saldo: '+obj.saldo);
+					},
+					error: function(msg){alert(msg);}
+		});
+	};
+	
 </SCRIPT>
 <!-- END PILIH PELANGGAN -->
 

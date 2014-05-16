@@ -13,11 +13,11 @@ class Table_model extends CI_Model {
         
     }
     function load($table_name,$field_key=''){
- 
-        
         $this->browse($param);
     }
-    function table_def(){
+	
+    function table_def($table_name=''){
+		if($table_name!='')$this->table_name=$table_name;
         $q = mysql_query('DESCRIBE '.$this->table_name);
         while($row = mysql_fetch_array($q)) {
     //        echo "{$row['Field']} - {$row['Type']}\n";

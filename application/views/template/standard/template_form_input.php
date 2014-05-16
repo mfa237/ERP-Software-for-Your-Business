@@ -11,7 +11,6 @@
 
 <script type="text/javascript">
         CI_ROOT = "<?=base_url();?>index.php/";
-        
 </script>	 
 
 <?

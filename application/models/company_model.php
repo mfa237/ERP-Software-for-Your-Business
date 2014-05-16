@@ -52,7 +52,16 @@ function __construct(){
 		$retval=$this->get_by_id($this->access->cid)->result_array();
 		//echo "company_model: setting: ";
 		//var_dump($retval);
-		return $retval[$key];
+		if(count($retval)==1){
+			return $retval[0][$key];
+		} else {
+			return $retval[$key];
+		}
 	}
-
+	function datalist(){
+	        $query=$this->db->query("select company_code from preferences");
+	        $ret=array(); $ret['']='- Select -';
+	        foreach ($query->result() as $row){ $ret[$row->company_code]=$row->company_code;}		 
+	        return $ret;
+	}
 }

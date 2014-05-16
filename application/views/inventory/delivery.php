@@ -1,6 +1,23 @@
-<h1>PROSES PENGELUARAN BARANG NON PO - [<?
-	echo link_button("Print","print_delivery()","print");	
-	?>]</h1>
+<div><h3>PROSES PENGELUARAN BARANG NON PO<div class="thumbnail">
+	<?
+	echo link_button('Print', 'print_delivery()','print');		
+	echo link_button('Help', 'load_help()','help');		
+	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/delivery");
+		}
+	</script>
+	
+</div></H3>
+<div class="thumbnail">	
 <form id="frmItem" method='post' >
    <table>
 	<tr>
@@ -34,13 +51,13 @@
 	 </td><td>&nbsp;</td></tr>
    </table>
   <!-- LINEITEMS -->	
-<h1>ITEMS DETAIL</H1>
+<h5>ITEMS DETAIL</H5>
 <div id='dgItem'><?=load_view('inventory/select_item_no_price.php')?></div>
 </form>
 
 <div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
 	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
+		style="width:600px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -58,6 +75,9 @@
 		</thead>
 	</table>
 </div>	
+
+</div>
+
 <!-- LINEITEMS -->
 
  <script language='javascript'>

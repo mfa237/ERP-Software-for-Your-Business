@@ -15,6 +15,11 @@ function get_by_id($id){
 	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 }
+function get_by_nomor($nomor){
+	$this->db->where("invoice_number",$nomor);
+	return $this->db->get($this->table_name);
+}
+
 function save($data){
 	if($data['discount']=='')$data['discount']=0;
 	$this->db->insert($this->table_name,$data);

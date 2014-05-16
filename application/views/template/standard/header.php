@@ -1,3 +1,4 @@
+
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -35,11 +36,11 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Master<b class="caret"></b></a>
           <ul class="dropdown-menu">
-				<li><a href="<?=base_url()?>index.php/customer" >Pelanggan</a></li>
-				<li><a href="<?=base_url()?>index.php/supplier" >Supplier</a></li>
-				<li><a href="<?=base_url()?>index.php/inventory" >Barang/Jasa</a></li>
-				<li><a href="<?=base_url()?>index.php/banks">Rekening</a></li>
-				<li><a href="<?=base_url()?>index.php/coa">Perkiraan</a></li>
+				<li><a href="<?=base_url()?>index.php/customer" class="info_link" >Pelanggan</a></li>
+				<li><a href="<?=base_url()?>index.php/supplier"  class="info_link" >Supplier</a></li>
+				<li><a href="<?=base_url()?>index.php/inventory"  class="info_link" >Barang/Jasa</a></li>
+				<li><a href="<?=base_url()?>index.php/banks" class="info_link" >Rekening</a></li>
+				<li><a href="<?=base_url()?>index.php/coa" class="info_link" >Perkiraan</a></li>
           </ul>
         </li>
       </ul>
@@ -49,14 +50,14 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Laporan<b class="caret"></b></a>
           <ul class="dropdown-menu">
-				<li><a href="#" >Penjualan</a></li>
-				<li><a href="#">Pembelian</a></li>
-				<li><a href="#">Inventory</a></li>
-				<li><a href="#">Kas-Bank</a></li>
-				<li><a href="#">Aktiva Tetap</a></li>
-				<li><a href="#">Manufacture</a></li>
-				<li><a href="#">Akuntansi</a></li>
-				<li><a href="#">Payroll</a></li>
+				<li><a href="<?=base_url()?>index.php/sales/reports"  class="info_link">Penjualan</a></li>
+				<li><a href="<?=base_url()?>index.php/purchase/reports" class="info_link">Pembelian</a></li>
+				<li><a href="<?=base_url()?>index.php/inventory/reports" class="info_link">Inventory</a></li>
+				<li><a href="<?=base_url()?>index.php/banks/reports" class="info_link">Kas-Bank</a></li>
+				<li><a href="<?=base_url()?>index.php/aktiva/reports" class="info_link">Aktiva Tetap</a></li>
+				<li><a href="<?=base_url()?>index.php/manuf/reports" class="info_link">Manufacture</a></li>
+				<li><a href="<?=base_url()?>index.php/gl/reports" class="info_link">Akuntansi</a></li>
+				<li><a href="<?=base_url()?>index.php/payroll/reports" class="info_link">Payroll</a></li>
 
           </ul>
         </li>
@@ -74,16 +75,10 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setting <b class="caret"></b></a>
           <ul class="dropdown-menu">
-			<li><a href="<?=base_url()?>index.php/company" >Perusahaan</a></li>
-			<li><a href="<?=base_url()?>index.php/user" >User Login</a></li>
-			<li><a href="<?=base_url()?>index.php/jobs" >User Jobs</a></li>
-			<li><a href="<?=base_url()?>index.php/company/sales">Penjualan</a></li>
-			<li><a href="<?=base_url()?>index.php/company/purchase">Pembelian</a></li>
-			<li><a href="<?=base_url()?>index.php/company/inventory">Inventory</a></li>
-			<li><a href="<?=base_url()?>index.php/company/gl_link">Link Perkiraan</a></li>
-			<li><a href="<?=base_url()?>index.php/nomor">Penomoran</a></li>
-			<li><a href="<?=base_url()?>index.php/company/others">Lain-lain</a></li>
-			<li><a href="<?=base_url()?>index.php/modules" >Modules</a></li>
+			<li><a href="<?=base_url()?>index.php/company"  class="info_link" >Perusahaan</a></li>
+			<li><a href="<?=base_url()?>index.php/user"  class="info_link" >User Login</a></li>
+			<li><a href="<?=base_url()?>index.php/jobs"  class="info_link"  >User Jobs</a></li>
+			<li><a  onclick="load_menu('admin')" href="#"  class="info_link" >Administration</a></li>
           </ul>
         </li>
       </ul>
@@ -91,13 +86,15 @@
   </div><!-- /.container-fluid -->
 </nav>
 <?
-function menu($title,$url,$func=false){
-	if(!$func){
-		echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	
-	} else {
-	    echo "<div><a href='#' onclick=\"load_menu('$url')\"  class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";
+ 
+	function menu($title,$url,$func=false){
+		if(!$func){
+			echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	
+		} else {
+			echo "<div><a href='#' onclick=\"load_menu('$url')\"  class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";
+		}
 	}
-}
+ 
 ?> 
 <script>
 	$(document).ready(function(){

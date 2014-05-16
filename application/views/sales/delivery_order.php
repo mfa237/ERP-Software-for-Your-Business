@@ -1,11 +1,27 @@
-<div class="col-sm-6 col-md-8"><h1>SURAT JALAN <div class="thumbnail">
+<div><h4>SURAT JALAN </H4><div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');
 	echo link_button('Add','','add','true',base_url().'index.php/delivery_order/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/delivery_order');		
+	echo link_button('Delete','','cut','true',base_url().'index.php/delivery_order/delete/'.$invoice_number);		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/delivery_order/view/'.$invoice_number);		
+	echo link_button('Help', 'load_help()','help');		
 	?>
-</div></H1>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/delivery_order");
+		}
+	</script>
+	
+</div>
 <div class="thumbnail">	
 <form id="frmDo"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -17,8 +33,10 @@
             		
             ?>
         </td> 
-        <td rowspan="4" style="vertical-align: top">
+        <td rowspan="4" style="vertical-align: top;width:300px">
+			<div class="thumbnail" style="padding:10px">
         	Alamat Pengiriman: </br><?=$customer_info?>
+			</div>
         </td>       
     </tr>
      <tr>
@@ -76,7 +94,7 @@
 					<thead>
 						<tr>
 							<th data-options="field:'item_number',width:80">Kode Barang</th>
-							<th data-options="field:'description',width:100">Nama Barang</th>
+							<th data-options="field:'description',width:200">Nama Barang</th>
 							<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
 							<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
 							<th data-options="field:'line_number',width:30,align:'right'">Line</th>
@@ -95,7 +113,7 @@
 			data-options="
 				toolbar: '#toolbar-search-so',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/sales_order/select_so_open'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -121,7 +139,7 @@
 			data-options="
 				toolbar: '#toolbar-search-cust',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/customer/select'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -156,11 +174,13 @@
 						$('#invoice_number').val(result.invoice_number);
 						var nomor=$('#invoice_number').val();
 						$('#mode').val('view');
-						$('#dgItem').datagrid({url:'<?=base_url()?>index.php/delivery_order/items/'+nomor+'/json'});
-						$('#dgItem').datagrid('reload');
-						$.messager.show({
-							title:'Success',msg:'Data sudah tersimpan. '
-						});
+//						$('#dgItem').datagrid({url:'<?=base_url()?>index.php/delivery_order/items/'+nomor+'/json'});
+//						$('#dgItem').datagrid('reload');
+//						$.messager.show({
+//							title:'Success',msg:'Data sudah tersimpan. '
+//						});
+						window.open("<?=base_url()?>index.php/delivery_order/view/"+nomor,"_self");  		
+						
 					} else {
 						$.messager.show({
 							title: 'Error',

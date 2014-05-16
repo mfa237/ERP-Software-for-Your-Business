@@ -100,4 +100,27 @@ class Sales_order_model extends CI_Model
         foreach ($query->result() as $row){$ret[$row->sales_order_number]=$row->sales_order_number;}		 
         return $ret;
 	}
+	function recalc_ship_qty($nomor_so) {
+	
+		$s="update  sales_order_lineitems 
+			left join (
+
+			select from_line_number,sum(quantity) as qty_do
+			from invoice_lineitems il
+			where from_line_doc='$nomor_so' 
+			group by from_line_number
+
+			) ip
+			on ip.from_line_number=sales_order_lineitems.line_number 
+
+			set ship_qty=qty_do 
+
+			where sales_order_lineitems.sales_order_number='$nomor_so'";
+		
+		
+ 
+		
+		
+		$this->db->query($s);
+	}
 }

@@ -1,13 +1,35 @@
-<div class="col-sm-6 col-md-8">
-	<h1>CREDIT MEMO<div class="thumbnail">
+<div>
+	<h4>CREDIT MEMO </h4><div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/sales_crmemo/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/sales_crmemo');		
+	echo link_button('Delete','delete_memo()','cut');		
+	if($posted) {
+		echo link_button('UnPosting','','cut','true',base_url().'index.php/sales_crmemo/unposting/'.$kodecrdb);		
+	} else {
+		echo link_button('Posting','','ok','true',base_url().'index.php/sales_crmemo/posting/'.$kodecrdb);		
+	}
+	echo link_button('Refresh','','reload','true',base_url().'index.php/sales_crmemo/view/'.$kodecrdb);		
+	echo link_button('Help', 'load_help()','help');		
+	
 	
 	?>
-</div></H1>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/sales_crmemo");
+		}
+	</script>
+	
+</div> 
 <div class="thumbnail">		
 <form id="frmCrDb"  method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>	
@@ -18,12 +40,30 @@
 			<td>
 				<?php echo form_input('kodecrdb',$kodecrdb,"id=kodecrdb"); ?>
             </td>
+			<td rowspan='2'>
+				<div id='customer_info' class='thumbnail' style='height:50px;width:300px'>
+					Customer Name.<?=$customer_info?>
+				</div>
+			</td>
+			
         </tr>	 
         <tr>
             <td>Tanggal</td><td><?php echo form_input('tanggal',$tanggal,'id=tanggal 
              class="easyui-datetimebox" required style="width:150px"');?>
             </td>
         </tr>
+       <tr>
+            <td>Pelanggan</td>
+            <td><?=form_input('customer_number',$customer_number,'id="customer_number"');?>
+            	<?=link_button("",'select_customer()','search','true')?>
+            </td>
+			<td rowspan="3">
+				<div id='faktur_info' name='faktur_info' class='thumbnail' style='height:50px;width:300px'>
+					Nomor Faktur.<?=$faktur_info?>
+				</div>
+			</td>
+			
+       </tr>
        <tr>
             <td>Faktur</td>
             <td><?=form_input('docnumber',$docnumber,'id="docnumber"');?>
@@ -45,49 +85,79 @@
        </td></tr>
    </table>
 </form>
-<div id='divItem'>
-<h4>KODE PERKIRAAN</H4>
-	<div id='dgItem'>
-		<table>
-			<tr>
-				<td>Kode Akun</td><td>Nama Akun</td><td>Jumlah</td><td>
-			</tr>
-			<tr>
-			    <form id="frmItem" method='post' >
-			         <td><input id="account" style='width:80px' 
-			         	name="account"   class="easyui-validatebox" required="true">
-						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-						onclick="lookup_coa()"></a>
-			         </td>
-			         <td><input id="description" name="description" style='width:280px'></td>
-			        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
-			        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-             		   plain='true'	onclick='save_item()'></a>
-					</td>
-			        <input type='hidden' id='kodecrdb_no' name='kodecrdb_no'>
-			        <input type='hidden' id='line_number' name='line_number'>
-			    </form>				
-			</tr>
-		</table>		
+<div class="easyui-tabs" style="width:700px;height:550px">
+	<div id="divItem" title="Kode Perkiraan" style="padding:10px">
+		<div id='dgItem'>
+			<table>
+				<tr>
+					<td>Kode Akun</td><td>Nama Akun</td><td>Jumlah</td><td>
+				</tr>
+				<tr>
+					<form id="frmItem" method='post' >
+						 <td><input id="account" style='width:80px' 
+							name="account"   class="easyui-validatebox" required="true">
+							<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
+							onclick="lookup_coa()"></a>
+						 </td>
+						 <td><input id="description" name="description" style='width:280px'></td>
+						<td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
+						<td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
+						   plain='true'	onclick='save_item()'></a>
+						</td>
+						<input type='hidden' id='kodecrdb_no' name='kodecrdb_no'>
+						<input type='hidden' id='line_number' name='line_number'>
+					</form>				
+				</tr>
+			</table>		
+		</div>
+		<table id="dgItemMemo" class="easyui-datagrid"  		
+			style="width:600;height:400"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tb',
+				url: '<?=base_url()?>index.php/crdb/items/<?=$kodecrdb?>/json'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'account',width:80">Kode Akun</th>
+					<th data-options="field:'description',width:250">Nama Perkiraan</th>
+					<th data-options="field:'amount',width:160,align:'right'">Jumlah</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+				</tr>
+			</thead>
+		</table>
 	</div>
-	<table id="dgItemMemo" class="easyui-datagrid"  		
-		style="width:500px;min-height:800px"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',
-			url: '<?=base_url()?>index.php/crdb/items/<?=$kodecrdb?>/json'
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'account',width:80">Kode Akun</th>
-				<th data-options="field:'description',width:150">Nama Perkiraan</th>
-				<th data-options="field:'amount',width:60,align:'right'">Jumlah</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
-</div>
+
+ 
+<!-- JURNAL -->
+	<DIV title="Jurnal" style="padding:10px">
+		<div id='divJurnal' class='thumbnail'>
+		<table id="dgCrdb" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,toolbar:'#tbCrdb',
+				url: '<?=base_url()?>index.php/jurnal/items/<?=$kodecrdb?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'account',width:80">Akun</th>
+					<th data-options="field:'account_description',width:150">Nama Akun</th>
+					<th data-options="field:'debit',width:80,align:'right'">Debit</th>
+					<th data-options="field:'credit',width:80,align:'right'">Credit</th>
+					<th data-options="field:'custsuppbank',width:50">Ref</th>
+					<th data-options="field:'operation',width:50">Operasi</th>
+					<th data-options="field:'source',width:50">Keterangan</th>
+					<th data-options="field:'transaction_id',width:50">Id</th>
+				</tr>
+			</thead>
+		</table>
+		</div>
+			
+	</DIV>
+	
+	
 </DIV>
 <div id="tb" style="height:auto">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
@@ -96,6 +166,7 @@
 
 <?=load_view('gl/select_coa')?>
 <? include_once 'faktur_select_crdb.php' ?>
+<? include_once 'customer_select.php' ?>
 
 
 <script type="text/javascript">
@@ -194,6 +265,24 @@
 				$('#line_number').val(row.line_number);
 				$('#kodecrdb_id').val(row.kodecrdb);
 			}
+		}
+		function delete_memo() {
+			var url='<?=base_url()?>index.php/sales_crmemo/delete/'+$("#kodecrdb").val();
+			$.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
+				if (r){
+					$.post(url,null,function(result){
+						if (result.success){
+							window.open('<?=base_url()?>index.php/sales_crmemo','_self');
+						} else {
+							$.messager.show({	// show error message
+								title: 'Error',
+								msg: result.msg
+							});
+						}
+					},'json');
+				}
+			});
+			
 		}
     
 </script>

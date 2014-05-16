@@ -1,3 +1,44 @@
+<div><h3>JURNAL UMUM</H3>
+<div class="thumbnail">
+	<?
+	if(!isset($closed))$closed=false;
+	if($closed=="")$closed=false;
+	
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Add','','add','true',base_url().'index.php/jurnal/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/jurnal');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/jurnal/view/'.$gl_id);		
+	echo link_button('Delete','','cut','true',base_url().'index.php/jurnal/delete/'.$gl_id);		
+	echo link_button('Help', 'load_help()','help');		
+	?>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/jurnal");
+		}
+	</script>
+	
+</div>
+<div class="thumbnail">
+
+<?php if (validation_errors()) { ?>
+	<div class="alert alert-error">
+	<button type="button" class="close" data-dismiss="alert">x</button>
+	<h4>Terjadi Kesalahan!</h4> 
+	<?php echo validation_errors(); ?>
+	</div>
+<?php } ?>
+ <?php if($message!="") { ?>
+<div class="alert alert-success"><? echo $message;?></div>
+<? } ?>
+
+
 <form id="frmItem" method='post' >
    <table>
 	<tr>
@@ -48,7 +89,7 @@
 </form>				
    	
 	<table id="dgItemJurnal" class="easyui-datagrid"  		
-		style="width:800px;min-height:800px"
+		style="width:auto;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -72,14 +113,19 @@
 		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 	</div>
 	
-	
+</div></div>	
    
 <?=load_view('gl/select_coa')?>   	
    
    
 <script type="text/javascript">
-    
+    var closed=<?=$closed?>;
+	
 		function save_item(){
+			alert(closed);
+			
+			if(closed){alert("Tidak bisa ubah jurnal ini karena sudah diclose!");return false;}
+			
 			url = '<?=base_url()?>index.php/jurnal/save_item';
 			$('#frmItem').form('submit',{
 				url: url,
@@ -111,6 +157,7 @@
 			});
 		}
 		function deleteItem(){
+			if(closed){alert("Tidak bisa ubah jurnal ini karena sudah diclose!");return false;}
 			var row = $('#dgItemJurnal').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
@@ -132,6 +179,7 @@
 			}
 		}
 		function editItem(){
+			if(closed){alert("Tidak bisa ubah jurnal ini karena sudah diclose!");return false;}
 			var row = $('#dgItemJurnal').datagrid('getSelected');
 			if (row){
 				$('#frmItem').form('load',row);

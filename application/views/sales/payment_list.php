@@ -11,14 +11,17 @@
 			<tr>
 				<th data-options="field:'no_bukti',width:80">Nomor Bukti</th>
 				<th data-options="field:'date_paid',width:80">Tanggal Bayar</th>
-				<th data-options="field:'how_paid',width:50,align:'left',editor:'text'">Cara Bayar</th>
-				<th data-options="field:'amount_paid',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Jumlah Bayar</th>
+				<th data-options="field:'how_paid',width:150,align:'left',editor:'text'">Cara Bayar</th>
+				<th data-options="field:'amount_paid',width:60,align:'right',editor:'numberbox',
+					formatter: function(value,row,index){
+						return number_format(value,2,'.',',');}">Jumlah</th>
+
 				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 			</tr>
 		</thead>
 	</table>
 
-<div id='dlgPayment'class="easyui-dialog" style="width:400px;height:250px;padding:10px 20px"
+<div id='dlgPayment'class="easyui-dialog" style="width:500px;height:450px;padding:10px 20px"
     closed="true" buttons="#dlg-buttons-pay">
 	
 	<?

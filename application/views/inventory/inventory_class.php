@@ -1,7 +1,9 @@
- <script src="<?=base_url();?>js/lib.js"></script>
-
- <div id='containerx'>
-   <?php echo validation_errors(); ?>
+<h1>KELAS BARANG</h1>
+ <div id='thumbnail'>
+   <?php 
+   if(!isset($kode))$kode="";
+   if(!isset($class))$class="";
+   echo validation_errors(); ?>
    <?php 
    		if($mode=='view'){
 			echo form_open('inventory_class/update','id=myform');
@@ -12,7 +14,7 @@
    		}
 		
    ?>
-   <div class='box6x'><h1>KELAS BARANG</h1>
+   
    <table>
 	<tr>
 		<td>Kode</td><td>
@@ -24,19 +26,14 @@
 			echo form_input('kode',$kode);
 		}		
 		?></td>
-	</tr>	 
-       <tr>
             <td>Kelas</td><td><?php echo form_input('class',$class);?></td>
-
-       </tr>
-	 
-        
-	 <tr><td>
+		<td>
 	 <input type="submit" value="Save" class="easyui-linkbutton" 
                    data-options="iconCls:'icon-save'" style="height:30px;width:60px"/>
 	 
-	 </td><td>&nbsp;</td></tr>
+	 </td>
+	 </tr>
    </table>
    </form>
-   </div>
+</div>
   

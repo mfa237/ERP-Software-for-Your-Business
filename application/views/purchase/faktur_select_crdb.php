@@ -6,7 +6,7 @@
 			data-options="
 				toolbar: '#toolbar-search-faktur',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/purchase_invoice/select'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -24,21 +24,42 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_faktur()">Select</a>
 </div>
 <SCRIPT language="javascript">
+
 	function select_faktur(){
-			$('#dlgSelectFaktur').dialog('open').dialog('setTitle','Cari nomor faktur');
-			$('#dgSelectFaktur').datagrid({url:'<?=base_url()?>index.php/purchase_invoice/select'});
-			$('#dgSelectaktur').datagrid('reload');
+		var supp=$("#supplier_number").val();
+		if(supp==""){alert("Pilih supplier dulu.");return false;}
+		var xurl='<?=base_url()?>index.php/purchase_invoice/select/'+supp;
+		console.log(xurl);
+		$('#dlgSelectFaktur').dialog('open').dialog('setTitle','Cari nomor faktur');
+		$('#dgSelectFaktur').datagrid({url:xurl});
+		$('#dgSelectaktur').datagrid('reload');
 	};	
 	function selected_faktur(){
 		var row = $('#dgSelectFaktur').datagrid('getSelected');
 		if (row){
 			$('#docnumber').val(row.purchase_order_number);
-			//$('#company').val(row.company);
 			$('#dlgSelectFaktur').dialog('close');
+			find_faktur();
 		} else {
 			alert("Pilih salah satu nomor faktur !");
 		}
 	}	
+	function find_faktur(){
+		var nomor=$('#docnumber').val();
+		if(nomor=="")return false;
+		xurl=CI_ROOT+'purchase_invoice/find/'+nomor;
+		$.ajax({
+					type: "GET",
+					url: xurl,
+					data:'invoice_number='+nomor,
+					success: function(msg){
+						var obj=jQuery.parseJSON(msg);
+						$('#faktur_info').html('Tanggal: '+obj.po_date+', Jumlah: '+obj.amount+', Saldo: '+obj.saldo);
+					},
+					error: function(msg){alert(msg);}
+		});
+	};
+
 </SCRIPT>
 <!-- END PILIH PELANGGAN -->
 

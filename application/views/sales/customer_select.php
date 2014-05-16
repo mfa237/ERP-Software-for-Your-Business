@@ -6,7 +6,7 @@
 			data-options="
 				toolbar: '#toolbar-search-cust',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/customer/select'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -35,7 +35,9 @@
 		var row = $('#dgSelectCust').datagrid('getSelected');
 		if (row){
 			$('#sold_to_customer').val(row.customer_number);
-			//$('#company').val(row.company);
+			$('#company').val(row.company);
+			$('#customer_info').html(row.company+'<br>'+row.street+'<br>'+row.city);
+			$('#customer_number').val(row.customer_number);
 			$('#dlgSelectCust').dialog('close');
 		} else {
 			alert("Pilih salah satu nomor customer !");

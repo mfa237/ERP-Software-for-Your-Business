@@ -1,47 +1,36 @@
-  <ul class="easyui-tree">
- 	<li><span><strong>Operation</strong></span>
- 		<ul>
- 			<li ><span>User Login</span>
- 				<ul>
- 					<li><?=anchor('user/add','New User ID');?></li>
- 					<li><?=anchor('user','Search User ID');?></li>
- 				</ul>
- 			</li>
- 			<li  >
- 				<span>User Group</span>
- 				<ul>
- 					<li><?=anchor('jobs/add','New User Group')?></li>
- 					<li><?=anchor('jobs','Search User Group');?></li>
- 				</ul>
- 			</li>
- 		</ul>
- 		
- 	</li>
- 	<li><span><strong>Setting</strong></span>
- 		<ul>
-			<li ><span>Company</span>
- 				<ul>
- 					<li><?=anchor('company','Nama Perusahaan')?></li>
- 				</ul>				
-			</li>
-			<li ><span>Global</span>
- 				<ul>
- 					<li><?=anchor('company/gl_link','Setting Accounts Link');?></li>
- 					<li><?=anchor('company/sales','Setting Penjualan');?></li>
- 					<li><?=anchor('company/purchase','Setting Pembelian');?></li>
- 					<li><?=anchor('company/inventory','Setting Inventory');?></li>
- 					<li><?=anchor('nomor','Setting Penomoran');?></li>
- 					<li><?=anchor('company/others','Setting Lain-lain');?></li>
- 				</ul>				
-			</li>
-			<li ><span>Modules</span>
- 				<ul>
- 					<li><?=anchor('modules/add','New Module')?></li>
- 					<li><?=anchor('modules','Search Module');?></li>
- 				</ul>				
-			</li>
-		</ul>
- 	</li>
- 	
- 	<li><span><strong>Reports</strong></span><ul>
- 	</ul></li>
+<div style="margin:10px 0;"></div>
+	<ul class="easyui-tree">
+		<li>
+			<span>Administration Modules</span>
+			<ul>
+				<li>
+					<span>Operation</span>
+					<ul>
+			<li><?=anchor('company','Nama Perusahaan', 'class="info_link"')?></li>
+			<li><?=anchor('user','User Login',' class="info_link"');?></li>
+			<li><?=anchor('periode','Periode Akuntansi', 'class="info_link"')?></li>
+			<li><?=anchor('jobs','User Job Group',' class="info_link"');?></li>
+			<li><a class="info_link" href="<?=base_url()?>index.php/company/sales " class="info_link">Penjualan</a></li>
+			<li><a class="info_link" href="<?=base_url()?>index.php/company/purchase" class="info_link">Pembelian</a></li>
+			<li><a class="info_link" href="<?=base_url()?>index.php/company/inventory" class="info_link">Inventory</a></li>
+			<li><a class="info_link" href="<?=base_url()?>index.php/company/gl_link" class="info_link">Link Perkiraan</a></li>
+			<li><a class="info_link" href="<?=base_url()?>index.php/nomor" class="info_link">Penomoran</a></li>
+			<li><a class="info_link" href="<?=base_url()?>index.php/company/others" class="info_link">Lain-lain</a></li>
+			<li><a class="info_link" href="<?=base_url()?>index.php/modules"  class="info_link">Modules</a></li>
+			<li><?=anchor('company/department','Department','class="info_link"');?></li>
+			<li><?=anchor('company/division','Division','class="info_link"');?></li>
+					</ul>
+				</li>
+				<li   data-options="state:'closed'">
+					<span>Report</span>
+					<ul>
+					</ul>
+				</li>
+				<li  data-options="state:'closed'">
+					<span>Master</span>
+					<ul>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>

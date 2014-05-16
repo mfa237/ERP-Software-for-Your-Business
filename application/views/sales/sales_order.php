@@ -1,14 +1,29 @@
-<div class="col-sm-6 col-md-8"><h2>SALES ORDER
+<div><h4>SALES ORDER </h4>
 	<div class="thumbnail">
 		<?
 			echo link_button("Save","save_so()","save");
 			echo link_button('Print', 'print_so()','print');
 			echo link_button('Add','','add','true',base_url().'index.php/sales_order/add');		
+			echo link_button('Delete','delete()','remove');		
 			echo link_button('Search','','search','true',base_url().'index.php/sales_order');		
+			echo link_button('Refresh','','reload','true',base_url().'index.php/sales_order/view/'.$sales_order_number);		
+			echo link_button('Help', 'load_help()','help');		
 					
 		?>	
+		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<div id="mmOptions" style="width:200px;">
+			<div onclick="load_help()">Help</div>
+			<div>Update</div>
+			<div>MaxOn Forum</div>
+			<div>About</div>
+		</div>
+		<script type="text/javascript">
+			function load_help() {
+				window.parent.$("#help").load("<?=base_url()?>index.php/help/load/sales_order");
+			}
+		</script>
 	</div>
-</h2>	
+</div>	
 
 <div class="thumbnail">
 
@@ -45,7 +60,7 @@
        </tr>
        <tr>
             <td>Keterangan</td><td colspan="6"><?php echo form_input('comments'
-                    ,$comments,'id=comments style="width:300px"');?>
+                    ,$comments,'id=comments style="width:400px"');?>
             </td>
             <td>        
             </td>
@@ -56,83 +71,108 @@
 
 
 <!-- SALES_ORDER_LINEITEMS -->	
-<h5>ITEMS</H5>
-<div id='divItem'>
-	<div id='dgItem'>
-		<table>
-			<tr>
-				<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
-				<td>Harga</td><td>Disc%</td><td>Jumlah</td><td></td>
-			</tr>
-			<tr>
-			    <form id="frmItem" method='post' >
-			         <td><input onblur='find()' id="item_number" style='width:80px' 
-			         	name="item_number"   class="easyui-validatebox" required="true">
-						<?=link_button('','searchItem()','search');?>
-			         </td>
-			         <td><input id="description" name="description" style='width:180px'></td>
-			         <td><input id="quantity"  style='width:20px'  name="quantity" onblur="hitung()"></td>
-			         <td><input id="unit" name="unit"  style='width:30px' ></td>
-			         <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-			        <td><input id="discount" name="discount"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-			        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
-			        <td>
-			        	<?=link_button('Add Item','save_item()','save');?>
-					</td>
-			        <input type='hidden' id='so_number' name='so_number'>
-			        <input type='hidden' id='line_number' name='line_number'>
-			    </form>
-				
-			</tr>
+<div class="easyui-tabs" style="width:700px;height:450px">
+	<div id='divItem' title="Items" style="padding:10px">
+		<div id='dgItem'>
+			<table>
+				<tr>
+					<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
+					<td>Harga</td><td>Disc%</td><td>Jumlah</td><td></td>
+				</tr>
+				<tr>
+					<form id="frmItem" method='post' >
+						 <td><input onblur='find()' id="item_number" style='width:80px' 
+							name="item_number"   class="easyui-validatebox" required="true">
+							<?=link_button('','searchItem()','search');?>
+						 </td>
+						 <td><input id="description" name="description" style='width:180px'></td>
+						 <td><input id="quantity"  style='width:40px'  name="quantity" onblur="hitung()"></td>
+						 <td><input id="unit" name="unit"  style='width:30px' ></td>
+						 <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+						<td><input id="discount" name="discount"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+						<td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
+						<td>
+							<?=link_button('Add Item','save_item()','save');?>
+						</td> 
+						<input type='hidden' id='so_number' name='so_number'>
+						<input type='hidden' id='line_number' name='line_number'>
+					</form>
+					
+				</tr>
+			</table>
+			
+		</div>
+		<table id="dg" class="easyui-datagrid"  
+			style="width:auto;height:200px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tb',
+				url: '<?=base_url()?>index.php/sales_order/items/<?=$sales_order_number?>/json'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'item_number',width:80">Kode Barang</th>
+					<th data-options="field:'description',width:150">Nama Barang</th>
+					<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+					<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}},
+						formatter: function(value,row,index){
+							return number_format(value,2,'.',',');}">Harga</th>
+					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
+					<th data-options="field:'amount',width:60,align:'right',editor:'numberbox',
+						formatter: function(value,row,index){
+							return number_format(value,2,'.',',');}">Jumlah</th>
+					<th data-options="field:'ship_qty',width:50">Ship Qty</th>
+					<th data-options="field:'ship_date',width:50">Ship Date</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+				</tr>
+			</thead>
 		</table>
+	<!-- END SALES_ORDER_LINEITEMS -->
 		
+		<h5>TOTAL</H5>
+		<div id='divTotal'> 
+					<table>
+						<tr>
+							<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
+							<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
+							<td>Pajak PPN %: </td><td><input id='sales_tax_percent' value='<?=$sales_tax_percent?>' style='width:50px'></td>
+						</tr><tr>
+							<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
+							<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
+							<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
+								 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
+								   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
+								
+							</td>
+						</tr>
+					</table>		
+		</div>
 	</div>
-	<table id="dg" class="easyui-datagrid"  
-		style="width:auto;min-height:auto"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',
-			url: '<?=base_url()?>index.php/sales_order/items/<?=$sales_order_number?>/json'
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
-				<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
-				<th data-options="field:'amount',width:60,align:'right',editor:'numberbox'">Jumlah</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
-<!-- END SALES_ORDER_LINEITEMS -->
-	
-	<h5>TOTAL</H5>
-	<div id='divTotal'> 
-				<table>
-					<tr>
-						<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
-						<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
-						<td>Pajak PPN %: </td><td><input id='sales_tax_percent' value='<?=$sales_tax_percent?>' style='width:50px'></td>
-					</tr><tr>
-						<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
-						<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
-						<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
-							 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-		             		   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
-		             		
-						</td>
-					</tr>
-				</table>		
+	<div title="Delivery" style="padding:10px">
+		<table id="dgDo" class="easyui-datagrid"  
+			style="width:auto;height:300px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,  
+				url: '<?=base_url();?>index.php/sales_order/delivery/<?=$sales_order_number;?>',toolbar:'',
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'invoice_number',width:100">Nomor</th>
+					<th data-options="field:'invoice_date',width:80">Tanggal</th>
+					<th data-options="field:'warehouse_code',width:80">Gudang</th>
+					<th data-options="field:'item_number',width:80">Item</th>
+					<th data-options="field:'description',width:180">Description</th>
+					<th data-options="field:'quantity',width:80">Quantity</th>
+					<th data-options="field:'unit',width:80">Unit</th>
+
+				</tr>
+			</thead>
+		</table>
 	</div>
 </div>
-
-
-<h5>PAYMENTS</H5>
-
 
 <div id="tb" style="height:auto">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
@@ -165,7 +205,8 @@
     </div>   
 </div>
 
-</DIV></div>
+</DIV>
+</div>
 <script type="text/javascript">
 	var url;	
     function save_so(){
@@ -199,7 +240,7 @@
 			});
 
     }
-    
+
 
 		function find(){
 		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val();
@@ -264,6 +305,11 @@
 		    });			
 		}
 		function save_item(){
+			var mode=$('#mode').val();
+			if(mode=="add"){
+				alert("Simpan dulu sebelum tambah item barang !");
+				return false;
+			}
 			url = '<?=base_url()?>index.php/sales_order/save_item';
 			$('#so_number').val($('#sales_order_number').val());
 						 
@@ -282,7 +328,7 @@
 						$('#unit').val('Pcs');
 						$('#item_number').val('');
 						$('#line_number').val('');
-						
+						$('#quantity').val(1);
 						find();
 						hitung();
 						

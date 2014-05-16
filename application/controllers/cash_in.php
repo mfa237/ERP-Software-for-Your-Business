@@ -92,7 +92,7 @@ class Cash_in extends CI_Controller {
 		} else {
 			$message='Error Update';
 		}	  
-        header('location: '.base_url().'index.php/cash_in');
+        header('location: '.base_url().'index.php/cash_in/view/'.$data['voucher']);
 	}
 	
 	function view($id,$message=null){

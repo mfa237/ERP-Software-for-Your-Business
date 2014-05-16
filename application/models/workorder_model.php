@@ -1,14 +1,14 @@
 <?php
 class Workorder_model extends CI_Model {
 
-private $primary_key='wo_number';
-private $table_name='workorder';
+private $primary_key='work_order_no';
+private $table_name='work_order';
 
 function __construct(){
 	parent::__construct();
 }
 	function get_paged_list($limit=10,$offset=0,
-	$order_column='wo_number',$order_type='asc')
+	$order_column='work_order_no',$order_type='asc')
 	{
 		if (empty($order_column)||empty($order_type))
 		$this->db->order_by($this->primary_key,'asc');
@@ -24,16 +24,24 @@ function __construct(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
-		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+		$data['start_date']= date( 'Y-m-d H:i:s', strtotime($data['start_date']));
+		$data['expected_date']= date( 'Y-m-d H:i:s', strtotime($data['expected_date']));
+		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){
+		$data['start_date']= date( 'Y-m-d H:i:s', strtotime($data['start_date']));
+		$data['expected_date']= date( 'Y-m-d H:i:s', strtotime($data['expected_date']));
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		return $this->db->update($this->table_name,$data);
 	}
 	function delete($id){
+
+		$this->db->where("work_order_no",$id);
+		$this->db->delete("work_order_detail");
+
 		$this->db->where($this->primary_key,$id);
-		$this->db->delete($this->table_name);
+		return $this->db->delete($this->table_name);
+		
 	}
 
 }

@@ -115,7 +115,7 @@
 	   echo "The file $filename is not writable";
 	   die;
 	}
-				
+
 	
 echo "
 --
@@ -1250,7 +1250,7 @@ echo "
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_asset` (
-  `id` varchar(10) character set utf8 NOT NULL,
+  `id` varchar(50) character set utf8 NOT NULL,
   `description` varchar(50) character set utf8 default NULL,
   `group_id` varchar(50) character set utf8 default NULL,
   `location_id` varchar(50) character set utf8 default NULL,
@@ -1258,9 +1258,9 @@ CREATE TABLE IF NOT EXISTS `fa_asset` (
   `custodian_id` varchar(50) character set utf8 default NULL,
   `vendor_id` varchar(50) character set utf8 default NULL,
   `sn` varchar(50) character set utf8 default NULL,
-  `acquisition_date` varchar(50) character set utf8 default NULL,
+  `acquisition_date`  datetime  default NULL,
   `acquisition_cost` double default NULL,
-  `warranty_date` varchar(8) character set utf8 default NULL,
+  `warranty_date` datetime default NULL,
   `depn_method` int(11) default NULL,
   `useful_lives` int(11) default NULL,
   `salvage_value` int(11) default NULL,
@@ -1345,6 +1345,7 @@ CREATE TABLE IF NOT EXISTS `fa_asset_group` (
   `salvage_value` int(11) default NULL,
   `expenses_depn` int(11) default NULL,
   `update_status` int(11) default NULL,
+  `warranty_date` datetime default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -6362,6 +6363,284 @@ where c.transtype='PO-CREDIT MEMO'
 ";
 if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 
+
+// new table for payroll
+echo "
+DROP TABLE employee;
+
+CREATE TABLE `employee` (
+  `nip` varchar(50) character set utf8 NOT NULL,
+  `nama` varchar(50) character set utf8 default NULL,
+  `tgllahir` datetime default NULL,
+  `agama` varchar(12) character set utf8 default NULL,
+  `kelamin` varchar(1) character set utf8 default NULL,
+  `status` varchar(12) character set utf8 default NULL,
+  `idktpno` varchar(20) character set utf8 default NULL,
+  `hireddate` datetime default NULL,
+  `dept` varchar(50) character set utf8 default NULL,
+  `divisi` varchar(50) character set utf8 default NULL,
+  `level` varchar(50) character set utf8 default NULL,
+  `position` varchar(50) character set utf8 default NULL,
+  `supervisor` varchar(50) character set utf8 default NULL,
+  `payperiod` varchar(50) character set utf8 default NULL,
+  `alamat` varchar(100) character set utf8 default NULL,
+  `kodepos` varchar(50) character set utf8 default NULL,
+  `telpon` varchar(12) character set utf8 default NULL,
+  `hp` varchar(25) character set utf8 default NULL,
+  `gp` double default NULL,
+  `tjabatan` double default NULL,
+  `ttransport` double default NULL,
+  `tmakan` double default NULL,
+  `incentive` double default NULL,
+  `sc` double(11,0) default NULL,
+  `rateot` double default NULL,
+  `tkesehatan` double default NULL,
+  `tlain` double default NULL,
+  `bjabatang` double default NULL,
+  `iurantht` double default NULL,
+  `blain` double default NULL,
+  `emptype` varchar(20) character set utf8 default NULL,
+  `emplevel` varchar(20) character set utf8 default NULL,
+  `pathimage` varchar(200) character set utf8 default NULL,
+  `update_status` int(11) default NULL,
+  `nip_id` varchar(50) default NULL,
+  `npwp` varchar(50) default NULL,
+  `bank_name` varchar(50) default NULL,
+  `account` varchar(50) default NULL,
+  `tempat_lahir` varchar(50) default NULL,
+  `pendidikan` varchar(50) default NULL,
+  `gol_darah` varchar(50) default NULL,
+  PRIMARY KEY  (`nip`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+
+
+CREATE TABLE jenis_tunjangan (
+	kode varchar (50) character set utf8 NOT NULL ,
+	keterangan varchar (50) character set utf8 NULL ,
+	sifat varchar (50) character set utf8 NULL ,
+	is_variable bit(1) default 0,
+	ref_column varchar (50) character set utf8 NULL ,
+	update_status int NULL ,
+	PRIMARY KEY  (`kode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE jenis_potongan (
+	kode varchar (50) character set utf8 NOT NULL ,
+	keterangan varchar (50) character set utf8 NULL ,
+	sifat varchar (50) character set utf8 NULL ,
+	is_variable bit(1) default 0,
+	ref_column varchar (50) character set utf8 NULL ,
+	update_status int NULL ,
+	PRIMARY KEY  (`kode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE employee_type (
+	kode varchar (50) character set utf8 NOT NULL ,
+	keterangan varchar (50) character set utf8 NULL ,
+	update_status int NULL ,
+	PRIMARY KEY  (`kode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE employee_group (
+	kode varchar (50) character set utf8 NOT NULL ,
+	keterangan varchar (50) character set utf8 NULL ,
+	update_status int NULL ,
+	PRIMARY KEY  (`kode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE employee_status (
+	status varchar (50) character set utf8 NOT NULL ,
+	keterangan varchar (50) character set utf8 NULL ,
+	update_status int NULL ,
+	PRIMARY KEY  (`status`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE employee_level (
+	kode varchar (50) character set utf8 NOT NULL ,
+	keterangan varchar (50) character set utf8 NULL ,
+	PRIMARY KEY  (`kode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE divisions (
+	div_code varchar (50) character set utf8 NOT NULL ,
+	div_name varchar (50) character set utf8 NULL ,
+	PRIMARY KEY  (div_code)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE departments (
+	dept_code varchar (50) character set utf8 NOT NULL ,
+	dept_name varchar (50) character set utf8 NULL ,
+	PRIMARY KEY  (dept_code)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE hr_emp_angsuran (
+	id int(11) NOT NULL auto_increment,
+	loan_number varchar (50) character set utf8 NOT NULL ,
+	nip varchar (50) character set utf8 NOT NULL ,
+	bulan int(2) NULL,
+	tahun int(4) NULL,
+	tanggal datetime null,
+	angsuran double null,
+	angsuran_bungan double null,
+	bayar double null,
+	bunga double,
+	tanggal_bayar datetime null,
+	no_bukti_bayar varchar(50) null,
+	jenis_bayar int null,
+	PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE hr_emp_default_com (
+	id int(11) NOT NULL auto_increment,
+	nip varchar (50) character set utf8 NOT NULL ,
+	def_com_code varchar (50) character set utf8 NULL ,
+	def_com_value double NULL ,
+	PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE hr_emp_level_com (
+	id int(11) NOT NULL auto_increment,
+	level_code varchar (50) character set utf8 NOT NULL ,
+	no_urut varchar (50) character set utf8 NULL ,
+	formula_string varchar (250) character set utf8 NULL ,
+	take_home_pay int NULL ,
+	salary_com_code varchar (50) character set utf8 NULL ,
+	salary_com_name varchar (50) character set utf8 NULL ,
+	PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE hr_emp_loan (
+	loan_number varchar (50) character set utf8 NULL ,
+	level_type varchar (50) character set utf8 NOT NULL ,
+	date_loan datetime null ,
+	loan_amount double NULL ,
+	loan_balance double NULL ,
+	angsuran double NULL ,
+	loan_count int  NULL ,
+	loan_last_to int  NULL ,
+	loan_last_date datetime NULL ,
+	approved_by varchar(50) null,
+	pay_method int null,
+	nip varchar(50) null,
+	id int(11) NOT NULL auto_increment,
+	PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE hr_pph (
+	kode varchar (50) character set utf8 NULL ,
+	percent_value real NULL ,
+	low_value double NULL ,
+	high_value double NULL ,
+	PRIMARY KEY  (kode)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE hr_pph_form (
+	id int(11) NOT NULL auto_increment,
+	kelompok varchar (50) character set utf8 NULL ,
+	nomor varchar (50) character set utf8 NULL ,
+	keterangan varchar (250) character set utf8 NULL ,
+	jumlah double NULL ,
+	header bit null,
+	rumus varchar(250) null,
+	template varchar(50) null,
+	PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE employee_pph (
+	id int(11) NOT NULL auto_increment,
+	nip varchar (50) character set utf8 NULL ,
+	nomor varchar (50) character set utf8 NULL ,
+	jumlah double NULL ,
+	tahun int NULL ,
+	bulan int null,
+	PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE hr_shift (
+	kode varchar (50) character set utf8 NOT NULL ,
+	time_in datetime NULL ,
+	time_out datetime NULL ,
+	different_day bit NULL ,
+	PRIMARY KEY  (kode)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE employee_shift (
+	id int(11) NOT NULL auto_increment,
+	nip varchar (50) character set utf8 NULL ,
+	kode_shift varchar (50) character set utf8 NULL ,
+	tanggal datetime NULL ,
+	keterangan int NULL ,
+	tcid varchar(50) null,
+	PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE hr_ptkp (
+	kode varchar (50) character set utf8 NOT NULL ,
+	keterangan varchar(50) null,
+	jumlah double NULL ,
+	PRIMARY KEY  (kode)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO hr_ptkp(kode,keterangan,jumlah)
+values('K0','KAWIN ANAK 0',26326000),
+('K1','KAWIN ANAK 1',28350000),
+('K2','KAWIN ANAK 2',30375000),
+('K3','KAWIN ANAK 3',32400000),
+('TK','BELUM KAWIN',24300000);
+
+CREATE TABLE time_card_detail (
+	id int(11) NOT NULL auto_increment,
+	salary_no int not null,
+	nip varchar(50) not null,
+	absen_type int null,
+	shift_code varchar(10) null,
+	work_status int null,
+	tanggal datetime NULL,
+	time_in varchar(5) null,
+	time_out varchar(5) null,
+	time_hour varchar(5) null,
+	ot_in varchar(5) null,
+	ot_out varchar(5) null,
+	ot_hour varchar(5) null,
+	ot_type varchar(10) null,
+	ot_exclude int null,
+	ot_amount double null,
+	tc_1 real null,
+	tc_2 real null,
+	tc_3 real null,
+	tc_4 real null,
+	tc_sum real null,
+	tc_run real null,
+	tc_exp real null,
+	free_in varchar(5) null,
+	free_out varchar(5) null,
+	free_hour varchar(5) null,
+	
+	PRIMARY KEY  (id) 
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+create view qry_payroll_component as 
+select 'income' as jenis, kode,keterangan,sifat,is_variable,ref_column from jenis_tunjangan
+union all
+select  'deduct' as jenis,  kode,keterangan,sifat,is_variable,ref_column from jenis_potongan;
+
+
+create table sys_log_run (
+	id int(11) NOT NULL auto_increment,
+	user_id varchar(50),
+	url varchar(200),
+	controller varchar(50),
+	method varchar(50),
+	param1 varchar(50),
+	PRIMARY KEY  (id) 
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+	
+
+
+";				
   
   
 

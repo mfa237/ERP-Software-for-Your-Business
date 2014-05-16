@@ -110,5 +110,10 @@ class Periode extends CI_Controller {
 	 	$this->periode_model->delete($id);
 	 	$this->browse();
 	}
-	
+	function select($periode="") {
+		$sql="select * from financial_periods";
+		if($periode!="")$sql.=" where period like '$periode%'";
+		
+		echo datasource($sql);
+	}
 }

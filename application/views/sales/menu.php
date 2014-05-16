@@ -1,24 +1,23 @@
- 
-	   <div class="col-sm-6 col-md-4"><h2>Operation</h2>
- 		<div class="thumbnail">
- 			<li><?=anchor(base_url().'index.php/sales_order','Sales Order','class="info_link"');?></li>
-			<li><?=anchor(base_url().'index.php/delivery_order','Surat Jalan','class="info_link"');?></li>
+<div style="margin:10px 0;"></div>
+	<ul class="easyui-tree">
+		<li>
+			<span>Sales Modules</span>
+			<ul>
+				<li>
+					<span>Operation</span>
+					<ul>
+ 			<li><?=anchor(base_url().'index.php/sales_order','Sales Order','class="info_link"  ');?></li>
+			<li><?=anchor(base_url().'index.php/delivery_order','Surat Jalan','class="info_link" ');?></li>
 			<li><?=anchor(base_url().'index.php/invoice','Faktur Penjualan','class="info_link"');?></li>
 			<li><?=anchor(base_url().'index.php/payment','Pembayaran Piutang','class="info_link"');?></li>
 			<li><?=anchor(base_url().'index.php/sales_retur','Retur Penjualan','class="info_link"');?></li>
 			<li><?=anchor(base_url().'index.php/sales_crmemo','Kredit Memo','class="info_link"');?></li>
 			<li><?=anchor(base_url().'index.php/sales_dbmemo','Debit Memo','class="info_link"');?></li>
- 		</div>
-        </div>
-        <div class="col-sm-6 col-md-4"><h2>Master</h2>
- 		<div class="thumbnail">
-			<li><?=anchor(base_url().'index.php/customer','Pelanggan','class="info_link"');?></li>
-			<li><?=anchor(base_url().'index.php/salesman','Salesman','class="info_link"');?></li>
-			<li><?=anchor(base_url().'index.php/type_of_payment','Termin','class="info_link"');?></li>
-		</div>        	
-        </div>
-        <div class="col-sm-6 col-md-4"><h2>Reports</h2>
-	 	<div class="thumbnail">
+					</ul>
+				</li>
+				<li   data-options="state:'closed'">
+					<span>Report</span>
+					<ul>
 			<li><?=anchor('sales/rpt/so_otstand','Open Sales Order')?></li>
 			<li><?=anchor('sales/rpt/do_list','Daftar Pengiriman')?></li>
 			<li><?=anchor('sales/rpt/faktur_sum','Penjualan Summary')?></li>
@@ -36,8 +35,17 @@
 			<li><?=anchor('sales/rpt/pay_type','Pembayaran Per Jenis Bayar')?></li>
 			<li><?=anchor('sales/rpt/cust_list','Daftar Pelanggan')?></li>
 			<li><?=anchor('sales/rpt/slsman_list','Daftar Salesman')?></li>
-	 	</div>
-        	
-        	
-        </div>
- 
+					</ul>
+				</li>
+				<li  data-options="state:'closed'">
+					<span>Master</span>
+					<ul>
+			<li><?=anchor(base_url().'index.php/customer','Pelanggan','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/salesman','Salesman','class="info_link"');?></li>
+			<li><?=anchor(base_url().'index.php/type_of_payment','Termin','class="info_link"');?></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+

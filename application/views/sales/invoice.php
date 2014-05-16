@@ -1,13 +1,47 @@
-<div class="col-sm-6 col-md-8"><h1>FAKTUR PENJUALAN  <div class="thumbnail">
+<div><h4>FAKTUR PENJUALAN  </H4><div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/invoice/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/invoice');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/invoice/view/'.$invoice_number);		
+	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Delete','','cut','true',base_url().'index.php/invoice/delete/'.$invoice_number);		
+
+	if($posted) {
+		echo link_button('UnPosting','','cut','true',base_url().'index.php/invoice/unposting/'.$invoice_number);		
+	} else {
+		echo link_button('Posting','','ok','true',base_url().'index.php/invoice/posting/'.$invoice_number);		
+	}
 	
 	?>
-</div></H1>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/invoice");
+		}
+	</script>
+	
+</div>
 <div class="thumbnail">	
+
+<?php if (validation_errors()) { ?>
+	<div class="alert alert-error">
+	<button type="button" class="close" data-dismiss="alert">x</button>
+	<h4>Terjadi Kesalahan!</h4> 
+	<?php echo validation_errors(); ?>
+	</div>
+<?php } ?>
+ <?php if($message!="") { ?>
+<div class="alert alert-success"><? echo $message;?></div>
+<? } ?>
+
 <form id="frmInvoice"  method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <table>
@@ -49,10 +83,13 @@
 		
 	</tr>
 	<tr>
-		<td>Nomor SO</td>
+		<td>Nomor Surat Jalan</td>
 		<td><?         
 			echo form_input('sales_order_number',$sales_order_number,'id=sales_order_number');                 
-         ?></td>		
+			echo link_button("","select_do_open()","search");
+		?>
+		 
+		 </td>		
 	</tr>
      <tr>
 		<td>Keterangan</td><td colspan="4">
@@ -64,69 +101,162 @@
 	</table>	
 </form>
     
-<div id='divItem' >
-<h5>SELECT ITEMS</H5>
-	<div id='dgItem'>
-		<? include_once "invoice_add_item_simple.php"; ?>
+<div class="easyui-tabs" style="width:700px;height:450px">
+	<div id='divItem' title='Items'>
+		<div id='dgItem'>
+			<? include_once "invoice_add_item_simple.php"; ?>
+		</div>
+		
+		<table id="dg" class="easyui-datagrid"  
+			style="width:auto;height:500"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tb',
+				url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'item_number'">Kode Barang</th>
+					<th data-options="field:'description',width:200">Nama Barang</th>
+					<th data-options="field:'quantity',align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+					<th data-options="field:'unit',align:'left',editor:'text'">Satuan</th>
+					<th data-options="field:'price',width:60,align:'right',editor:'numberbox',
+						formatter: function(value,row,index){
+							return number_format(value,2,'.',',');}">Harga</th>
+
+					<th data-options="field:'discount',editor:'numberbox'">Disc%</th>
+					<th data-options="field:'amount',width:60,align:'right',editor:'numberbox',
+						formatter: function(value,row,index){
+							return number_format(value,2,'.',',');}">Jumlah</th>
+
+					<th data-options="field:'account',align:'left'">Account</th>
+					<th data-options="field:'account_description',align:'left'">Account Description</th>
+					<th data-options="field:'cost',width:60,align:'right',editor:'numberbox',
+						formatter: function(value,row,index){
+							return number_format(value,2,'.',',');}">Cost</th>
+					<th data-options="field:'line_number',align:'right'">Line</th>
+				</tr>
+			</thead>
+		</table>
+		
+				<h5>INVOICE - TOTAL</H5>
+				<div id='divTotal'> 
+					<table>
+						<tr>
+							<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
+							<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
+						</tr>
+						<tr>
+							<td>Pajak PPN %: </td><td><input id='sales_tax_percent' value='<?=$sales_tax_percent?>' style='width:50px'></td>
+							<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
+						</tr>
+						<tr>
+							<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
+							<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
+								 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
+								   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
+								
+							</td>
+						</tr>
+					</table>		
+				</div>
+		
 	</div>
-    
-	<table id="dg" class="easyui-datagrid"  
-		style="width:600px;min-height:800px"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',
-			url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'item_number'">Kode Barang</th>
-				<th data-options="field:'description'">Nama Barang</th>
-				<th data-options="field:'quantity',align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'price',align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
-				<th data-options="field:'discount',editor:'numberbox'">Disc%</th>
-				<th data-options="field:'amount',align:'right',editor:'numberbox'">Jumlah</th>
-				<th data-options="field:'line_number',align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
+
+	<div id='divPay' title="Payments"'>
+	<?
+		include_once "payment_list.php";
+	?>
+	</div>
+	<div id='divRetur' title='Retur'>
+		<table id="dgRetur" class="easyui-datagrid"  
+			style="width:800px;min-height:600px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '',
+				url: '<?=base_url()?>index.php/invoice/retur/<?=$invoice_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'invoice_number',width:80">Nomor Bukti</th>
+					<th data-options="field:'invoice_date',width:80">Tanggal Retur</th>
+					<th data-options="field:'item_number',width:80">Item</th>
+					<th data-options="field:'description',width:80">Description</th>
+					<th data-options="field:'quantity',width:80">Quantity</th>
+					<th data-options="field:'unit',width:80">Unit</th>
+					<th data-options="field:'price',width:80">Price</th>
+					<th data-options="field:'amount',width:80">Amount</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+<!-- MEMO -->
+	<div id='tbCrdb'>
+		<?=link_button('Delete','delete_crdb()','remove');?>
+	</div>
+	<DIV title="Memo" style="padding:10px">
 	
-			<h5>INVOICE - TOTAL</H5>
-			<div id='divTotal'> 
-				<table>
-					<tr>
-						<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
-						<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
-						<td>Pajak PPN %: </td><td><input id='sales_tax_percent' value='<?=$sales_tax_percent?>' style='width:50px'></td>
-					</tr>
-					<tr>
-						<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
-						<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
-						<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
-							 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-		             		   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
-		             		
-						</td>
-					</tr>
-					<tr>
-						<td>Total Payment: </td><td><input id='total_payment'  style='width:80px'></td>				
-						<td>Total Retur: </td><td><input id='total_retur'  style='width:80px'></td>
-						<td>Total CrDB Memo: </td><td><input id='total_crdb'  style='width:80px'></td>
-						<td>Saldo Faktur: </td><td><input id='saldo'  style='width:80px'></td>
-					</tr>
-				</table>		
-			</div>
+		<table id="dgCrdb" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,toolbar:'#tbCrdb',
+				url: '<?=base_url()?>index.php/invoice/list_crdb/<?=$invoice_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'nomor',width:80">Nomor</th>
+					<th data-options="field:'tanggal',width:150">Tanggal</th>
+					<th data-options="field:'amount',width:150">Jumlah</th>
+				</tr>
+			</thead>
+		</table>
+	
+	</DIV>
+	
+<!-- JURNAL -->
+	<DIV title="Jurnal" style="padding:10px">
+		<div id='divJurnal' class='thumbnail'>
+		<table id="dgCrdb" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,toolbar:'#tbCrdb',
+				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'account',width:80">Akun</th>
+					<th data-options="field:'account_description',width:150">Nama Akun</th>
+					<th data-options="field:'debit',width:80,align:'right'">Debit</th>
+					<th data-options="field:'credit',width:80,align:'right'">Credit</th>
+					<th data-options="field:'custsuppbank',width:50">Ref</th>
+					<th data-options="field:'operation',width:50">Operasi</th>
+					<th data-options="field:'source',width:50">Keterangan</th>
+					<th data-options="field:'transaction_id',width:50">Id</th>
+				</tr>
+			</thead>
+		</table>
+		</div>
+			
+	</DIV>	
+<!-- SUMMARY -->
+	<DIV title="Summary" style="padding:10px">
+		<div id='divSum' class='thumbnail'>
+		
+			<?=$summary_info?>
+		
+		</div>
+			
+	</DIV>
+	
 	
 </div>
 
-<div id='divPay' style='display:none'>
-<h5>PAYMENTS</H5>
-<?
-	include_once "payment_list.php";
-?>
-</div>
 <? include_once 'customer_select.php' ?>
+<? include_once 'delivery_select.php' ?>
 
 
 </div> 
@@ -425,9 +555,6 @@
 		    });
 			
 		}
-
-      
-      
         
  </script>
      

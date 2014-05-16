@@ -1,5 +1,10 @@
-<h1>PENERIMAAN BARANG DARI PO - [<?=link_button('Print','print_receive()','print');?>]</H1>
-
+<div><h1>PO RECEIVE<div class="thumbnail">
+	<?
+	echo link_button('Print', 'print_receive()','print');		
+	echo link_button('Delete', 'delete_receive()','cut');		
+	?>
+</div></H1>
+<div class="thumbnail">	
    <table >
        <tr>
            <td>Receipt No:</td><td><strong><?=$shipment_id?></strong>
@@ -9,7 +14,7 @@
                        
        </tr>
        <tr>
-            <td>Nomor PO:</td><td><strong><?=$purchase_order_number?></strong></td>
+            <td>Nomor PO:</td><td><strong><a href="<?=base_url()?>index.php/purchase_order/view/<?=$purchase_order_number?>"><?=$purchase_order_number?></a></strong></td>
                        
        </tr>
        <tr>
@@ -49,11 +54,35 @@
 				</tr>
 			</thead>
 		</table>
-		
+</div>		
 <script language='javascript'>
 	function print_receive(){
 		url="<?=base_url()?>index.php/receive_po/print_bukti/<?=$shipment_id?>";
 		window.open(url,'_blank');
+	}
+	function delete_receive()
+	{
+		$.ajax({
+				type: "GET",
+				url: "<?=base_url()?>/index.php/receive_po/delete/<?=$shipment_id?>",
+				data: "",
+				success: function(result){
+					var result = eval('('+result+')');
+					if(result.success){
+						$.messager.show({
+							title:'Success',msg:result.msg
+						});	
+						window.open('<?=base_url()?>index.php/receive_po','_self');
+					} else {
+						$.messager.show({
+							title:'Error',msg:result.msg
+						});							
+					};
+				},
+				error: function(msg){alert(msg);}
+		}); 				
+		
+		
 	}
 		
 </script>		

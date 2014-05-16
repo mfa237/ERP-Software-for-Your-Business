@@ -29,6 +29,11 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
+	function get_by_gl_id($id){
+		$this->db->where("gl_id",$id);
+		return $this->db->get($this->table_name);
+	}
+	
 	function save($data){
 		$data['date']= date('Y-m-d H:i:s', strtotime($data['date']));
 		return $this->db->insert($this->table_name,$data);
@@ -45,7 +50,10 @@ function __construct(){
 		$this->db->where('transaction_id',$id);
 		return $this->db->delete($this->table_name);
 	}
-	function add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source,$cid){
+	function add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source,$cid="",$ref=""){
+		
+		if($cid=="")$cid=$this->access->cid;
+		
 		$data['date']= date('Y-m-d H:i:s', strtotime($date));
 		$data['gl_id']=$gl_id;
 		$data['account_id']=$account_id;
@@ -54,11 +62,48 @@ function __construct(){
 		$data['operation']=$operation;
 		$data['source']=$source;
 		$data['company_code']=$cid;
+		$data['custsuppbank']=$ref;
+
+		///var_dump($data);
+
+		if($account_id=="" or $account_id=="0") {
+			echo "ERR_INVALID_COA";
+			return false;
+		}
+		
+		
 		return $this->save($data);
 	}
-	function del_jurnal($id){
-		$this->db->where('gl_id',$id);
+	function del_jurnal($gl_id){
+
+		if($q=$this->db->query("select date from gl_transactions where gl_id='$gl_id' limit 1")) {
+			if($r=$q->row()){
+				$this->load->model("periode_model");
+				if($this->periode_model->closed($r->date)){
+					echo "ERR_PERIOD";
+					return false;
+				}
+			}
+		}
+		$this->db->where('gl_id',$gl_id);
 		return $this->db->delete($this->table_name);
+	}
+	function balance($gl_id) {
+		if($this->db->query("select count(1) as cnt from gl_transactions where gl_id='$gl_id'")->row()->cnt==0) {
+			echo "ERR_GL_NOT_FOUND";
+			return false;
+		} else {
+			return $this->db->query("select sum(debit)-sum(credit) as z_amt 
+			from gl_transactions where gl_id='$gl_id'")->row()->z_amt==0;
+		}
+	}
+	function validate($gl_id){
+		if(!$this->balance($gl_id)){
+			echo "ERR_NOT_BALANCE";
+			$this->del_jurnal($gl_id);
+			return false;
+		}
+		return true;
 	}
 
 }

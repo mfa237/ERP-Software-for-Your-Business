@@ -1,6 +1,10 @@
-<script src="<?=base_url();?>js/lib.js"></script>
- <div id='container'>
-   <?php echo validation_errors(); ?>
+   <?php 
+   if(!isset($kode))$kode="";
+   if(!isset($category))$category="";
+   
+   echo validation_errors(); 
+   
+   ?>
    <?php 
    		if($mode=='view'){
 			echo form_open('category/update','id=myform');
@@ -11,33 +15,24 @@
    		}
 		
    ?>
-   <div class='box6x'><h1>KELOMPOK BARANG</h1>
-   <table>
-	<tr>
-		<td>Kode</td><td>
-		<?php
-		if($mode=='view'){
-			echo $kode;
-			echo form_hidden('kode',$kode);
-		} else { 
-			echo form_input('kode',$kode);
-		}		
-		?></td>
-	</tr>	 
-       <tr>
-            <td>Kelompok</td><td><?php echo form_input('category',$category);?></td>
-
+   <h3>KELOMPOK BARANG</h3>
+   <div class='thumbnail'><table>
+		<tr>
+			<td>Kode</td><td>
+			<?php
+			if($mode=='view'){
+				echo $kode;
+				echo form_hidden('kode',$kode);
+			} else { 
+				echo form_input('kode',$kode);
+			}		
+			?></td>
+		    <td>Kelompok</td><td><?php echo form_input('category',$category);?></td>
+			 <td> <input type="submit" value="Save" class="easyui-linkbutton" 
+		                   data-options="iconCls:'icon-save'" style="height:30px;width:60px"/>
+			 
+			 </td>
        </tr>
-	 
-        
-	 <tr><td>
-	 <input type="submit" value="Save" class="easyui-linkbutton" 
-                   data-options="iconCls:'icon-save'" style="height:30px;width:60px"/>
-	 
-	 </td><td>&nbsp;</td></tr>
-   </table>
+   		</table>
    </form>
-   </div>
- </body>
-</html>
-
+	</div>

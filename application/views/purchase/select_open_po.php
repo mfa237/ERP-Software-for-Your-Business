@@ -37,12 +37,17 @@
 			$('#purchase_order_number').val(nomor);
 			$('#dlgSelectFaktur').dialog('close');
 	 		$("#divItem").fadeIn("slow");
-	 		url=CI_ROOT+"purchase_order/items_not_received/"+nomor;
-	 		void get_this(url,'','divItem');
+			po_items(nomor);
 		} else {
 			alert("Pilih salah satu nomor purchase order !");
 		}
 	}	
+	function po_items(nomor_po)
+	{
+		url=CI_ROOT+"purchase_order/items_not_received/"+nomor_po;
+		$('#dgRcv').datagrid({url:url});
+		$('#dgRcv').datagrid('reload');
+	}
 	
 </SCRIPT>
 <!-- END PILIH FAKTUR -->

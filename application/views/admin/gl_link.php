@@ -1,7 +1,9 @@
+<div><h1>LINK KODE AKUN PERKIRAAN</H1>
+<div class="thumbnail">
 <form  id="frmLink" method='post' >
 	<table>
 		<tr>
-			<td colspan="2"><h2>PEMBELIAN</h2></td>
+			<td colspan="2"><h4>PEMBELIAN</h4></td><td></td>
 		</tr>
 		<tr>
 			<td>Hutang (Account Payable)</td><td><?
@@ -48,7 +50,7 @@
 
 
 		<tr>
-			<td colspan="2"><h2>PERSEDIAAN</h2></td>
+			<td colspan="2"><h4>PERSEDIAAN</h4></td>
 		</tr>
 		<tr>
 			<td>Penjualan Barang</td><td><?
@@ -94,7 +96,7 @@
 		</tr>
 
 		<tr>
-			<td colspan="2"><h2>PENJUALAN</h2></td>
+			<td colspan="2"><h4>PENJUALAN</h4></td>
 		</tr>
 		<tr>
 			<td>Piutang (Account Receivable)</td><td><?
@@ -158,7 +160,7 @@
 		</tr>
 
 		<tr>
-			<td colspan="2"><h2>KAS / BANK</h2></td>
+			<td colspan="2"><h4>KAS / BANK</h4></td>
 		</tr>
 		<tr>
 			<td>Perkiraan Transaksi Kas</td><td><?
@@ -180,7 +182,7 @@
 		</tr>
 
 		<tr>
-			<td colspan="2"><h2>AKUNTANSI</h2></td>
+			<td colspan="2"><h4>AKUNTANSI</h4></td>
 		</tr>
 		<tr>
 			<td>Laba/Rugi Periode Berjalan</td><td><?
@@ -200,12 +202,13 @@
 			echo link_button('','lookup_coa(\'historical_balance_account\')','search');
 			?></td>
 		</tr>
+		<tr><td colspan="4" align="right"><input type='submit' name='cmdSave'></td></tr>
 
 	</table>
 	
-	<input type='submit' name='cmdSave'>
+	
 </form>
-
+</DIV></DIV>
    
 <?=load_view('gl/select_coa_link')?>   	
    

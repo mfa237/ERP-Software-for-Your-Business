@@ -1,20 +1,69 @@
-<div class="col-sm-6 col-md-8"><h1>RETUR PENJUALAN <div class="thumbnail">
+<div><h4>RETUR PENJUALAN </H4><div class="thumbnail">
 	<?
+	
+	
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/sales_retur/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/sales_retur');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/sales_retur/view/'.$invoice_number);		
+	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Delete','','cut','true',base_url().'index.php/sales_retur/delete/'.$invoice_number);		
+	if($posted) {
+		echo link_button('UnPosting','','cut','true',base_url().'index.php/sales_retur/unposting/'.$invoice_number);		
+	} else {
+		echo link_button('Posting','','ok','true',base_url().'index.php/sales_retur/posting/'.$invoice_number);		
+	}
+	
 	
 	?>
-</div></H1>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/sales_retur");
+		}
+	</script>
+	
+</div>
 <div class="thumbnail">	
 
-   <?php echo validation_errors(); ?>
+<?php if (validation_errors()) { ?>
+	<div class="alert alert-error">
+	<button type="button" class="close" data-dismiss="alert">x</button>
+	<h4>Terjadi Kesalahan!</h4> 
+	<?php echo validation_errors(); ?>
+	</div>
+<?php } ?>
+ <?php if($message!="") { ?>
+<div class="alert alert-success"><? echo $message;?></div>
+<? } ?>
+
+
 <form id="myform"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 
 <table>
     <tr>
+		<td>Nomor</td>
+        <td>  			
+            <? 
+            	echo form_input('invoice_number',$invoice_number,'id=invoice_number');
+            ?>
+        </td>
+		<td rowspan='4'>
+			<div id="customer_info" name="customer_info" class='thumbnail' style='width:300px;height:100px'>
+				<?=$customer_info?>
+			</div?
+		</td>
+		        
+    </tr>
+	<tr>
      	<td>Pelanggan</td><td><?
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
         ?>
@@ -23,15 +72,8 @@
 			onclick="select_customer()"></a>
 			<? } ?>     
 		</td>
-
-		<td>Nomor</td>
-        <td>  			
-            <? 
-            	echo form_input('invoice_number',$invoice_number,'id=invoice_number');
-            ?>
-        </td>
-		        
-    </tr>
+	
+	</tr>
      <tr><td>Tanggal</td><td><?         
 			  echo form_input('invoice_date',$invoice_date,'id=invoice_date
              class="easyui-datetimebox" required style="width:150px"');                 
@@ -57,37 +99,68 @@
 
    </form>
     </div>
-<div id='divItem' style='display:<?=$mode=='add'?'none':''?>>
-<h1>SELECT ITEMS</H1>
-	<div id='dgItem'>
-		<?
-		include_once "invoice_add_item_simple.php"; 
-		?>
+<div class="easyui-tabs" style="width:700px;height:450px">
+	<div id='divItem' title='Items'>
+		<div id='dgItem'><? include_once "invoice_add_item_simple.php"; ?></div>
 		
+		<table id="dg" class="easyui-datagrid"  
+			style="width:800px;min-height:800px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tb',
+				url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'item_number',width:80">Kode Barang</th>
+					<th data-options="field:'description',width:150">Nama Barang</th>
+					<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+						<th data-options="field:'price',width:60,align:'right',editor:'numberbox',
+							formatter: function(value,row,index){
+								return number_format(value,2,'.',',');}">Jumlah</th>
+					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
+						<th data-options="field:'amount',width:60,align:'right',editor:'numberbox',
+							formatter: function(value,row,index){
+								return number_format(value,2,'.',',');}">Jumlah</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+				</tr>
+			</thead>
+		</table>
 	</div>
-    
-	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',
-			url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
-				<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
-				<th data-options="field:'amount',width:60,align:'right',editor:'numberbox'">Jumlah</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
+<!-- JURNAL -->
+	<DIV title="Jurnal" style="padding:10px">
+		<div id='divJurnal' class='thumbnail'>
+		<table id="dgCrdb" class="easyui-datagrid"  
+			style="width:700px;min-height:700px"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,toolbar:'#tbCrdb',
+				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'account',width:80">Akun</th>
+					<th data-options="field:'account_description',width:150">Nama Akun</th>
+					<th data-options="field:'debit',width:80,align:'right'">Debit</th>
+					<th data-options="field:'credit',width:80,align:'right'">Credit</th>
+					<th data-options="field:'custsuppbank',width:50">Ref</th>
+					<th data-options="field:'operation',width:50">Operasi</th>
+					<th data-options="field:'source',width:50">Keterangan</th>
+					<th data-options="field:'transaction_id',width:50">Id</th>
+				</tr>
+			</thead>
+		</table>
+		</div>
+			
+	</DIV>	
+	
 </div>
+
+	
+	
+
 </div>
 <? include_once 'customer_select.php' ?>
 <? include_once 'invoice_select.php' ?>
@@ -386,6 +459,16 @@
                 error: function(msg){alert(msg);}
 		    });
 			
+		}
+		function searchItem()
+		{
+			var faktur=$('#your_order__').val();
+			if(faktur==""){alert("Pilih nomor faktur yang akan diretur !");return false;}
+			
+			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang atas nomor faktur');
+			xurl='<?=base_url()?>index.php/invoice/list_item/'+faktur;
+			$('#dgItemSearch').datagrid({url:xurl});
+			$('#dgItemSearch').datagrid('reload');
 		}
 
       

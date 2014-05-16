@@ -6,7 +6,7 @@
 			data-options="
 				toolbar: '#toolbar-search-faktur',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/purchase_invoice/select'
+				url: ''
 			">
 			<thead>
 				<tr>

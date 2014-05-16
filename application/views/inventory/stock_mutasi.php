@@ -1,6 +1,24 @@
-<h1>MUTASI STOCK ANTAR LOKASI - [ 
-	<?echo link_button("Print","print_mutasi()","print");?>	
-]</H1>
+<div><h2>MUTASI STOCK ANTAR LOKASI<div class="thumbnail"> 
+	<?
+	echo link_button("Print","print_mutasi()","print");
+	echo link_button('Help', 'load_help()','help');		
+		
+	?>	
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_mutasi");
+		}
+	</script>
+	
+</div></H2>
+<div class="thumbnail">	
 <form id="frmItem" method='post' >
    <table>
 	<tr>
@@ -33,16 +51,16 @@
      </tr>
 	 <tr><td>&nbsp</td><td>&nbsp</td></tr>
    </table>
-<H1></H1>
+ 
 <!-- LINEITEMS -->	
-<h1>ITEMS DETAIL</H1>
+<h5>ITEMS DETAIL</H5>
 <div id='dgItem'><?=load_view('inventory/select_item_no_price.php')?></div>
 </form>
 
 
 <div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
 	<table id="dg" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
+		style="width:500px;min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -60,6 +78,8 @@
 		</thead>
 	</table>
 </div>	
+
+</div>
 <!-- LINEITEMS -->
 
  <script language='javascript'>

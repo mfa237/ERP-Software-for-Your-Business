@@ -1,3 +1,4 @@
+<? if(($mode=="add" or $mode=="edit")) { ?>
 
 <table>
 	<tr>
@@ -5,26 +6,37 @@
 		<td>Harga</td><td>Disc%</td><td>Jumlah</td><td></td>
 	</tr>
 	<tr>
+
 	    <form id="frmItem" method='post' >
 	         <td><input onblur='find()' id="item_number" style='width:80px' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 				onclick="searchItem()"></a>
 	         </td>
-	         <td><input id="description" name="description" style='width:280px'></td>
+	         <td><input id="description" name="description" style='width:200px'></td>
 	         <td><input id="quantity"  style='width:40px'  name="quantity" onblur="hitung()"></td>
 	         <td><input id="unit" name="unit"  style='width:30px' ></td>
 	         <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
 	        <td><input id="discount" name="discount"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
 	        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
-	        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-     		   plain='true'	onclick='save_item()'></a>
+	        
+			<td>
+
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
+				   plain='true'	onclick='save_item()'></a>
+				
 			</td>
 	        <input type='hidden' id='po_number_item' name='po_number_item'>
 	        <input type='hidden' id='line_number' name='line_number'>
+	        <input type='hidden' id='gudang_item' name='gudang_item'>
 	    </form>
+		
 	</tr>
 </table>
+
+<? } ?>
+
+
 <div id="tb" style="height:auto">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
@@ -45,7 +57,7 @@
 			data-options="
 				toolbar: '#tb_search',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/inventory/filter'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -90,10 +102,14 @@
 	        hitung_jumlah();			
 		}
 		function save_item(){
-			url = '<?=base_url()?>index.php/purchase_order/save_item';
-			po=$('#purchase_order_number').val();
+			var gudang=$("#warehouse_code").val();
+			var url = '<?=base_url()?>index.php/purchase_order/save_item';
+			var po=$('#purchase_order_number').val();
+
+			if($("#mode").val()=="add"){alert("Simpan dulu nomor ini.");return false;};
+			if(gudang==""){alert("Pilih dulu kode gudang !");return false;};
 			$('#po_number_item').val(po);
-						 
+			$("#gudang_item").val(gudang);			 
 			$('#frmItem').form('submit',{
 				url: url,
 				onSubmit: function(){

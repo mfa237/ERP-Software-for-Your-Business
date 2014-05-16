@@ -49,6 +49,7 @@ class Cash_mutasi extends CI_Controller {
             $data['mode']='';
             $data['message']='';
             $data['account_number_list']=$this->bank_accounts_model->account_number_list();
+			$data['closed']=0;
             return $data;
 	}
 	function index()
@@ -101,8 +102,8 @@ class Cash_mutasi extends CI_Controller {
 		 $model=$this->check_writer_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
-                 $data['message']=$message;
-                 $this->template->display_form_input($this->file_view,$data,'');
+		 $data['message']=$message;
+		 $this->template->display_form_input($this->file_view,$data,'');
 
 	
 	}
@@ -159,5 +160,20 @@ class Cash_mutasi extends CI_Controller {
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
-	
+	function unposting($voucher) {
+		$message=$this->check_writer_model->unposting($voucher);
+		$this->view($voucher,$message);
+	}
+	function posting($voucher) {
+		$message=$this->check_writer_model->posting($voucher);
+		$this->view($voucher,$message);
+	}
+	function delete($voucher) {
+		$message=$this->check_writer_model->delete($voucher);
+		if($message!=""){
+			$this->view($voucher,$message);
+			return false;
+		} 
+		$this->browse();
+	}	
 }

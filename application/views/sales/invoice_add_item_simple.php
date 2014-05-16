@@ -45,7 +45,7 @@
 			data-options="
 				toolbar: '#tb_search',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/inventory/filter'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -90,7 +90,9 @@
 	        hitung_jumlah();			
 		}
 		function save_item(){
-			url = '<?=base_url()?>index.php/invoice/save_item';
+			var mode=$('#mode').val();
+			if(mode=="add"){alert("Simpan dulu nomor ini !");return false;}
+			var url = '<?=base_url()?>index.php/invoice/save_item';
 			$('#invoice_number_item').val($('#invoice_number').val());
 						 
 			$('#frmItem').form('submit',{

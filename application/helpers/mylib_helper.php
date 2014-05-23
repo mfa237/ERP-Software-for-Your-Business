@@ -1,5 +1,14 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+if(!function_exists('add_date')){	
+	function add_date($givendate,$day=0,$mth=0,$yr=0) {
+		  $cd = strtotime($givendate);
+		  $newdate = date('Y-m-d h:i:s', mktime(date('h',$cd),
+		date('i',$cd), date('s',$cd), date('m',$cd)+$mth,
+		date('d',$cd)+$day, date('Y',$cd)+$yr));
+		  return $newdate;
+	}
+}
 if(!function_exists('add_log_run')){	
 	function add_log_run($url){
         $CI =& get_instance();
@@ -42,7 +51,7 @@ if(!function_exists('link_button')){
     	if($url==''){
 	        return '<a href="#" class="easyui-linkbutton" 
 	        data-options="iconCls:\'icon-'.$icon.'\', 
-	        plain: '.$plain.'" onclick="'.$func.'  ">'.$caption.'</a>';
+	        plain: '.$plain.'" onclick="'.$func.';return false;">'.$caption.'</a>';
 		} else {
 	        return '<a href="'.$url.'" class="easyui-linkbutton" 
 	        data-options="iconCls:\'icon-'.$icon.'\', 

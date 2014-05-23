@@ -1,13 +1,7 @@
 <!-- PILIH PELANGGAN --> 
 <div id='dlgSelectSupp'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-cust">
+     closed="true" buttons="#button-select-supp">
      <div id='divSelectSupp'> 
-		<div id="toolbar-search-supp" class="thumbnail" style="height:auto">
-			Enter Text: <input id="search_supp_lov" style='width:180' name="search_supp_lov">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_supplier()"></a>        
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_supplier()">Select</a>
-		</div>
-	 
 		<table id="dgSelectSupp" class="easyui-datagrid"  
 			data-options="
 				toolbar: '',
@@ -25,6 +19,13 @@
 		</table>
     </div>   
 </div>
+<div id="button-select-supp" class="thumbnail" style="height:auto">
+	Enter Text: <input id="search_supp_lov" style='width:180' name="search_supp_lov">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_supplier();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_supplier();return false;">Select</a>
+</div>
+
+
 <SCRIPT language="javascript">
 	function select_supplier(){
 			$('#dlgSelectSupp').dialog('open').dialog('setTitle','Cari nama supplier');

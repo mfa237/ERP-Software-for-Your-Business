@@ -23,6 +23,7 @@ function recalc($nomor){
 	
     $inv=$this->get_by_id($nomor)->row();
     if($inv) {
+		$this->invoice_lineitems_model->check_revenue_acct($nomor,$inv->invoice_type);
 	    $this->sub_total=$this->invoice_lineitems_model->sum_total_price($nomor);
 		
 		$disc_amount=$inv->discount*$this->sub_total;
@@ -47,7 +48,10 @@ function recalc($nomor){
 			$sql.="false";
 		}
 		$sql.=",amount=".$this->amount.",subtotal=".$this->sub_total
-		.",saldo_invoice=".$this->saldo." where invoice_number='$nomor'";
+		.",saldo_invoice=".$this->saldo.",disc_amount='".$disc_amount."',tax='".$tax_amount."' 
+			where invoice_number='$nomor'";
+		//var_dump($sql);
+		
 		$this->db->query($sql);
 
 	}
@@ -100,14 +104,24 @@ $order_column='',$order_type='asc')
 function count_all(){
 	return $this->db->count_all($this->table_name);
 }
+
 function get_by_id($id){
-	$this->db->where($this->primary_key,$id);
-	$r_item=$this->db->query("select warehouse_code from invoice_lineitems 
-		where invoice_number='$id' limit 1")->row();
 	 
-	if($r_item){
-		$this->warehouse_code=$r_item->warehouse_code;
+	$this->db->where($this->primary_key,$id);
+	if($row=$this->db->get($this->table_name)->row()){
+		$r_item=$this->db->query("select warehouse_code from invoice_lineitems 
+			where invoice_number='$id' limit 1")->row();
+		if($r_item)	$this->warehouse_code=$r_item->warehouse_code;
+		$terms=$row->payment_terms;
+		$due_date=$row->due_date;
+		if($t=$this->db->query("select days from type_of_payment where type_of_payment='$terms'")){
+			if($t=$t->row())$due_date=add_date($row->invoice_date,$t->days);
+		}
+		$data['warehouse_code']=$this->warehouse_code;
+		$data['due_date']=$due_date;
+		$this->update($id,$data);
 	}
+	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 }
 function save($data){
@@ -294,11 +308,11 @@ function delete($id){
 		//-- posting piutang
 		$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_ar, 
 			$faktur->invoice_date,$faktur->amount,0,"Account Receivable",$faktur->comments,$cid,$faktur->sold_to_customer);
-		if($faktur->disc_amount>0){
+		if($faktur->disc_amount!=0){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_disc, 
 				$faktur->invoice_date,$faktur->disc_amount,0,"Sales Discount",$faktur->comments,$cid,$faktur->sold_to_customer);
 		}
-		if($faktur->tax>0){
+		if($faktur->tax!=0){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_tax, 
 				$faktur->invoice_date,$faktur->tax,0,"Sales Tax",$faktur->comments,$cid,$faktur->sold_to_customer);					
 		}
@@ -407,11 +421,11 @@ function delete($id){
 		//-- posting piutang
 		$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_ar, 
 			$faktur->invoice_date,0,$faktur->amount,"Account Receivable",$faktur->comments,$cid,$faktur->sold_to_customer);
-		if($faktur->disc_amount>0){
+		if($faktur->disc_amount!=0){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_disc, 
 				$faktur->invoice_date,0,$faktur->disc_amount,"Sales Discount",$faktur->comments,$cid,$faktur->sold_to_customer);
 		}
-		if($faktur->tax>0){
+		if($faktur->tax!=0){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_tax, 
 				$faktur->invoice_date,0,$faktur->tax,"Sales Tax",$faktur->comments,$cid,$faktur->sold_to_customer);					
 		}

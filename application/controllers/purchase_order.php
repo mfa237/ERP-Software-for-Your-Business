@@ -35,6 +35,7 @@ class Purchase_order extends CI_Controller {
             if($record==NULL){
 				$data['purchase_order_number']=$this->nomor_bukti();
 			}
+			$data['has_receive']=false;
             return $data;
 	}
 	function index()
@@ -93,7 +94,7 @@ class Purchase_order extends CI_Controller {
         $data['terms']=$this->input->post('terms');
         $data['due_date']=$this->input->post('due_date');
         $data['comments']=$this->input->post('comments');
-		
+		unset($data['has_receive']);
 		if($id==""){
 			$id=$this->session->userdata('purchase_order_number');
 			$data['purchase_order_number']=$id;
@@ -130,6 +131,7 @@ class Purchase_order extends CI_Controller {
  		 $id=$this->input->post('purchase_order_number');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
+			unset($data['has_receive']);
 			$this->purchase_order_model->update($id,$data);
                         $message='Update Success';
 		} else {
@@ -155,7 +157,8 @@ class Purchase_order extends CI_Controller {
 		 $data['subtotal']=$model->subtotal;
 		 $data['discount']=$model->discount;
 		 $data['po_tax_percent']=$model->tax;
-		  
+		 $data['has_receive']=$this->db->query("select count(1) as cnt from inventory_products 
+				where purchase_order_number='$id'")->row()->cnt;
 		 $this->purchase_order_model->recalc_qty_recvd($id);
 
 

@@ -72,10 +72,12 @@ class Cash_mutasi extends CI_Controller {
 		$data=$this->get_posts();
 		$data['voucher']=$this->nomor_bukti();
         $data['deposit_amount']=$data['payment_amount'];
+		if($data['trans_type']=="")$data['trans_type']="trans trx";
 		$id=$this->check_writer_model->save($data);
-        $message='update success';
+		$message=mysql_error();
+		if($message=="") $message='update success';
 		$this->nomor_bukti(true);
-        header('location: '.base_url().'index.php/cash_mutasi');
+		$this->view($data['voucher'],$message);
 	}
 	
 	function update()
@@ -94,13 +96,16 @@ class Cash_mutasi extends CI_Controller {
 		} else {
 			$message='Error Update';
 		}	  
-        header('location: '.base_url().'index.php/cash_mutasi');
+		$message=mysql_error();
+		if($message=="") $message='update success';
+		$this->view($data['voucher'],$message);
 	}
 	
 	function view($id,$message=null){
 		 $data['id']=$id;
 		 $model=$this->check_writer_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
+		  
 		 $data['mode']='view';
 		 $data['message']=$message;
 		 $this->template->display_form_input($this->file_view,$data,'');

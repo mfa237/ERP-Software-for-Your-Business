@@ -1,33 +1,34 @@
 <!-- PILIH PELANGGAN --> 
-<div id='dlgSelectCust'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-cust">
+<div id='dlgSelectCust'class="easyui-dialog" style="width:600px;height:380px;padding:5px 5px"
+     closed="true" buttons="#btn1">
      <div id='divSelectCust'> 
 		<table id="dgSelectCust" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#toolbar-search-cust',
+				toolbar: '',
 				singleSelect: true,
 				url: ''
 			">
 			<thead>
 				<tr>
-					<th data-options="field:'company',width:80">Pelanggan</th>
-					<th data-options="field:'customer_number',width:80">Kode</th>
-					<th data-options="field:'city',width:180">Kota</th>
-					<th data-options="field:'region',width:80">Wilayah</th>
+					<th data-options="field:'company',width:'180'">Pelanggan</th>
+					<th data-options="field:'customer_number',width:'80'">Kode</th>
+					<th data-options="field:'salesman',width:'80'">Salesman</th>
+					<th data-options="field:'city',width:'80'">Kota</th>
+					<th data-options="field:'region',width:'80'">Wilayah</th>
 				</tr>
 			</thead>
 		</table>
     </div>   
 </div>
-<div id="toolbar-search-cust" style="height:auto">
-	Enter Text: <input  id="search_cust" style='width:180' name="search_cust">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_customer()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_customer()">Select</a>
+<div id="btn1" name="btn1" style="height:auto">
+		<input  id="search_cust" style='width:100' name="search_cust" placeholder='Search'>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" onclick="select_customer();return false;">Cari</a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="false" onclick="selected_customer();return false;">Pilih</a>
 </div>
 <SCRIPT language="javascript">
 	function select_customer(){
-			$('#dlgSelectCust').dialog('open').dialog('setTitle','Cari nama pelanggan');
 			search=$('#search_cust').val();
+			$('#dlgSelectCust').dialog('open').dialog('setTitle','Cari Pelanggan');
 			$('#dgSelectCust').datagrid({url:'<?=base_url()?>index.php/customer/select/'+search});
 			$('#dgSelectCust').datagrid('reload');
 	};	

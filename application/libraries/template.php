@@ -57,36 +57,13 @@ class Template {
     //$data['message']='';
 	  
 	 if(!$this->is_ajax())
-	 {	
+	 {
+	 
 	  	$data['library_src']=$this->library_src;
 	  	$data['script_head']=$this->script_head;
-		if(isset($data['_right_menu'])){
-			$fm=$data['_right_menu'];
-			$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
-		} else {
-		   $data['_right_menu']='';
-		}				
-    	$fm=$this->_ci->session->userdata('_right_menu');
-        if($fm!='')$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
-    	$fm=$this->_ci->session->userdata('_left_menu');
-        if($fm!='')$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
-		$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
 
-		if($template==$fm){
-			$dashboard=$fm."_dashboard";
-			if(file_exists(APPPATH."views/$dashboard.php")){
-				$data['_content']=$this->_ci->load->view($dashboard,$data, true);						
-			} else {
-				$data['_content']="Dashboard view not found! <br>".$dashboard;
-			}
-		} else {
-			$data['_content']=$this->_ci->load->view($template,$data, true);
-		}
-		$data['_header']=$this->_ci->load->view('template/standard/header',$data, true);
 		if(!isset($data['ajaxed']))$data['ajaxed']=true;
-		if($template=="welcome_message"){
-			$data["visible_right"]="";
-		}
+		$data['_header']=$this->_ci->load->view('template/standard/header',$data, true);
 		$data['_footer']=$this->_ci->load->view('template/standard/footer',$data, true);
 
 		$sql="select distinct controller,method,param1 from sys_log_run where user_id='".$this->_ci->access->user_id()."' order by id desc limit 10 ";
@@ -94,7 +71,7 @@ class Template {
 		add_log_run($url);
 		 
 		$q=$this->_ci->db->query($sql);		
-		$sys_log_run="<h4>Recent Runing</h4>";
+		$sys_log_run="";
 		if($q){
 			foreach ($q->result() as $row) {
 				$url=$row->controller;
@@ -103,10 +80,43 @@ class Template {
 				$sys_log_run.="<li><a  class='info_link'  href='".base_url()."index.php/".$url."'>".$url."</a></li>";
 			}
 		}
-		$data['sys_log_run']=$sys_log_run;		
-		$this->_ci->load->view('template/standard/template',$data);              
+		$data['sys_log_run']=$sys_log_run;
+
+
+		if($template=="welcome_message"){
+			$data["visible_right"]="";
+			$data['_content']=$this->_ci->load->view($template,$data, true);
+			$this->_ci->load->view('template/standard/welcome',$data);              
+		} else {
+			if(isset($data['_right_menu'])){
+				$fm=$data['_right_menu'];
+
+				$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+			} else {
+			   $data['_right_menu']='';
+			}				
+			$fm=$this->_ci->session->userdata('_right_menu');
+			if($fm!='')$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+			$fm=$this->_ci->session->userdata('_left_menu');
+
+			if($fm!='')$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+			$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
+
+			if($template==$fm){
+				$dashboard=$fm."_dashboard";
+				if(file_exists(APPPATH."views/$dashboard.php")){
+					$data['_content']=$this->_ci->load->view($dashboard,$data, true);						
+				} else {
+					$data['_content']="Dashboard view not found! <br>".$dashboard;
+				}
+			} else {
+				$data['_content']=$this->_ci->load->view($template,$data, true);
+			}
+			$this->_ci->load->view('template/standard/template',$data);              
+		}
+			
 	 } else {
-		 $this->_ci->load->view($template,$data);
+		$this->_ci->load->view($template,$data);
 	 }
  }
  function display_single($template,$data=null) {

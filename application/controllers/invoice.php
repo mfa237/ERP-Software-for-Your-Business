@@ -48,15 +48,17 @@ class Invoice extends CI_Controller {
 
 	function set_defaults($record=NULL){
 		$data=data_table($this->table_name,$record);
+		 
         $data['library_src'] = $this->jquery->script();
         $data['script_head'] = $this->jquery->_compile();
 		$data['mode']='';
 		$data['message']='';
         $data['warehouse_code']=$this->access->cid;
-		$data['invoice_date']= date("Y-m-d");
+		if($record==NULL)$data['invoice_date']= date("Y-m-d");
 		if($record==NULL)$data['invoice_number']=$this->nomor_bukti();
         $data['invoice_type']='I';
 		 $data['summary_info']='';
+		$data['customer_info']='';
 		return $data;
 	}
 	function index()
@@ -209,6 +211,7 @@ class Invoice extends CI_Controller {
     }        
 	function view($id,$message=null){
 		 $data['id']=$id;
+		 $this->invoice_model->recalc($id);
 		 $model=$this->invoice_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
@@ -216,7 +219,6 @@ class Invoice extends CI_Controller {
          $data['customer_list']=$this->customer_model->select_list();  
          $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
 		 $data['salesman_list']=$this->salesman_model->select_list();
-		 $this->invoice_model->recalc($id);
 		 $data['payment_amount']=$this->invoice_model->amount_paid;
 		 $data['retur_amount']=$this->invoice_model->retur_amount;
 		 $data['crdb_amount']=$this->invoice_model->crdb_amount;
@@ -228,7 +230,7 @@ class Invoice extends CI_Controller {
 		 
 		$data['salesman_list']=$this->salesman_model->select_list();
         $data['payment_terms_list']=$this->type_of_payment_model->select_list();
-		 $data['summary_info']=$this->summary($id);
+		$data['summary_info']=$this->summary($id);
 			
          $menu='sales/menu_invoice';
 		 $this->session->set_userdata('_right_menu',$menu);
@@ -437,7 +439,7 @@ class Invoice extends CI_Controller {
 				if($saldo!=0){
 					$row['amount']=number_format($row['amount']);
 					$row['saldo']=number_format($saldo);
-					$row['bayar']=form_input("bayar[]","","style='width:150px'");
+					$row['bayar']=form_input("bayar[]","","style='width:100px'");
 					$row['invoice_number']=$nomor.form_hidden("faktur[]",$nomor);
 					$rows[$i++]=$row;
 				}
@@ -549,33 +551,19 @@ class Invoice extends CI_Controller {
 	}
 	function daftar_saldo_faktur()
 	{
-		$this->load->model('invoice_model');
-		$sql="select p.invoice_number as faktur, p.invoice_date as tanggal,
-		s.company,p.payment_terms,p.amount,0 as payment,0 as retur,0 as crdb,0 as saldo
-		from invoice p
-		left join customers s on s.customer_number=p.sold_to_customer
-		where invoice_type='I' and year(p.invoice_date)=".date('Y')."
-		order by p.invoice_date asc";
-		
-		$query=$this->db->query($sql);
-		$flds=$query->list_fields();
-		$i=0;
-		$data[0]=0;
-		foreach($query->result_array() as $row){
-		    $faktur=$row['faktur'];
-			$amount=$row['amount'];
-			if($amount==null)$amount=0;
-			$saldo=$this->invoice_model->recalc($faktur);
-			$data[$i]=$row;
-			$data[$i]['amount']=$this->invoice_model->amount;
-			$data[$i]['payment']=$this->invoice_model->amount_paid;
-			$data[$i]['retur']=$this->invoice_model->retur_amount;
-			$data[$i]['crdb']=$this->invoice_model->crdb_amount;
-			$data[$i]['saldo']=$saldo;
-			$i++;
-		}
-		 
-		echo browse_data($data,$flds);
+		$sql="select invoice_number,invoice_date,amount,company,due_date  
+		from invoice i left join customers c on c.customer_number=i.sold_to_customer
+		where invoice_type='I' and due_date>=".date('Y-m-d')."  
+		order by invoice_date   		
+		limit 5
+		";
+		echo datasource($sql);
+	}
+	function omzet_salesman() {
+		$sql="select salesman,sum(amount) as jumlah 
+		from invoice where invoice_type='I' and year(invoice_date)=".date('Y')." 
+		group by salesman";
+		echo datasource($sql);
 	}
 	function items($nomor,$type='')
 	{

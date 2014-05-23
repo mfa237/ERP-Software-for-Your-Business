@@ -5,8 +5,8 @@
 	echo link_button('Print', 'print_voucher()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/cash_mutasi/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/cash_mutasi');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/cash_mutasi/view/'.$voucher);		
-	echo link_button('Delete','','remove','true',base_url().'index.php/cash_mutasi/delete/'.$voucher);		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/cash_mutasi/view/'.$voucher);		
+	if($mode=="view") echo link_button('Delete','','remove','true',base_url().'index.php/cash_mutasi/delete/'.$voucher);		
 	
 	if($posted) {
 		echo link_button('UnPosting','','cut','true',base_url().'index.php/cash_mutasi/unposting/'.$voucher);		
@@ -53,13 +53,14 @@
 ?>
 
    
+<input type='hidden' id='posted' name='posted' value='<?=$posted?>'>    
    <table>
        <tr>
             <td>Jenis</td><td>
 				<div class='thumbnail'>
                 <?php echo form_radio('trans_type','cash trx',$trans_type=='cash trx');?>Cash  &nbsp; &nbsp;
                 <?php echo form_radio('trans_type','cheque trx',$trans_type=='cheque trx');?>Giro/Cek  &nbsp; &nbsp;
-                <?php echo form_radio('trans_type','trans trx',$trans_type=='trans trx',' checked ');?>Transfer  &nbsp; &nbsp;
+                <?php echo form_radio('trans_type','trans trx',$trans_type=='trans trx');?>Transfer  &nbsp; &nbsp;
 				</div>
             </td>
        </tr>

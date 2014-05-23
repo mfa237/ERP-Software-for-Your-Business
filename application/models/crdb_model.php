@@ -130,13 +130,12 @@ private $table_name='crdb_memo';
 		$this->load->model('jurnal_model');
 		$this->load->model('chart_of_accounts_model');
 		$this->load->model('company_model');
-		
 		if($type=="SO-CREDIT MEMO" or $type=="SO-DEBIT MEMO") {
 			$this->load->model('customer_model');
 			$this->load->model('invoice_model');
 			$faktur=$this->invoice_model->get_by_id($docnumber)->row();
-			if($accountid=="")$accountid=$faktur->account_id;
-			if($accountid=="") {
+			if($accountid=="" or $accountid=="0")$accountid=$faktur->account_id;
+			if($accountid==""  or $accountid=="0") {
 				$accountid=$this->company_model->setting("accounts_receivable");
 				$this->db->query("update invoice set account_id='".$accountid."' 
 					where invoice_number='".$docnumber."'");

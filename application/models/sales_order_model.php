@@ -116,11 +116,51 @@ class Sales_order_model extends CI_Model
 			set ship_qty=qty_do 
 
 			where sales_order_lineitems.sales_order_number='$nomor_so'";
+			
+		$this->db->query($s);
 		
 		
- 
+		$s="update sales_order_lineitems set shipped=true where quantity=ship_qty 
+		and sales_order_number='$nomor_so'";
+		$this->db->query($s);
+
+		$s="update sales_order_lineitems set shipped=false where quantity=ship_qty 
+		and sales_order_number='$nomor_so'";
+		$this->db->query($s);
+
+
+		$s="update sales_order 
 		
+		left join (select sales_order_number,sum(quantity) as z_qty,
+		sum(ship_qty) as z_ship_qty 
+		from sales_order_lineitems
+		where sales_order_number='$nomor_so'
+		group by sales_order_number) il
+		on il.sales_order_number=sales_order.sales_order_number
+		
+		set delivered=true 
+		
+		where z_qty=z_ship_qty 
+		and sales_order.sales_order_number='$nomor_so'";
 		
 		$this->db->query($s);
+
+		$s="update sales_order 
+		
+		left join (select sales_order_number,sum(quantity) as z_qty,
+		sum(ship_qty) as z_ship_qty 
+		from sales_order_lineitems
+		where sales_order_number='$nomor_so'
+		group by sales_order_number) il
+		on il.sales_order_number=sales_order.sales_order_number
+		
+		set delivered=false
+		
+		where z_qty>z_ship_qty 
+		and sales_order.sales_order_number='$nomor_so'";
+
+		$this->db->query($s);
+
+		
 	}
 }

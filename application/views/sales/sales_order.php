@@ -4,7 +4,7 @@
 			echo link_button("Save","save_so()","save");
 			echo link_button('Print', 'print_so()','print');
 			echo link_button('Add','','add','true',base_url().'index.php/sales_order/add');		
-			echo link_button('Delete','delete()','remove');		
+			echo link_button('Delete','delete()','cut');		
 			echo link_button('Search','','search','true',base_url().'index.php/sales_order');		
 			echo link_button('Refresh','','reload','true',base_url().'index.php/sales_order/view/'.$sales_order_number);		
 			echo link_button('Help', 'load_help()','help');		
@@ -36,21 +36,32 @@
 				<?php echo form_input('sales_order_number',
                         $sales_order_number,"id=sales_order_number"); ?>
             </td>
+			<td rowspan="5">
+				<div class="thumbnail" id="customer_info" style="width:300px;height:100px"><?=$customer_info?></div>
+			</td>
+	</tr>
+	<tr>
             <td>Tanggal</td><td><?php echo form_input('sales_date',$sales_date,'id=sales_date 
              class="easyui-datetimebox" required style="width:150px"');?>
             </td>
 
         </tr>	 
        <tr>
-            <td>Pelanggan</td><td><?php echo form_dropdown('sold_to_customer'
-                    ,$customer_list,$sold_to_customer,"id=sold_to_customer");?>
-            </td>
+            <td>Pelanggan</td>
+			<td><?php 
+				echo form_input('sold_to_customer',$sold_to_customer,"id=sold_to_customer");
+				echo link_button("","select_customer();return false;","search");
+			?></td>
+	</tr>
+	<tr>
             <td>Rencana Dikirim</td>
             <td><?=form_input('due_date',$due_date,'id=due_date class="easyui-datetimebox" required style="width:150px"');?></td>
        </tr>
        <tr>
        		<td>Salesman: </td>
        		<td><?php echo form_dropdown('salesman',$salesman_list,$salesman,'id=salesman');?></td>
+	</tr>
+	<tr>
             <td>Termin</td><td><?php echo form_dropdown('payment_terms'
                     ,$payment_terms_list,$payment_terms,"id=payment_terms");?>
             </td>
@@ -174,39 +185,19 @@
 	</div>
 </div>
 
+
+</DIV>
+</div>
 <div id="tb" style="height:auto">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 </div>
-<div id="tb_search" style="height:auto">
-	Enter Text: <input  id="search_item" style='width:180' 
- 	name="search_item">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
-</div>
 
-<div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;"
-        closed="true" buttons="#dlg-buttons">
-     <div id='divItemSearchResult'> 
-		<table id="dgItemSearch" class="easyui-datagrid"  
-			data-options="
-				toolbar: '#tb_search',
-				singleSelect: true,
-				url: '<?=base_url()?>index.php/inventory/filter'
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'description',width:150">Nama Barang</th>
-					<th data-options="field:'item_number',width:80">Kode Barang</th>
-				</tr>
-			</thead>
-		</table>
-    </div>   
-</div>
+<?
+	include_once 'customer_select.php';
+	echo load_view('inventory/inventory_select');
+?>
 
-</DIV>
-</div>
 <script type="text/javascript">
 	var url;	
     function save_so(){
@@ -241,26 +232,6 @@
 
     }
 
-
-		function find(){
-		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val();
-		    console.log(xurl);
-		    $.ajax({
-		                type: "GET",
-		                url: xurl,
-		                data:'item_no='+$('#item_number').val(),
-		                success: function(msg){
-		                    var obj=jQuery.parseJSON(msg);
-		                    $('#item_number').val(obj.item_number);
-		                    $('#price').val(obj.retail);
-		                    //$('#cost').val(obj.cost);
-		                    //$('#unit').val(obj.unit_of_measure);
-		                    $('#description').val(obj.description);
-		                    hitung();
-		                },
-		                error: function(msg){alert(msg);}
-		    });
-		};
 		function hitung(){
 	        if($('#quantity').val()==0)$('#quantity').val(1);
 	        gross=$('#quantity').val()*$('#price').val();
@@ -382,25 +353,7 @@
 				$('#so_number').val(row.so_number);
 			}
 		}
-		function selectSearchItem()
-		{
-			var row = $('#dgItemSearch').datagrid('getSelected');
-			if (row){
-				$('#item_number').val(row.item_number);
-				$('#description').val(row.description);
-				find();
-				$('#dlgSearchItem').dialog('close');
-			}
-			
-		}
-		function searchItem()
-		{
-			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang');
-			nama=$('#search_item').val();
-			$('#dgItemSearch').datagrid({url:'<?=base_url()?>index.php/inventory/filter/'+nama});
-			$('#dgItemSearch').datagrid('reload');
 
-		}
   	function print_so(){
             so=$('#sales_order_number').val(); 
             window.open("<?=base_url().'index.php/sales_order/print_so/'?>"+so,"new");  		

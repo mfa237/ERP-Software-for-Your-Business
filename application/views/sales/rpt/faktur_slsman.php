@@ -8,6 +8,7 @@
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
 	$text1=$CI->input->post('text1');
+	$text2=$CI->input->post('text2');
     $CI->load->model('sales_order_model');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
@@ -38,19 +39,32 @@
 	     		<thead>
 	     			<tr><td>Salesman</td><td>Tanggal</td><td>Nomor Faktur</td><td>Kode Pelanggan</td><td>Nama Pelanggan</td>
 	     				<td>Nomor SO</td><td>Termin</td><td>Jumlah</td>
+						<td>Payment</td><td>Retur</td><td>Cr Memo</td><td>Dr Memo</td>
+						<td>Saldo</td>
 	     			</tr>
 	     		</thead>
 	     		<tbody>
      			<?
-     			$sql="select i.invoice_date,i.invoice_number,i.sold_to_customer,
-     			c.company,i.due_date,i.payment_terms,i.salesman,i.amount,i.sales_order_number
-     			 from invoice i left join customers c on c.customer_number=i.sold_to_customer
-	            where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2'  ";
+     			$sql="select * from qry_invoice i where invoice_date between '$date1' and '$date2'  ";
 				if($text1!="")$sql.=" and i.salesman='" . $text1 . "'";
+				if($text2!="")$sql.=" and i.sold_to_customer='" . $text2 . "'";
 				$sql.=" order by i.salesman,i.invoice_date";
      			$rst_so=$CI->db->query($sql);
      			$tbl="";
-                 foreach($rst_so->result() as $row){
+				$z_amount=0;		$z_payment=0;
+				$z_retur=0;			$z_cr_amount=0;
+				$z_db_amount=0;		$z_saldo=0;
+
+				$z_amount_sls=0;$z_payment_sls=0;
+				$z_retur_sls=0;$z_cr_amount_sls=0;
+				$z_db_amount_sls=0;$z_saldo_sls=0;
+
+
+				$old_sales="";
+				$rows=$rst_so->result();
+                 for($i=0;$i<count($rows);$i++){
+					$row=$rows[$i];
+					$old_sales=$row->salesman;
                     $tbl.="<tr>";
                     $tbl.="<td>".$row->salesman."</td>";
                     $tbl.="<td>".$row->invoice_date."</td>";
@@ -60,8 +74,62 @@
                     $tbl.="<td>".$row->sales_order_number."</td>";
                     $tbl.="<td>".$row->payment_terms."</td>";
                     $tbl.="<td align='right'>".number_format($row->amount)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->payment)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->retur)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->cr_amount)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->db_amount)."</td>";
+					$saldo=$row->amount-$row->payment-$row->cr_amount+$row->db_amount;
+                    $tbl.="<td align='right'>".number_format($saldo)."</td>";
                     $tbl.="</tr>";
+					$z_amount=$z_amount+$row->amount;
+					$z_payment=$z_payment+$row->payment;
+					$z_retur=$z_retur+$row->retur;
+					$z_cr_amount=$z_cr_amount+$row->cr_amount;
+					$z_db_amount=$z_db_amount+$row->db_amount;
+					$z_saldo=$z_saldo+$saldo;
+
+					$z_amount_sls=$z_amount_sls+$row->amount;
+					$z_payment_sls=$z_payment_sls+$row->payment;
+					$z_retur_sls=$z_retur_sls+$row->retur;
+					$z_cr_amount_sls=$z_cr_amount_sls+$row->cr_amount;
+					$z_db_amount_sls=$z_db_amount_sls+$row->db_amount;
+					$z_saldo_sls=$z_saldo_sls+$saldo;
+
+					if($i<count($rows)-1){
+						if($old_sales != $rows[$i+1]->salesman){
+							$tbl.= "<tr><td><h4>Sub Total : ".$old_sales."</h4></td>
+							<td colspan='6'>
+							<td align='right'><h4>".number_format($z_amount_sls)."</h4></td>
+							<td align='right'><h4>".number_format($z_payment_sls)."</h4></td>
+							<td align='right'><h4>".number_format($z_retur_sls)."</h4></td>
+							<td align='right'><h4>".number_format($z_cr_amount_sls)."</h4></td>
+							<td align='right'><h4>".number_format($z_db_amount_sls)."</h4></td>
+							<td align='right'><h4>".number_format($z_saldo_sls)."</h4></td>
+							</tr>";
+							$z_amount_sls=0;$z_payment_sls=0;
+							$z_retur_sls=0;$z_cr_amount_sls=0;
+							$z_db_amount_sls=0;$z_saldo_sls=0;
+						}
+					}
                };
+				$tbl.= "<tr><td><h4>Sub Total : ".$old_sales."</h4></td>
+				<td></td><td></td><td></td><td></td><td></td><td></td>
+				<td align='right'><h4>".number_format($z_amount_sls)."</h4></td>
+				<td align='right'><h4>".number_format($z_payment_sls)."</h4></td>
+				<td align='right'><h4>".number_format($z_retur_sls)."</h4></td>
+				<td align='right'><h4>".number_format($z_cr_amount_sls)."</h4></td>
+				<td align='right'><h4>".number_format($z_db_amount_sls)."</h4></td>
+				<td align='right'><h4>".number_format($z_saldo_sls)."</h4></td>
+				</tr>";
+			   
+			   $tbl.="<tr><td><h4>TOTAL</h4></td><td></td><td></td><td></td>
+	     				<td></td><td></td><td></td>
+						<td align='right'><h4>".number_format($z_amount)."</h4></td>
+						<td align='right'><h4>".number_format($z_payment)."</h4></td>
+						<td align='right'><h4>".number_format($z_retur)."</h4></td>
+						<td align='right'><h4>".number_format($z_cr_amount)."</h4></td>
+						<td align='right'><h4>".number_format($z_db_amount)."</h4></td>
+						<td align='right'><h4>".number_format($z_saldo)."</h4></td></tr>";
 			   echo $tbl;
 				   				   				   
 			?>	

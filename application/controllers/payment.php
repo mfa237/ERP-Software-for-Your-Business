@@ -112,6 +112,7 @@ class Payment extends CI_Controller {
     
     }
    function view($no_bukti,$message=""){
+		$this->load->model('customer_model');
    		$this->load->model('check_writer_model');
 		$rcek=$this->check_writer_model->get_by_id($no_bukti)->row();
 		$data['posted']=$rcek->posted;
@@ -123,7 +124,8 @@ class Payment extends CI_Controller {
 			$data['amount_paid']=$rcek->deposit_amount;
 			$data['account_number']=$rcek->account_number;
 			$data['trans_type']=$rcek->trans_type;
-			$data['cust_info']=$rcek->supplier_number.' - '.$rcek->payee;
+			//$data['cust_info']=$rcek->supplier_number.' - '.$rcek->payee;
+			$data['cust_info']=$this->customer_model->info($rcek->supplier_number);
   		
 			$this->template->display_form_input('sales/payment_multi_view',$data,'');
 						

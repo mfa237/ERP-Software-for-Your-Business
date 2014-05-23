@@ -9,12 +9,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand glyphicon glyphicon-th" href="<?=base_url()?>index.php"> Home</a>
+      <a class="navbar-brand glyphicon glyphicon-th  border-hover" href="<?=base_url()?>index.php"> Home</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav border-hover" >
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Transaksi <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -32,7 +32,7 @@
         </li>
       </ul>
 
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav  border-hover">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Master<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -46,7 +46,7 @@
       </ul>
 
 
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav  border-hover">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Laporan<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -63,7 +63,7 @@
         </li>
       </ul>
       
-      <form class="navbar-form navbar-right" role="search">
+      <form class="navbar-form navbar-right " role="search">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search">
         </div>
@@ -72,7 +72,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li><a href="<?=base_url()?>index.php/login/logout">Logout</a></li>
-        <li class="dropdown">
+        <li class="dropdown  border-hover">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setting <b class="caret"></b></a>
           <ul class="dropdown-menu">
 			<li><a href="<?=base_url()?>index.php/company"  class="info_link" >Perusahaan</a></li>

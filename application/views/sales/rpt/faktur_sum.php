@@ -37,16 +37,18 @@
 	     		<thead>
 	     			<tr><td>Tanggal</td><td>Nomor Faktur</td><td>Kode Pelanggan</td><td>Nama Pelanggan</td>
 	     				<td>Nomor SO</td><td>Termin</td><td>Salesman</td><td>Jumlah</td>
+						<td>Payment</td><td>Retur</td><td>Cr Memo</td><td>Dr Memo</td>
+						<td>Saldo</td>
 	     			</tr>
 	     		</thead>
 	     		<tbody>
      			<?
-     			$sql="select i.invoice_date,i.invoice_number,i.sold_to_customer,
-     			c.company,i.due_date,i.payment_terms,i.salesman,i.amount,i.sales_order_number
-     			 from invoice i left join customers c on c.customer_number=i.sold_to_customer
-	            where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2'  ";
+     			$sql="select * from qry_invoice where invoice_date between '$date1' and '$date2'  ";
      			$rst_so=$CI->db->query($sql);
      			$tbl="";
+				$z_amount=0;		$z_payment=0;
+				$z_retur=0;			$z_cr_amount=0;
+				$z_db_amount=0;		$z_saldo=0;
                  foreach($rst_so->result() as $row){
                     $tbl.="<tr>";
                     $tbl.="<td>".$row->invoice_date."</td>";
@@ -57,8 +59,28 @@
                     $tbl.="<td>".$row->payment_terms."</td>";
                     $tbl.="<td>".$row->salesman."</td>";
                     $tbl.="<td align='right'>".number_format($row->amount)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->payment)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->retur)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->cr_amount)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->db_amount)."</td>";
+					$saldo=$row->amount-$row->payment-$row->cr_amount+$row->db_amount;
+                    $tbl.="<td align='right'>".number_format($saldo)."</td>";
                     $tbl.="</tr>";
+					$z_amount=$z_amount+$row->amount;
+					$z_payment=$z_payment+$row->payment;
+					$z_retur=$z_retur+$row->retur;
+					$z_cr_amount=$z_cr_amount+$row->cr_amount;
+					$z_db_amount=$z_db_amount+$row->db_amount;
+					$z_saldo=$z_saldo+$saldo;
                };
+			   
+			   $tbl.="<tr><td>TOTAL</td><td></td><td></td><td></td>
+	     				<td></td><td></td><td></td><td align='right'>".number_format($z_amount)."</td>
+						<td align='right'>".number_format($z_payment)."</td>
+						<td align='right'>".number_format($z_retur)."</td>
+						<td align='right'>".number_format($z_cr_amount)."</td>
+						<td align='right'>".number_format($z_db_amount)."</td>
+						<td align='right'>".number_format($z_saldo)."</td></tr>";
 			   echo $tbl;
 				   				   				   
 			?>	

@@ -26,21 +26,70 @@
 			<area shape="circle" alt="" coords="470,317,29" href="<?=base_url()?>index.php/jurnal" class="info_link" title="General Ledger" />
 			<area shape="default" nohref="nohref" alt="" />
 			</map>
+			 
 		</div>
-		<div class="thumbnail">
-			<div id="p" class="thumbnail" title="Saldo Piutang Pelanggan"  
-				data-options="iconCls:'icon-help'" >
-				<div id='divCustomer' style="width:90%;height:400px;padding:5px;">
-					 <img src="<?=base_url()?>images/loading.gif">		
+		<div class="row">
+			<div class="thumbnail col-md-6 " >
+				<div id="p" class="thumbnail" title="Saldo Piutang Pelanggan"  
+					data-options="iconCls:'icon-help'" >
+					<div id='divCustomer' style="height:200px;padding:5px;">
+						 <img src="<?=base_url()?>images/loading.gif">		
+					</div>
 				</div>
 			</div>
-		</div>
-		
-		<div class="thumbnail" >
-			<div id="p" class="thumbnail" title="Total Penjualan"  
-				data-options="iconCls:'icon-help'" >
-				<div id='divSales'  style="width:90%;height:200px;padding:5px;"><img src="<?=base_url()?>images/loading.gif"></div>
+			
+			<div class="thumbnail col-md-6 " >
+				<div id="p" class="thumbnail" title="Total Penjualan"  
+					data-options="iconCls:'icon-help'" >
+					<div id='divSales'  style="height:200px;padding:5px;"><img src="<?=base_url()?>images/loading.gif"></div>
+				</div>
 			</div>
+			<div class="thumbnail col-md-6 " >
+					<div id='divFaktur'  style="height:200px;padding:5px;">
+						<table id="dgRetur" class="easyui-datagrid"  
+							style="width:400px;min-height:300px"
+							data-options="title: 'Faktur Jatuh Tempo',
+								iconCls: 'icon-tip',
+								singleSelect: true,
+								toolbar: '',
+								url: '<?=base_url()?>index.php/invoice/daftar_saldo_faktur'
+							">
+							<thead>
+								<tr>
+									<th data-options="field:'invoice_number',width:60">Faktur</th>
+									<th data-options="field:'invoice_date',width:70">Tanggal</th>
+									<th data-options="field:'due_date',width:70">Jth Tempo</th>
+									<th data-options="field:'company',width:80">Pelanggan</th>
+									<th data-options="field:'amount',width:80,align:'right',editor:'numberbox',
+										formatter: function(value,row,index){
+											return number_format(value,2,'.',',');}">Jumlah</th>
+								</tr>
+							</thead>
+						</table>					
+				</div>
+			</div>
+			<div class="thumbnail col-md-6 " >
+					<div id='divFaktur'  style="height:200px;padding:5px;">
+						<table id="dgRetur" class="easyui-datagrid"  
+							style="width:400px;min-height:300px"
+							data-options="title: 'Omzet Salesman',
+								iconCls: 'icon-tip',
+								singleSelect: true,
+								toolbar: '',
+								url: '<?=base_url()?>index.php/invoice/omzet_salesman'
+							">
+							<thead>
+								<tr>
+									<th data-options="field:'salesman',width:180">Nama Salesman</th>
+									<th data-options="field:'jumlah',width:80,align:'right',editor:'numberbox',
+										formatter: function(value,row,index){
+											return number_format(value,2,'.',',');}">Jumlah</th>
+								</tr>
+							</thead>
+						</table>					
+				</div>
+			</div>
+
 		</div>
 	</div>
 </div>
@@ -58,7 +107,7 @@ $().ready(function(){
 	
 		//void get_this(CI_ROOT+'customer/grafik_saldo','','divCustomer');
 		//void get_this(CI_ROOT+'invoice/grafik_penjualam','','divSales');
-		//v/oid get_this(CI_ROOT+'invoice/daftar_saldo_faktur','','divFaktur');
+		 
 		//void get_this(CI_ROOT+'customer/daftar_umur','','divUmur');
 		//void get_this(CI_ROOT+'invoice/daftar_umur_faktur','','divUmurFaktur');
 		//void get_this(CI_ROOT+'purchase_invoice/daftar_kartu_gl','','divGL');

@@ -168,14 +168,11 @@ class Customer extends CI_Controller {
 		
 	}	
 	function select($search=''){
-		$sql="select company,customer_number, city,region,country,street,suite
-		from customers 
-		where (company like '$search%' or customer_number like '$search%')
-		order by company
-		limit 100";
-		$rs = mysql_query($sql); $result = array();
-		while($row = mysql_fetch_object($rs)){array_push($result, $row);}			 
-		echo json_encode($result);
+		$sql="select company,customer_number, city,region,country,street,suite,salesman 
+		from customers where  (company like '$search%' or customer_number like '$search%')
+		order by company";
+	 
+ 		echo datasource($sql);
 	}
 	function filter($search=''){
 		echo datasource('select company,customer_number from customers');

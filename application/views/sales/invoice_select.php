@@ -1,10 +1,10 @@
 <!-- PILIH FAKTUR  --> 
 <div id='dlgFaktur'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-cust">
+     closed="true" buttons="#tbFaktur">
      <div id='divFaktur'> 
 		<table id="dgFaktur" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#tbFaktur',
+				toolbar: '',
 				singleSelect: true
 			">
 			<thead>

@@ -147,7 +147,7 @@ class Coa extends CI_Controller {
 	}        
 	function select($account=''){
 		$sql="select account,account_description,id from chart_of_accounts where 1=1";
-		if($account!="")$sql.=" and account like '$account%'";
+		if($account!="")$sql.=" and (account like '$account%' or account_description like '%$account%')";
 		echo datasource($sql);	
 	}
 	function card($account_id) {

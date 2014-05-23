@@ -443,33 +443,13 @@ class Purchase_invoice extends CI_Controller {
 	}
 	function daftar_saldo_faktur()
 	{
-		$sql="select p.purchase_order_number as faktur, p.po_date as tanggal,
-		s.supplier_name,p.terms,p.amount,0 as payment,0 as retur,0 as crdb,0 as saldo
+		$sql="select p.purchase_order_number , p.po_date ,
+		s.supplier_name,p.terms,p.amount,p.due_date
 		from purchase_order p
 		left join suppliers s on s.supplier_number=p.supplier_number
-		where potype='I' and year(p.po_date)=".date('Y')."
-		order by p.po_date asc";
-		
-		$query=$this->db->query($sql);
-		$flds=$query->list_fields();
-		$i=0;
-		$data[0]=0;
-		foreach($query->result_array() as $row){
-			$amount=$row['amount'];
-			if($amount==null)$amount=0;
-			$saldo=$amount;
-			if($saldo<>0){
-				$data[$i]=$row;
-				$faktur=$row['faktur'];
-				$data[$i]['payment']=$this->amount_paid($faktur);
-				$data[$i]['retur']=$this->amount_retur($faktur);
-				$data[$i]['crdb']=$this->amount_crdb($faktur);
-				$data[$i]['saldo']=$amount;
-				$i++;
-			}
-		}
-		 
-		echo browse_data($data,$flds);
+		where potype='I' and (p.due_date<=".date("Y-m-d")." or p.due_date is null) 
+		order by p.po_date asc limit 5";
+		echo datasource($sql);
 	}
 	function amount_paid($faktur){return $this->purchase_order_model->paid_amont($faktur);}
 	function amount_retur($faktur){return $this->purchase_order_model->retur_amount($faktur);}

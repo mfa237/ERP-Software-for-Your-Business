@@ -26,19 +26,11 @@ if(!isset($_right_menu))$_right_menu="";
 </script>
 </head>
 <body>
-<div class="container" style="margin-left:15px;padding-left:5px;" >
+<div class="container" >
 	<? if(!$ajaxed) { ?> 
 		<div class="row" style="background-repeat:no-repeat; background-image:url('<?=base_url()?>images/header2.jpg')">
 			<img src="<?=base_url()?>images/logo_maxon.png">
-			<div style="float:right;background:#428bca;">
-				<a href="http://www.facebook.com/maxon51" target="_new" title="Follow Facebook">
-						<img src="http://www.talagasoft.com/img/fb.png"></a>
-				<a href="http://www.twitter.com/talagasoft" target="_new" title="Follow Twitter">
-					<img src="http://www.talagasoft.com/img/twitter.png">
-				</a>
-			</div>
 			<?=$_header?>
-			
 		</div>
 		<div class="row" >
 			<div class="col-md-9">
@@ -47,40 +39,66 @@ if(!isset($_right_menu))$_right_menu="";
 			
 			<? if($visible_right!=""){?>
 				<div id="__section_right" class="col-md-3" >
-					<div class="thumbnail">
-						<?
-						echo $this->access->print_info();
-						echo "</br>".date('l jS \of F Y h:i:s A');
-						?>
+					<div class="panel panel-primary " style="margin-bottom:10px">
+						<div class="panel-heading">
+							<h3 class="panel-title"  style="padding:10px;color:white">USER LOGIN</h3>
+						</div>
+						<div class="panel-body"   style="padding:10px;">
+							<?
+							echo $this->access->print_info();
+							echo "</br>".date('l jS \of F Y h:i:s A');
+							?>
+						</div>	
 					</div>
-					<div class="thumbnail">
-						<?=$_left_menu?>
+					<div class="panel panel-primary "  style="margin-bottom:10px" >
+						<div class="panel-heading">
+							<h3 class="panel-title"  style="padding:10px;color:white">MAIN MENU</h3>
+						</div>
+						<div class="panel-body"   style="padding:10px;">
+							<?=$_left_menu?>
+						</div>
 					</div>
-					<div class="thumbnail">
-						<div id="help"></div>
+
+					<div class="panel panel-primary "  style="margin-bottom:10px">
+						<div class="panel-heading">
+							<h3 class="panel-title"  style="padding:10px;color:white">HELP BOX</h3>
+						</div>
+						<div class="panel-body"   style="padding:10px;">
+							<div id="help"></div>
+						</div>	
 					</div>
-					<div class="thumbnail">
-						<?=$sys_log_run?>
+					<div class="panel panel-primary "  style="margin-bottom:10px">
+						<div class="panel-heading">
+							<h3 class="panel-title"  style="padding:10px;color:white">LAST RUNING</h3>
+						</div>
+						<div class="panel-body"   style="padding:10px;">
+							<?=$sys_log_run?>
+						</div>
 					</div>
-					<div class="thumbnail">
-						 <h4>DONASI</h4>
-						 <li><strong>BANK BCA</strong></li>
-							<I>ANDRI ANDIANA - 2400 0920 98</I>						 
-						 <li><strong>PAYPAL</strong><i>Click Cofee ;)</i></li>	
-						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-							<input type="hidden" name="cmd" value="_s-xclick">
-							<input type="hidden" name="hosted_button_id" value="3B2BALTFG7KWQ">
-							<input type="image" src="<?=base_url()?>images/donation.png" style="width:165px!important;" width="165px" 
-							height="auto" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-							<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="10" height="10">
-						</form>
+					
+					<div class="panel panel-primary "  style="margin-bottom:10px">
+						<div class="panel-heading">
+							<h3 class="panel-title"  style="padding:10px;color:white">DONATE</h3>
+						</div>
+						<div class="panel-body"   style="padding:10px;">
+							 <h4>DONASI</h4>
+							 <li><strong>BANK BCA</strong></li>
+								<I>ANDRI ANDIANA - 2400 0920 98</I>						 
+							 <li><strong>PAYPAL</strong><i>Click Cofee ;)</i></li>	
+							<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+								<input type="hidden" name="cmd" value="_s-xclick">
+								<input type="hidden" name="hosted_button_id" value="3B2BALTFG7KWQ">
+								<input type="image" src="<?=base_url()?>images/donation.png" style="width:165px!important;" width="165px" 
+								height="auto" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+								<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="10" height="10">
+							</form>
+						</div>	
 					</div>
-					<div class="thumbnail"><div class="easyui-calendar" ></div></div>
 				</div>	
 			<? } ?>
 			
 		</div>
-		<div class="row-fluid"><div class="thumbnail" style="margin:10px 10px;"><?=$_footer?></div></div>
+		<div class="row-fluid footer"><div style="margin:10px 10px;"><?=$_footer?></div></div>
 	<? } else { ?>
 		 
 		<?php echo $_content;?>  
@@ -96,7 +114,7 @@ if(!isset($_right_menu))$_right_menu="";
 				$('#tt').tabs('select', title); 
 			} else { 			
 				index++;
-				var content = '<iframe scrolling="auto" frameborder="0" src="'+url+'" style="width:100%;height:600px;"></iframe>'; 
+				var content = '<iframe scrolling="auto" frameborder="0" src="'+url+'" style=";width:90%;height:900px;"></iframe>'; 
 				
 				$('#tt').tabs('add',{
 					title: title,

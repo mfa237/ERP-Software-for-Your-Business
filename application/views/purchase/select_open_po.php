@@ -4,9 +4,9 @@
      <div id='divSelectFaktur'> 
 		<table id="dgSelectFaktur" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#toolbar-search-faktur',
+				toolbar: '',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/purchase_order/select_open_po'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -18,7 +18,7 @@
 		</table>
     </div>   
 </div>
-<div id="toolbar-search-faktur" style="height:auto">
+<div id="button-select-faktur" style="height:auto">
 	Enter Text: <input  id="search_supp" style='width:180' name="search_supp">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_po()"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_po()">Select</a>

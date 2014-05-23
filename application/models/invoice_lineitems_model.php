@@ -44,7 +44,24 @@ function sum_total_price($nomor)
 		from invoice_lineitems 
         where invoice_number='".$nomor."'")->row()->sum_total_price;
 }
+function check_revenue_acct($nomor,$type="I") {
 
+	$set=$this->db->query("select inventory_sales,inventory_cogs  from preferences 
+	where not (inventory_sales='0' or inventory_sales is null)")->row();
+
+	$sql="update invoice_lineitems 
+	left join inventory i on i.item_number=invoice_lineitems.item_number 
+	set revenue_acct_id=sales_account
+	where  invoice_number='$nomor'
+	and (revenue_acct_id is null or revenue_acct_id='0')";
+	$this->db->query($sql);
+	
+	$sql="update invoice_lineitems set revenue_acct_id='".$set->inventory_sales."' 
+		where invoice_number='$nomor' 
+		and (revenue_acct_id is null or revenue_acct_id='0')";
+		
+	$this->db->query($sql);
+}
 
 function browse($nomor)
 {

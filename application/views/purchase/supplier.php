@@ -1,4 +1,5 @@
-<div><h3>MASTER SUPPLIER</H3><div class="thumbnail">
+	<h3>MASTER SUPPLIER</H3>
+	<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
@@ -24,7 +25,7 @@
 	</script>
 	
 </div>
-<div class="thumbnail">	
+ 
 
 <div class="easyui-tabs" style="width:700px;height:auto">
 	<div title="General" style="padding:10px">
@@ -46,9 +47,6 @@
 			  <td><?php echo form_input('supplier_name',$supplier_name,'style="width:150px"');?></td>
 
 
-			  <td>Aktif</td>
-			  <td><?=form_radio('active',1,$active=='1'?TRUE:FALSE);?>
-				Yes <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE);?> No </td>
 			</tr>	 
 
 			<tr>
@@ -90,8 +88,12 @@
 			</tr>	 
 			<tr>
 			  <td>Saldo Hutang</td>
-			  <td>Rp. <?=number_format($saldo);?></td>
-			</tr>	 
+			  <td><strong>Rp. <?=number_format($saldo);?></strong></td>
+			  <td>Aktif</td>
+			  <td><?=form_radio('active',1,$active=='1'?TRUE:FALSE);?>
+				Yes <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE);?> No </td>
+
+		  </tr>	 
 
 		   </table>
 		   </form>

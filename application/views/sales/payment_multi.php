@@ -3,7 +3,8 @@
 	echo link_button('Save', 'process()','save');		
 	echo link_button('Print', 'print()','print');
 	echo link_button('Add','','add','true',base_url().'index.php/payment/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/payment');		
+	echo link_button('Search','','search','true',base_url().'index.php/payment');
+		
 	echo link_button('Help', 'load_help()','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -34,7 +35,7 @@
 			<td colspan="2"><div id="cust_info"></div></td>
 		</tr>
 		<tr>
-			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro','Transfer'),$how_paid,"id=how_paid");?></td>
+			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro','Transfer'),$how_paid,"id=how_paid style='width:150px'");?></td>
 		</tr>
 		<tr>
 			<td>Tanggal Bayar: </td><td><?=form_input('date_paid',$date_paid,'class="easyui-datetimebox"');?></td>
@@ -58,7 +59,7 @@
 					<th data-options="field:'due_date',width:80">Tempo</th>
 					<th data-options="field:'amount',width:80,align:'right'">Jumlah</th>
 					<th data-options="field:'saldo',width:80,align:'right'">Saldo</th>
-					<th data-options="field:'bayar',width:'100'">Bayar</th>
+					<th data-options="field:'bayar',width:'150'">Bayar</th>
 				</tr>
 			</thead>
 		</table>
@@ -67,31 +68,10 @@
 	</form>
 </div>
 
-<div id='dlgSelectCust'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-cust">
-     <div id='divSelectCust'> 
-		<table id="dgSelectCust" class="easyui-datagrid"  
-			data-options="
-				toolbar: '#toolbar-search-cust',
-				singleSelect: true,
-				url: '<?=base_url()?>index.php/customer/select'
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'company',width:80">Pelanggan</th>
-					<th data-options="field:'customer_number',width:80">Kode</th>
-					<th data-options="field:'city',width:180">Kota</th>
-					<th data-options="field:'region',width:80">Wilayah</th>
-				</tr>
-			</thead>
-		</table>
-    </div>   
-</div>
-<div id="toolbar-search-cust" style="height:auto">
-	Enter Text: <input  id="search_cust" style='width:180' name="search_cust">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_customer()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_customer()">Select</a>
-</div>
+<?
+	include_once 'customer_select.php';
+	
+?>
 
 <script language='javascript'>
 	function selected_customer(){

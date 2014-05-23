@@ -53,7 +53,7 @@ class Sales_order extends CI_Controller {
             if($record==NULL)$data['sales_order_number']=$this->nomor_bukti();
 			if($data['sales_date']=='')$data['sales_date']= date("Y-m-d H:i:s");
 			if($data['due_date']=='')$data['due_date']= date("Y-m-d H:i:s");
-							
+			$data['customer_info']="";
             return $data;
 	}
 	function index()
@@ -78,7 +78,7 @@ class Sales_order extends CI_Controller {
 			$data['mode']='add';
 			$data['message']='';
             $data['sold_to_customer']=$this->input->post('sold_to_customer');
-            $data['customer_list']=$this->customer_model->select_list();
+            //$data['customer_list']=$this->customer_model->select_list();
 			$data['salesman_list']=$this->salesman_model->select_list();
             $data['amount']=$this->input->post('amount');
             $data['payment_terms_list']=$this->type_of_payment_model->select_list();
@@ -362,7 +362,7 @@ class Sales_order extends CI_Controller {
 				$table.="<tr><td>".$row->item_number."</td><td>".$row->description."</td><td>"
 				.$row->quantity."</td><td>".$row->unit."</td>
 				<td>".$row->ship_qty."</td><td>".$qty_sisa."</td>
-				<td><input type='text' name='qty_order[]' style='width:50px' value='0'</td>
+				<td><input type='text' name='qty_order[]' style='width:30px' value=''</td>
 				<input type='hidden' name='line_number[]' value='".$row->line_number."'>
 				</tr>";
 			}

@@ -4,7 +4,7 @@
 	echo link_button('Print', 'print_item()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/inventory/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/inventory');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/inventory/view/'.$item_number);		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/inventory/view/'.$item_number);		
 	echo link_button('Gambar', 'upload_gambar()','save');		
 	echo link_button('Help', 'load_help()','help');		
 	

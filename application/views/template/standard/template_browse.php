@@ -57,15 +57,28 @@ if(isset($_form)){
 			$i=0;
 			 
 			foreach($criteria as $fa){
-			 
+				$type="text";
+				$val="";
 				if($fa->field_class=="easyui-datetimebox"){
 					$val=date("Y-m-d 00:00:00");
 					if(strpos($fa->field_id,"date_to"))$val=date("Y-m-d 23:59:59");
+					echo " ".$fa->caption.'
+					<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
+					class="'.$fa->field_class.'" style="width:80px">';
+					echo " ";
+				} else if($fa->field_class=="checkbox"){
+					echo " 
+					<input type='checkbox' value='$val' id='".$fa->field_id."'  name='".$fa->field_id."' 
+					> ".$fa->caption;
+					echo " ";
+
 				} else {
-					$val="";
+					echo " ".$fa->caption.'
+					<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
+					class="'.$fa->field_class.'" style="width:80px">';
+					echo " ";
+
 				}
-				echo " ".$fa->caption.' </td><td><input value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" class="'.$fa->field_class.'" style="width:80px">';
-				echo " ";
 				 
 				$i++;
 			}
@@ -159,7 +172,7 @@ if(isset($_form)){
     	xsearch=$('#frmSearch_<?=$controller?>').serialize();
 	    xurl=CI_ROOT+CI_CONTROL+'/browse_data?'+xsearch;
         $('#dg_<?=$controller?>').datagrid({url:xurl});
-        $('#dg_<?=$controller?>').datagrid('reload');
+        //$('#dg_<?=$controller?>').datagrid('reload');
     }
 		
 

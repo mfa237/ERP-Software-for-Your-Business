@@ -130,5 +130,8 @@ class Salesman extends CI_Controller {
 	 	$this->salesman_model->delete($id);
 	 	$this->browse();
 	}
+	function select($search=""){
+		echo datasource("select salesman from salesman");
+	}
 	
 }

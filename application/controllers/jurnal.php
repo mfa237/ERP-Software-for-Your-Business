@@ -180,6 +180,7 @@ class Jurnal extends CI_Controller {
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Nomor Bukti","sid_number");
 		$faa[]=criteria("Jenis","sid_opr");
+		$faa[]=criteria("Only Not Balance","sid_balance","checkbox");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -187,6 +188,14 @@ class Jurnal extends CI_Controller {
 		$no=$this->input->get('sid_number');
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		$not_balance="";
+		if(isset($_GET['sid_balance'])){
+			$not_balance="select gl_id from gl_transactions
+				group by gl_id
+				having sum(debit)<>sum(credit)";
+		}
+		 
+		
         $sql=$this->sql.' where 1=1';
 		if($no!=''){
 			$sql.=" and gl_id='".$no."'";
@@ -194,6 +203,8 @@ class Jurnal extends CI_Controller {
 			$sql.=" and date between '$d1' and '$d2'";
 			if($this->input->get('sid_opr')!='')$sql.=" operation like '".$this->input->get('sid_opr')."%'";
 		}
+		if($not_balance!="")$sql.=" and gl_id in (".$not_balance.")";
+		
         //$sql.=" limit $offset,$limit";
         //echo $sql;
         echo datasource($sql);

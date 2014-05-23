@@ -5,7 +5,6 @@
 	if(!($mode=="add" or $mode=="edit"))$disabled=" disabled";
 	if($mode=="edit")$disabled_edit=" disabled";
 	if($mode=="edit" or $mode=="add") echo link_button('Save', 'save_po()','save');		
-	
 	if($mode=="view") {
 		echo link_button('Edit', '','edit','true',base_url().'index.php/purchase_order/view/'.$purchase_order_number.'/edit');		
 		echo link_button('Add','','add','true',base_url().'index.php/purchase_order/add');		
@@ -43,6 +42,9 @@
 				$purchase_order_number,"id='purchase_order_number' 
 				class='easyui-validatebox' data-options='required:true,	validType:length[3,30]' ".$disabled.$disabled_edit); 
 			?></td>
+			<td rowspan='4'>
+				<span id='supplier_name' name='supplier_name' class='thumbnail' style='height:100px;width:300px'><?=$supplier_info?></span>
+			</td>
        </tr>	 
        <tr>
         	<td>Tanggal</td><td><?php echo form_input('po_date',$po_date,'id=po_date  
@@ -56,7 +58,6 @@
 			if($mode=="add") echo link_button('','select_supplier()',"search","true"); 
 			 
             ?>
-			<span id='supplier_name' name='supplier_name'><?=$supplier_info?></span>
 			</td>
             
        </tr>	 
@@ -191,6 +192,7 @@
 </div>
 <script type="text/javascript">
 	var url;	
+	var has_receive='<?=$has_receive?>';
     function save_po(){
         if($('#purchase_order_number').val()==''){alert('Isi nomor purchase order !');return false;}
         if($('#supplier_number').val()==''){alert('Pilih kode supplier !');return false;}

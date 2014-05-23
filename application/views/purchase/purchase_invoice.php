@@ -10,6 +10,7 @@
 	echo link_button('Search','','search','true',base_url().'index.php/purchase_invoice');		
 	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
 	echo link_button('Delete', 'delete_nomor()','cut');
+	echo link_button('Doc Receive', 'select_receive()','search');
 	
 	if($posted) {
 		echo link_button('UnPosting','','cut','true',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		

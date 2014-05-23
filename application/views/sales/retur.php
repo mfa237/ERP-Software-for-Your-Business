@@ -6,14 +6,14 @@
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/sales_retur/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/sales_retur');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/sales_retur/view/'.$invoice_number);		
-	echo link_button('Help', 'load_help()','help');		
-	echo link_button('Delete','','cut','true',base_url().'index.php/sales_retur/delete/'.$invoice_number);		
+	if($mode=="view")echo link_button('Refresh','','reload','true',base_url().'index.php/sales_retur/view/'.$invoice_number);		
+	if($mode=="view")echo link_button('Delete','','cut','true',base_url().'index.php/sales_retur/delete/'.$invoice_number);		
 	if($posted) {
 		echo link_button('UnPosting','','cut','true',base_url().'index.php/sales_retur/unposting/'.$invoice_number);		
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/sales_retur/posting/'.$invoice_number);		
 	}
+	echo link_button('Help', 'load_help()','help');		
 	
 	
 	?>
@@ -136,7 +136,7 @@
 			style="width:700px;min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
-				singleSelect: true,toolbar:'#tbCrdb',
+				singleSelect: true,toolbar:'',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
 			">
 			<thead>

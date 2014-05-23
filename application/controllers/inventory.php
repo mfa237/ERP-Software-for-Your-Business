@@ -180,7 +180,7 @@ class Inventory extends CI_Controller {
 		echo json_encode($data);
  	}
 	function filter($nama='',$type='json'){
-		$sql="select item_number,description
+		$sql="select item_number,description,category
 		 from inventory  where 1=1 and description like '".$nama."%' limit 100";
 		$rs = mysql_query($sql);
 		$result = array();

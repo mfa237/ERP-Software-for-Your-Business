@@ -73,7 +73,10 @@ class Cash_out extends CI_Controller {
 		$id=$this->check_writer_model->save($data);
         $message='update success';
 		$this->nomor_bukti(true);
-        header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
+		$message=mysql_error();
+		if($message=="")$message='Update Success';
+		$this->view($data['voucher'],$message);
+//        header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
 	}
 	
 	function update()
@@ -87,11 +90,14 @@ class Cash_out extends CI_Controller {
 			$data=$this->get_posts();                    
             unset($data['trans_id']);
             $this->check_writer_model->update($id,$data);
-            $message='Update Success';
+			$message=mysql_error();
+			if($message=="")$message='Update Success';
 		} else {
-			$message='Error Update';
+			$message=mysql_error();
+			if($message=="")$message='Update Gagal';
 		}	  
-        header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
+		$this->view($id,$message.mysql_error());
+//        header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
 	}
 	function view($id,$message=null){
 		 $data['id']=$id;

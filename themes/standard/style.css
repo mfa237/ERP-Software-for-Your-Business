@@ -6,15 +6,12 @@
 a.l-btn span.l-btn-left {
   height: 24px;
 }
-*{
-	font-size:12px;
-}
-
-body {
+ body {
     font-family:helvetica,tahoma,verdana,sans-serif;
     padding:1px;
-    font-size:13px;
-    margin:0;
+    margin:0 auto;
+	width: auto; 
+	background: #F1F1F1 url('../../images/p1.png');
 }
 
 .clear				{ clear: both; }
@@ -73,6 +70,7 @@ body {
         color: #D0D0D0;
         font-weight: 100;
 }
+
 .fld {
      height:30px;
 }
@@ -178,10 +176,7 @@ body {
 	 background-image: linear-gradient(to bottom, #d2d2f9, #a6a6f2);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d2d2f9, endColorstr=#a6a6f2);
 }
 
-p {
-    font-size:11px;
-    font-weight: normal;
-}
+ 
 code {
 	font-family: Consolas, Monaco, Courier New, Courier, monospace;
 	font-size: 12px;
@@ -203,8 +198,15 @@ p.footer{
 	margin: 20px 0 0 0;
 }
 
-#container{
-     
+.container {
+	border: 1px #428bca solid;
+	margin:0px auto;
+	padding:10px;
+    border-radius: 5px;
+	-webkit-box-shadow: 0 5px 5px #777;
+	-moz-box-shadow: 0 5px 5px #777;
+	box-shadow: 0 5px 5px #777;
+	min-height:600px;	
 }
 #sidebar{
  
@@ -485,18 +487,71 @@ p.footer{
 	background:url('../../images/setup.png') no-repeat center center;
 }
 
-.max-tool h1 {
-	font-size:12px;
-	font-weight:900;
-	 
-}
-.max-tool .tool {
-	background-color: #cdcdcd;
-}
+
 .widget-help {
 	background:#FBEC88;;
 	padding:5px;
 }
-.widget-help li,p {
+.widget-help li  {
 	font-size:9px;
+}
+ .welcome_t {
+}
+.welcome_line {
+height: 1px;
+background: url(../../images/welcome_bg.png) no-repeat center top;
+}
+.navbar-default {
+	background-color: #428bca;
+	color: #ffffff;
+	border-radius: 1px;
+}
+.navbar-default .navbar-nav > li > a {
+	color: #F7F0F0;
+}
+.navbar-default .navbar-brand {
+	color: #F8F2F2;
+}
+.row {
+	margin-right: 0px;
+	margin-left: 0px;
+}
+.footer {
+	background-color: #428bca;
+	padding: 10px;
+	height:200px;
+	margin-top:10px;
+	border-top: rgb(78, 101, 175) 2px solid;	
+}
+
+.tabs-header, .tabs-tool {
+	background-color: #F8FAFC;
+}
+.tabs-header {
+	border-style: none;
+	padding-top: 0px;
+}
+.thumbnail {
+	margin-bottom: 5px;
+}
+ .border-hover:hover { 
+	border-bottom:1px red solid;
+	
+ }
+ .panel-heading {
+	padding: 1px 1px 7px 1px;
+}
+.panel-title {
+	height: 10px;
+	line-height: 10px;
+}
+.form-control {
+	height: 26px;
+}
+.btn {
+	padding: 2px 12px;
+}
+.col-md-5 {
+padding-right: 5px;
+padding-left: 5px;
 }

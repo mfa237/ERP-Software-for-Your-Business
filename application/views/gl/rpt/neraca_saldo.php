@@ -60,6 +60,9 @@
      			$sql="select account,account_description,id from chart_of_accounts
 	            order by account_type,account ";
      			$rst_coa=$CI->db->query($sql);
+				$total_awal_cr=0;$total_awal_db=0;
+				$total_cr=0;$total_db=0;
+				$total_akhir_cr=0;$total_akhir_db=0;
 				foreach ($rst_coa->result() as $row_coa) {
 	
 	 		       $sql="select sum(g.debit) as sum_debit,sum(g.credit) as sum_credit 
@@ -95,22 +98,47 @@
 	                    $tbl.="<td align='right'>".number_format($sld_db)."</td>";
 	                    $tbl.="<td align='right'>".number_format($sld_cr)."</td>";
 	                    $tbl.="<td align='right'>".number_format($sld_db-$sld_cr)."</td>";
+						$total_awal_db=$total_awal_db+$sld_db;
+						$total_awal_cr=$total_awal_cr+$sld_cr;
 	
 	                    $tbl.="<td align='right'>".number_format($mut_db)."</td>";
 	                    $tbl.="<td align='right'>".number_format($mut_cr)."</td>";
 	                    $tbl.="<td align='right'>".number_format($mut_db-$mut_cr)."</td>";
+						$total_db=$total_db+$mut_db;
+						$total_cr=$total_cr+$mut_cr;
 	
 	                    $tbl.="<td align='right'>".number_format($sld_db+$mut_db)."</td>";
 	                    $tbl.="<td align='right'>".number_format($sld_cr+$mut_cr)."</td>";
 	                    $tbl.="<td align='right'>".number_format($saldo)."</td>";
+						$total_akhir_db=$total_akhir_db+$sld_db+$mut_db;
+						$total_akhir_cr=$total_akhir_cr+$sld_cr+$mut_cr;
 	
 	                    $tbl.="</tr>";
 	                    $tbl.="<tr>";
                     }				   
-				   echo $tbl;
+
+					echo $tbl;
 					
 				};
-				   				   				   
+				$tbl="<tr>";
+				$tbl.="<td>TOTAL</td>";
+				$tbl.="<td></td>";
+				$tbl.="<td align='right'>".number_format($total_awal_db)."</td>";
+				$tbl.="<td align='right'>".number_format($total_awal_cr)."</td>";
+				$tbl.="<td align='right'>".number_format($total_awal_db-$total_awal_cr)."</td>";
+
+				$tbl.="<td align='right'>".number_format($total_db)."</td>";
+				$tbl.="<td align='right'>".number_format($total_cr)."</td>";
+				$tbl.="<td align='right'>".number_format($total_db-$total_cr)."</td>";
+
+				$tbl.="<td align='right'>".number_format($total_akhir_db)."</td>";
+				$tbl.="<td align='right'>".number_format($total_akhir_cr)."</td>";
+				$tbl.="<td align='right'>".number_format($total_akhir_db-$total_akhir_cr)."</td>";
+
+				$tbl.="</tr>";
+				$tbl.="<tr>";
+				
+				echo $tbl;
 			?>	
 				</tbody>
      		</table>

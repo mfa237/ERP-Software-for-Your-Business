@@ -4,15 +4,15 @@
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/invoice/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/invoice');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/invoice/view/'.$invoice_number);		
-	echo link_button('Help', 'load_help()','help');		
-	echo link_button('Delete','','cut','true',base_url().'index.php/invoice/delete/'.$invoice_number);		
+	if($mode=="view") echo link_button('Delete','','cut','true',base_url().'index.php/invoice/delete/'.$invoice_number);		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/invoice/view/'.$invoice_number);		
 
 	if($posted) {
 		echo link_button('UnPosting','','cut','true',base_url().'index.php/invoice/unposting/'.$invoice_number);		
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/invoice/posting/'.$invoice_number);		
 	}
+	echo link_button('Help', 'load_help()','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -24,6 +24,7 @@
 	</div>
 	<script type="text/javascript">
 		function load_help() {
+		  	event.preventDefault(); 
 			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/invoice");
 		}
 	</script>
@@ -54,7 +55,11 @@
 			onclick="select_customer()"></a>
 			<? } ?>     
 		</td>
-
+		<td rowspan="5">
+				<div class="thumbnail" id="customer_info" style="width:300px;height:100px"><?=$customer_info?></div>
+			</td>
+	</tr>
+	<tr>
 		<td>Nomor</td>
         <td>  			
             <? 
@@ -67,6 +72,8 @@
 			  echo form_input('invoice_date',$invoice_date,'id=invoice_date
              class="easyui-datetimebox" required style="width:150px"');                 
          ?></td>
+	</tr>
+	<tr>
 		 <td>Salesman</td><td><?
 			 echo form_dropdown('salesman',$salesman_list,$salesman); 
         ?></td> 
@@ -75,6 +82,8 @@
      	<td>Termin</td><td><?
 			echo form_dropdown('payment_terms',$payment_terms_list,$payment_terms,"id=payment_terms"); 
         ?></td>
+	</tr>
+	<tr>
      	
 		<td>Jatuh Tempo</td><td><? 
 	     echo form_input('due_date',$due_date,'id=due_date 
@@ -101,14 +110,14 @@
 	</table>	
 </form>
     
-<div class="easyui-tabs" style="width:700px;height:450px">
+<div class="easyui-tabs" style="height:450px">
 	<div id='divItem' title='Items'>
 		<div id='dgItem'>
 			<? include_once "invoice_add_item_simple.php"; ?>
 		</div>
 		
 		<table id="dg" class="easyui-datagrid"  
-			style="width:auto;height:500"
+			style="width:auto;min-height:200px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,

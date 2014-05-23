@@ -50,10 +50,10 @@
 <form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
 	<table style="width:600px">
 		<tr>
-			<td>Nomor Bukti: </td><td><?=$voucher?></td>
+			<td>Nomor Bukti: </td><td><h4><?=$voucher?></h4></td>
 		</tr>
 		<tr>
-			<td>Pelanggan: </td><td><?=$cust_info?></td>
+			<td>Pelanggan: </td><td><div class='thumbnail'><?=$cust_info?></div></td>
 		</tr>
 		<tr>
 			<td>Tanggal Bayar: </td><td><?=$date_paid?></td>
@@ -65,7 +65,7 @@
 			<td>Jenis Bayar: </td><td><?=$trans_type?></td>
 		</tr>
 		<tr>
-			<td>Jumlah Bayar: </td><td><?=number_format($amount_paid);?></td>
+			<td>Jumlah Bayar: </td><td><h4></h4><?=number_format($amount_paid);?></td>
 		</tr>
 	</table>
 	

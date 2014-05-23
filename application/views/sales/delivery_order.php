@@ -1,12 +1,14 @@
-<div><h4>SURAT JALAN </H4><div class="thumbnail">
-	<?
-	echo link_button('Save', 'save()','save');		
-	echo link_button('Print', 'print()','print');
-	echo link_button('Add','','add','true',base_url().'index.php/delivery_order/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/delivery_order');		
-	echo link_button('Delete','','cut','true',base_url().'index.php/delivery_order/delete/'.$invoice_number);		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/delivery_order/view/'.$invoice_number);		
-	echo link_button('Help', 'load_help()','help');		
+<div><h4>SURAT JALAN </H4>
+<div class="thumbnail">
+	<? 
+		echo link_button('Save', 'save()','save');		
+		echo link_button('Print', 'print()','print');		
+		echo link_button('Add','','add','true',base_url().'index.php/delivery_order/add');		
+		if($mode=="view") echo link_button('Delete','','cut','true',base_url().'index.php/delivery_order/delete/'.$invoice_number);		
+		echo link_button('Search','','search','true',base_url().'index.php/delivery_order');		
+		if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/delivery_order/view/'.$invoice_number);		
+		echo link_button('Help', 'load_help()','help');		
+
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
@@ -17,11 +19,12 @@
 	</div>
 	<script type="text/javascript">
 		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/delivery_order");
+			event.preventDefault(); 
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/invoice");
 		}
 	</script>
-	
 </div>
+
 <div class="thumbnail">	
 <form id="frmDo"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -33,9 +36,9 @@
             		
             ?>
         </td> 
-        <td rowspan="4" style="vertical-align: top;width:300px">
-			<div class="thumbnail" style="padding:10px">
-        	Alamat Pengiriman: </br><?=$customer_info?>
+        <td rowspan="4" style="vertical-align: top;">
+			<div id="customer_info" class="thumbnail" style="padding:10px;width:300px;height:100px">
+				<?=$customer_info?>
 			</div>
         </td>       
     </tr>
@@ -111,7 +114,7 @@
      <div id='divSelectSoResult'> 
 		<table id="dgSelectSo" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#toolbar-search-so',
+				toolbar: '',
 				singleSelect: true,
 				url: ''
 			">
@@ -126,37 +129,17 @@
 		</table>
     </div>   
 </div>
-<div id="toolbar-search-so" style="height:auto">
+<div id="button-select-so" style="height:auto">
 	Enter Text: <input  id="search_so" style='width:180' name="search_so">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_so_open()"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_so_number()">Select</a>
 </div>
 
-<div id='dlgSelectCust'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-so">
-     <div id='divSelectCust'> 
-		<table id="dgSelectCust" class="easyui-datagrid"  
-			data-options="
-				toolbar: '#toolbar-search-cust',
-				singleSelect: true,
-				url: ''
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'company',width:80">Pelanggan</th>
-					<th data-options="field:'customer_number',width:80">Kode</th>
-					<th data-options="field:'city',width:180">Kota</th>
-					<th data-options="field:'region',width:80">Wilayah</th>
-				</tr>
-			</thead>
-		</table>
-    </div>   
-</div>
-<div id="toolbar-search-cust" style="height:auto">
-	Enter Text: <input  id="search_cust" style='width:180' name="search_cust">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_customer()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_customer()">Select</a>
-</div>
+
+<?
+	include_once 'customer_select.php';
+	echo load_view('inventory/inventory_select');
+?>
 
  <script language='javascript'>
   	function save(){
@@ -305,24 +288,5 @@
 				alert("Pilih kode pelanggan terlebih dahulu !");
 			}
 	};
-
-//-- search customer
-	function selected_customer(){
-		var row = $('#dgSelectCust').datagrid('getSelected');
-		if (row){
-			$('#sold_to_customer').val(row.customer_number);
-			//$('#company').val(row.company);
-			$('#dlgSelectCust').dialog('close');
-		} else {
-			alert("Pilih salah satu nomor customer !");
-		}
-	}
-	
-	function select_customer(){
-			$('#dlgSelectCust').dialog('open').dialog('setTitle','Cari nama pelanggan');
-			search=$('#search_cust').val();
-			$('#dgSelectCust').datagrid({url:'<?=base_url()?>index.php/customer/select/'+search});
-			$('#dgSelectCust').datagrid('reload');
-	};
-
+ 
  </script>

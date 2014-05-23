@@ -31,6 +31,7 @@ function __construct(){
 	}
 	function save($data){
 		if(isset($data['check_date']))$data['check_date']= date('Y-m-d H:i:s', strtotime($data['check_date'])); 
+		if(isset($data['cleared_date']))$data['cleared_date']= date('Y-m-d H:i:s', strtotime($data['cleared_date'])); 
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 		echo mysql_error();
@@ -38,6 +39,7 @@ function __construct(){
 	function update($id,$data){
 		 
 		if(isset($data['check_date']))$data['check_date']= date('Y-m-d H:i:s', strtotime($data['check_date'])); 
+		if(isset($data['cleared_date']))$data['cleared_date']= date('Y-m-d H:i:s', strtotime($data['cleared_date'])); 
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 		echo mysql_error();

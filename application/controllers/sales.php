@@ -29,7 +29,47 @@ class Sales extends CI_Controller {
 				 $data['criteria1']=true;
 				 $data['label1']='Kode Pelanggan';
 				 $data['text1']='';
+				 $data['output1']="text1";
+				 $data['key1']="customer_number";
+				 $data['fields1'][]=array("company","180","Nama");
+				 $data['fields1'][]=array("customer_number","80","Kode");
+				 $data['fields1'][]=array("street","180","Alamat");
+				 $data['ctr1']='customer/select';
 				 break;			 
+			 case 'faktur_slsman':
+				 $data['criteria1']=true;
+				 $data['label1']='Kode Salesman';
+				 $data['text1']='';
+				 $data['output1']="text1";
+				 $data['key1']="salesman";
+				 $data['fields1'][]=array("salesman","180","Salesman");
+				 $data['ctr1']='salesman/select';
+
+				 $data['criteria2']=true;
+				 $data['label2']='Kode Pelanggan';
+				 $data['text2']='';
+				 $data['output2']="text2";
+				 $data['key2']="customer_number";
+				 $data['fields2'][]=array("company","180","Nama");
+				 $data['fields2'][]=array("customer_number","80","Kode");
+				 $data['fields2'][]=array("street","180","Alamat");
+				 $data['ctr2']='customer/select';
+
+				 break;			 
+			 case 'faktur_cust':
+			 case 'age_dtl':
+				 $data['criteria1']=true;
+				 $data['label1']='Kode Pelanggan';
+				 $data['text1']='';
+				 $data['output1']="text1";
+				 $data['key1']="customer_number";
+				 $data['fields1'][]=array("company","180","Nama");
+				 $data['fields1'][]=array("customer_number","80","Kode");
+				 $data['fields1'][]=array("street","180","Alamat");
+				 $data['ctr1']='customer/select';
+
+				 break;			 
+
 			 default:
 				 break;
 		 }

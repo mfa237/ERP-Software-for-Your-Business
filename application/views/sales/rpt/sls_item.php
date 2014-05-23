@@ -55,27 +55,53 @@
 				if($kode_barang!="")$sql.=" and il.item_number='".$kode_barang."'";
 				$sql.=" order by il.item_number";
 				
-     			$rst_so=$CI->db->query($sql);
+     			$rst_so=$CI->db->query($sql)->result();
      			$tbl="";
-                 foreach($rst_so->result() as $row){
-                    $tbl.="<tr>";
-                    $tbl.="<td>".$row->item_number."</td>";
-                    $tbl.="<td>".$row->description."</td>";
-                    $tbl.="<td align='right'>".number_format($row->quantity)."</td>";
-                    $tbl.="<td>".$row->unit."</td>";
-                    $tbl.="<td align='right'>".number_format($row->price)."</td>";
-                    $tbl.="<td align='right'>".number_format($row->discount,2)."</td>";
-                    $tbl.="<td align='right'>".number_format($row->amount,2)."</td>";
-                    
-                    $tbl.="<td>".$row->invoice_date."</td>";
-                    $tbl.="<td>".$row->invoice_number."</td>";
-                    $tbl.="<td>".($row->sold_to_customer)."</td>";
-                    $tbl.="<td>".$row->company."</td>";
-                    $tbl.="<td>".$row->sales_order_number."</td>";
-                    $tbl.="<td>".$row->payment_terms."</td>";
-                    $tbl.="<td>".$row->salesman."</td>";
-                    $tbl.="</tr>";
-               };
+				$item_new="";	$item_old="";
+				$i=0;
+				
+                while($i<count($rst_so)){
+					$row=$rst_so[$i];
+					$item_new=$row->item_number;	
+					$item_old=$item_new;
+					$z_qty=0;
+					while ($item_old==$item_new && $i<count($rst_so)) {
+						$tbl.="<tr>";
+						$tbl.="<td>".$row->item_number."</td>";
+						$tbl.="<td>".$row->description."</td>";
+						$tbl.="<td align='right'>".number_format($row->quantity)."</td>";
+						$tbl.="<td>".$row->unit."</td>";
+						$tbl.="<td align='right'>".number_format($row->price)."</td>";
+						$tbl.="<td align='right'>".number_format($row->discount,2)."</td>";
+						$tbl.="<td align='right'>".number_format($row->amount,2)."</td>";
+						
+						$tbl.="<td>".$row->invoice_date."</td>";
+						$tbl.="<td>".$row->invoice_number."</td>";
+						$tbl.="<td>".($row->sold_to_customer)."</td>";
+						$tbl.="<td>".$row->company."</td>";
+						$tbl.="<td>".$row->sales_order_number."</td>";
+						$tbl.="<td>".$row->payment_terms."</td>";
+						$tbl.="<td>".$row->salesman."</td>";
+						$tbl.="</tr>";
+						
+						$z_qty=$z_qty+$row->quantity;
+						
+						$i++;
+						if($i<count($rst_so)-1){
+							$row=$rst_so[$i];
+							$item_new=$row->item_number;	
+						}
+					}
+					
+					$tbl.="<tr>
+	     				<td>Sub Total</td><td>$item_old</td><td>$z_qty</td><td></td>
+	     				<td></td><td></td><td>Jumlah</td>
+	     				<td></td><td></td><td></td><td></td>
+	     				<td></td><td></td><td></td>
+	     			</tr>
+					";
+					
+                };
 			   echo $tbl;
 				   				   				   
 			?>	

@@ -8,8 +8,8 @@
 	echo link_button('Print', 'print_voucher()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/cash_in/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/cash_in');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/cash_in/view/'.$voucher);		
-	echo link_button('Delete','','remove','true',base_url().'index.php/cash_in/delete/'.$voucher);		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/cash_in/view/'.$voucher);		
+	if($mode=="view") echo link_button('Delete','','remove','true',base_url().'index.php/cash_in/delete/'.$voucher);		
 	
 	if($posted) {
 		echo link_button('UnPosting','','cut','true',base_url().'index.php/cash_in/unposting/'.$voucher);		
@@ -57,30 +57,48 @@
     }
 ?>
 
- 
+ <input type='hidden' id='posted' name='posted' value='<?=$posted?>'>    
+
    <table >
        <tr>
-            <td>Rekening Penerima </td><td><?php echo form_dropdown( 'account_number',$account_number_list,$account_number);?></td>
+            <td>Rekening Penerima </td><td><?php echo form_dropdown( 'account_number',$account_number_list,$account_number,"style='height:30px'");?></td>
+            <td>Tanggal</td><td><?php echo form_input('check_date',$check_date,'id=check_date 
+             class="easyui-datetimebox"  style="width:150px;height:30px"');?></td>
        </tr>
        <tr>
-            <td>Jenis Transaksi </td><td>
-                <?php echo form_radio('trans_type','cash in',$trans_type=='cash in'," checked ");?> - Cash 
-                <?php echo form_radio('trans_type','cheque in',$trans_type=='cheque in');?> - Giro/Cek
-                <?php echo form_radio('trans_type','trans in',$trans_type=='trans in');?> - Transfer
+            <td>Jenis</td>
+			<td>
+                <?php echo form_radio('trans_type','cash in',$trans_type=='cash in'," checked ");?>Cash
             </td>
+            <td>Nomor Giro</td><td><?php echo form_input('check_number',$check_number);?></td>
+       <tr>
+       <tr>
+            <td></td>
+			<td>
+                <?php echo form_radio('trans_type','cheque in',$trans_type=='cheque in');?>Giro atau Cek
+            </td>
+            <td>Cleared</td><td><?php echo form_checkbox('cleared',$cleared);?></td>
+       <tr>
+       <tr>
+            <td></td>
+			<td>
+                <?php echo form_radio('trans_type','trans in',$trans_type=='trans in');?>Transfer
+            </td>
+           
+            <td>Cleared Date</td><td><?php echo form_input('cleared_date',$cleared_date,'id=cleared_date 
+             class="easyui-datetimebox"   style="width:150px;height:30px"');?></td>
+       <tr>
+		<tr>
+            <td>Jumlah</td><td><?php echo form_input('deposit_amount',$deposit_amount);?></td>
+            <td>Giro Batal</td><td><?php echo form_checkbox('void',$void);?></td>
        </tr>
        <tr>
-            <td>Tanggal Transaksi </td><td><?php echo form_input('check_date',$check_date,'id=check_date 
-             class="easyui-datetimebox" required style="width:150px"');?></td>
+            <td>Kode Pelanggan </td><td><?php echo form_input('supplier_number',$supplier_number,"id='sold_to_customer'");?>
+			<?=link_button("","select_customer();return false","search");?>
+			</td>
+            <td>Diterima dari</td><td><?php echo form_input('payee',$payee,"id='company'");?></td>
        </tr>
        <tr>
-            <td>Terima dari</td><td><?php echo form_input('payee',$payee);?></td>
-       </tr>
-       <tr>
-            <td>Jumlah Diterima </td><td><?php echo form_input('deposit_amount',$deposit_amount);?></td>
-       </tr>
-       <tr>
-            <td>Keterangan / Catatan  </td><td><?php echo form_input('memo',$memo,"style='width:300px'");?></td>
        </tr>
 		<tr>
 			<td>Voucher</td><td>
@@ -93,7 +111,16 @@
 				echo form_input('voucher',$voucher);
 			}		
 			?></td>
+            <td>Penerimaan Piutang</td><td><?php echo form_checkbox('bill_payment',$bill_payment);?></td>
+			
 		</tr>	 
+		<tr>
+            <td>Nomor Transfer </td><td><?php echo form_input('bank_tran_id',$bank_tran_id);?></td>
+            <td>Nama Bank Penerima</td><td><?php echo form_input('from_bank',$from_bank);?></td>
+		</tr>
+       <tr>
+            <td>Keterangan</td><td colspan='6'><?php echo form_input('memo',$memo,"style='width:500px'");?></td>
+       </tr>
    </table>
  </form>
 
@@ -152,6 +179,7 @@
 </div>
 
 <?=load_view('gl/select_coa')?>
+<?=load_view('sales/customer_select')?>
 
 <script type="text/javascript">
     function save_this(){

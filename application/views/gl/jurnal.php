@@ -7,8 +7,8 @@
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/jurnal/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/jurnal');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/jurnal/view/'.$gl_id);		
-	echo link_button('Delete','','cut','true',base_url().'index.php/jurnal/delete/'.$gl_id);		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/jurnal/view/'.$gl_id);		
+	if($mode=="view") echo link_button('Delete','','cut','true',base_url().'index.php/jurnal/delete/'.$gl_id);		
 	echo link_button('Help', 'load_help()','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -80,7 +80,7 @@
 			        <td><input id="debit" name="debit"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
 			        <td><input id="credit" name="credit"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
 			        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-             		   plain='true'	onclick='save_item()'></a>
+             		   plain='true'	onclick='save_item();return false;'></a>
 					</td>
 			        <input type='hidden' id='transaction_id' name='transaction_id'>
 			</tr>
@@ -89,7 +89,7 @@
 </form>				
    	
 	<table id="dgItemJurnal" class="easyui-datagrid"  		
-		style="width:auto;min-height:800px"
+		style="width:auto;height:500px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,
@@ -119,11 +119,9 @@
    
    
 <script type="text/javascript">
-    var closed=<?=$closed?>;
+    var closed='<?=$closed?>';
 	
 		function save_item(){
-			alert(closed);
-			
 			if(closed){alert("Tidak bisa ubah jurnal ini karena sudah diclose!");return false;}
 			
 			url = '<?=base_url()?>index.php/jurnal/save_item';

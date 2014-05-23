@@ -11,19 +11,19 @@
 	         <td><input onblur='find()' id="item_number" style='width:80px' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-				onclick="searchItem()"></a>
+				onclick="searchItem();return false;"></a>
 	         </td>
 	         <td><input id="description" name="description" style='width:200px'></td>
 	         <td><input id="quantity"  style='width:40px'  name="quantity" onblur="hitung()"></td>
 	         <td><input id="unit" name="unit"  style='width:30px' ></td>
-	         <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-	        <td><input id="discount" name="discount"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+	         <td><input id="price" name="price"  style='width:80px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric"></td>
+	        <td><input id="discount" name="discount"  style='width:30px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric"></td>
 	        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
 	        
 			<td>
 
 				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-				   plain='true'	onclick='save_item()'></a>
+				   plain='true'	onclick='save_item();return false;'></a>
 				
 			</td>
 	        <input type='hidden' id='po_number_item' name='po_number_item'>
@@ -42,33 +42,7 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 </div>
 
-<div id="tb_search" style="height:auto">
-	Enter Text: <input  id="search_item" style='width:180' 
- 	name="search_item">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
-</div>
-
-<div id='dlgSearchItem'class="easyui-dialog" style="width:400px;height:380px;padding:10px 20px"
-        closed="true" buttons="#dlg-buttons">
-     <div id='divItemSearchResult'> 
-		<table id="dgItemSearch" class="easyui-datagrid"  
-			data-options="
-				toolbar: '#tb_search',
-				singleSelect: true,
-				url: ''
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'description',width:150">Nama Barang</th>
-					<th data-options="field:'item_number',width:80">Kode Barang</th>
-				</tr>
-			</thead>
-		</table>
-    </div>   
-</div>	   
-
+<?=load_view("inventory/inventory_select");?>
 <script language="JavaScript">
 		function find(){
 		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val();
@@ -108,6 +82,7 @@
 
 			if($("#mode").val()=="add"){alert("Simpan dulu nomor ini.");return false;};
 			if(gudang==""){alert("Pilih dulu kode gudang !");return false;};
+//			if(has_receive>0){alert("Nomor PO ini sudah ada penerimaan, tidak bisa diubah.");return false;};
 			$('#po_number_item').val(po);
 			$("#gudang_item").val(gudang);			 
 			$('#frmItem').form('submit',{
@@ -144,25 +119,6 @@
 					}
 				}
 			});
-		}
-		function selectSearchItem()
-		{
-			var row = $('#dgItemSearch').datagrid('getSelected');
-			if (row){
-				$('#item_number').val(row.item_number);
-				$('#description').val(row.description);
-				find();
-				$('#dlgSearchItem').dialog('close');
-			}
-			
-		}
-		function searchItem()
-		{
-			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang');
-			nama=$('#search_item').val();
-			xurl='<?=base_url()?>index.php/inventory/filter/'+nama;
-			$('#dgItemSearch').datagrid({url:xurl});
-			$('#dgItemSearch').datagrid('reload');
 		}
 		function deleteItem(){
 			var row = $('#dg').datagrid('getSelected');

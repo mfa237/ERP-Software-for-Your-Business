@@ -63,8 +63,16 @@ function __construct(){
 		$data['source']=$source;
 		$data['company_code']=$cid;
 		$data['custsuppbank']=$ref;
+		$credit_tmp=0;
+		if($data['debit']<0){
+			$data['credit']=abs($data['debit']);
+			$data['debit']=0;
+		} else if($data['credit']<0) {
+			$data['debit']=abs($data['credit']);
+			$data['credit']=0;
+		}
 
-		///var_dump($data);
+		//var_dump($data);
 
 		if($account_id=="" or $account_id=="0") {
 			echo "ERR_INVALID_COA";
@@ -75,7 +83,7 @@ function __construct(){
 		return $this->save($data);
 	}
 	function del_jurnal($gl_id){
-
+		//return false;
 		if($q=$this->db->query("select date from gl_transactions where gl_id='$gl_id' limit 1")) {
 			if($r=$q->row()){
 				$this->load->model("periode_model");

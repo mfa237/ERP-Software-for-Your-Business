@@ -71,9 +71,9 @@ class Delivery_order extends CI_Controller {
 		$this->load->model('shipping_locations_model');
 		$data['mode']='add';
 		$data['message']='';
-        $data['customer_list']=$this->customer_model->select_list();
-		$data['salesman_list']=$this->salesman_model->select_list();
-		$data['so_list']=$this->sales_order_model->select_list_not_delivered();
+        //$data['customer_list']=$this->customer_model->select_list();
+		//$data['salesman_list']=$this->salesman_model->select_list();
+		//$data['so_list']=$this->sales_order_model->select_list_not_delivered();
         $data['sold_to_customer']="";
         $data['amount']=$this->input->post('amount');
         $data['payment_terms_list']=$this->type_of_payment_model->select_list();
@@ -318,7 +318,7 @@ class Delivery_order extends CI_Controller {
 			echo json_encode($result);
 	}
 	function select_do_open($cust) {
-		$sql="select invoice_number,invoice_date 
+		$sql="select invoice_number,invoice_date,salesman,shipped_via,warehouse_code,due_date
 		from invoice where invoice_type='D'
 		and sold_to_customer='$cust' and (do_invoiced is null or do_invoiced=0)";
 		echo datasource($sql);
@@ -332,8 +332,11 @@ class Delivery_order extends CI_Controller {
 		from invoice_lineitems 
 		where invoice_number='$nomor_do'";
 		
-		echo $sql;
+//		echo $sql;
 		
+		$this->db->query($sql);
+		
+		$sql="update invoice set do_invoiced=true where invoice_number='$nomor_do'";
 		$this->db->query($sql);
 		
 	}

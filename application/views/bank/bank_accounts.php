@@ -4,7 +4,7 @@
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/banks/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/banks');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/banks/view/'.$bank_account_number);		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/banks/view/'.$bank_account_number);		
 	echo link_button('Help', 'load_help()','help');		
 	
 	?>

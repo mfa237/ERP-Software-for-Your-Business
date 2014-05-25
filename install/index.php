@@ -7,12 +7,28 @@
     <link rel="stylesheet" type="text/css" href="installer.css" />
 </head>
 <body>
-	
+<script type="text/javascript" charset="utf-8" src="../js/jquery/jquery-1.8.0.min.js"></script>	
+<script type="text/javascript" charset="utf-8" src="../js/jquery-ui/jquery.easyui.min.js"></script>	
+
+<style>
+.msg {
+	background-color: rgb(209, 209, 201);
+	padding: 10px;
+	font-family: monospace;
+}
+.btn_next{
+	width:20px;
+	height:20px;
+	background-color:blue;
+	pointer:cursor;
+}
+</style>
 <div id="CanvasDiv">
 	<h1>SELAMAT DATANG</h1>
 	<H2>PROSES INSTALASI MAXON ERP</H2>
 	<P>Silahkan input seting database dan server MySQL dibawah ini:</P>
-	<form id="database" action="create_db.php"  method="POST" >
+	<div id='content'>
+	<form id="database" action=""  method="POST" >
 		<ul><li>
 			<fieldset>
 				<label for="server">Nama Server atau alamat IP MySQL Server.</label>
@@ -43,11 +59,72 @@
 			</li>
 			<li>
 			<fieldset>
-				<button type="submit">Submit</button>		
-				
+				<button id="cmdSubmit" >Submit</button>	
 			</fieldset>
 			</li>
+
 		</ul>		
 	</form>
+	</div>
+
 </div>
 </body>
+
+<script>
+	var c=0;
+	var t;
+	var url="create_db_process.php";
+	$("#cmdSubmit").click(function(e){
+		e.preventDefault();
+		$("#database").fadeOut();
+		create_db();
+	});
+	function create_db() {
+		var retval=false;
+			$('#database').form('submit',{
+				url: url,
+				success: function(result){
+					var result = eval('('+result+')');
+					if (result.success){
+						add_log(result.msg);
+						run_sql();
+						retval= true;
+					} else {
+						add_log(result.msg);
+						retval=false;
+					}
+				}
+			});		
+		return retval;
+	}
+	function run_sql() {
+		c=c+1;
+		$.ajax({
+                type: "GET",
+                url: url,
+				contentType: 'application/json; charset=utf-8',
+                data:{nomor:c}, 
+                success: function(msg){
+					add_log(msg);
+                    //var obj=jQuery.parseJSON(msg);
+					//add_log(obj.table);
+                },
+                error: function(msg){add_log(msg);}
+		});		
+		t=setTimeout(function(){sql_exec()}, 500);
+	}
+	function add_log(msg){
+		if(msg!=""){
+			$( "#content" ).append( "<div class='msg'>"+msg+"</div>" );
+		}
+	}
+	function sql_exec(){
+		run_sql();
+		if(c>=41){
+			clearTimeout(t);
+			timer_is_on = 0;	
+			add_log("<h1>Finish.</h1> Silahkan kilik link berikut untuk masuk ke program, gunakan login: admin dan pass: admin <a href='../index.php'><h1>Login</h1></a>");
+		}
+	}
+	
+</script>

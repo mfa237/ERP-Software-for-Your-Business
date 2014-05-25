@@ -1,10 +1,10 @@
 
 <!-- DIALOG KODE PERKIRAAN -->
 <div id='dlgCoa' class="easyui-dialog"  style="width:600px;height:380px;padding:5px 5px"
-closed="true" 
+closed="true"  toolbar="#tbCoa"
 >
 		<table id="dgCoa" class="easyui-datagrid"  
-		data-options="toolbar: '#tbCoa', singleSelect: true,
+		data-options="toolbar: '', singleSelect: true,
 			url: '<?=base_url()?>index.php/coa/select'">
 			<thead>
 				<tr>

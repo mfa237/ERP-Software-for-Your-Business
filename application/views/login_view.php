@@ -7,7 +7,6 @@
 echo $library_src;
 echo $script_head;
 ?>
-<link rel="stylesheet" type="text/css" href="<?=base_url()?>themes/standard/style_loginx.css" />
 <link rel="stylesheet" href="assets/flexslider/flexslider.css" type="text/css" media="screen">
 <script type="text/javascript" src="assets/flexslider/jquery.flexslider-min.js"></script>
 

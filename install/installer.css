@@ -1,15 +1,8 @@
-/*
- * Installer Theme for WebERP
- * V1.0 2013-07-26
- * HTML5 - for usability
- * (incomplete- needs refinement with font size, margin sizes etc)
- **/
-
 html {
  width:: 100%;
  background:#f0f0f0;
 }
-*:focus {outline: none;} /* Get rid of webkit focus at outset */
+*:focus {outline: none;}
 body {
     font: 16px/24px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", sans-serif;
     background: #f4f4f4;
@@ -20,13 +13,13 @@ body {
     width:100%;
     height:auto;
     min-height:10%;
-	text-align:center; /* Align the whole form page centre */
+	text-align:center; 
 }
 div#CanvasDiv {
     width: 800px;
     margin: auto;
     min-width: 600px;
-    text-align: left; /* get back our normal text */
+    text-align: left; 
     padding: 20px;
     height: auto;
 }
@@ -47,8 +40,6 @@ img{
     border:none;
     vertical-align:middle;
 }
-/*** Standard webERP STATUS MESSAGE classes ***/
-
 div.error {
     background: #ffd3bf;
     border:1px solid #ED5410;

@@ -1,172 +1,55 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?
+//start creating tables
+include "koneksi.php";
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>MaxOn Installation Wizard</title>
-    <link rel="stylesheet" type="text/css" href="installer.css" />
-</head>
-<body>
-<div id="CanvasDiv">
-	<h1>SELAMAT DATANG</h1>
-	<H2>PROSES INSTALASI MAXON ERP</H2>
-	<P>Silahkan tunggu sedang menjalanan query...</P>
-	<?
-	error_reporting(1);
-	$server=$_POST['server'];
-	$database=$_POST['database'];
-	$user_id=$_POST['user_id'];
-	$user_pass=$_POST['user_pass'];
-    if($server=="" or $database=="" or $user_id==""){
-    	echo "<div class='error'>Isi nama server,database,userid !\n<br>";
-    	echo "Silahkan kembali atau tekan tombol back browser.
-    	</div>";
-		die;
-    }
-	
-	$link=mysql_connect($server,$user_id,$user_pass);
-	if(!$link){
-		echo "<div class='error'>Tidak bisa konek ! /n <br>";
-		echo mysql_error()."</div>";
-		die;
-	}
-	echo "Konek ke server .. OK\n <br>";
-
-	$sql="DROP DATABASE ".$database;
-//	mysql_query($sql);
-	echo "<br>".mysql_error();
-
-	if(mysql_select_db($database)){
-		echo "<div class='error'>Database ". $database . " sudah ada! \n <br>
-		Tidak bisa diteruskan, silahkan kembali dan ganti nama database.</div>";
-		die;		
-	}
-	
-	$sql = 'CREATE DATABASE '.$database;
-	if (mysql_query($sql, $link)) {
-		echo "Membuat database baru $database ... OK\n <br>";
-	} else {
-		echo "<div class='error'>Database " . $database . " tidak bisa dibuat! \n <br>";
-		echo mysql_error() . "</div>";
-		die;		
-	}		
-	if(!mysql_select_db($database)){
-		echo "<div class='error'>Database ". $database . " belum ada! \n <br>
-		Tidak bisa diteruskan, silahkan kembali dan ganti nama database.</div>";
-		die;		
-	}
-
-	
-	// write ../application/config/database.php
-	$content="<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-	 
-	\$active_group = 'default';
-	\$active_record = TRUE;
-	\$db['default']['hostname'] = '$server';
-	\$db['default']['username'] = '$user_id';
- 	\$db['default']['password'] = '$user_pass';
-	\$db['default']['database'] = '$database';
-	\$db['default']['dbdriver'] = 'mysql';
-	\$db['default']['dbprefix'] = '';
-	\$db['default']['pconnect'] = TRUE;
-	\$db['default']['db_debug'] = TRUE;
-	\$db['default']['cache_on'] = FALSE;
-	\$db['default']['cachedir'] = '';
-	\$db['default']['char_set'] = 'utf8';
-	\$db['default']['dbcollat'] = 'utf8_general_ci';
-	\$db['default']['swap_pre'] = '';
-	\$db['default']['autoinit'] = TRUE;
-	\$db['default']['stricton'] = FALSE;
-	
+$nomor=$_GET['nomor'];
+$mag="";
+$sql="";
+switch($nomor){
+case 1:
+	$table="bank_accounts";
+	$sql="CREATE TABLE IF NOT EXISTS `bank_accounts` (
+	  `bank_account_number` varchar(50) character set utf8 NOT NULL default '',
+	  `type_bank` varchar(50) character set utf8 default NULL,
+	  `bank_name` varchar(50) character set utf8 default NULL,
+	  `aba_number` varchar(50) character set utf8 default NULL,
+	  `routing_code` varchar(15) character set utf8 default NULL,
+	  `street` varchar(50) character set utf8 default NULL,
+	  `suite` varchar(50) character set utf8 default NULL,
+	  `city` varchar(50) character set utf8 default NULL,
+	  `state_province` varchar(50) character set utf8 default NULL,
+	  `zip_postal_code` varchar(50) character set utf8 default NULL,
+	  `country` varchar(50) character set utf8 default NULL,
+	  `contact_name` varchar(50) character set utf8 default NULL,
+	  `phone_number` varchar(50) character set utf8 default NULL,
+	  `fax_number` varchar(50) character set utf8 default NULL,
+	  `starting_check_number` varchar(50) character set utf8 default NULL,
+	  `last_bank_statement_date` datetime default NULL,
+	  `last_bank_statement_balance` double default NULL,
+	  `account_id` int(50) default NULL,
+	  `micr_line` varchar(40) character set utf8 default NULL,
+	  `no_bukti_in` varchar(50) character set utf8 default NULL,
+	  `no_bukti_out` varchar(50) character set utf8 default NULL,
+	  `org_id` varchar(50) character set utf8 default NULL,
+	  `update_status` varchar(50) character set utf8 default NULL,
+	  PRIMARY KEY  (`bank_account_number`),
+	  KEY `x1` (`bank_account_number`)
+	) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 	";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-	$filename="../application/config/database.php";
-	if (is_writable($filename)) {
-	   if (!$handle = fopen($filename, 'w')) {
-	        echo "Cannot open file ($filename)";
-	        exit;
-	   }
-	   if (fwrite($handle, $content) === FALSE) {
-	       echo "Cannot write to file ($filename)";
-	       exit;
-	   }
-	   echo "Success, wrote ($somecontent) to file ($filename)";
-	   
-	   fclose($handle);
-	
-	} else {
-	   echo "The file $filename is not writable";
-	   die;
-	}
+	$table="bank_accounts";
+	$sql="
+	INSERT INTO `bank_accounts` (`bank_account_number`, `type_bank`, `bank_name`, `aba_number`, `routing_code`, `street`, `suite`, `city`, `state_province`, `zip_postal_code`, `country`, `contact_name`, `phone_number`, `fax_number`, `starting_check_number`, `last_bank_statement_date`, `last_bank_statement_balance`, `account_id`, `micr_line`, `no_bukti_in`, `no_bukti_out`, `org_id`, `update_status`) 
+	VALUES('BCA', 'D', 'BCA', '', '', 'JL. RAYA PURWAKARTA NO. 38 a', '', '', '', '', '', '', '', '', '', '0000-00-00 00:00:00', 0, 0, '', 'A', 'B', '', ''),
+	('BNI', 'Bank', 'BNI', '', '', 'JL. RAYA PURWAKARTA NO. 38', '', '', '', '', '', '', '', '', '', '0000-00-00 00:00:00', 0, 1374, '', 'A', 'B', '', ''),
+	('BRI', 'Bank', 'BRI', '', '', 'JL. RAYA PURWAKARTA NO. 38', '', '', '', '', '', '', '', '', '', '2013-08-12 00:00:00', 0, 0, '', '', '', '', '')
+	";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-	$filename="../application/config/maxon_installed.php";
-	$content="OK";
-	if (is_writable($filename)) {
-	   if (!$handle = fopen($filename, 'w')) {
-	        echo "Cannot open file ($filename)";
-	        exit;
-	   }
-	   if (fwrite($handle, $content) === FALSE) {
-	       echo "Cannot write to file ($filename)";
-	       exit;
-	   }
-	   fclose($handle);
-	} else {
-	   echo "The file $filename is not writable";
-	   die;
-	}
-
-	
-echo "
---
--- Table structure for table `bank_accounts`
---
-";
-$sql="CREATE TABLE IF NOT EXISTS `bank_accounts` (
-  `bank_account_number` varchar(50) character set utf8 NOT NULL default '',
-  `type_bank` varchar(50) character set utf8 default NULL,
-  `bank_name` varchar(50) character set utf8 default NULL,
-  `aba_number` varchar(50) character set utf8 default NULL,
-  `routing_code` varchar(15) character set utf8 default NULL,
-  `street` varchar(50) character set utf8 default NULL,
-  `suite` varchar(50) character set utf8 default NULL,
-  `city` varchar(50) character set utf8 default NULL,
-  `state_province` varchar(50) character set utf8 default NULL,
-  `zip_postal_code` varchar(50) character set utf8 default NULL,
-  `country` varchar(50) character set utf8 default NULL,
-  `contact_name` varchar(50) character set utf8 default NULL,
-  `phone_number` varchar(50) character set utf8 default NULL,
-  `fax_number` varchar(50) character set utf8 default NULL,
-  `starting_check_number` varchar(50) character set utf8 default NULL,
-  `last_bank_statement_date` datetime default NULL,
-  `last_bank_statement_balance` double default NULL,
-  `account_id` int(50) default NULL,
-  `micr_line` varchar(40) character set utf8 default NULL,
-  `no_bukti_in` varchar(50) character set utf8 default NULL,
-  `no_bukti_out` varchar(50) character set utf8 default NULL,
-  `org_id` varchar(50) character set utf8 default NULL,
-  `update_status` varchar(50) character set utf8 default NULL,
-  PRIMARY KEY  (`bank_account_number`),
-  KEY `x1` (`bank_account_number`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-echo "
---
--- Dumping data for table `bank_accounts`
---
-";
-$sql="
-INSERT INTO `bank_accounts` (`bank_account_number`, `type_bank`, `bank_name`, `aba_number`, `routing_code`, `street`, `suite`, `city`, `state_province`, `zip_postal_code`, `country`, `contact_name`, `phone_number`, `fax_number`, `starting_check_number`, `last_bank_statement_date`, `last_bank_statement_balance`, `account_id`, `micr_line`, `no_bukti_in`, `no_bukti_out`, `org_id`, `update_status`) 
-VALUES('BCA', 'D', 'BCA', '', '', 'JL. RAYA PURWAKARTA NO. 38 a', '', '', '', '', '', '', '', '', '', '0000-00-00 00:00:00', 0, 0, '', 'A', 'B', '', ''),
-('BNI', 'Bank', 'BNI', '', '', 'JL. RAYA PURWAKARTA NO. 38', '', '', '', '', '', '', '', '', '', '0000-00-00 00:00:00', 0, 1374, '', 'A', 'B', '', ''),
-('BRI', 'Bank', 'BRI', '', '', 'JL. RAYA PURWAKARTA NO. 38', '', '', '', '', '', '', '', '', '', '2013-08-12 00:00:00', 0, 0, '', '', '', '', '')
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-echo "--
--- Table structure for table `bill_detail`
---";
+case 4:
+	$table="bill_detail";
 
 $sql="CREATE TABLE IF NOT EXISTS `bill_detail` (
   `id` int(11) NOT NULL auto_increment,
@@ -185,10 +68,12 @@ $sql="CREATE TABLE IF NOT EXISTS `bill_detail` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-echo "--
--- Table structure for table `bill_header`
---";
+
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
+
+case 5:
+	$table="bill_header";
 
 $sql="CREATE TABLE IF NOT EXISTS `bill_header` (
   `bill_id` varchar(50) character set utf8 NOT NULL default '',
@@ -202,12 +87,11 @@ $sql="CREATE TABLE IF NOT EXISTS `bill_header` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-
-echo "--
--- Table structure for table `budget`
---";
+case 6:
+	$table="budget";
 
 $sql="CREATE TABLE IF NOT EXISTS `budget` (
   `account_id` int(11) default NULL,
@@ -231,11 +115,11 @@ $sql="CREATE TABLE IF NOT EXISTS `budget` (
   KEY `x1` (`account_id`,`budget_year`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "--
--- Table structure for table `chart_account_link`
---";
+case 7:
+	$table="chart_account_link";
 
 $sql="CREATE TABLE IF NOT EXISTS `chart_account_link` (
   `company_code` varchar(50) character set utf8 NOT NULL default '',
@@ -250,10 +134,12 @@ $sql="CREATE TABLE IF NOT EXISTS `chart_account_link` (
   PRIMARY KEY  (`company_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-echo "--
--- Table structure for table `chart_of_accounts`
---";
+
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
+
+case 8:
+	$table="chart_bank_accounts";
 
 $sql="CREATE TABLE IF NOT EXISTS `chart_of_accounts` (
   `id` int(11) NOT NULL auto_increment,
@@ -281,13 +167,11 @@ $sql="CREATE TABLE IF NOT EXISTS `chart_of_accounts` (
   KEY `x2` (`account_description`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1505 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "--
--- Table structure for table `chart_of_account_types`
---
-";
-
+case 9:
+	$table="chart_of_account_types";
 
 $sql="
 CREATE TABLE IF NOT EXISTS `chart_of_account_types` (
@@ -302,15 +186,7 @@ CREATE TABLE IF NOT EXISTS `chart_of_account_types` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Dumping data for table `chart_of_account_types`
---
-";
-
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 $sql="
 INSERT INTO `chart_of_account_types` (`account_type_num`, `account_type`, `income_statement_num`, `sub_acc_income`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -323,15 +199,13 @@ INSERT INTO `chart_of_account_types` (`account_type_num`, `account_type`, `incom
 (7, 'Pendapatan Lain', NULL, NULL, NULL, NULL, NULL),
 (8, 'Baya Lain', NULL, NULL, NULL, NULL, NULL);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 10:
+	$table="check_writer";
 
-echo "
---
--- Table structure for table `check_writer`
---
-";
-$sql="
+	$sql="
 CREATE TABLE IF NOT EXISTS `check_writer` (
   `trans_id` int(11) NOT NULL auto_increment,
   `trans_type` varchar(50) character set utf8 default NULL,
@@ -377,14 +251,8 @@ CREATE TABLE IF NOT EXISTS `check_writer` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=83 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-
-echo "--
--- Table structure for table `check_writer_deposit_detail`
---
-";
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_deposit_detail` (
   `trans_id` int(11) default NULL,
@@ -402,13 +270,8 @@ CREATE TABLE IF NOT EXISTS `check_writer_deposit_detail` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "--
--- Table structure for table `check_writer_items`
---
-";
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_items` (
   `trans_id` int(11) default NULL,
@@ -429,13 +292,9 @@ CREATE TABLE IF NOT EXISTS `check_writer_items` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "--
--- Table structure for table `check_writer_print_settings`
---
-";$sql="
+$sql="
 CREATE TABLE IF NOT EXISTS `check_writer_print_settings` (
   `id` int(11) NOT NULL auto_increment,
   `check_position` double default NULL,
@@ -452,14 +311,9 @@ CREATE TABLE IF NOT EXISTS `check_writer_print_settings` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `check_writer_recurring_payments`
---
-";$ql="
+$ql="
 CREATE TABLE IF NOT EXISTS `check_writer_recurring_payments` (
   `payment_number` int(11) default NULL,
   `bank_account_number` varchar(50) character set utf8 default NULL,
@@ -475,14 +329,9 @@ CREATE TABLE IF NOT EXISTS `check_writer_recurring_payments` (
   `sourcefile` varchar(255) character set utf8 default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `check_writer_recurring_payment_items`
---
-";$sql="
+$sql="
 CREATE TABLE IF NOT EXISTS `check_writer_recurring_payment_items` (
   `payment_number` int(11) default NULL,
   `line_number` int(11) NOT NULL auto_increment,
@@ -495,14 +344,9 @@ CREATE TABLE IF NOT EXISTS `check_writer_recurring_payment_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `check_writer_undeposited_checks`
---
-";$sql="
+$sql="
 CREATE TABLE IF NOT EXISTS `check_writer_undeposited_checks` (
   `payment_date` datetime default NULL,
   `line_number` int(11) NOT NULL auto_increment,
@@ -518,14 +362,12 @@ CREATE TABLE IF NOT EXISTS `check_writer_undeposited_checks` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 11:
+	$table="city";
 
-echo "
---
--- Table structure for table `city`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `city` (
@@ -535,14 +377,8 @@ CREATE TABLE IF NOT EXISTS `city` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `crdb_memo`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `crdb_memo` (
@@ -563,15 +399,8 @@ CREATE TABLE IF NOT EXISTS `crdb_memo` (
   PRIMARY KEY  (`linenumber`,`docnumber`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-
-echo "
---
--- Table structure for table `crdb_memo_dtl`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `crdb_memo_dtl` (
@@ -586,15 +415,8 @@ CREATE TABLE IF NOT EXISTS `crdb_memo_dtl` (
   PRIMARY KEY  (`lineid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=32 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-
-echo "
---
--- Table structure for table `credit_card_type`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `credit_card_type` (
@@ -610,14 +432,9 @@ CREATE TABLE IF NOT EXISTS `credit_card_type` (
   PRIMARY KEY  (`id`,`card_type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Dumping data for table `credit_card_type`
---
-";
 $sql="
 
 INSERT INTO `credit_card_type` (`id`, `card_type`, `update_status`, `sourceautonumber`, `sourcefile`, `card_name`, `to_date`, `from_date`, `disc_percent`) VALUES
@@ -626,14 +443,8 @@ INSERT INTO `credit_card_type` (`id`, `card_type`, `update_status`, `sourceauton
 (3, 'Mandiri Master', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (8, 'Amex', NULL, NULL, NULL, 'Amex Card', '2010-02-11 00:00:00', '2009-07-24 00:00:00', 10);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `currencies`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `currencies` (
@@ -643,29 +454,22 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   PRIMARY KEY  (`currency_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `currencies`
---
-";
 $sql="
 
 INSERT INTO `currencies` (`currency_code`, `description`, `update_status`) VALUES
 ('IDR', 'Rupiah', NULL),
 ('USD', 'Dollar', NULL);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "
---
--- Table structure for table `customers`
---
-";
-$sql="
+case 12:
+	$table="customers";
+
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `customers` (
   `customer_number` varchar(50) character set utf8 NOT NULL,
@@ -724,14 +528,8 @@ CREATE TABLE IF NOT EXISTS `customers` (
   PRIMARY KEY  (`customer_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `customers`
---
-";
 $sql="
 
 INSERT INTO `customers` (`customer_number`, `active`, `customer_record_type`, `type_of_customer`, `region`, `salutation`, `first_name`, `middle_initial`, `last_name`, `company`, `street`, `suite`, `city`, `state`, `zip_postal_code`, `country`, `phone`, `fax`, `other_phone`, `email`, `tax_exempt`, `sales_tax_code`, `sales_tax2_code`, `credit_limit`, `discount_percent`, `markup_percent`, `credit_balance`, `pricing_type`, `code`, `comments`, `payment_terms`, `credithold`, `salesman`, `shipped_via`, `route_delivery_code`, `route_delivery_sequence`, `route_delivery_day`, `finance_charges`, `last_finance_charge_date`, `finance_charge_acct`, `finance_charge_pct`, `bill_to_customer_number`, `current_balance`, `npwp`, `org_id`, `update_status`, `nppkp`, `create_date`, `create_by`, `update_date`, `update_by`, `password`, `limi_date`) VALUES
@@ -745,14 +543,8 @@ INSERT INTO `customers` (`customer_number`, `active`, `customer_record_type`, `t
 ('C1021', 1, '', '', '', '', '', '', '', 'ADI BIN SLAMET', 'Jl. Raya Serang Km. 200', '', 'Purwakarta', '', '', '', '0264-9399393', '0299200111', '', 'zadr50@yahoo.com', 0, '', '', 0, 0, 0, 0, '', '', 0, '60 Hari', 0, '', '', '', 0, '', b'0', '2014-03-02 00:00:00', 1373, 0, '', 0, '', '', 0, '', '2014-03-02 00:00:00', '', '2014-03-02 00:00:00', '', '', '2014-03-02 00:00:00'),
 ('aaa', 1, '', '', '', '', '', '', '', 'dfasfs', 'dfasdf', 'dfasdf', 'Purwakarta', '', '', '', '', '', '', 'dfasd', 0, '', '', 0, 0, 0, 0, '', '', 0, 'Kredi 90 Hari', 0, '', '', '', 0, '', b'0', '2014-03-16 00:00:00', 1373, 0, '', 0, '', '', 0, '', '2014-03-16 00:00:00', '', '2014-03-16 00:00:00', '', '', '2014-03-16 00:00:00');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `customers_other_info`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `customers_other_info` (
@@ -768,15 +560,8 @@ CREATE TABLE IF NOT EXISTS `customers_other_info` (
   PRIMARY KEY  (`cust_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Table structure for table `customer_beginning_balance`
---
-";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+ 
 $sql="
 
 CREATE TABLE IF NOT EXISTS `customer_beginning_balance` (
@@ -793,15 +578,8 @@ CREATE TABLE IF NOT EXISTS `customer_beginning_balance` (
   PRIMARY KEY  (`tanggal`,`customer_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `customer_shipto`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `customer_shipto` (
@@ -821,14 +599,9 @@ CREATE TABLE IF NOT EXISTS `customer_shipto` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `customer_statement_defaults`
---
-";
+ 
 $sql="
 
 CREATE TABLE IF NOT EXISTS `customer_statement_defaults` (
@@ -858,14 +631,12 @@ CREATE TABLE IF NOT EXISTS `customer_statement_defaults` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 13:
+	$table="department";
 
-echo "
---
--- Table structure for table `departments`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `departments` (
@@ -881,15 +652,13 @@ CREATE TABLE IF NOT EXISTS `departments` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 14:
+	$table="employee";
 
-echo "
---
--- Table structure for table `employee`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `employee` (
   `nip` varchar(50) character set utf8 NOT NULL,
@@ -926,18 +695,19 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `emplevel` varchar(20) character set utf8 default NULL,
   `pathimage` varchar(200) character set utf8 default NULL,
   `update_status` int(11) default NULL,
+  `nip_id` varchar(50) default NULL,
+  `npwp` varchar(50) default NULL,
+  `bank_name` varchar(50) default NULL,
+  `account` varchar(50) default NULL,
+  `tempat_lahir` varchar(50) default NULL,
+  `pendidikan` varchar(50) default NULL,
+  `gol_darah` varchar(50) default NULL,
   PRIMARY KEY  (`nip`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employeeeducations`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeeeducations` (
@@ -957,14 +727,8 @@ CREATE TABLE IF NOT EXISTS `employeeeducations` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employeeexperience`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeeexperience` (
@@ -987,14 +751,9 @@ CREATE TABLE IF NOT EXISTS `employeeexperience` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Table structure for table `employeefamily`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeefamily` (
@@ -1012,14 +771,9 @@ CREATE TABLE IF NOT EXISTS `employeefamily` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Table structure for table `employeelicense`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeelicense` (
@@ -1035,14 +789,8 @@ CREATE TABLE IF NOT EXISTS `employeelicense` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employeemedical`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeemedical` (
@@ -1056,14 +804,8 @@ CREATE TABLE IF NOT EXISTS `employeemedical` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employeerewardpunish`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeerewardpunish` (
@@ -1079,71 +821,8 @@ CREATE TABLE IF NOT EXISTS `employeerewardpunish` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employees`
---
-";
-$sql="
-
-CREATE TABLE IF NOT EXISTS `employees` (
-  `employeeNumber` int(11) NOT NULL,
-  `lastName` varchar(50) NOT NULL,
-  `firstName` varchar(50) NOT NULL,
-  `extension` varchar(10) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `officeCode` varchar(10) NOT NULL,
-  `reportsTo` int(11) default NULL,
-  `jobTitle` varchar(50) NOT NULL,
-  PRIMARY KEY  (`employeeNumber`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Dumping data for table `employees`
---
-";
-$sql="
-
-INSERT INTO `employees` (`employeeNumber`, `lastName`, `firstName`, `extension`, `email`, `officeCode`, `reportsTo`, `jobTitle`) VALUES
-(1002, 'Murphy', 'Diane', 'x5800', 'dmurphy@classicmodelcars.com', '1', NULL, 'President'),
-(1056, 'Patterson', 'Mary', 'x4611', 'mpatterso@classicmodelcars.com', '1', 1002, 'VP Sales'),
-(1076, 'Firrelli', 'Jeff', 'x9273', 'jfirrelli@classicmodelcars.com', '1', 1002, 'VP Marketing'),
-(1088, 'Patterson', 'William', 'x4871', 'wpatterson@classicmodelcars.com', '6', 1056, 'Sales Manager (APAC)'),
-(1102, 'Bondur', 'Gerard', 'x5408', 'gbondur@classicmodelcars.com', '4', 1056, 'Sale Manager (EMEA)'),
-(1143, 'Bow', 'Anthony', 'x5428', 'abow@classicmodelcars.com', '1', 1056, 'Sales Manager (NA)'),
-(1165, 'Jennings', 'Leslie', 'x3291', 'ljennings@classicmodelcars.com', '1', 1143, 'Sales Rep'),
-(1166, 'Thompson', 'Leslie', 'x4065', 'lthompson@classicmodelcars.com', '1', 1143, 'Sales Rep'),
-(1188, 'Firrelli', 'Julie', 'x2173', 'jfirrelli@classicmodelcars.com', '2', 1143, 'Sales Rep'),
-(1216, 'Patterson', 'Steve', 'x4334', 'spatterson@classicmodelcars.com', '2', 1143, 'Sales Rep'),
-(1286, 'Tseng', 'Foon Yue', 'x2248', 'ftseng@classicmodelcars.com', '3', 1143, 'Sales Rep'),
-(1323, 'Vanauf', 'George', 'x4102', 'gvanauf@classicmodelcars.com', '3', 1143, 'Sales Rep'),
-(1337, 'Bondur', 'Loui', 'x6493', 'lbondur@classicmodelcars.com', '4', 1102, 'Sales Rep'),
-(1370, 'Hernandez', 'Gerard', 'x2028', 'ghernande@classicmodelcars.com', '4', 1102, 'Sales Rep'),
-(1401, 'Castillo', 'Pamela', 'x2759', 'pcastillo@classicmodelcars.com', '4', 1102, 'Sales Rep'),
-(1501, 'Bott', 'Larry', 'x2311', 'lbott@classicmodelcars.com', '7', 1102, 'Sales Rep'),
-(1504, 'Jones', 'Barry', 'x102', 'bjones@classicmodelcars.com', '7', 1102, 'Sales Rep'),
-(1611, 'Fixter', 'Andy', 'x101', 'afixter@classicmodelcars.com', '6', 1088, 'Sales Rep'),
-(1612, 'Marsh', 'Peter', 'x102', 'pmarsh@classicmodelcars.com', '6', 1088, 'Sales Rep'),
-(1619, 'King', 'Tom', 'x103', 'tking@classicmodelcars.com', '6', 1088, 'Sales Rep'),
-(1621, 'Nishi', 'Mami', 'x101', 'mnishi@classicmodelcars.com', '5', 1056, 'Sales Rep'),
-(1625, 'Kato', 'Yoshimi', 'x102', 'ykato@classicmodelcars.com', '5', 1621, 'Sales Rep'),
-(1702, 'Gerard', 'Martin', 'x2312', 'mgerard@classicmodelcars.com', '4', 1102, 'Sales Rep');
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Table structure for table `employeeskill`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeeskill` (
@@ -1157,14 +836,8 @@ CREATE TABLE IF NOT EXISTS `employeeskill` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employeetraining`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employeetraining` (
@@ -1181,14 +854,8 @@ CREATE TABLE IF NOT EXISTS `employeetraining` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employee_level`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employee_level` (
@@ -1201,14 +868,8 @@ CREATE TABLE IF NOT EXISTS `employee_level` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `employee_type`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `employee_type` (
@@ -1219,14 +880,8 @@ CREATE TABLE IF NOT EXISTS `employee_type` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `exchange_rate`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `exchange_rate` (
@@ -1239,15 +894,14 @@ CREATE TABLE IF NOT EXISTS `exchange_rate` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "
---
--- Table structure for table `fa_asset`
---
-";
-$sql="
+case 15:
+	$table="fixed_asset";
+
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `fa_asset` (
   `id` varchar(50) character set utf8 NOT NULL,
@@ -1271,15 +925,9 @@ CREATE TABLE IF NOT EXISTS `fa_asset` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
-
---
--- Table structure for table `fa_asset_depreciation`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_asset_depreciation` (
@@ -1296,15 +944,8 @@ CREATE TABLE IF NOT EXISTS `fa_asset_depreciation` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `fa_asset_depreciation_schedule`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_asset_depreciation_schedule` (
@@ -1321,15 +962,9 @@ CREATE TABLE IF NOT EXISTS `fa_asset_depreciation_schedule` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
-
---
--- Table structure for table `fa_asset_group`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_asset_group` (
@@ -1350,15 +985,8 @@ CREATE TABLE IF NOT EXISTS `fa_asset_group` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `fa_asset_service_log`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_asset_service_log` (
@@ -1379,15 +1007,9 @@ CREATE TABLE IF NOT EXISTS `fa_asset_service_log` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
-
---
--- Table structure for table `fa_asset_transaction`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_asset_transaction` (
@@ -1407,15 +1029,8 @@ CREATE TABLE IF NOT EXISTS `fa_asset_transaction` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `fa_cards`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_cards` (
@@ -1439,15 +1054,8 @@ CREATE TABLE IF NOT EXISTS `fa_cards` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `fa_setting`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fa_setting` (
@@ -1460,15 +1068,8 @@ CREATE TABLE IF NOT EXISTS `fa_setting` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `fb_room`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `fb_room` (
@@ -1487,14 +1088,8 @@ CREATE TABLE IF NOT EXISTS `fb_room` (
   KEY `room_code` (`room_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `fb_room`
---
-";
 $sql="
 
 INSERT INTO `fb_room` (`room_code`, `room_name`, `regular_hour`, `happy_hour`, `status`, `nota`, `dept`, `RType`, `capacity`, `desciption`, `update_status`) VALUES
@@ -1503,16 +1098,14 @@ INSERT INTO `fb_room` (`room_code`, `room_name`, `regular_hour`, `happy_hour`, `
 ('Meja 3', 'Meja 3', 0, 0, 1, '', '', '', '', '', NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "
+case 16:
+	$table="financial";
 
---
--- Table structure for table `finance_charge_defaults`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `finance_charge_defaults` (
   `minimum_days_past_due` int(11) default NULL,
@@ -1528,15 +1121,8 @@ CREATE TABLE IF NOT EXISTS `finance_charge_defaults` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `financial_periods`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `financial_periods` (
@@ -1551,14 +1137,8 @@ CREATE TABLE IF NOT EXISTS `financial_periods` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `financial_periods`
---
-";
 $sql="
 
 INSERT INTO `financial_periods` (`year_id`, `sequence`, `period`, `startdate`, `enddate`, `closed`, `update_status`, `id`) VALUES
@@ -1572,15 +1152,8 @@ INSERT INTO `financial_periods` (`year_id`, `sequence`, `period`, `startdate`, `
 (2013, 8, '2013-08', '2013-08-01 00:00:00', '2013-08-31 00:00:00', 0, 0, 21),
 (2014, 1, '2014-01', '2014-01-01 00:00:00', '2014-01-31 23:59:00', 0, 0, 22);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `gl_begbalarc_year`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_begbalarc_year` (
@@ -1596,15 +1169,8 @@ CREATE TABLE IF NOT EXISTS `gl_begbalarc_year` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `gl_beginning_balance_archive`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_beginning_balance_archive` (
@@ -1620,15 +1186,12 @@ CREATE TABLE IF NOT EXISTS `gl_beginning_balance_archive` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 17:
+	$table="project";
 
-echo "
-
---
--- Table structure for table `gl_projects`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_projects` (
@@ -1661,15 +1224,8 @@ CREATE TABLE IF NOT EXISTS `gl_projects` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `gl_projects_budget`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_projects_budget` (
@@ -1696,15 +1252,8 @@ CREATE TABLE IF NOT EXISTS `gl_projects_budget` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `gl_projects_saldo`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_projects_saldo` (
@@ -1720,15 +1269,8 @@ CREATE TABLE IF NOT EXISTS `gl_projects_saldo` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `gl_report_groups`
---
-";
 $sql="
 CREATE TABLE IF NOT EXISTS `gl_report_groups` (
   `id` int(11) NOT NULL auto_increment,
@@ -1748,14 +1290,12 @@ CREATE TABLE IF NOT EXISTS `gl_report_groups` (
   UNIQUE KEY `x1` (`group_type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=271 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 18:
+	$table="accounting";
 
-echo "
---
--- Dumping data for table `gl_report_groups`
---
-";
 $sql="
 
 INSERT INTO `gl_report_groups` (`id`, `company_code`, `account_type`, `group_type`, `group_name`, `parent_group_type`, `update_status`, `sourceautonumber`, `sourcefile`, `create_date`, `create_by`, `update_date`, `update_by`) VALUES
@@ -1772,15 +1312,8 @@ INSERT INTO `gl_report_groups` (`id`, `company_code`, `account_type`, `group_typ
 (270, NULL, 1, '11020', 'Kas Besar', '10000', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `gl_transactions`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_transactions` (
@@ -1810,14 +1343,8 @@ CREATE TABLE IF NOT EXISTS `gl_transactions` (
   KEY `x1` (`gl_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1012 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Dumping data for table `gl_transactions`
---
-";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+ 
 $sql="
 
 INSERT INTO `gl_transactions` (`transaction_id`, `company_code`, `gl_id`, `date_time_stamp`, `account_id`, `date`, `debit`, `credit`, `source`, `operation`, `custsuppbank`, `jurnaltype`, `project_code`, `org_id`, `update_status`, `sourceautonumber`, `sourcefile`, `id_name`, `create_date`, `create_by`, `update_date`, `update_by`) VALUES
@@ -1837,15 +1364,8 @@ INSERT INTO `gl_transactions` (`transaction_id`, `company_code`, `gl_id`, `date_
 (845, 'C01', 'PJL00086', NULL, 1373, '2013-05-09 00:00:00', 0, 2000, NULL, 'Sales', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `gl_transactions_archive`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_transactions_archive` (
@@ -1864,16 +1384,13 @@ CREATE TABLE IF NOT EXISTS `gl_transactions_archive` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 19:
+	$table="inventory";
 
-echo "
-
---
--- Table structure for table `inventory`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `inventory` (
   `item_number` varchar(50) character set utf8 NOT NULL,
@@ -1982,14 +1499,8 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   UNIQUE KEY `ix_item` (`item_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `inventory`
---
-";
 $sql="
 
 INSERT INTO `inventory` (`item_number`, `active`, `class`, `category`, `sub_category`, `picking_order`, `supplier_number`, `description`, `manufacturer`, `model`, `last_inventory_date`, `cost`, `cost_from_mfg`, `retail`, `special_features`, `item_picture`, `last_order_date`, `expected_delivery`, `lead_time`, `case_pack`, `unit_of_measure`, `location`, `bin`, `weight`, `weight_unit`, `manufacturer_item_number`, `upc_code`, `serialized`, `assembly`, `multiple_pricing`, `multiple_warehouse`, `style`, `inventory_account`, `sales_account`, `cogs_account`, `amount_ordered`, `quantity_in_stock`, `quantity_on_back_order`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `taxable`, `recordstate`, `gudang_1`, `gudang_2`, `gudang_3`, `gudang_4`, `gudang_5`, `gudang_6`, `gudang_7`, `gudang_8`, `gudang_9`, `gudang_10`, `total_amount`, `upd_qty_asm_method`, `iskitchenitem`, `org_id`, `update_status`, `custom_field_1`, `custom_label_1`, `custom_field_2`, `custom_label_2`, `custom_field_3`, `custom_label_3`, `custom_field_4`, `custom_label_4`, `custom_field_5`, `custom_label_5`, `custom_field_6`, `custom_label_6`, `custom_field_7`, `custom_label_7`, `custom_field_8`, `custom_label_8`, `custom_field_9`, `custom_label_9`, `custom_field_10`, `custom_label_10`, `qstep1`, `qstep2`, `qstep3`, `qty_awal`, `discount_percent`, `allowchangeprice`, `allowchangedisc`, `setuptime`, `processtime`, `finishtime`, `linkto_product1`, `linkto_product2`, `linkto_product3`, `komisi`, `isservice`, `isneedprocesstime`, `pricestep1`, `pricestep2`, `pricestep3`, `create_date`, `create_by`, `update_date`, `update_by`, `tax_account`) VALUES
@@ -2006,15 +1517,8 @@ INSERT INTO `inventory` (`item_number`, `active`, `class`, `category`, `sub_cate
 ('ffsdg', b'1', 'Stock Item', 'MINUMAN', 'MINUMAN', 0, 'ALFAMART', 'fgsdf', '', '', '2014-03-16 00:00:00', 0, 1000, 1200, '', '', '2014-03-16 00:00:00', '2014-03-16 00:00:00', '', 0, 'Pcs', '', '', 0, '', '', '', b'0', b'0', b'0', b'0', b'0', 1417, 1415, 0, 0, 0, 0, 0, 0, 0, b'0', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b'0', '', 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, b'0', b'0', 0, 0, 0, 0, 0, 0, 0, b'0', b'0', 0, 0, 0, '2014-03-16 00:00:00', '', '2014-03-16 00:00:00', '', 1396);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventorysource`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventorysource` (
@@ -2027,15 +1531,8 @@ CREATE TABLE IF NOT EXISTS `inventorysource` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_assembly`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_assembly` (
@@ -2053,15 +1550,8 @@ CREATE TABLE IF NOT EXISTS `inventory_assembly` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_beginning_balance`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_beginning_balance` (
@@ -2117,15 +1607,8 @@ CREATE TABLE IF NOT EXISTS `inventory_beginning_balance` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_categories`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_categories` (
@@ -2152,14 +1635,8 @@ CREATE TABLE IF NOT EXISTS `inventory_categories` (
   PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `inventory_categories`
---
-";
 $sql="
 
 INSERT INTO `inventory_categories` (`kode`, `category`, `update_status`, `custom_label_1`, `custom_label_2`, `custom_label_3`, `custom_label_4`, `custom_label_5`, `custom_label_6`, `custom_label_7`, `custom_label_8`, `custom_label_9`, `custom_label_10`, `sourceautonumber`, `sourcefile`, `parent_id`, `create_date`, `create_by`, `update_date`, `update_by`) VALUES
@@ -2174,15 +1651,8 @@ INSERT INTO `inventory_categories` (`kode`, `category`, `update_status`, `custom
 ('MOBIL', 'MOBIL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_class`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_class` (
@@ -2196,14 +1666,9 @@ CREATE TABLE IF NOT EXISTS `inventory_class` (
   UNIQUE KEY `x1` (`kode`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `inventory_class`
---
-";
+ 
 $sql="
 INSERT INTO `inventory_class` (`kode`, `class`, `id`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
 ('Stock Item', 'Stock Item', 6, NULL, NULL, NULL),
@@ -2213,15 +1678,8 @@ INSERT INTO `inventory_class` (`kode`, `class`, `id`, `update_status`, `sourceau
 ('Material', 'Material', 14, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_moving`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_moving` (
@@ -2244,14 +1702,8 @@ CREATE TABLE IF NOT EXISTS `inventory_moving` (
   UNIQUE KEY `x1` (`transfer_id`,`item_number`,`date_trans`,`from_location`,`to_location`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=34 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `inventory_moving`
---
-";
 $sql="
 
 INSERT INTO `inventory_moving` (`transfer_id`, `item_number`, `date_trans`, `from_location`, `from_qty`, `to_location`, `to_qty`, `trans_by`, `cost`, `update_status`, `id`, `comments`, `trans_type`, `total_amount`, `unit`) VALUES
@@ -2260,15 +1712,8 @@ INSERT INTO `inventory_moving` (`transfer_id`, `item_number`, `date_trans`, `fro
 ('TRX00002', 'DJISAMSU', '2014-03-26 11:08:52', 'Ambon', 1, 'Bali', 1, NULL, 10000, NULL, 31, '', NULL, 10000, 'Bks');
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_prices`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_prices` (
@@ -2284,15 +1729,8 @@ CREATE TABLE IF NOT EXISTS `inventory_prices` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_price_history`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_price_history` (
@@ -2305,15 +1743,13 @@ CREATE TABLE IF NOT EXISTS `inventory_price_history` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "
+case 21:
+	$table="inventory_products";
 
---
--- Table structure for table `inventory_products`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_products` (
@@ -2361,14 +1797,8 @@ CREATE TABLE IF NOT EXISTS `inventory_products` (
   KEY `x1` (`item_number`,`shipment_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=467 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `inventory_products`
---
-";
 $sql="
 
 INSERT INTO `inventory_products` (`id`, `item_number`, `shipment_id`, `date_received`, `cost`, `supplier_number`, `warehouse_code`, `color`, `size`, `purchase_order_number`, `quantity_in_stock`, `quantity_received`, `total_amount`, `selected`, `other_doc_number`, `receipt_type`, `receipt_by`, `comments`, `production_code`, `unit`, `multi_unit`, `mu_qty`, `mu_price`, `new_cost`, `from_line_number`, `tanggal_jual`, `no_faktur_beli`, `no_faktur_jual`, `no_do_jual`, `tanggal_beli`, `no_retur_jual`, `update_status`, `sourceautonumber`, `sourcefile`, `serial_number`, `create_date`, `create_by`, `update_date`, `update_by`, `retail`) VALUES
@@ -2384,15 +1814,8 @@ INSERT INTO `inventory_products` (`id`, `item_number`, `shipment_id`, `date_rece
 (466, 'DJISAMSU', 'DOX00012', '2014-03-26 09:39:47', 10000, NULL, 'Surabaya', NULL, NULL, NULL, NULL, 1, 10000, NULL, NULL, 'ETC_OUT', NULL, 'Keluar barang bonus', NULL, 'Bks', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_promotion`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_promotion` (
@@ -2416,15 +1839,8 @@ CREATE TABLE IF NOT EXISTS `inventory_promotion` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_sales_disc`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_sales_disc` (
@@ -2443,15 +1859,8 @@ CREATE TABLE IF NOT EXISTS `inventory_sales_disc` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_serialized_items`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_serialized_items` (
@@ -2480,15 +1889,8 @@ CREATE TABLE IF NOT EXISTS `inventory_serialized_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `inventory_suppliers`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_suppliers` (
@@ -2502,15 +1904,9 @@ CREATE TABLE IF NOT EXISTS `inventory_suppliers` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
-
---
--- Table structure for table `inventory_warehouse`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_warehouse` (
@@ -2556,17 +1952,13 @@ CREATE TABLE IF NOT EXISTS `inventory_warehouse` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 22:
+	$table="invoice";
 
-echo "
-
---
--- Table structure for table `invoice`
---
-
-";
-$sql="
+	$sql="
 CREATE TABLE IF NOT EXISTS `invoice` (
   `invoice_number` varchar(20) character set utf8 NOT NULL,
   `invoice_type` varchar(1) character set utf8 default NULL,
@@ -2637,14 +2029,8 @@ CREATE TABLE IF NOT EXISTS `invoice` (
   PRIMARY KEY  (`invoice_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `invoice`
---
-";
 $sql="
 
 INSERT INTO `invoice` (`invoice_number`, `invoice_type`, `sales_order_number`, `type_of_invoice`, `account_id`, `sold_to_customer`, `ship_to_customer`, `invoice_date`, `your_order__`, `source_of_order`, `payment_terms`, `salesman`, `fob`, `shipped_via`, `tax`, `tax_2`, `freight`, `discount`, `other`, `paid`, `comments`, `sales_tax_code`, `sales_tax_percent`, `sales_tax2_code`, `sales_tax_percent_2`, `posted`, `posting_gl_id`, `batch_post`, `finance_charge`, `department`, `truck`, `capacity`, `printed`, `payment`, `insurance`, `packing`, `discount_2`, `discount_3`, `print_counter`, `uang_muka`, `saldo_invoice`, `amount`, `disc_amount_1`, `disc_amount_2`, `disc_amount_3`, `total_amount`, `audit_status`, `org_id`, `update_status`, `ppn_amount`, `do_invoiced`, `your_order_date`, `disc_amount`, `sales_name`, `promosi_code`, `create_date`, `create_by`, `update_date`, `update_by`, `no_so_text`, `no_po_text`, `currency_code`, `currency_rate`, `warehouse_code`, `subtotal`, `due_date`) VALUES
@@ -2656,15 +2042,8 @@ INSERT INTO `invoice` (`invoice_number`, `invoice_type`, `sales_order_number`, `
 ('PJL00113', 'I', '', 'Simple', NULL, 'ANDRI', NULL, '2014-03-27 07:00:00', NULL, NULL, '60 Hari', 'Andri', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 13000, 13000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 13000, '2014-03-27 07:00:00');
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `invoice_delivery_order_info`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `invoice_delivery_order_info` (
@@ -2678,15 +2057,8 @@ CREATE TABLE IF NOT EXISTS `invoice_delivery_order_info` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `invoice_lineitems`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `invoice_lineitems` (
@@ -2763,14 +2135,8 @@ CREATE TABLE IF NOT EXISTS `invoice_lineitems` (
   KEY `ix_invoice_lineitems_1` (`invoice_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=595 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `invoice_lineitems`
---
-";
 $sql="
 
 INSERT INTO `invoice_lineitems` (`invoice_number`, `line_number`, `item_number`, `quantity`, `unit`, `description`, `price`, `discount`, `taxable`, `shipped`, `ship_date`, `ship_qty`, `bo_qty`, `serial_number`, `job_reference`, `comments`, `cost`, `color`, `size`, `warehouse_code`, `revenue_acct_id`, `amount`, `currency_code`, `currency_rate`, `discount_amount`, `quality`, `packing_material`, `multi_unit`, `mu_qty`, `mu_harga`, `forex_price`, `base_curr_amount`, `disc_2`, `disc_amount_2`, `disc_3`, `disc_amount_3`, `update_status`, `ppn_amount`, `nett_amount`, `from_line_number`, `from_line_type`, `from_line_doc`, `sourceautonumber`, `sourcefile`, `discount_addition`, `printcount`, `tax_amount`, `sales_comm_percent`, `sales_comm_amount`, `employee_id`, `line_order_type`, `start_time`, `duration_minute`, `promo`, `coa1`, `coa2`, `coa3`, `coa4`, `coa5`, `coa1amt`, `coa2amt`, `coa3amt`, `coa4amt`, `coa5amt`, `create_date`, `create_by`, `update_date`, `update_by`, `sc_amount`) VALUES
@@ -2782,14 +2148,8 @@ INSERT INTO `invoice_lineitems` (`invoice_number`, `line_number`, `item_number`,
 ('PJL00113', 594, 'SAMP', 1, 'Bks', 'Sampoerna Hijau', 8000.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 7000, NULL, NULL, NULL, NULL, 8000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `invoice_serialized_items`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `invoice_serialized_items` (
@@ -2806,14 +2166,9 @@ CREATE TABLE IF NOT EXISTS `invoice_serialized_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Table structure for table `invoice_shipment`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `invoice_shipment` (
@@ -2857,14 +2212,8 @@ CREATE TABLE IF NOT EXISTS `invoice_shipment` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `invoice_shipment_export`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `invoice_shipment_export` (
@@ -2883,14 +2232,8 @@ CREATE TABLE IF NOT EXISTS `invoice_shipment_export` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `invoice_tax_serial`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `invoice_tax_serial` (
@@ -2909,14 +2252,8 @@ CREATE TABLE IF NOT EXISTS `invoice_tax_serial` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `kas_kasir`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `kas_kasir` (
@@ -2932,14 +2269,8 @@ CREATE TABLE IF NOT EXISTS `kas_kasir` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `kendaraan`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `kendaraan` (
@@ -2959,15 +2290,13 @@ CREATE TABLE IF NOT EXISTS `kendaraan` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 23:
+	$table="modules";
 
-echo "
---
--- Table structure for table `modules`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `modules` (
   `module_id` varchar(50) character set utf8 NOT NULL,
@@ -2983,14 +2312,8 @@ CREATE TABLE IF NOT EXISTS `modules` (
   PRIMARY KEY  (`module_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `modules_groups`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `modules_groups` (
@@ -3006,14 +2329,8 @@ CREATE TABLE IF NOT EXISTS `modules_groups` (
   UNIQUE KEY `x1` (`user_group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `modules_groups`
---
-";
 $sql="
 
 INSERT INTO `modules_groups` (`user_group_id`, `user_group_name`, `creation_date`, `description`, `path_image`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -3035,14 +2352,8 @@ INSERT INTO `modules_groups` (`user_group_id`, `user_group_name`, `creation_date
 ('ddd', 'ddd', '2013-08-31 00:00:00', 'dd', '', 0, '', ''),
 ('a', 'abbb', '2013-08-31 00:00:00', 'abbb', '', 0, '', '');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `org_struct`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `org_struct` (
@@ -3064,14 +2375,8 @@ CREATE TABLE IF NOT EXISTS `org_struct` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `other_vendors`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `other_vendors` (
@@ -3099,15 +2404,13 @@ CREATE TABLE IF NOT EXISTS `other_vendors` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 24:
+	$table="payables";
 
-echo "
---
--- Table structure for table `payables`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `payables` (
   `bill_id` int(11) NOT NULL auto_increment,
@@ -3149,14 +2452,8 @@ CREATE TABLE IF NOT EXISTS `payables` (
   PRIMARY KEY  (`bill_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=66 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `payables`
---
-";
 $sql="
 
 INSERT INTO `payables` (`bill_id`, `vendor_type`, `supplier_number`, `other_number`, `purchase_order`, `purchase_order_number`, `expense_type`, `account_id`, `invoice_number`, `invoice_date`, `amount`, `due_date`, `terms`, `discount_taken`, `purpose_of_expense`, `tax_deductible`, `comments`, `paid`, `posted`, `posting_gl_id`, `batch_post`, `X1099`, `invoice_received`, `items_received`, `many_po`, `curr_code`, `curr_rate`, `curr_code_org`, `curr_rate_org`, `curr_selisih`, `org_id`, `update_status`, `sourceautonumber`, `sourcefile`, `update_date`, `saldo_invoice`) VALUES
@@ -3166,13 +2463,8 @@ INSERT INTO `payables` (`bill_id`, `vendor_type`, `supplier_number`, `other_numb
 (65, NULL, 'YOGYA', NULL, 1, 'PO00152', 'Purchase Order', NULL, 'PO00152', '2014-03-25 07:00:00', 1000, '2014-03-25 07:00:00', 'Kredit 30 Hari', NULL, 'Purchase Order', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "--
--- Table structure for table `payables_items`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `payables_items` (
@@ -3188,14 +2480,8 @@ CREATE TABLE IF NOT EXISTS `payables_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `payables_many_po`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `payables_many_po` (
@@ -3206,14 +2492,8 @@ CREATE TABLE IF NOT EXISTS `payables_many_po` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `payables_payments`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `payables_payments` (
@@ -3241,14 +2521,9 @@ CREATE TABLE IF NOT EXISTS `payables_payments` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Dumping data for table `payables_payments`
---
-";
 $sql="
 
 INSERT INTO `payables_payments` (`bill_id`, `line_number`, `date_paid`, `how_paid`, `how_paid_account_id`, `check_number`, `amount_paid`, `amount_alloc`, `trans_id`, `curr_code`, `curr_rate`, `curr_code_org`, `curr_rate_org`, `curr_selisih`, `purchase_order_number`, `update_status`, `sourceautonumber`, `sourcefile`, `update_date`, `no_bukti`, `paid_by`) VALUES
@@ -3260,15 +2535,13 @@ INSERT INTO `payables_payments` (`bill_id`, `line_number`, `date_paid`, `how_pai
 (57, 33, '2014-03-24 07:00:00', '0', 1374, NULL, 8000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'PI00014', NULL, NULL, NULL, NULL, 'APP00066', NULL),
 (57, 34, '2014-03-24 07:00:00', '1', 0, NULL, 50000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'PI00014', NULL, NULL, NULL, NULL, 'APP00067', NULL);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 25:
+	$table="payments";
 
-echo "
---
--- Table structure for table `payments`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `payments` (
   `invoice_number` varchar(50) character set utf8 default NULL,
@@ -3308,14 +2581,9 @@ CREATE TABLE IF NOT EXISTS `payments` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=176 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Dumping data for table `payments`
---
-";
 $sql="
 
 INSERT INTO `payments` (`invoice_number`, `line_number`, `date_paid`, `how_paid`, `how_paid_acct_id`, `credit_card_number`, `expiration_date`, `authorization`, `amount_paid`, `amount_alloc`, `comments`, `check_type`, `curr_code`, `curr_rate`, `curr_rate_exc`, `curr_code_org`, `curr_rate_org`, `curr_selisih`, `no_bukti`, `trans_id`, `org_id`, `update_status`, `receipt_by`, `credit_card_type`, `sourceautonumber`, `sourcefile`, `jenisuangmuka`, `angsur_no_dari`, `angsur_no_sampai`, `angsur_sisa`, `angsur_lunas`, `angsur_lunas_bunga`, `from_bank`, `from_account`) VALUES
@@ -3329,14 +2597,8 @@ INSERT INTO `payments` (`invoice_number`, `line_number`, `date_paid`, `how_paid`
 ('PJL00153', 175, '2014-03-25 07:00:00', '0', 0, NULL, NULL, NULL, 9500, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00095', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `payroll_link`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `payroll_link` (
@@ -3350,14 +2612,8 @@ CREATE TABLE IF NOT EXISTS `payroll_link` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `pending_stock_opname`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `pending_stock_opname` (
@@ -3389,14 +2645,8 @@ CREATE TABLE IF NOT EXISTS `pending_stock_opname` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `pending_stock_opname_tmp`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `pending_stock_opname_tmp` (
@@ -3408,14 +2658,12 @@ CREATE TABLE IF NOT EXISTS `pending_stock_opname_tmp` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 26:
+	$table="preferences";
 
-echo "
---
--- Table structure for table `preferences`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `preferences` (
@@ -3526,14 +2774,8 @@ CREATE TABLE IF NOT EXISTS `preferences` (
   PRIMARY KEY  (`company_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `preferences`
---
-";
 $sql="
 
 INSERT INTO `preferences` (`company_code`, `company_name`, `slogan`, `invoice_contact`, `purchase_order_contact`, `street`, `suite`, `city_state_zip_code`, `phone_number`, `fax_number`, `email`, `fed_tax_id`, `perpetual_inventory`, `out_of_stock_checking`, `purchase_order_restocking`, `item_categories`, `supplier_numbering`, `default_invoice_type`, `default_bank_account_number`, `default_credit_card_account`, `invoice_numbering`, `use_sales_order_number`, `customer_credit_account_number`, `supplier_credit_account_number`, `po_numbering`, `invoice_message_copy__1`, `invoice_message_copy__2`, `invoice_message_copy__3`, `invoice_message_copy__4`, `invoice_message_copy__5`, `po_message_copy__1`, `po_message_copy__2`, `po_message_copy__3`, `po_message_copy__4`, `po_message_copy__5`, `bol_message_copy__1`, `bol_message_copy__2`, `bol_message_copy__3`, `bol_message_copy__4`, `inventory_tracking`, `inventory_costing`, `customer_order`, `customer_numbering`, `general_ledger`, `freight_taxable`, `other_taxable`, `accounts_receivable`, `so_freight`, `so_other`, `so_tax`, `so_tax_2`, `so_discounts_given`, `accounts_payable`, `po_freight`, `po_other`, `po_tax`, `po_tax_2`, `po_discounts_taken`, `inventory`, `inventory_sales`, `inventory_cogs`, `maximize_on_640`, `invoice_number`, `po_number`, `quote_number`, `sales_order_number`, `gl_post_date`, `security`, `sales_selection`, `printed_check_password`, `unpost_password`, `undeposited_checks`, `autostub`, `startup_company_schedule`, `po_show_items`, `acctproglocation`, `payrollproglocation`, `payrolldatalocation`, `custbalupdated`, `display_shiptos`, `version`, `inventorysearch`, `barcodeinventorystandard`, `barcodeinventorywarehouse`, `barcodepo`, `barcodesales`, `invpridec`, `invqtydec`, `payrollsystem`, `poitemdisplay`, `salesitemdisplay`, `salpridec`, `salqtydec`, `state_tax_id`, `gl_post_date_2`, `earning_account`, `year_earning_account`, `historical_balance_account`, `default_cash_payment_account`, `invamtdec`, `salamtdec`, `purpridec`, `purqtydec`, `update_status`) VALUES
@@ -3543,14 +2785,12 @@ INSERT INTO `preferences` (`company_code`, `company_name`, `slogan`, `invoice_co
 ('C01', 'Head Office', '', '', '', 'Jl. Raya Kalibata No. 29', '', 'Jakarta', '021-2020022', '', '', '', 0, 0, 0, 0, 0, 0, '1485', '0', 0, 0, 1416, 1421, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 1373, 1417, 1482, 1396, 0, 1416, 1373, 1420, 1503, 1396, 0, 1421, 1374, 1415, 1419, 0, '', '', '', '', 0, 0, 0, '', '', 0, 0, 0, 0, '', '', '', '2013-09-08 00:00:00', 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 1483, 1408, 1411, 1370, 0, 0, 0, 0, 0),
 ('C02', 'Budidaya Lele', '', '', '', 'JL. RAYA SADANG NO. 29', '', 'Purwakarta', '08219292', '02192828', 'budi@localhost.com', '', 0, 0, 0, 0, 0, 0, '', '', 0, 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', 0, 0, 0, '', '', 0, 0, 0, 0, '', '', '', '2014-03-02 00:00:00', 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 27:
+	$table="promosi";
 
-echo "
---
--- Table structure for table `promosi_disc`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_disc` (
@@ -3581,14 +2821,8 @@ CREATE TABLE IF NOT EXISTS `promosi_disc` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `promosi_extra_item`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_extra_item` (
@@ -3614,14 +2848,8 @@ CREATE TABLE IF NOT EXISTS `promosi_extra_item` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `promosi_item`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_item` (
@@ -3638,14 +2866,8 @@ CREATE TABLE IF NOT EXISTS `promosi_item` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `promosi_item_category`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_item_category` (
@@ -3656,14 +2878,8 @@ CREATE TABLE IF NOT EXISTS `promosi_item_category` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `promosi_item_customer`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_item_customer` (
@@ -3674,14 +2890,8 @@ CREATE TABLE IF NOT EXISTS `promosi_item_customer` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `promosi_outlet`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_outlet` (
@@ -3689,15 +2899,8 @@ CREATE TABLE IF NOT EXISTS `promosi_outlet` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `promosi_point_transactions`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_point_transactions` (
@@ -3717,14 +2920,8 @@ CREATE TABLE IF NOT EXISTS `promosi_point_transactions` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `promosi_time`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `promosi_time` (
@@ -3732,15 +2929,12 @@ CREATE TABLE IF NOT EXISTS `promosi_time` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 28:
+	$table="purchase_order";
 
-echo "
-
---
--- Table structure for table `purchase_order`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `purchase_order` (
@@ -3793,13 +2987,8 @@ CREATE TABLE IF NOT EXISTS `purchase_order` (
   PRIMARY KEY  (`purchase_order_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-echo "
---
--- Table structure for table `purchase_order_lineitems`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `purchase_order_lineitems` (
@@ -3852,286 +3041,8 @@ CREATE TABLE IF NOT EXISTS `purchase_order_lineitems` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=313 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-echo "
---
--- Stand-in structure for view `qry_coa`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_coa` (
-`account` varchar(20)
-,`account_description` varchar(50)
-,`jenis` varchar(1)
-,`db_or_cr` varbinary(11)
-,`saldo_awal` double
-,`parent` varchar(10)
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Stand-in structure for view `qry_kartustock_adj`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_adj` (
-`tanggal` datetime
-,`jenis` varchar(10)
-,`no_sumber` varchar(50)
-,`item_number` varchar(50)
-,`description` varchar(50)
-,`qty_masuk` int(11)
-,`qty_keluar` int(11)
-,`price` int(1)
-,`cost` double
-,`amount_masuk` double
-,`amount_keluar` int(1)
-,`gudang` varchar(50)
-,`comments` varchar(250)
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Stand-in structure for view `qry_kartustock_delivery`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_delivery` (
-`tanggal` datetime
-,`tipe` varchar(1)
-,`jenis` varchar(11)
-,`termin` varchar(20)
-,`no_sumber` varchar(20)
-,`item_number` varchar(50)
-,`description` varchar(255)
-,`qty_masuk` int(1)
-,`qty_keluar` double(17,0)
-,`unit` varchar(15)
-,`price` double(11,2)
-,`cost` double
-,`discount` double(11,2)
-,`discount_amount` double
-,`amount` double
-,`gudang` varchar(15)
-,`mata_uang` varchar(50)
-,`rate` double
-,`customer` varchar(50)
-,`comments` varchar(250)
-,`mu_qty` double(11,0)
-,`multi_unit` varchar(25)
-,`mu_harga` double
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Stand-in structure for view `qry_kartustock_etc_out`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_etc_out` (
-`tanggal` datetime
-,`tipe` varchar(50)
-,`jenis` varchar(50)
-,`termin` varchar(7)
-,`no_sumber` varchar(50)
-,`item_number` varchar(50)
-,`description` varchar(50)
-,`qty_masuk` int(1)
-,`qty_keluar` int(11)
-,`unit` varchar(50)
-,`price` double
-,`cost` double
-,`discount` int(1)
-,`discount_amount` int(1)
-,`amount` double
-,`gudang` varchar(15)
-,`mata_uang` varchar(3)
-,`rate` int(1)
-,`supplier` varchar(50)
-,`comments` varchar(250)
-,`mu_qty` int(11)
-,`multi_unit` varchar(50)
-,`mu_price` double
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Stand-in structure for view `qry_kartustock_invoice`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_invoice` (
-`tanggal` datetime
-,`tipe` varchar(1)
-,`jenis` varchar(18)
-,`termin` varchar(20)
-,`no_sumber` varchar(20)
-,`item_number` varchar(50)
-,`description` varchar(255)
-,`qty_masuk` double(17,0)
-,`qty_keluar` double(17,0)
-,`unit` varchar(15)
-,`price` double(11,2)
-,`cost` double
-,`discount` double(11,2)
-,`discount_amount` double
-,`amount` double
-,`gudang` varchar(15)
-,`mata_uang` varchar(50)
-,`rate` double
-,`customer` varchar(50)
-,`comments` varchar(250)
-,`mu_qty` double(11,0)
-,`multi_unit` varchar(25)
-,`mu_harga` double
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Stand-in structure for view `qry_kartustock_purchase`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_purchase` (
-`tanggal` datetime
-,`tipe` varchar(11)
-,`jenis` varchar(18)
-,`terms` varchar(50)
-,`no_sumber` varchar(50)
-,`item_number` varchar(50)
-,`description` varchar(255)
-,`qty_masuk` double(11,0)
-,`qty_keluar` double(17,0)
-,`unit` varchar(50)
-,`price` double
-,`cost` double
-,`discount` double(11,2)
-,`disc_amount_1` double
-,`amount_masuk` double
-,`amount_keluar` bigint(20)
-,`gudang` varchar(50)
-,`mata_uang` varchar(50)
-,`rate` double
-,`supplier_number` varchar(50)
-,`mu_qty` double(11,0)
-,`multi_unit` varchar(50)
-,`mu_harga` double
-,`comments` varchar(250)
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Stand-in structure for view `qry_kartustock_receipt`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_receipt` (
-`tanggal` datetime
-,`tipe` varchar(50)
-,`jenis` varchar(50)
-,`termin` varchar(7)
-,`no_sumber` varchar(50)
-,`item_number` varchar(50)
-,`description` varchar(50)
-,`qty_masuk` int(11)
-,`qty_keluar` int(11)
-,`unit` varchar(50)
-,`price` double
-,`cost` double
-,`discount` int(1)
-,`discount_amount` int(1)
-,`amount` double
-,`gudang` varchar(15)
-,`mata_uang` varchar(3)
-,`rate` int(1)
-,`supplier` varchar(50)
-,`comments` varchar(250)
-,`mu_qty` int(11)
-,`multi_unit` varchar(50)
-,`mu_price` double
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Stand-in structure for view `qry_kartustock_transfer`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_transfer` (
-`tanggal` datetime
-,`jenis` varchar(8)
-,`no_sumber` varchar(50)
-,`item_number` varchar(50)
-,`description` varchar(50)
-,`qty_masuk` bigint(20)
-,`qty_keluar` bigint(20)
-,`price` bigint(20)
-,`cost` bigint(20)
-,`amount_masuk` double
-,`amount_keluar` double
-,`gudang` varchar(50)
-,`comments` varchar(250)
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Stand-in structure for view `qry_kartustock_union`
---
-";
-$sql="
-CREATE TABLE IF NOT EXISTS `qry_kartustock_union` (
-`tanggal` datetime
-,`jenis` varchar(50)
-,`no_sumber` varchar(50)
-,`item_number` varchar(50)
-,`description` varchar(255)
-,`qty_masuk` double
-,`qty_keluar` double
-,`price` double
-,`cost` double
-,`amount_masuk` double
-,`amount_keluar` double
-,`gudang` varchar(50)
-,`comments` varchar(250)
-);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Table structure for table `quotation`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `quotation` (
@@ -4169,14 +3080,8 @@ CREATE TABLE IF NOT EXISTS `quotation` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `quotation_lineitems`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `quotation_lineitems` (
@@ -4220,16 +3125,13 @@ CREATE TABLE IF NOT EXISTS `quotation_lineitems` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 31:
+	$table="report_list";
 
-echo "
-
---
--- Table structure for table `report_list`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `report_list` (
   `report_code` varchar(75) character set utf8 NOT NULL,
@@ -4273,15 +3175,8 @@ CREATE TABLE IF NOT EXISTS `report_list` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `rpt_open_to_buy`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `rpt_open_to_buy` (
@@ -4300,15 +3195,8 @@ CREATE TABLE IF NOT EXISTS `rpt_open_to_buy` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `salesman`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `salesman` (
@@ -4324,13 +3212,8 @@ CREATE TABLE IF NOT EXISTS `salesman` (
   PRIMARY KEY  (`salesman`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-echo "
---
--- Table structure for table `salesman_group`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `salesman_group` (
@@ -4343,15 +3226,8 @@ CREATE TABLE IF NOT EXISTS `salesman_group` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `salesman_group_komisi`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `salesman_group_komisi` (
@@ -4370,15 +3246,8 @@ CREATE TABLE IF NOT EXISTS `salesman_group_komisi` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `salesman_komisi`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `salesman_komisi` (
@@ -4391,16 +3260,13 @@ CREATE TABLE IF NOT EXISTS `salesman_komisi` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 32:
+	$table="sales_order";
 
-echo "
-
---
--- Table structure for table `sales_order`
---
-";
-$sql="
+	$sql="
 
 CREATE TABLE IF NOT EXISTS `sales_order` (
   `sales_order_number` varchar(22) character set utf8 NOT NULL,
@@ -4466,13 +3332,9 @@ CREATE TABLE IF NOT EXISTS `sales_order` (
   PRIMARY KEY  (`sales_order_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "--
--- Table structure for table `sales_order_lineitems`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sales_order_lineitems` (
@@ -4522,15 +3384,8 @@ CREATE TABLE IF NOT EXISTS `sales_order_lineitems` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=254 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `sales_tax_rates`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sales_tax_rates` (
@@ -4540,14 +3395,8 @@ CREATE TABLE IF NOT EXISTS `sales_tax_rates` (
   PRIMARY KEY  (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `service_jobs`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `service_jobs` (
@@ -4569,14 +3418,8 @@ CREATE TABLE IF NOT EXISTS `service_jobs` (
   UNIQUE KEY `x1` (`job_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `service_job_sparepart`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `service_job_sparepart` (
@@ -4593,14 +3436,8 @@ CREATE TABLE IF NOT EXISTS `service_job_sparepart` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `service_order`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `service_order` (
@@ -4633,14 +3470,8 @@ CREATE TABLE IF NOT EXISTS `service_order` (
   PRIMARY KEY  (`no_bukti`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `shipped_via`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `shipped_via` (
@@ -4655,14 +3486,8 @@ CREATE TABLE IF NOT EXISTS `shipped_via` (
   PRIMARY KEY  (`shipped_via`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `shipping_locations`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `shipping_locations` (
@@ -4684,14 +3509,8 @@ CREATE TABLE IF NOT EXISTS `shipping_locations` (
   PRIMARY KEY  (`location_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `shipping_locations`
---
-";
 $sql="
 
 INSERT INTO `shipping_locations` (`location_number`, `address_type`, `attention_name`, `company_name`, `street`, `suite`, `city`, `state`, `zip`, `country`, `phone`, `fax`, `other_phone`, `comments`, `update_status`) VALUES
@@ -4704,14 +3523,8 @@ INSERT INTO `shipping_locations` (`location_number`, `address_type`, `attention_
 ('Ambon', 'Penyimpanan', '', NULL, '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('Bali', 'Penyimpanan', 'Husni', NULL, 'Jl. Raya Sabrang', NULL, 'Bali', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `source_of_order`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `source_of_order` (
@@ -4722,14 +3535,12 @@ CREATE TABLE IF NOT EXISTS `source_of_order` (
   PRIMARY KEY  (`source_of_order`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 33:
+	$table="supplier";
 
-echo "
---
--- Table structure for table `suppliers`
---
-";
 $sql="
 CREATE TABLE IF NOT EXISTS `suppliers` (
   `supplier_number` varchar(50) character set utf8 NOT NULL,
@@ -4774,14 +3585,8 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   PRIMARY KEY  (`supplier_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `suppliers`
---
-";
 $sql="
 
 INSERT INTO `suppliers` (`supplier_number`, `active`, `supplier_other_vendor`, `supplier_account_number`, `type_of_vendor`, `supplier_name`, `salutation`, `first_name`, `middle_initial`, `last_name`, `street`, `suite`, `city`, `state`, `zip_postal_code`, `country`, `phone`, `fax`, `email`, `payment_terms`, `credit_limit`, `fed_tax_id`, `comments`, `credit_balance`, `default_account`, `x1099`, `x1099fedwithheld`, `x1099line`, `x1099statewithheld`, `print1099`, `state_tax_id`, `plafon_hutang`, `org_id`, `update_status`, `create_date`, `create_by`, `update_date`, `update_by`, `acc_biaya`) VALUES
@@ -4790,13 +3595,8 @@ INSERT INTO `suppliers` (`supplier_number`, `active`, `supplier_other_vendor`, `
 ('INDOMART', 1, '', '1393', '', 'INDOMART', '', '', '', '', 'Purwakarta', '', '', '', '', '', '', '', '', '', 0, '', '', 0, 0, b'0', 0, 0, 0, b'0', '', 0, '', 0, '2013-08-14 00:00:00', '', '2013-08-14 00:00:00', '', 1423),
 ('YOGYA', 1, '', '1393', '', 'YOGYA Dept Store', '', '', '', '', 'Jl. Jend. Sudirman', 'Purwakarta', '', '', '', '', '', '', 'yogya@localhost', '60 Hari', 0, '', '', 0, 0, b'0', 0, 0, 0, b'0', '', 0, '', 0, '2014-03-24 00:00:00', '', '2014-03-24 00:00:00', '', 1423);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "--
--- Table structure for table `supplier_beginning_balance`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `supplier_beginning_balance` (
@@ -4815,13 +3615,8 @@ CREATE TABLE IF NOT EXISTS `supplier_beginning_balance` (
   UNIQUE KEY `x1` (`tanggal`,`supplier_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "-
--- Table structure for table `syslog`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `syslog` (
@@ -4832,13 +3627,8 @@ CREATE TABLE IF NOT EXISTS `syslog` (
   `update_status` int(11) default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "--
--- Table structure for table `sysreportdesign`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sysreportdesign` (
@@ -4859,14 +3649,8 @@ CREATE TABLE IF NOT EXISTS `sysreportdesign` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `sysreportdesignfiles`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sysreportdesignfiles` (
@@ -4889,14 +3673,12 @@ CREATE TABLE IF NOT EXISTS `sysreportdesignfiles` (
   UNIQUE KEY `x1` (`filename`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
+	break;
 
-echo "
---
--- Table structure for table `system_variables`
---
-";
+case 34:
+	$table="sysvar";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `system_variables` (
@@ -4913,14 +3695,8 @@ CREATE TABLE IF NOT EXISTS `system_variables` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=568 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `system_variables`
---
-";
 $sql="
 
 INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `id`, `update_status`, `section`, `category`, `vartype`, `varlist`) VALUES
@@ -4951,51 +3727,6 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('DisAssembly Numbering - AutoNumber', 7, '0', NULL, 27, 1, 'System', NULL, NULL, NULL),
 ('Display Supplier/Customer', 4, 'True', NULL, 28, 1, 'System', NULL, NULL, NULL),
 ('DisplayError', 1, 'True', '', 29, 1, 'System', NULL, NULL, NULL),
-('Flag [Bank Accounts] add no_bukti_in, no_bukti_out', 1, '1', 'NIL', 31, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Customers] add NPPKP.', 1, '1', 'NIL', 32, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [GL Transaction] +project_code', 1, '1', 'NIL', 33, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [gl_projects] add sales, cost, expense', 1, '1', 'NIL', 34, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [gl_projects] add sales, cost, expense, labar', 1, '1', 'NIL', 35, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory Beginning Balance] hpp_awal,akhir', 1, '1', 'NIL', 36, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory Moving] add cost', 1, '1', 'NIL', 37, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory] add custom fields', 1, '1', 'NIL', 38, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Invoice Lineitems] koreksi qty dan mu qty', 1, '1', 'NIL', 39, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Invoice Tax Serial] create.', 1, '1', 'NIL', 40, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Invoice] add audit_status', 1, '1', 'NIL', 41, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [org_struct] add table', 1, '1', 'NIL', 42, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [sys_tooltip] add table', 1, '1', 'NIL', 43, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Check Writer 100', 1, '1', NULL, 44, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Check Writer 101', 1, '1', NULL, 45, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Check Writer 102', 1, '1', 'add curr_code, curr_rate', 46, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag DB Integrated GL', 1, '1', NULL, 47, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory 100', 1, '1', 'NIL', 48, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Balance 100', 1, '1', 'NIL', 49, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Beginning Balance 100', 1, '1', 'NIL', 50, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Ordering Info', 1, '1', 'NIL', 51, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Products 100', 1, '1', 'NIL', 52, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Products 101', 1, '1', 'NIL', 53, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Products 102', 1, '1', 'NIL', 54, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Products 103', 1, '1', 'NIL', 55, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Inventory Serialized Items 100', 1, '1', 'NIL', 56, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Invoice 200', 1, '1', 'NIL', 57, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Invoice 201', 1, '1', 'NIL', 58, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Invoice Correction', 1, '1', NULL, 59, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag KIS Group Modules 100', 1, '1', 'NIL', 60, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag KIS Modules 100', 1, '1', 'NIL', 61, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Multi Unit', 1, '1', NULL, 62, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Payables 100', 1, '1', NULL, 63, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Payment 100', 1, '1', NULL, 64, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Payments 102', 1, '1', 'add no_bukti', 65, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Payments 103', 1, '1', 'NIL', 66, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag PO Info Correction', 1, '1', NULL, 67, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Purchase Order 100', 1, '1', 'NIL', 68, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Purchase Order 102', 1, '1', 'NIL', 69, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Purchase Order Lineitems 100', 1, '1', 'NIL', 70, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag Quotation add Disc, MultiUnit', 1, '1', 'NIL', 71, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag System Variabel 100', 1, '1', 'add keterangan di system variabel', 72, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag TMP_KARTU_STOCK add harga, hpp_awal,hpp_akhir', 1, '1', 'NIL', 73, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag tmp_seri 100', 1, '1', 'NIL', 74, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag User 101', 1, '1', 'NIL', 75, 1, 'Upgrade', NULL, NULL, NULL),
 ('Footer1', 11, 'Terimakasih', NULL, 76, 1, 'System', NULL, NULL, NULL),
 ('Footer2', 7, 'Footer2', NULL, 77, 1, 'System', NULL, NULL, NULL),
 ('Footer3', 7, 'Footer3', NULL, 78, 1, 'System', NULL, NULL, NULL),
@@ -5007,15 +3738,6 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('Header2', 7, 'Header2', NULL, 84, 1, 'System', NULL, NULL, NULL),
 ('Header3', 7, 'Header3', NULL, 85, 1, 'System', NULL, NULL, NULL),
 ('height', 0, '11190', NULL, 86, 1, 'System', NULL, NULL, NULL),
-('HKGL112', 16, 'GetAccount(1098)', NULL, 87, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL113', 16, 'GetAccount(1099)', NULL, 88, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL114', 16, 'GetAccount(1204)', NULL, 89, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL115', 16, 'GetAccount(1210)', NULL, 90, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL116', 16, 'GetAccount(1104)', NULL, 91, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL117', 16, 'GetAccount(1111)', NULL, 92, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL118', 16, 'GetAccount(1206)', NULL, 93, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL119', 16, 'GetAccount(1102)', NULL, 94, 1, 'Accounting', NULL, NULL, NULL),
-('HKGL120', 16, 'GetAccount(1110)', NULL, 95, 1, 'Accounting', NULL, NULL, NULL),
 ('Invoice DO Numbering', 14, '!JDO~$0045', '', 96, 1, 'Sales', NULL, NULL, NULL),
 ('Invoice DO Numbering - AutoNumber', 7, '1', '', 97, 1, 'Sales', NULL, NULL, NULL),
 ('Invoice Konsinyasi Numbering', 14, '!JKO~$00001', '', 98, 1, 'Sales', NULL, NULL, NULL),
@@ -5082,13 +3804,6 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('WindowState', 1, '2', NULL, 162, 1, 'System', NULL, NULL, NULL),
 ('Work Order Numbering', 13, '!WO~@-~$00013', NULL, 163, 1, 'System', NULL, NULL, NULL),
 ('yes', 0, 'True', NULL, 164, 1, 'System', NULL, NULL, NULL),
-('Flag [Kas Kasir] add kasir', 1, '1', 'nil', 165, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Payments] add pos fields', 1, '1', 'NIL', 166, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory] add qstep1', 1, '1', 'nil', 167, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory] add qty_awal', 1, '1', 'nil', 168, 1, 'Upgrade', NULL, NULL, NULL),
-('Sales Tax Numbering', 22, '!010.000.07.~$00000005', 'Nomor urut faktur pajak', 169, 1, 'Sales', NULL, NULL, NULL),
-('Flag [Trans_Type] new table', 1, '1', 'NIL', 173, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [qry_KartuStock_Union] Add query', 1, '1', 'NIL', 174, 1, 'Upgrade', NULL, NULL, NULL),
 ('DefaultCurrency', 3, 'IDR', '', 175, 1, 'System', NULL, NULL, NULL),
 ('BeginDate', 10, '2012-01-01 00:00', '', 176, 1, 'System', NULL, NULL, NULL),
 ('FiscalYear', 10, '2012', '', 177, 1, 'System', NULL, NULL, NULL),
@@ -5096,18 +3811,7 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('AllowInputDateTo', 10, '2012-12-31 00:00', '', 179, 1, 'Purchase', 'Auto Numbering', '', ''),
 ('ShowReminder', 4, 'True', '', 180, 1, 'System', NULL, NULL, NULL),
 ('ShowTips', 4, 'FALSE', 'Show Tips', 181, 1, 'System', NULL, NULL, NULL),
-('Flag [Inventory] add AllowChangePrice', 1, '1', 'nil', 182, 1, 'Upgrade', NULL, NULL, NULL),
-('Flag [Sales Order] add uang_muka', 1, '1', 'NIL', 183, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Preferences] add PurPriDec, PurQtyDec', 1, '1', 'NIL', 188, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add from_line_type', 1, '1', 'NIL', 190, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Sales Order] add uang_muka 2', 1, '1', 'NIL', 191, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Purchase Order Lineitems] add from_line_numb', 1, '1', 'NIL', 201, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Purchase Order Lineitems] add from_line_numb', 1, '1', 'NIL', 205, NULL, 'Upgrade', NULL, NULL, NULL),
 ('PO Jumlah Discount', 1, '1', '', 206, NULL, 'System', NULL, NULL, NULL),
-('Flag [Invoice] do_invoiced', 1, '1', 'NIL', 207, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [so_do_inv_pay] add', 1, '1', 'NIL', 208, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Purchase Order] add amount', 1, '1', 'NIL', 209, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag add [Invoice Shipment]', 1, '1', 'NIL', 210, NULL, 'Upgrade', NULL, NULL, NULL),
 ('TypeOfInvoice', 0, 'Simple', 'Jenis faktur', 211, NULL, 'Sales', NULL, NULL, NULL),
 ('TypeOfInvoice', 0, 'Profesional', 'Jenis faktur', 212, NULL, 'Sales', NULL, NULL, NULL),
 ('TypeOfInvoice', 0, 'Product Detail', 'Jenis faktur', 213, NULL, 'Sales', NULL, NULL, NULL),
@@ -5115,50 +3819,26 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('TypeOfInvoice', 0, 'Konsinyasi', 'Jenis faktur', 215, NULL, 'Sales', NULL, NULL, NULL),
 ('TypeOfInvoice', 0, 'Faktur Eceran', 'Jenis faktur', 216, NULL, 'Sales', NULL, NULL, NULL),
 ('TypeOfInvoice', 0, 'Faktur Grosir', 'Jenis faktur', 217, NULL, 'Sales', NULL, NULL, NULL),
-('Flag add key type of invoice', 1, '1', 'NIL', 218, NULL, 'Upgrade', NULL, NULL, NULL),
 ('AppSecureLevel', 1, '0', 'NIL', 219, NULL, 'Sales', 'Auto Numbering', '', ''),
 ('HargaBeliPoItem', 1, '0', '', 220, NULL, 'System', NULL, NULL, NULL),
-('Flag add [Check Writer] JenisUangMuka, SisaUangMuk', 1, '1', 'NIL', 221, NULL, 'Upgrade', NULL, NULL, NULL),
 ('TypeOfInvoice', 0, 'Faktur Pangan', 'Jenis faktur', 222, NULL, 'Sales', NULL, NULL, NULL),
 ('TypeOfInvoice', 0, 'Faktur Kebun', 'Jenis faktur', 223, NULL, 'Sales', NULL, NULL, NULL),
-('Flag add [sqlListDo]', 1, '1', 'NIL', 224, NULL, 'Upgrade', NULL, NULL, NULL),
 ('PO Request Numbering', 14, '!POR~@-~$00001', 'NIL', 225, NULL, 'System', NULL, NULL, NULL),
-('Flag [Import] Build Source Autonumber', 0, '1', NULL, 226, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Preferences] change Fed Tax ID', 1, '1', 'NIL', 227, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [CW Items] add org_id', 1, '1', 'NIL', 228, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag change [tmp_kartu_hutang] amount', 1, '1', 'NIL', 229, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag change [tmp_kartu_piutang] amount', 1, '1', 'NIL', 230, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [gl_projects] add invoice_number', 1, '1', 'NIL', 231, NULL, 'Upgrade', NULL, NULL, NULL),
 ('AR Payment Numbering - AutoNumber', 1, '1', '', 232, NULL, 'System', NULL, NULL, NULL),
 ('Acc In KAS Numbering', 15, '!KM.KAS.~$00072', '', 233, NULL, 'Banking', 'Auto Numbering', '', ''),
 ('Acc Out KAS Numbering', 15, '!KK.KAS.~$00056', '', 234, NULL, 'Sales', 'Auto Numbering', '', ''),
-('Flag [Fa_Asset] change acquisition_date', 1, '1', 'NIL', 235, NULL, 'Upgrade', NULL, NULL, NULL),
 ('Retur Beli Numbering - AutoNumber', 1, '1', '', 236, NULL, 'System', NULL, NULL, NULL),
 ('AP Payment Numbering - AutoNumber', 1, '1', '', 237, NULL, 'Purchase', 'Auto Numbering', '', ''),
 ('Inventory Numbering - AutoNumber', 1, '1', '', 238, NULL, 'Inventory', NULL, NULL, NULL),
 ('Inventory Numbering', 6, '$00013', '', 239, NULL, 'Inventory', NULL, NULL, NULL),
-('Flag Ubah symbol kode barang', 1, '1', 'NIL', 244, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [tmp_stock_card_1] add table', 1, '1', 'NIL', 245, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag add qry_daftar_piutang', 1, '1', 'NIL', 255, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Invoice] your_order_date', 1, '1', 'NIL', 256, NULL, 'Upgrade', NULL, NULL, NULL),
 ('TerbilangInvoice', 1, '0', '', 257, NULL, 'System', NULL, NULL, NULL),
-('Flag [SysVar] set terbilang bahasa', 1, '1', 'NIL', 258, NULL, 'Upgrade', NULL, NULL, NULL),
 ('SelectRecWhenPrintInvoice', 1, '0', '', 259, NULL, 'Sales', NULL, NULL, NULL),
-('Flag [SysVar] set pilih rekening', 1, '1', 'NIL', 260, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [SysVar] add Section,Category,VarType', 1, '1', 'NIL', 261, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory] add SetupTime~ ProcessTime', 1, '1', 'None', 262, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory] add Komisi~ IsService', 1, '1', 'None', 263, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [SysVar] add [Discount Addition]', 1, '1', 'nil', 264, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [Inventory Serial] add function', 1, '1', 'NIL', 265, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [user_modules] add', 1, '1', 'nil', 266, NULL, 'Upgrade', NULL, NULL, NULL),
-('Flag [user_modules] add', 1, '1', 'nil', 267, NULL, 'Upgrade', NULL, NULL, NULL),
 ('FingerprintKey', 1, 'UAA2ARPPEAEJEEE66', 'FingerprintKey', 268, NULL, 'System', NULL, NULL, NULL),
 ('LicenceKey', 37, 'HI42T2GP7EIMN3A2AAA13AE7IEE68IIA2EIAA', 'NIL', 269, NULL, 'System', NULL, NULL, NULL),
 ('LicenceCount', 1, '2', 'NIL', 270, NULL, 'System', NULL, NULL, NULL),
 ('LicenseKey', 1, 'HAA2A2BPE4EJ6EE66', 'LicenseKey', 271, NULL, 'System', NULL, NULL, NULL),
 ('LicenseCount', 1, '2', 'LicenseCount', 272, NULL, 'System', NULL, NULL, NULL),
 ('AppLicenseStatus', 1, '1', 'NIL', 273, NULL, 'Sales', 'Auto Numbering', '', ''),
-('Flag add patch v.630', 1, '1', 'NIL', 274, NULL, 'Upgrade', NULL, NULL, NULL),
 ('Acc In BCA Numbering', 15, '!BCA.KM.~$00035', '', 275, NULL, 'Banking', 'Auto Numbering', '', ''),
 ('Acc Out BCA Numbering', 15, '!BCA.KK.~$00015', '', 276, NULL, 'Banking', 'Auto Numbering', '', ''),
 ('MultiCurrency', 1, '1', 'NIL', 277, NULL, 'System', '', '', ''),
@@ -5170,13 +3850,6 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('Invoice Angkutan Numbering', 7, '$000016', 'NIL', 284, NULL, NULL, NULL, NULL, NULL),
 ('Biaya Angkutan Numbering', 11, '@BA~$000032', 'NIL', 285, NULL, NULL, NULL, NULL, NULL),
 ('ReCalcHppBeforeJournal', 1, '0', 'NIL', 286, NULL, NULL, NULL, NULL, NULL),
-('Flag [credit_card_type] add card_type', 1, '1', 'nil', 287, NULL, NULL, NULL, NULL, NULL),
-('Flag [Kas kasir] add catatan', 1, '1', 'nil', 288, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add [Tax_Amount]', 1, '1', 'nil', 289, NULL, NULL, NULL, NULL, NULL),
-('Flag [PR_Card] addnew table', 1, '1', 'nil', 290, NULL, NULL, NULL, NULL, NULL),
-('Flag [090613].[qry_KartuPiutang]', 1, '1', 'NIL', 291, NULL, NULL, NULL, NULL, NULL),
-('Flag [090615].[Report List] visible', 1, '1', 'NIL', 293, NULL, NULL, NULL, NULL, NULL),
-('Flag [GL_BegBalArc_Year] add table', 1, '1', 'NIL', 294, NULL, NULL, NULL, NULL, NULL),
 ('AutoCreateSupplierWhenOrder', 1, 'True', '', 295, NULL, NULL, NULL, NULL, NULL),
 ('AllowMoveToNextControlWhenEmpty', 1, '', '', 296, NULL, NULL, NULL, NULL, NULL),
 ('Multi Currency', 1, 'True', '', 297, NULL, NULL, NULL, NULL, NULL),
@@ -5184,32 +3857,12 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('GridAutoCompletion', 1, '1', '', 299, NULL, NULL, NULL, NULL, NULL),
 ('GridAutoDropdown', 1, '1', '', 300, NULL, NULL, NULL, NULL, NULL),
 ('GridMoveColWithTab', 1, '0', '', 301, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add sales_comm_amount', 1, '1', 'NIL', 302, NULL, NULL, NULL, NULL, NULL),
-('Flag [090701].[qry_KartuPiutang]', 1, '1', 'NIL', 303, NULL, NULL, NULL, NULL, NULL),
-('Flag [KIS Modules] add onaccount payment', 1, '1', 'nil', 305, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] change employee_id', 1, '1', 'nil', 306, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add forex price', 1, '1', 'nil', 307, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add PrintCount', 1, '1', 'None', 308, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add employee_id~ line_ord', 1, '1', 'None', 309, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory] add [qstep1]', 1, '1', 'nil', 310, NULL, NULL, NULL, NULL, NULL),
-('Flag [Report List] Add more field', 1, '1', 'NIL', 311, NULL, NULL, NULL, NULL, NULL),
-('Flag Set QtyStockUpdateWhen', 1, '999', 'NIL', 312, NULL, NULL, NULL, NULL, NULL),
 ('Service Order Numbering', 14, '!SRV~@-~$00003', 'service job numbering', 313, NULL, NULL, NULL, NULL, NULL),
 ('Service job numbering', 15, '!SJOB~@-~$00005', 'service job numbering', 314, NULL, NULL, NULL, NULL, NULL),
 ('NilaiPembulatan', 3, '0', 'nil', 315, NULL, NULL, NULL, NULL, NULL),
-('Flag [credit_card_type] add [card_name]', 1, '1', 'nil', 316, NULL, NULL, NULL, NULL, NULL),
-('Flag [user_modules] add menu adj', 1, '1', 'nil', 317, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Categories] add field parent_id', 1, '1', 'nil', 318, NULL, NULL, NULL, NULL, NULL),
-('Flag [customers_other_info] add table', 1, '1', 'nil', 319, NULL, NULL, NULL, NULL, NULL),
-('Flag [tmp_kartu_stock] add [comments]', 1, '1', 'nil', 320, NULL, NULL, NULL, NULL, NULL),
-('Flag [user_modules] add menu assembly', 1, '1', 'nil', 321, NULL, NULL, NULL, NULL, NULL),
 ('adjust_raw_material', 5, 'True', 'nil', 322, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Shipment] add addr1, addr2 etc', 1, '1', 'NIL', 323, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Shipment] add kota asal', 1, '1', 'NIL', 324, NULL, NULL, NULL, NULL, NULL),
 ('recalc_discount_when_report', 5, 'False', 'nil', 325, NULL, NULL, NULL, NULL, NULL),
-('Flag [qry_pos_nota] add new query', 1, '1', 'nil', 326, NULL, NULL, NULL, NULL, NULL),
 ('Customer ShipTo Numbering', 6, '$00008', 'nil', 327, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Warehouse] add price', 1, '1', 'NIL', 328, NULL, NULL, NULL, NULL, NULL),
 ('Invoice Numbering - Locked', 1, '1', '', 329, NULL, NULL, NULL, NULL, NULL),
 ('GabungKodeJurnal', 1, '1', '', 330, NULL, NULL, NULL, NULL, NULL),
 ('LoadSelectItem', 1, '', '', 331, NULL, NULL, NULL, NULL, NULL),
@@ -5221,19 +3874,11 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('allow_reprint_po', 1, '1', 'NIL', 337, NULL, NULL, NULL, NULL, NULL),
 ('allow_reprint_po_invoice', 1, '1', 'NIL', 338, NULL, NULL, NULL, NULL, NULL),
 ('allow_reprint_retur_beli', 1, '1', 'NIL', 339, NULL, NULL, NULL, NULL, NULL),
-('Flag Allow Reprint Document', 1, '1', 'NIL', 340, NULL, NULL, NULL, NULL, NULL),
-('Flag [user_modules] add menu form stock opname', 1, '1', 'nil', 341, NULL, NULL, NULL, NULL, NULL),
-('Flag [user_modules] add menu retur opname', 1, '1', 'nil', 342, NULL, NULL, NULL, NULL, NULL),
 ('lock_change_item', 5, 'True', 'nil', 343, NULL, NULL, NULL, NULL, NULL),
-('Flag [user_modules] add menu lap minus', 1, '1', 'nil', 344, NULL, NULL, NULL, NULL, NULL),
 ('Adjustment Numbering', 11, '!ADJ~$00020', '', 345, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Warehouse] add qstep', 1, '1', 'NIL', 346, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Moving] add id', 1, '1', 'NIL', 347, NULL, NULL, NULL, NULL, NULL),
 ('Transfer Stock Numbering', 14, '!TRX~$00002', '', 348, NULL, NULL, NULL, NULL, NULL),
 ('Adjustment Numbering - AutoNumber', 1, '1', '', 349, NULL, NULL, NULL, NULL, NULL),
 ('Transfer Stock Numbering - AutoNumber', 1, '0', 'NIL', 350, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Moving] add catatan', 1, '1', 'NIL', 351, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Warehouse] add desc', 1, '1', 'NIL', 352, NULL, NULL, NULL, NULL, NULL),
 ('col_width_kode', 4, '3110', 'nil', 353, NULL, NULL, NULL, NULL, NULL),
 ('col_width_qty', 3, '555', 'nil', 354, NULL, NULL, NULL, NULL, NULL),
 ('col_width_unit', 3, '450', 'nil', 355, NULL, NULL, NULL, NULL, NULL),
@@ -5241,38 +3886,16 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('col_width_disc_prc', 3, '615', 'nil', 357, NULL, NULL, NULL, NULL, NULL),
 ('col_width_disc_amt', 3, '700', 'nil', 358, NULL, NULL, NULL, NULL, NULL),
 ('col_width_jumlah', 4, '1500', 'nil', 359, NULL, NULL, NULL, NULL, NULL),
-('Flag [user_modules] add menu print kartu', 1, '1', 'nil', 360, NULL, NULL, NULL, NULL, NULL),
-('Flag [user_modules] add menu cust detil', 1, '1', 'nil', 361, NULL, NULL, NULL, NULL, NULL),
-('Flag [invoice_angkutan] add sektor', 1, '1', 'NIL', 362, NULL, NULL, NULL, NULL, NULL),
-('Flag [add field update_status]', 1, '1', 'NIL', 363, NULL, NULL, NULL, NULL, NULL),
-('Flag [credit_card_type] add vales', 1, '1', 'nil', 364, NULL, NULL, NULL, NULL, NULL),
 ('Acc In LIPO 234 Numbering', 11, '!KML~$00001', 'NIL', 365, NULL, NULL, NULL, NULL, NULL),
 ('Acc OutLIPO 234 Numbering', 11, '!KKL~$00002', 'NIL', 366, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Warehouse] add description', 1, '1', 'NIL', 367, NULL, NULL, NULL, NULL, NULL),
-('Flag [org_struct] add table 2', 1, '1', 'NIL', 368, NULL, NULL, NULL, NULL, NULL),
-('Flag [Kendaraan] add merk,bpkb', 1, '1', 'NIL', 369, NULL, NULL, NULL, NULL, NULL),
-('Flag [Wilayah] add kode', 1, '1', 'NIL', 370, NULL, NULL, NULL, NULL, NULL),
 ('NextShipToId', 12, '!SHT1~$00008', 'Penomoran untuk kode pengiriman customer', 371, NULL, NULL, NULL, NULL, NULL),
 ('AllowChangePrice', 0, 'true', NULL, 372, NULL, NULL, NULL, NULL, NULL),
 ('AllowChangeDiscItem', 0, 'true', NULL, 373, NULL, NULL, NULL, NULL, NULL),
-('Flag [payments] change cc charge', 1, '1', 'nil', 374, NULL, NULL, NULL, NULL, NULL),
-('Flag [Recalc Inv Amount]', 1, '1', 'nil', 375, NULL, NULL, NULL, NULL, NULL),
 ('allow_cashier_report', 4, 'True', 'nil', 376, NULL, NULL, NULL, NULL, NULL),
 ('LockSO_Freight', 0, 'true', NULL, 377, NULL, NULL, NULL, NULL, NULL),
 ('LockSO_Tax', 0, 'true', NULL, 378, NULL, NULL, NULL, NULL, NULL),
 ('DisplayConfirmWhenPayment', 0, 'false', NULL, 379, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice] add sales_name', 1, '1', 'nil', 380, NULL, NULL, NULL, NULL, NULL),
-('Flag [Promosi_Disc] add outlet', 1, '1', 'nil', 381, NULL, NULL, NULL, NULL, NULL),
-('Flag change [sys_Grid] colstr1', 1, '1', 'NIL', 382, NULL, NULL, NULL, NULL, NULL),
-('Flag change [GL Transactions] ID_Name', 1, '1', 'NIL', 383, NULL, NULL, NULL, NULL, NULL),
-('Flag [Payments] add JenisUangMuka', 1, '1', 'NIL', 384, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Assembly] add default_cost', 1, '1', 'NIL', 385, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice] add Coa1 s.d Coa5', 1, '1', 'NIL', 386, NULL, NULL, NULL, NULL, NULL),
 ('ItemReturBased', 1, '2', 'NIL', 387, NULL, NULL, NULL, NULL, NULL),
-('Flag [Promosi_Disc] add disc_base', 1, '1', 'nil', 388, NULL, NULL, NULL, NULL, NULL),
-('Flag [User] add discount', 1, '1', 'nil', 389, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice] add promosi_code', 1, '1', 'nil', 390, NULL, NULL, NULL, NULL, NULL),
-('Flag [add field update_by]', 1, '1', 'NIL', 391, NULL, NULL, NULL, NULL, NULL),
 ('AskGLIDPosting', 5, 'False', 'NIL', 394, NULL, NULL, NULL, NULL, NULL),
 ('Acc In Mandiri Numbering', 12, '!BMM.~$00002', 'NIL', 395, NULL, NULL, NULL, NULL, NULL),
 ('Acc OutMandiri Numbering', 12, '!BKM.~$00002', 'NIL', 396, NULL, NULL, NULL, NULL, NULL),
@@ -5281,19 +3904,8 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('Invoice DO Other Numbering - Locked', 1, '1', '', 399, NULL, NULL, NULL, NULL, NULL),
 ('tmp_no_po', 7, 'JDO0037', '', 400, NULL, NULL, NULL, NULL, NULL),
 ('tmp_no_so', 7, 'JDO0037', 'SO00033', 401, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice] add ref do so po', 1, '1', 'NIL', 402, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add line_order_type', 1, '1', 'nil', 403, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Categories] add parent_id', 1, '1', 'NIL', 404, NULL, NULL, NULL, NULL, NULL),
-('Flag [Purchase Order Lineitems] add harga jual', 1, '1', 'NIL', 405, NULL, NULL, NULL, NULL, NULL),
-('Flag [Inventory Products] add harga jual', 1, '1', 'NIL', 406, NULL, NULL, NULL, NULL, NULL),
-('Flag [Purchase Order Lineitems] add dept', 1, '1', 'NIL', 407, NULL, NULL, NULL, NULL, NULL),
-('Flag [Purchase Order] add type invoice', 1, '1', 'NIL', 411, NULL, NULL, NULL, NULL, NULL),
-('Flag [Purchase Order Lineitems] add price_margin', 1, '1', 'NIL', 412, NULL, NULL, NULL, NULL, NULL),
-('Flag [Invoice Lineitems] add disc add', 1, '1', 'nil', 413, NULL, NULL, NULL, NULL, NULL),
-('Flag [customers_other_info] add disc amount', 1, '1', 'nil', 414, NULL, NULL, NULL, NULL, NULL),
 ('HideAccountEarningAccount', 5, 'True', '', 415, NULL, NULL, NULL, NULL, NULL),
 ('AllowVoucherNonMember', 5, 'True', 'nil', 416, NULL, NULL, NULL, NULL, NULL),
-('Flag [voucher_master] addnew', 1, '1', 'nil', 417, NULL, NULL, NULL, NULL, NULL),
 ('MoveToNextCol', 5, 'False', 'NIL', 418, NULL, NULL, NULL, NULL, NULL),
 ('InvalidAcc_Jurnal', 0, '1483', 'InvalidAcc_Jurnal', 419, NULL, NULL, NULL, NULL, NULL),
 ('InvalidAcc_Jurnal', 0, '1408', 'InvalidAcc_Jurnal', 420, NULL, NULL, NULL, NULL, NULL),
@@ -5301,7 +3913,6 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('UnlockChangePriceInvoice', 5, '', '', 422, NULL, NULL, NULL, NULL, NULL),
 ('ProtectChangePrice', 5, '', '', 423, NULL, NULL, NULL, NULL, NULL),
 ('ProtectChangeDisc', 5, '', '', 424, NULL, NULL, NULL, NULL, NULL),
-('Flag [Payments] add angsur_no_dari', 1, '1', 'NIL', 425, NULL, NULL, NULL, NULL, NULL),
 ('Purchase Order Number', 21, '', 'No Comment', 445, NULL, NULL, NULL, NULL, NULL),
 ('Retur Jual Numbering', 20, '', 'No Comment', 446, NULL, NULL, NULL, NULL, NULL),
 ('Adjustmnet Numbering', 20, '', 'No Comment', 447, NULL, NULL, NULL, NULL, NULL),
@@ -5389,15 +4000,11 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('CoaGift', NULL, '0', 'auto', 565, NULL, NULL, NULL, NULL, NULL),
 ('Adjust Numbering', NULL, '!ADJ~$00006', 'Numbering', 567, NULL, NULL, NULL, NULL, NULL);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-
-echo "
-
---
--- Table structure for table `sys_grid`
---
-";
+case 35:
+	$table="sysgrid";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sys_grid` (
@@ -5439,15 +4046,8 @@ CREATE TABLE IF NOT EXISTS `sys_grid` (
   PRIMARY KEY  (`selectionindex`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `sys_objects`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sys_objects` (
@@ -5462,14 +4062,8 @@ CREATE TABLE IF NOT EXISTS `sys_objects` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `sys_tooltip`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sys_tooltip` (
@@ -5485,153 +4079,8 @@ CREATE TABLE IF NOT EXISTS `sys_tooltip` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `tbtreeviewdata`
---
-";
-$sql="
-
-CREATE TABLE IF NOT EXISTS `tbtreeviewdata` (
-  `id` varchar(20) collate latin1_general_ci NOT NULL,
-  `parentid` varchar(20) collate latin1_general_ci NOT NULL,
-  `text` varchar(200) collate latin1_general_ci default NULL,
-  `image` varchar(30) collate latin1_general_ci default NULL,
-  `expand` tinyint(1) default NULL,
-  `rank` int(11) default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Dumping data for table `tbtreeviewdata`
---
-";
-$sql="
-
-INSERT INTO `tbtreeviewdata` (`id`, `parentid`, `text`, `image`, `expand`, `rank`) VALUES
-('hardware', 'root', 'Hardware', 'Folder.gif', 1, 1),
-('software', 'root', 'Software', 'Folder.gif', 1, 2),
-('ebook', 'root', 'E-books', 'Folder.gif', 1, 4),
-('intel', 'hardware', 'Intel.doc', 'doc.gif', 0, 2),
-('recycle', 'root', 'Recycle', 'xpRecycle.gif', 1, 5),
-('amd', 'software', 'AMD.doc', 'doc.gif', 0, 2),
-('asus', 'hardware', 'Asus.doc', 'doc.gif', 0, 1),
-('windowxp', 'hardware', 'WindowXP.doc', 'doc.gif', 0, 3),
-('linux', 'software', 'Linux.doc', 'doc.gif', 0, 1),
-('macos', '', 'MacOs.doc', 'doc.gif', 0, 1);
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Table structure for table `tb_imageview`
---
-";
-$sql="
-
-CREATE TABLE IF NOT EXISTS `tb_imageview` (
-  `ID` int(11) NOT NULL,
-  `Small_Image` varchar(30) NOT NULL,
-  `Big_Image` varchar(30) NOT NULL,
-  `Description` varchar(200) default NULL,
-  KEY `ID` (`ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Dumping data for table `tb_imageview`
---
-";
-$sql="
-
-INSERT INTO `tb_imageview` (`ID`, `Small_Image`, `Big_Image`, `Description`) VALUES
-(1, 'small_image1.jpg', 'big_image1.jpg', 'Color of Autumn'),
-(2, 'small_image2.jpg', 'big_image2.jpg', 'Back to Nature'),
-(3, 'small_image3.jpg', 'big_image3.jpg', 'Beauty of Hawaii '),
-(4, 'small_image4.jpg', 'big_image4.jpg', 'Pure'),
-(5, 'small_image5.jpg', 'big_image5.jpg', 'Dream Home'),
-(6, 'small_image6.jpg', 'big_image6.jpg', 'Imazing Nature');
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Table structure for table `tb_slidemenu`
---
-";
-$sql="
-
-CREATE TABLE IF NOT EXISTS `tb_slidemenu` (
-  `ID` varchar(15) NOT NULL,
-  `ParentID` varchar(15) NOT NULL,
-  `IsChild` tinyint(1) NOT NULL,
-  `Text` varchar(50) default NULL,
-  PRIMARY KEY  (`ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Dumping data for table `tb_slidemenu`
---
-";
-$sql="
-
-INSERT INTO `tb_slidemenu` (`ID`, `ParentID`, `IsChild`, `Text`) VALUES
-('companyhome', 'root', 0, 'Company Home'),
-('systemtasks', 'root', 0, 'System Tasks'),
-('otherplaces', 'root', 0, 'Other Places'),
-('exploresite', 'root', 0, 'Explore Site'),
-('resources', 'root', 0, 'Resources'),
-('entertainment', 'companyhome', 1, 'Entertainment'),
-('games', 'companyhome', 1, 'Games'),
-('greetingcards', 'companyhome', 1, 'Greeting Cards'),
-('downloads', 'companyhome', 1, 'Downloads'),
-('newcars', 'companyhome', 1, 'New cars'),
-('smartstuff', 'companyhome', 1, 'Smart Stuff'),
-('viewsysteminfo', 'systemtasks', 1, 'View System info'),
-('addprograms', 'systemtasks', 1, 'Add programs'),
-('changesettings', 'systemtasks', 1, 'Change settings'),
-('addusers', 'systemtasks', 1, 'Add Users'),
-('MyNetworkPlaces', 'otherplaces', 1, 'My Network Places'),
-('MyDocuments', 'otherplaces', 1, 'My Documents'),
-('SharedDocuments', 'otherplaces', 1, 'Shared Documents'),
-('ControlPanel', 'otherplaces', 1, 'Control Panel'),
-('careers', 'exploresite', 1, 'Careers'),
-('buytickets', 'exploresite', 1, 'Buy Tickets'),
-('Business', 'exploresite', 1, 'Business'),
-('Enewsletters ', 'resources', 1, 'E-Newsletters '),
-('DiscussionCent', 'resources', 1, 'Discussion Center '),
-('WhitePapers ', 'resources', 1, 'White Papers '),
-('OnlineCourses ', 'resources', 1, 'Online Courses '),
-('OnlineBookLib', 'resources', 1, 'Online Book Library');
-";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
-
---
--- Table structure for table `trans_type`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `trans_type` (
@@ -5641,15 +4090,8 @@ CREATE TABLE IF NOT EXISTS `trans_type` (
   PRIMARY KEY  (`type_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `type_of_account`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `type_of_account` (
@@ -5660,15 +4102,8 @@ CREATE TABLE IF NOT EXISTS `type_of_account` (
   PRIMARY KEY  (`type_of_account`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `type_of_payment`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `type_of_payment` (
@@ -5682,14 +4117,7 @@ CREATE TABLE IF NOT EXISTS `type_of_payment` (
   PRIMARY KEY  (`type_of_payment`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Dumping data for table `type_of_payment`
---
-";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 $sql="
 
 INSERT INTO `type_of_payment` (`type_of_payment`, `discount_percent`, `discount_days`, `days`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -5698,15 +4126,12 @@ INSERT INTO `type_of_payment` (`type_of_payment`, `discount_percent`, `discount_
 ('60 Hari', 0, 30, 60, 0, '', ''),
 ('Kredi 90 Hari', 0.1, 30, 90, 0, '', '');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
+case 3:
+	$table="user";
 
-echo "
-
---
--- Table structure for table `user`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `user` (
@@ -5725,14 +4150,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY  (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Dumping data for table `user`
---
-";
 $sql="
 
 INSERT INTO `user` (`user_id`, `username`, `password`, `path_image`, `update_status`, `disc_prc_max`, `disc_amt_max`, `email`, `NIP`, `userlevel`, `active`, `cid`) VALUES
@@ -5747,15 +4166,8 @@ INSERT INTO `user` (`user_id`, `username`, `password`, `path_image`, `update_sta
 ('ujang', 'ujang', 'ujang', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'T01'),
 ('acong', 'acong', 'acong', '', 0, 0, 0, '', '', '', 0, 'T01');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `user_group_modules`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `user_group_modules` (
@@ -5770,14 +4182,9 @@ CREATE TABLE IF NOT EXISTS `user_group_modules` (
   UNIQUE KEY `x1` (`group_id`,`module_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1655 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-
-echo "
---
--- Dumping data for table `user_group_modules`
---
-";
 $sql="
 
 INSERT INTO `user_group_modules` (`id`, `group_id`, `module_id`, `permission`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -5991,15 +4398,13 @@ INSERT INTO `user_group_modules` (`id`, `group_id`, `module_id`, `permission`, `
 (1633, 'ANDRI', 'ID_JasaKiriman', NULL, NULL, NULL, NULL),
 (1631, 'ANDRI', 'frmMain.Addnew', NULL, NULL, NULL, NULL);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
+
+case 37:
+	$table="jobs";
 
 
-echo "
-
---
--- Table structure for table `user_job`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `user_job` (
@@ -6013,14 +4418,9 @@ CREATE TABLE IF NOT EXISTS `user_job` (
   UNIQUE KEY `x1` (`user_id`,`group_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=203 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Dumping data for table `user_job`
---
-";
 $sql="
 
 INSERT INTO `user_job` (`id`, `user_id`, `group_id`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -6049,15 +4449,13 @@ INSERT INTO `user_job` (`id`, `user_id`, `group_id`, `update_status`, `sourceaut
 (116, 'andri', 'test', NULL, NULL, NULL),
 (201, 'admin', 'ADM', NULL, NULL, NULL);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
+
+case 38:
+	$table="voucher";
 
 
-echo "
-
---
--- Table structure for table `voucher_master`
---
-";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `voucher_master` (
@@ -6078,15 +4476,8 @@ CREATE TABLE IF NOT EXISTS `voucher_master` (
   PRIMARY KEY  (`voucher_no`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Table structure for table `wilayah`
---
-";
 $sql="
 CREATE TABLE IF NOT EXISTS `wilayah` (
   `wilayah` varchar(50) character set utf8 default NULL,
@@ -6096,14 +4487,9 @@ CREATE TABLE IF NOT EXISTS `wilayah` (
   PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 
-echo "
---
--- Table structure for table `yescalendaricons`
---
-";
 $sql="
 CREATE TABLE IF NOT EXISTS `yescalendaricons` (
   `noteiconname` varchar(50) character set utf8 default NULL,
@@ -6114,14 +4500,8 @@ CREATE TABLE IF NOT EXISTS `yescalendaricons` (
   `sourcefile` varchar(255) character set utf8 default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
---
--- Table structure for table `yes_smartsearchdefinition`
---
-";
 $sql="
 CREATE TABLE IF NOT EXISTS `yes_smartsearchdefinition` (
   `searchid` varchar(50) character set utf8 default NULL,
@@ -6143,17 +4523,11 @@ CREATE TABLE IF NOT EXISTS `yes_smartsearchdefinition` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-
-echo "
---
--- Structure for view `qry_coa`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_coa`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+case 39:
+	$table="query";
 $sql="
 CREATE  VIEW `qry_coa` AS select `chart_of_accounts`.`account` AS `account`,
 `chart_of_accounts`.`account_description` AS `account_description`,_utf8'D' AS `jenis`,
@@ -6164,132 +4538,51 @@ select `gl_report_groups`.`group_type` AS `group_type`,`gl_report_groups`.`group
 _utf8'H' AS `jenis`,_utf8'' AS `db_or_cr`,NULL AS `0`,`gl_report_groups`.`parent_group_type` AS `parent_group_type` 
 from `gl_report_groups`;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Structure for view `qry_kartustock_adj`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_kartustock_adj`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 $sql="
 CREATE VIEW `qry_kartustock_adj` AS select `i`.`date_trans` AS `tanggal`,_utf8'Adjustment' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,`s`.`description` AS `description`,abs(if((`i`.`to_qty` > 0),`i`.`to_qty`,0)) AS `qty_masuk`,abs(if((`i`.`to_qty` < 0),`i`.`to_qty`,0)) AS `qty_keluar`,0 AS `price`,`i`.`cost` AS `cost`,(`i`.`cost` * abs(`i`.`to_qty`)) AS `amount_masuk`,0 AS `amount_keluar`,`i`.`to_location` AS `gudang`,`i`.`comments` AS `comments` from (`inventory_moving` `i` left join `inventory` `s` on((`i`.`item_number` = `s`.`item_number`)));
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Structure for view `qry_kartustock_delivery`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_kartustock_delivery`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 $sql="
 CREATE  VIEW `qry_kartustock_delivery` AS select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Surat Jalan' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,0 AS `qty_masuk`,abs(`il`.`quantity`) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where (`i`.`invoice_type` = _utf8'D');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Structure for view `qry_kartustock_etc_out`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_kartustock_etc_out`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 $sql="
 CREATE   VIEW `qry_kartustock_etc_out` AS select `pp`.`date_received` AS `tanggal`,`pp`.`receipt_type` AS `tipe`,`pp`.`receipt_type` AS `jenis`,_utf8'Unknown' AS `termin`,`pp`.`shipment_id` AS `no_sumber`,`pp`.`item_number` AS `item_number`,`s`.`description` AS `description`,0 AS `qty_masuk`,abs(`pp`.`quantity_received`) AS `qty_keluar`,`pp`.`unit` AS `unit`,`pp`.`cost` AS `price`,`pp`.`cost` AS `cost`,0 AS `discount`,0 AS `discount_amount`,`pp`.`total_amount` AS `amount`,`pp`.`warehouse_code` AS `gudang`,_utf8'IDR' AS `mata_uang`,1 AS `rate`,`pp`.`supplier_number` AS `supplier`,`pp`.`comments` AS `comments`,`pp`.`mu_qty` AS `mu_qty`,`pp`.`multi_unit` AS `multi_unit`,`pp`.`mu_price` AS `mu_price` from (`inventory_products` `pp` left join `inventory` `s` on((`pp`.`item_number` = `s`.`item_number`))) where (`pp`.`receipt_type` = _utf8'ETC_OUT');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Structure for view `qry_kartustock_invoice`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_kartustock_invoice`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 $sql="
 CREATE   VIEW `qry_kartustock_invoice` AS select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Faktur Jual Kontan' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,if((`il`.`quantity` < 0),abs(`il`.`quantity`),0) AS `qty_masuk`,if((`il`.`quantity` > 0),abs(`il`.`quantity`),0) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where ((`i`.`invoice_type` = _utf8'I') and (`i`.`payment_terms` in (_utf8'Cash',_utf8'',_utf8'Tunai',_utf8'Kontan'))) union all select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Surat Jalan' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,if((`il`.`quantity` < 0),abs(`il`.`quantity`),0) AS `qty_masuk`,if((`il`.`quantity` > 0),abs(`il`.`quantity`),0) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where ((`i`.`invoice_type` = _utf8'D') and (`il`.`from_line_type` = _utf8'SO')) union all select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Retur Jual' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,abs(`il`.`quantity`) AS `qty_masuk`,0 AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where (`i`.`invoice_type` = _utf8'R') union all select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Konsinyasi' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,if((`il`.`quantity` < 0),abs(`il`.`quantity`),0) AS `qty_masuk`,if((`il`.`quantity` > 0),abs(`il`.`quantity`),0) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where (`i`.`invoice_type` = _utf8'K');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Structure for view `qry_kartustock_purchase`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_kartustock_purchase`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 $sql="
 CREATE VIEW `qry_kartustock_purchase` AS select `p`.`po_date` AS `tanggal`,_utf8'BELI_KONTAN' AS `tipe`,_utf8'Faktur Beli Kredit' AS `jenis`,`p`.`terms` AS `terms`,`pi`.`purchase_order_number` AS `no_sumber`,`pi`.`item_number` AS `item_number`,`pi`.`description` AS `description`,`pi`.`quantity` AS `qty_masuk`,0 AS `qty_keluar`,`pi`.`unit` AS `unit`,`pi`.`price` AS `price`,`pi`.`price` AS `cost`,`pi`.`discount` AS `discount`,`pi`.`disc_amount_1` AS `disc_amount_1`,`pi`.`total_price` AS `amount_masuk`,0 AS `amount_keluar`,`pi`.`warehouse_code` AS `gudang`,`pi`.`currency_code` AS `mata_uang`,`pi`.`currency_rate` AS `rate`,`p`.`supplier_number` AS `supplier_number`,`pi`.`mu_qty` AS `mu_qty`,`pi`.`multi_unit` AS `multi_unit`,`pi`.`mu_harga` AS `mu_harga`,`p`.`comments` AS `comments` from (`purchase_order_lineitems` `pi` left join `purchase_order` `p` on((`p`.`purchase_order_number` = `pi`.`purchase_order_number`))) where ((`p`.`potype` = _utf8'I') and (`p`.`terms` in (_utf8'',_utf8'CASH',_utf8'TUNAI',_utf8'KONTAN'))) union all select `p`.`po_date` AS `tanggal`,_utf8'RET_BELI' AS `tipe`,_utf8'Retur Beli Kredit' AS `jenis`,`p`.`terms` AS `terms`,`pi`.`purchase_order_number` AS `no_sumber`,`pi`.`item_number` AS `item_number`,`pi`.`description` AS `description`,0 AS `qty_masuk`,abs(`pi`.`quantity`) AS `qty_keluar`,`pi`.`unit` AS `unit`,`pi`.`price` AS `price`,`pi`.`price` AS `cost`,`pi`.`discount` AS `discount`,`pi`.`disc_amount_1` AS `disc_amount_1`,`pi`.`total_price` AS `amount_masuk`,0 AS `amount_keluar`,`pi`.`warehouse_code` AS `gudang`,`pi`.`currency_code` AS `mata_uang`,`pi`.`currency_rate` AS `rate`,`p`.`supplier_number` AS `supplier_number`,`pi`.`mu_qty` AS `mu_qty`,`pi`.`multi_unit` AS `multi_unit`,`pi`.`mu_harga` AS `mu_harga`,`p`.`comments` AS `comments` from (`purchase_order_lineitems` `pi` left join `purchase_order` `p` on((`p`.`purchase_order_number` = `pi`.`purchase_order_number`))) where (`p`.`potype` = _utf8'R');
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
-echo "
-
---
--- Structure for view `qry_kartustock_receipt`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_kartustock_receipt`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
 $sql="
 CREATE  VIEW `qry_kartustock_receipt` AS select `pp`.`date_received` AS `tanggal`,`pp`.`receipt_type` AS `tipe`,`pp`.`receipt_type` AS `jenis`,_utf8'Unknown' AS `termin`,`pp`.`shipment_id` AS `no_sumber`,`pp`.`item_number` AS `item_number`,`s`.`description` AS `description`,abs(if((`pp`.`quantity_received` > 0),`pp`.`quantity_received`,0)) AS `qty_masuk`,abs(if((`pp`.`quantity_received` < 0),`pp`.`quantity_received`,0)) AS `qty_keluar`,`pp`.`unit` AS `unit`,`pp`.`cost` AS `price`,`pp`.`cost` AS `cost`,0 AS `discount`,0 AS `discount_amount`,`pp`.`total_amount` AS `amount`,`pp`.`warehouse_code` AS `gudang`,_utf8'IDR' AS `mata_uang`,1 AS `rate`,`pp`.`supplier_number` AS `supplier`,`pp`.`comments` AS `comments`,`pp`.`mu_qty` AS `mu_qty`,`pp`.`multi_unit` AS `multi_unit`,`pp`.`mu_price` AS `mu_price` from (`inventory_products` `pp` left join `inventory` `s` on((`pp`.`item_number` = `s`.`item_number`))) where (`pp`.`receipt_type` not in (_utf8'INVOICE',_utf8'RET_BELI',_utf8'ETC_OUT'));
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-
-echo "
---
--- Structure for view `qry_kartustock_transfer`
---";
-$sql="
-DROP TABLE IF EXISTS `qry_kartustock_transfer`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 $sql="
 CREATE VIEW `qry_kartustock_transfer` AS select `i`.`date_trans` AS `tanggal`,_utf8'Transfer' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,`s`.`description` AS `description`,0 AS `qty_masuk`,abs(`i`.`to_qty`) AS `qty_keluar`,0 AS `price`,0 AS `cost`,0 AS `amount_masuk`,(`i`.`cost` * abs(`i`.`to_qty`)) AS `amount_keluar`,`i`.`from_location` AS `gudang`,`i`.`comments` AS `comments` from (`inventory_moving` `i` left join `inventory` `s` on((`i`.`item_number` = `s`.`item_number`))) where (`i`.`from_location` <> `i`.`to_location`) union all select `i`.`date_trans` AS `tanggal`,_utf8'Transfer' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,`s`.`description` AS `description`,abs(`i`.`to_qty`) AS `qty_masuk`,0 AS `qty_keluar`,0 AS `price`,0 AS `cost`,(`i`.`cost` * abs(`i`.`to_qty`)) AS `amount_masuk`,0 AS `amount_keluar`,`i`.`to_location` AS `gudang`,`i`.`comments` AS `comments` from (`inventory_moving` `i` left join `inventory` `s` on((`i`.`item_number` = `s`.`item_number`))) where (`i`.`from_location` <> `i`.`to_location`);
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
-
-echo "
---
--- Structure for view `qry_kartustock_union`
---
-";
-$sql="DROP TABLE IF EXISTS `qry_kartustock_union`;
-";
-if(mysql_query($sql))echo "";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
 $sql="CREATE VIEW `qry_kartustock_union` AS select `i`.`tanggal` AS `tanggal`,`i`.`jenis` AS `jenis`,`i`.`no_sumber` AS `no_sumber`,`i`.`item_number` AS `item_number`,`i`.`description` AS `description`,`i`.`qty_masuk` AS `qty_masuk`,`i`.`qty_keluar` AS `qty_keluar`,`i`.`price` AS `price`,`i`.`cost` AS `cost`,if((`i`.`qty_masuk` > 0),(`i`.`cost` * `i`.`qty_masuk`),0) AS `amount_masuk`,if((`i`.`qty_masuk` > 0),0,(`i`.`cost` * `i`.`qty_keluar`)) AS `amount_keluar`,`i`.`gudang` AS `gudang`,`i`.`comments` AS `comments` from `qry_kartustock_invoice` `i` where (`i`.`item_number` is not null) union all select `r`.`tanggal` AS `tanggal`,`r`.`jenis` AS `jenis`,`r`.`no_sumber` AS `no_sumber`,`r`.`item_number` AS `item_number`,`r`.`description` AS `description`,`r`.`qty_masuk` AS `qty_masuk`,`r`.`qty_keluar` AS `qty_keluar`,`r`.`price` AS `price`,`r`.`cost` AS `cost`,if((`r`.`qty_masuk` > 0),(`r`.`cost` * `r`.`qty_masuk`),0) AS `amount_masuk`,if((`r`.`qty_masuk` > 0),0,(`r`.`cost` * `r`.`qty_keluar`)) AS `amount_keluar`,`r`.`gudang` AS `gudang`,`r`.`comments` AS `comments` from `qry_kartustock_receipt` `r` union all select `r`.`tanggal` AS `tanggal`,`r`.`jenis` AS `jenis`,`r`.`no_sumber` AS `no_sumber`,`r`.`item_number` AS `item_number`,`r`.`description` AS `description`,`r`.`qty_masuk` AS `qty_masuk`,`r`.`qty_keluar` AS `qty_keluar`,`r`.`price` AS `price`,`r`.`cost` AS `cost`,if((`r`.`qty_masuk` > 0),(`r`.`cost` * `r`.`qty_masuk`),0) AS `amount_masuk`,if((`r`.`qty_masuk` > 0),0,(`r`.`cost` * `r`.`qty_keluar`)) AS `amount_keluar`,`r`.`gudang` AS `gudang`,`r`.`comments` AS `comments` from `qry_kartustock_etc_out` `r` union all select `p`.`tanggal` AS `tanggal`,`p`.`jenis` AS `jenis`,`p`.`no_sumber` AS `no_sumber`,`p`.`item_number` AS `item_number`,`p`.`description` AS `description`,`p`.`qty_masuk` AS `qty_masuk`,`p`.`qty_keluar` AS `qty_keluar`,`p`.`price` AS `price`,`p`.`cost` AS `cost`,`p`.`amount_masuk` AS `amount_masuk`,`p`.`amount_keluar` AS `amount_keluar`,`p`.`gudang` AS `gudang`,`p`.`comments` AS `comments` from `qry_kartustock_purchase` `p` union all select `qry_kartustock_adj`.`tanggal` AS `tanggal`,`qry_kartustock_adj`.`jenis` AS `jenis`,`qry_kartustock_adj`.`no_sumber` AS `no_sumber`,`qry_kartustock_adj`.`item_number` AS `item_number`,`qry_kartustock_adj`.`description` AS `description`,`qry_kartustock_adj`.`qty_masuk` AS `qty_masuk`,`qry_kartustock_adj`.`qty_keluar` AS `qty_keluar`,`qry_kartustock_adj`.`price` AS `price`,`qry_kartustock_adj`.`cost` AS `cost`,`qry_kartustock_adj`.`amount_masuk` AS `amount_masuk`,`qry_kartustock_adj`.`amount_keluar` AS `amount_keluar`,`qry_kartustock_adj`.`gudang` AS `gudang`,`qry_kartustock_adj`.`comments` AS `comments` from `qry_kartustock_adj` union all select `qry_kartustock_transfer`.`tanggal` AS `tanggal`,`qry_kartustock_transfer`.`jenis` AS `jenis`,`qry_kartustock_transfer`.`no_sumber` AS `no_sumber`,`qry_kartustock_transfer`.`item_number` AS `item_number`,`qry_kartustock_transfer`.`description` AS `description`,`qry_kartustock_transfer`.`qty_masuk` AS `qty_masuk`,`qry_kartustock_transfer`.`qty_keluar` AS `qty_keluar`,`qry_kartustock_transfer`.`price` AS `price`,`qry_kartustock_transfer`.`cost` AS `cost`,`qry_kartustock_transfer`.`amount_masuk` AS `amount_masuk`,`qry_kartustock_transfer`.`amount_keluar` AS `amount_keluar`,`qry_kartustock_transfer`.`gudang` AS `gudang`,`qry_kartustock_transfer`.`comments` AS `comments` from `qry_kartustock_transfer`;
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "
---
--- Structure for view `qry_kartu_piutang`
---
-";
+case 30:
+	$table="qry_kartu_piutang";
+	
 $sql="CREATE  VIEW qry_kartu_piutang AS
    select invoice_type as jenis, sales_order_number as ref,invoice_number as no_bukti
   ,invoice_date as tanggal,amount as jumlah,sold_to_customer as customer_number
@@ -6318,14 +4611,11 @@ $sql="CREATE  VIEW qry_kartu_piutang AS
   left join invoice i on i.invoice_number=c.docnumber
   where transtype='SO-DEBIT MEMO' and invoice_type='I'
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-echo "
---
--- Structure for view `qry_kartu_hutang`
---
-";
-
+case 29:
+	$table="qry_kartu_hutang";
 $sql="create view qry_kartu_hutang as 
 
 select invoice_date as tanggal,case when purchase_order<>0 then purchase_order_number
@@ -6361,59 +4651,12 @@ left join purchase_order p on p.purchase_order_number=c.docnumber
 where c.transtype='PO-CREDIT MEMO'
 
 ";
-if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
 
-
-// new table for payroll
-echo "
-DROP TABLE employee;
-
-CREATE TABLE `employee` (
-  `nip` varchar(50) character set utf8 NOT NULL,
-  `nama` varchar(50) character set utf8 default NULL,
-  `tgllahir` datetime default NULL,
-  `agama` varchar(12) character set utf8 default NULL,
-  `kelamin` varchar(1) character set utf8 default NULL,
-  `status` varchar(12) character set utf8 default NULL,
-  `idktpno` varchar(20) character set utf8 default NULL,
-  `hireddate` datetime default NULL,
-  `dept` varchar(50) character set utf8 default NULL,
-  `divisi` varchar(50) character set utf8 default NULL,
-  `level` varchar(50) character set utf8 default NULL,
-  `position` varchar(50) character set utf8 default NULL,
-  `supervisor` varchar(50) character set utf8 default NULL,
-  `payperiod` varchar(50) character set utf8 default NULL,
-  `alamat` varchar(100) character set utf8 default NULL,
-  `kodepos` varchar(50) character set utf8 default NULL,
-  `telpon` varchar(12) character set utf8 default NULL,
-  `hp` varchar(25) character set utf8 default NULL,
-  `gp` double default NULL,
-  `tjabatan` double default NULL,
-  `ttransport` double default NULL,
-  `tmakan` double default NULL,
-  `incentive` double default NULL,
-  `sc` double(11,0) default NULL,
-  `rateot` double default NULL,
-  `tkesehatan` double default NULL,
-  `tlain` double default NULL,
-  `bjabatang` double default NULL,
-  `iurantht` double default NULL,
-  `blain` double default NULL,
-  `emptype` varchar(20) character set utf8 default NULL,
-  `emplevel` varchar(20) character set utf8 default NULL,
-  `pathimage` varchar(200) character set utf8 default NULL,
-  `update_status` int(11) default NULL,
-  `nip_id` varchar(50) default NULL,
-  `npwp` varchar(50) default NULL,
-  `bank_name` varchar(50) default NULL,
-  `account` varchar(50) default NULL,
-  `tempat_lahir` varchar(50) default NULL,
-  `pendidikan` varchar(50) default NULL,
-  `gol_darah` varchar(50) default NULL,
-  PRIMARY KEY  (`nip`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1
-
-
+case 40:
+	$table="payroll";
+$sql=" 
 CREATE TABLE jenis_tunjangan (
 	kode varchar (50) character set utf8 NOT NULL ,
 	keterangan varchar (50) character set utf8 NULL ,
@@ -6422,9 +4665,10 @@ CREATE TABLE jenis_tunjangan (
 	ref_column varchar (50) character set utf8 NULL ,
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-
+$sql=" 
 CREATE TABLE jenis_potongan (
 	kode varchar (50) character set utf8 NOT NULL ,
 	keterangan varchar (50) character set utf8 NULL ,
@@ -6433,46 +4677,62 @@ CREATE TABLE jenis_potongan (
 	ref_column varchar (50) character set utf8 NULL ,
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE employee_type (
 	kode varchar (50) character set utf8 NOT NULL ,
 	keterangan varchar (50) character set utf8 NULL ,
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE employee_group (
 	kode varchar (50) character set utf8 NOT NULL ,
 	keterangan varchar (50) character set utf8 NULL ,
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE employee_status (
 	status varchar (50) character set utf8 NOT NULL ,
 	keterangan varchar (50) character set utf8 NULL ,
 	update_status int NULL ,
 	PRIMARY KEY  (`status`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE employee_level (
 	kode varchar (50) character set utf8 NOT NULL ,
 	keterangan varchar (50) character set utf8 NULL ,
 	PRIMARY KEY  (`kode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE divisions (
 	div_code varchar (50) character set utf8 NOT NULL ,
 	div_name varchar (50) character set utf8 NULL ,
 	PRIMARY KEY  (div_code)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
-CREATE TABLE departments (
-	dept_code varchar (50) character set utf8 NOT NULL ,
-	dept_name varchar (50) character set utf8 NULL ,
-	PRIMARY KEY  (dept_code)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+	break;
+
+case 20:
+	$table="angsuran";
+$sql=" 
 
 CREATE TABLE hr_emp_angsuran (
 	id int(11) NOT NULL auto_increment,
@@ -6489,8 +4749,10 @@ CREATE TABLE hr_emp_angsuran (
 	no_bukti_bayar varchar(50) null,
 	jenis_bayar int null,
 	PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
+$sql=" 
 
 CREATE TABLE hr_emp_default_com (
 	id int(11) NOT NULL auto_increment,
@@ -6498,7 +4760,10 @@ CREATE TABLE hr_emp_default_com (
 	def_com_code varchar (50) character set utf8 NULL ,
 	def_com_value double NULL ,
 	PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE hr_emp_level_com (
 	id int(11) NOT NULL auto_increment,
@@ -6509,7 +4774,10 @@ CREATE TABLE hr_emp_level_com (
 	salary_com_code varchar (50) character set utf8 NULL ,
 	salary_com_name varchar (50) character set utf8 NULL ,
 	PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE hr_emp_loan (
 	loan_number varchar (50) character set utf8 NULL ,
@@ -6527,15 +4795,20 @@ CREATE TABLE hr_emp_loan (
 	id int(11) NOT NULL auto_increment,
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
+$sql=" 
 CREATE TABLE hr_pph (
 	kode varchar (50) character set utf8 NULL ,
 	percent_value real NULL ,
 	low_value double NULL ,
 	high_value double NULL ,
 	PRIMARY KEY  (kode)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
 
+$sql=" 
 
 CREATE TABLE hr_pph_form (
 	id int(11) NOT NULL auto_increment,
@@ -6547,7 +4820,13 @@ CREATE TABLE hr_pph_form (
 	rumus varchar(250) null,
 	template varchar(50) null,
 	PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	break;
+
+case 2:
+	$table="pph";
+$sql=" 
 
 CREATE TABLE employee_pph (
 	id int(11) NOT NULL auto_increment,
@@ -6557,7 +4836,9 @@ CREATE TABLE employee_pph (
 	tahun int NULL ,
 	bulan int null,
 	PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+$sql=" 
 
 CREATE TABLE hr_shift (
 	kode varchar (50) character set utf8 NOT NULL ,
@@ -6565,7 +4846,10 @@ CREATE TABLE hr_shift (
 	time_out datetime NULL ,
 	different_day bit NULL ,
 	PRIMARY KEY  (kode)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE employee_shift (
 	id int(11) NOT NULL auto_increment,
@@ -6575,21 +4859,30 @@ CREATE TABLE employee_shift (
 	keterangan int NULL ,
 	tcid varchar(50) null,
 	PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE hr_ptkp (
 	kode varchar (50) character set utf8 NOT NULL ,
 	keterangan varchar(50) null,
 	jumlah double NULL ,
 	PRIMARY KEY  (kode)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 INSERT INTO hr_ptkp(kode,keterangan,jumlah)
 values('K0','KAWIN ANAK 0',26326000),
 ('K1','KAWIN ANAK 1',28350000),
 ('K2','KAWIN ANAK 2',30375000),
 ('K3','KAWIN ANAK 3',32400000),
-('TK','BELUM KAWIN',24300000);
+('TK','BELUM KAWIN',24300000);";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 CREATE TABLE time_card_detail (
 	id int(11) NOT NULL auto_increment,
@@ -6620,12 +4913,18 @@ CREATE TABLE time_card_detail (
 	free_hour varchar(5) null,
 	
 	PRIMARY KEY  (id) 
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 create view qry_payroll_component as 
 select 'income' as jenis, kode,keterangan,sifat,is_variable,ref_column from jenis_tunjangan
 union all
-select  'deduct' as jenis,  kode,keterangan,sifat,is_variable,ref_column from jenis_potongan;
+select  'deduct' as jenis,  kode,keterangan,sifat,is_variable,ref_column from jenis_potongan;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+$sql=" 
 
 
 create table sys_log_run (
@@ -6636,16 +4935,11 @@ create table sys_log_run (
 	method varchar(50),
 	param1 varchar(50),
 	PRIMARY KEY  (id) 
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-	
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+
+}
+	echo $nomor. " - " .$msg;
 
 
-";				
-  
-  
-
-	 header("location: install_finish.php");
-	?>
-</div>
-</body>
-<?
+?>

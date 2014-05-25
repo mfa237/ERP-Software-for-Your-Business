@@ -104,7 +104,9 @@ if(!isset($_right_menu))$_right_menu="";
 		<?php echo $_content;?>  
 		 
 	<? } ?>
-</div>  
+</div>
+
+
 </body>
 
 <script type="text/javascript">
@@ -114,7 +116,7 @@ if(!isset($_right_menu))$_right_menu="";
 				$('#tt').tabs('select', title); 
 			} else { 			
 				index++;
-				var content = '<iframe scrolling="auto" frameborder="0" src="'+url+'" style=";width:90%;height:900px;"></iframe>'; 
+				var content = '<iframe scrolling="auto" frameborder="0" src="'+url+'" style=";width:99%;height:900px;"></iframe>'; 
 				
 				$('#tt').tabs('add',{
 					title: title,

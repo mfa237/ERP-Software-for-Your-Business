@@ -26,15 +26,10 @@
  
 
 </style>
+
+<h1>MODULES</h1>
+
 <?
-function add_shortcut($label,$icon,$color='#cdc',$nomor='0') {
-	echo "<div class='max-modules' style='background-color:$color' onclick='run_modul($nomor);'> 
-		<div class='icon'>
-			<img src='".base_url()."images/$icon'>
-		</div>
-		<div class='label'>$label</div>
-	</div>";
-}
 add_shortcut('Pembelian','ico_purchase.png','#57CE57',1);
 add_shortcut('Penjualan','ico_sales.png','#579CD1',2);
 add_shortcut('Inventory','ico_inventory.png','#C87CDB',3);
@@ -44,8 +39,23 @@ add_shortcut('Manufacture','ico_manuf.png','#A1A8DD',6);
 add_shortcut('Payroll','ico_payroll.png','#DFABE9',7);
 add_shortcut('Akuntansi','ico_bank.png','#D8EC70',10);
 add_shortcut('Setting','ico_setting.png','#A2B1A2',8);
+?>
+
+<div class="clearfix"></div>
+
+<?
+function add_shortcut($label,$icon,$color='#cdc',$nomor='0') {
+	echo "<div class='max-modules' style='background-color:$color' onclick='run_modul($nomor);'> 
+		<div class='icon'>
+			<img src='".base_url()."images/$icon'>
+		</div>
+		<div class='label'>$label</div>
+	</div>";
+}
 
 ?>
+
+
 <script>
 	function run_modul(nomor) {
 		var  url='purchase';

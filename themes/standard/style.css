@@ -555,3 +555,10 @@ background: url(../../images/welcome_bg.png) no-repeat center top;
 padding-right: 5px;
 padding-left: 5px;
 }
+
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+  color: #FFFCFC;
+}
+
+  

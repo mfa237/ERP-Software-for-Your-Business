@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AksiIDE>
+  <project>
+    <name>maxon</name>
+    <module>maxon</module>
+    <moduleid>maxon</moduleid>
+    <framework>
+      <name>CodeIgniter</name>
+    </framework>
+    <site>
+      <RunAs>0</RunAs>
+      <url>http://localhost/talagasoft/simak/v6.maxon/</url>
+    </site>
+    <database/>
+    <js/>
+    <git/>
+  </project>
+</AksiIDE>

@@ -1,4 +1,7 @@
-<?php if(!defined('BASEPATH')) exit('No direct script access allowd');
+<?php 
+
+if(!defined('BASEPATH')) exit('No direct script access allowd');
+
 class Sales_order extends CI_Controller {
     private $limit=10;
     private $sql="select i.sales_order_number,i.sales_date,i.due_date,i.amount, 
@@ -86,8 +89,7 @@ class Sales_order extends CI_Controller {
 			$this->template->display_form_input($this->file_view,$data,'');			
 		}        
 	}
-	function save()
-	{
+	function save()	{
 		$mode=$this->input->post('mode');
 		if($mode=="add"){
 	        $id=$this->nomor_bukti();
@@ -320,93 +322,92 @@ class Sales_order extends CI_Controller {
 		$data['comments']=$invoice->comments;
         $this->load->view('sales/rpt/print_so',$data);
    	}
-        function list_open_so($customer)
-        {
-            $sql="select p.sales_order_number,p.sales_date,p.due_date,p.payment_terms,p.salesman 
-            from sales_order  p
-            where p.sold_to_customer='$customer'";
-            echo browse_simple($sql,'',500,300,'dgSoList');
+	function list_open_so($customer){
+		$sql="select p.sales_order_number,p.sales_date,p.due_date,p.payment_terms,p.salesman 
+		from sales_order  p
+		where p.sold_to_customer='$customer'";
+		echo browse_simple($sql,'',500,300,'dgSoList');
 
-        }
-		function select_so_open($search=''){
-			$search=urldecode($search);
-			$sql="select sales_order_number,sales_date,sold_to_customer,company
-			 from sales_order so left join customers c on c.customer_number=so.sold_to_customer
-			 where sold_to_customer like '$search%'";
-			 $sql.=" limit 100";
-			 
-			  
-			$rs = mysql_query($sql); $result = array();
-			while($row = mysql_fetch_object($rs)){array_push($result, $row);}			 
-			echo json_encode($result);
-		}
+	}
+	function select_so_open($search=''){
+		$search=urldecode($search);
+		$sql="select sales_order_number,sales_date,sold_to_customer,company
+		 from sales_order so left join customers c on c.customer_number=so.sold_to_customer
+		 where sold_to_customer like '$search%'";
+		 $sql.=" limit 100";
+		 
+		  
+		$rs = mysql_query($sql); $result = array();
+		while($row = mysql_fetch_object($rs)){array_push($result, $row);}			 
+		echo json_encode($result);
+	}
 
-        function list_item_delivery($nomor){
-            $this->load->model('sales_order_lineitems_model');
-			$query=$this->db->query("select * from sales_order_lineitems where sales_order_number='$nomor'");
-			$table="<table class='table1' style='width:500px'>
-			<thead><tr><th>Item Number</th>
-				<th>Description</th>
-				<th>Qty Order</th>
-				<th>Unit</th>
-				<th>Qty Terkirim</th>
-				<th>Qty Sisa</th>
-				<th>Qty Kirim</th>
-			</tr></thead>";
+	function list_item_delivery($nomor){
+		$this->load->model('sales_order_lineitems_model');
+		$query=$this->db->query("select * from sales_order_lineitems where sales_order_number='$nomor'");
+		$table="<table class='table1' style='width:500px'>
+		<thead><tr><th>Item Number</th>
+			<th>Description</th>
+			<th>Qty Order</th>
+			<th>Unit</th>
+			<th>Qty Terkirim</th>
+			<th>Qty Sisa</th>
+			<th>Qty Kirim</th>
+		</tr></thead>";
+		
+		$table.="
+		<tbody>";
+		foreach($query->result() as $row){
+			$qty_sisa=$row->quantity-$row->ship_qty;
 			
-			$table.="
-			<tbody>";
-			foreach($query->result() as $row){
-				$qty_sisa=$row->quantity-$row->ship_qty;
-				
-				$table.="<tr><td>".$row->item_number."</td><td>".$row->description."</td><td>"
-				.$row->quantity."</td><td>".$row->unit."</td>
-				<td>".$row->ship_qty."</td><td>".$qty_sisa."</td>
-				<td><input type='text' name='qty_order[]' style='width:30px' value=''</td>
-				<input type='hidden' name='line_number[]' value='".$row->line_number."'>
-				</tr>";
-			}
-			$table.="</tbody>
-			</table>";
-			echo $table;			 
+			$table.="<tr><td>".$row->item_number."</td><td>".$row->description."</td><td>"
+			.$row->quantity."</td><td>".$row->unit."</td>
+			<td>".$row->ship_qty."</td><td>".$qty_sisa."</td>
+			<td><input type='text' name='qty_order[]' style='width:30px' value='' '</td>
+			<input type='hidden' name='line_number[]' value='".$row->line_number."'>
+			</tr>";
+		}
+		$table.="</tbody>
+		</table>";
+		echo $table;			 
 
-        }
-		function delivery($sales_order_number) {
-            $sql="select i.invoice_number,invoice_date,il.warehouse_code,il.item_number,il.description,il.quantity,il.unit
-                from invoice i left join invoice_lineitems il on il.invoice_number=i.invoice_number
-                where invoice_type='D' 
-                and sales_order_number='$sales_order_number'";
-			 
- 			echo datasource($sql);
+	}
+	function delivery($sales_order_number) {
+		$sql="select i.invoice_number,invoice_date,il.warehouse_code,il.item_number,il.description,il.quantity,il.unit
+			from invoice i left join invoice_lineitems il on il.invoice_number=i.invoice_number
+			where invoice_type='D' 
+			and sales_order_number='$sales_order_number'";
+		 
+		echo datasource($sql);
+	}
+	function view_delivery($sales_order_number)
+	{             
+		$this->load->model('invoice_model');
+		$sql="select distinct invoice_number as nomor_surat_jalan,
+			invoice_date as tanggal,sales_order_number,warehouse_code 
+			from invoice
+			where invoice_type='D' 
+			and sales_order_number='$sales_order_number'";
+		$data['list_delivery']=browse_simple($sql, 
+				"Daftar Pengiriman atas nomor sales order [".$sales_order_number."]"
+				, 400, 0, "dgItem", "cmdButtons");
+		$sales=$this->sales_order_model->get_by_id($sales_order_number)->row();
+		$data['sold_to_customer']=$sales->sold_to_customer;
+		$data['customer_info']=$this->customer_model->info($sales->sold_to_customer);
+		$data['sales_order_number']=$sales_order_number;
+		$this->template->display('sales/list_delivery',$data);            
+	}
+	function sub_total($nomor){
+		if(($_GET['discount'])){
+			$sql="update sales_order set discount=".$_GET['discount'].",sales_tax_percent=".$_GET['tax']
+			.",freight=".$_GET['freight'].",other=".$_GET['others']." where sales_order_number='$nomor'";
+			$rs=mysql_query($sql);
 		}
-        function view_delivery($sales_order_number)
-        {             
-            $this->load->model('invoice_model');
-            $sql="select distinct invoice_number as nomor_surat_jalan,
-                invoice_date as tanggal,sales_order_number,warehouse_code 
-                from invoice
-                where invoice_type='D' 
-                and sales_order_number='$sales_order_number'";
-            $data['list_delivery']=browse_simple($sql, 
-                    "Daftar Pengiriman atas nomor sales order [".$sales_order_number."]"
-                    , 400, 0, "dgItem", "cmdButtons");
-            $sales=$this->sales_order_model->get_by_id($sales_order_number)->row();
-            $data['sold_to_customer']=$sales->sold_to_customer;
-            $data['customer_info']=$this->customer_model->info($sales->sold_to_customer);
-            $data['sales_order_number']=$sales_order_number;
-            $this->template->display('sales/list_delivery',$data);            
-        }
-		function sub_total($nomor){
-			if(($_GET['discount'])){
-				$sql="update sales_order set discount=".$_GET['discount'].",sales_tax_percent=".$_GET['tax']
-				.",freight=".$_GET['freight'].",other=".$_GET['others']." where sales_order_number='$nomor'";
-				$rs=mysql_query($sql);
-			}
-			$saldo=$this->sales_order_model->recalc($nomor);
-			$sub_total=$this->sales_order_model->sub_total;
-			$data=array('sub_total'=>$sub_total,'amount'=>$this->sales_order_model->amount);
-			echo json_encode($data);				
-		}
+		$saldo=$this->sales_order_model->recalc($nomor);
+		$sub_total=$this->sales_order_model->sub_total;
+		$data=array('sub_total'=>$sub_total,'amount'=>$this->sales_order_model->amount);
+		echo json_encode($data);				
+	}
 	function find($sales_order_number=''){
 		$query=$this->db->query("select s.sales_order_number,s.sales_date,s.sold_to_customer,
 		c.company from sales_order s left join customers c on s.sold_to_customer=c.customer_number");
@@ -416,3 +417,5 @@ class Sales_order extends CI_Controller {
 		
 		
 }
+
+?>

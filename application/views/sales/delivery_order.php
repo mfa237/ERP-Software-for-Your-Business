@@ -47,7 +47,7 @@
     	    echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer');?>
         	<? if($mode=='add') { ?>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-			onclick="select_customer()"></a>
+			onclick="select_customer();return false;"></a>
 			<? } ?>
         </td>
     </tr>
@@ -64,7 +64,7 @@
         	<? if($mode=='add') { ?>
 
 			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-			onclick="select_so_open()"></a>
+			onclick="select_so_open();return false;"></a>
 
 			<? } ?>
 
@@ -157,11 +157,6 @@
 						$('#invoice_number').val(result.invoice_number);
 						var nomor=$('#invoice_number').val();
 						$('#mode').val('view');
-//						$('#dgItem').datagrid({url:'<?=base_url()?>index.php/delivery_order/items/'+nomor+'/json'});
-//						$('#dgItem').datagrid('reload');
-//						$.messager.show({
-//							title:'Success',msg:'Data sudah tersimpan. '
-//						});
 						window.open("<?=base_url()?>index.php/delivery_order/view/"+nomor,"_self");  		
 						
 					} else {
@@ -288,5 +283,4 @@
 				alert("Pilih kode pelanggan terlebih dahulu !");
 			}
 	};
- 
  </script>

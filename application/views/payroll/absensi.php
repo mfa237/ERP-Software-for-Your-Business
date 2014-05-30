@@ -10,7 +10,7 @@
 			<canvas class="CoolClock:chunkySwiss"></canvas>
 		</div>	
 		<div class="thumbnail">
-		<h4>INPUT ABSEN <?=link_button('Tambah','add_absen()','save')?></h4>
+		<h5>INPUT ABSEN </h5>
 		</div>
 		<div class="thumbnail">
 			<form id="frmAbsen" method="POST">
@@ -19,7 +19,7 @@
 			  <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" style="width:140px"></td></tr>
 			  <tr><td>Jam Masuk</td><td><input id="time_in" name="time_in"></td></tr>
 		      <tr><td>Jam Keluar</td><td><input id="time_out" name="time_out"></td></tr>
-		      <tr><td></td></tr>
+		      <tr><td> <?=link_button('Tambah','add_absen()','save','false')?></td></tr>
 		   </table>
 		   </form>
 		</div>
@@ -31,7 +31,9 @@
 			  <tr><td>Divisi</td><td><input id="divisi" name="divisi" disabled></td></tr>
 		      <tr><td>Nip Id</td><td><input id="nip_id" name="nip_id" disabled></td></tr>
 		      <tr><td>Type</td><td><input id="emptype" disabled></td></tr>
-		      <tr><td></td></tr>
+		      <tr><td>
+			 
+			  </td></tr>
 		   </table>
 		</div>
 

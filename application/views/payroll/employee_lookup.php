@@ -1,18 +1,18 @@
 <div id="tb_employee" style="height:auto">
 	Enter Text: <input  id="search_emp" style='width:180' name="search_emp">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="search_employee()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="select_employee()">Select</a>
+	onclick="lookup_employee();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="select_employee();return false;">Select</a>
 </div>
 
 <div id='dlg_employee'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#dlg_buttons_employee">
+        closed="true" buttons="#tb_employee">
      <div id='div_employee_result'> 
 		<table id="dg_employee" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#tb_employee',
+				toolbar: '',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/employee/find'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -31,6 +31,11 @@
 			if (row){
 				$('#nip').val(row.nip);
 				$('#nama').val(row.nama);
+	                    $('#nip_id').val(row.nip_id);
+	                    $('#dept').val(row.dept);
+	                    $('#divisi').val(row.divisi);
+	                    $('#emptype').val(row.emptype);
+				
 				$('#dlg_employee').dialog('close');
 			}
 	}

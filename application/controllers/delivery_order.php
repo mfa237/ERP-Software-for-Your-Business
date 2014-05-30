@@ -103,8 +103,8 @@ class Delivery_order extends CI_Controller {
 		if($mode=="add"){
 			$ok=$this->invoice_model->save($data);
 			$this->invoice_model->save_from_so_items($data['invoice_number'],
-				$this->input->post('qty_order'),
-				$this->input->post('line_number'),$this->input->post('warehouse_code'));
+			$this->input->post('qty_order'),
+			$this->input->post('line_number'),$this->input->post('warehouse_code'));
 		} else {
 			$ok=$this->invoice_model->update($id,$data);
 		}
@@ -342,3 +342,6 @@ class Delivery_order extends CI_Controller {
 	}
 
 }
+
+
+?>

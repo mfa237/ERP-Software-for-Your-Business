@@ -9,6 +9,9 @@
 	background: #EFF5F7;
 	border: 1px solid rgb(143, 143, 235);
 	font-size: 10px;
+	border-radius: 4px;
+	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .xchat-min {
 	position: fixed;
@@ -20,18 +23,21 @@
 	background: #EFF5F7;
 	border: 1px solid rgb(143, 143, 235);
 	font-size: 10px;
+	border-radius: 4px;
+	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
 .xchat-title {
-	background: rgb(13,143,235);
+	background: #46b8da;
 	color: white;
 	font-size: 15px;
 	padding: 5px;
-	width: auto;
-	margin-left: -10px;
+	 
+	margin-left: -5px;
 	margin-top: -10px;
-	margin-bottom:10px;
-	width: 200px;
+	margin-bottom: 10px;
+	width: 190px;
 }
 .xchat-content {
 
@@ -59,8 +65,8 @@
 }
 
 </style>
-<div class="xchat" id="xchat">
-	<div class="xchat-title">NGOBROL
+<div class="xchat-min" id="xchat">
+	<div class="xchat-title glyphicon glyphicon-user"> NGOBROL
 		<span class="xchat-button">+</span>
 	</div>
 	<div class="xchat-content">
@@ -77,11 +83,16 @@
 </div>
 
 <script>
-	var xchat_state=0;
+	var xchat_state=1;
 	var t=0;
 	
 	function load_chat_msg() {
 		$('#xchat-content-chat').addClass("xchat-loading");
+		 
+		if(xchat_state==1){
+			 clearTimeout(t);
+			 return false;
+		}
 		t=setTimeout(function(){load_chat_msg()}, 18000);
 		$.ajax({
                 type: "GET",
@@ -102,16 +113,18 @@
 	}
 	$().ready(function(){
 
-		load_chat_msg();
 
 		$('.xchat-button').click(function(e){
 			e.preventDefault();
 			if(xchat_state==0) {
 				xchat_state=1;
 				$('#xchat').removeClass("xchat").addClass("xchat-min");
+				clearTimeout(t);
+				
 			} else {
 				xchat_state=0;
 				$('#xchat').removeClass("xchat-min").addClass("xchat");
+				load_chat_msg();
 			};
 		});
 		$('#xchat-message').bind('keypress', function(e) {

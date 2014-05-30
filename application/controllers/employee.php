@@ -58,9 +58,9 @@ class Employee extends CI_Controller {
 				$ok=$this->employee_model->update($id,$data);				
 			}
 			if($ok){echo json_encode(array("success"=>true,"nip"=>$id));} 
-			else {echo json_encode(array("msg1"=>"Error ".mysql_error()));}
+			else {echo json_encode(array("msg"=>"Error ".mysql_error()));}
 		 }  
-		 else {echo json_encode(array("msg2"=>"Error ".validation_errors()));}
+		 else {echo json_encode(array("msg"=>"Error ".validation_errors()));}
 	}
 	function view($id,$message=null){
 
@@ -191,5 +191,32 @@ class Employee extends CI_Controller {
 		$ok=$this->employee_group_model->delete($kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
-	
+	function experience($cmd,$id=''){
+		if($cmd=="save"){
+			 
+			$data=$this->input->post();
+			if(isset($data['startdate']))$data['startdate']= date('Y-m-d H:i:s', strtotime($data['startdate']));
+			if(isset($data['finishdate']))$data['finishdate']= date('Y-m-d H:i:s', strtotime($data['finishdate']));
+			 
+			
+			if($data['id']=="" or $data['id']=="0") {
+				unset($data['id']);
+				$ok=$this->db->insert("employeeexperience",$data);
+			} else {
+				$id=$data['id'];
+				$this->db->where("id",$id);
+				$ok=$this->db->update("employeeexperience",$data);
+			}
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+		if($cmd=="load") {
+			$sql="select * from employeeexperience where employeeid='$id'";
+			echo datasource($sql);
+		}
+		if($cmd=="delete") {
+			$this->db->where("id",$id);
+			$ok=$this->db->delete("employeeexperience");
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}
 }

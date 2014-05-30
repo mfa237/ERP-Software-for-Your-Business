@@ -26,7 +26,7 @@ if(!isset($_right_menu))$_right_menu="";
 </script>
 </head>
 <body>
-<div class="container" >
+<div class="containerx" >
 	<? if(!$ajaxed) { ?> 
 		<div class="row" style="background-repeat:no-repeat; background-image:url('<?=base_url()?>images/header2.jpg')">
 			<img src="<?=base_url()?>images/logo_maxon.png">
@@ -43,7 +43,7 @@ if(!isset($_right_menu))$_right_menu="";
 				<div id="__section_right" class="col-md-3" >
 					<div class="panel panel-primary " style="margin-bottom:10px">
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">USER LOGIN</h3>
+							<h3 class="panel-title   glyphicon glyphicon-log-in "  style="padding:10px;color:white"> USER LOGIN</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<?
@@ -54,7 +54,7 @@ if(!isset($_right_menu))$_right_menu="";
 					</div>
 					<div class="panel panel-primary "  style="margin-bottom:10px" >
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">MAIN MENU</h3>
+							<h3 class="panel-title glyphicon glyphicon-th"  style="padding:10px;color:white"> MAIN MENU</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<?=$_left_menu?>
@@ -63,7 +63,7 @@ if(!isset($_right_menu))$_right_menu="";
 
 					<div class="panel panel-primary "  style="margin-bottom:10px">
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">HELP BOX</h3>
+							<h3 class="panel-title glyphicon glyphicon-question-sign"  style="padding:10px;color:white"> HELP BOX</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<div id="help"></div>
@@ -71,7 +71,7 @@ if(!isset($_right_menu))$_right_menu="";
 					</div>
 					<div class="panel panel-primary "  style="margin-bottom:10px">
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">LAST RUNING</h3>
+							<h3 class="panel-title glyphicon glyphicon-facetime-video"  style="padding:10px;color:white"> LAST RUNING</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<?=$sys_log_run?>
@@ -80,7 +80,7 @@ if(!isset($_right_menu))$_right_menu="";
 					
 					<div class="panel panel-primary "  style="margin-bottom:10px">
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">DONATE</h3>
+							<h3 class="panel-title glyphicon glyphicon-euro"  style="padding:10px;color:white"> DONATE</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							 <h4>DONASI</h4>

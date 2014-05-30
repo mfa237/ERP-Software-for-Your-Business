@@ -1,4 +1,4 @@
-<div><h1>PO RECEIVE<div class="thumbnail">
+<div><h3>RECEIVE PURCHASEORDER ITEMS</H3><div class="thumbnail">
 	<?
 	echo link_button('Save', 'simpan()','save');		
 	echo link_button('Help', 'load_help()','help');		
@@ -16,7 +16,7 @@
 		}
 	</script>
 	
-</div></H1>
+</div>
 
 
 <div class="thumbnail">	

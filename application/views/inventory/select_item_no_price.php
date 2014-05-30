@@ -33,11 +33,11 @@
 </div>
 
 <div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#dlg-buttons">
+        closed="true" buttons="#tb_search">
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#tb_search',
+				toolbar: '',
 				singleSelect: true,
 				url: '<?=base_url()?>index.php/inventory/filter'
 			">

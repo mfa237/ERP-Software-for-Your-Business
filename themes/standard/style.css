@@ -11,7 +11,8 @@ a.l-btn span.l-btn-left {
     padding:1px;
     margin:0 auto;
 	width: auto; 
-	background: #F1F1F1 url('../../images/p1.png');
+	--background: url('../../images/back2.jpg');
+	background-repeat:none;
 }
 
 .clear				{ clear: both; }
@@ -198,15 +199,17 @@ p.footer{
 	margin: 20px 0 0 0;
 }
 
-.container {
-	border: 1px #428bca solid;
-	margin:0px auto;
-	padding:10px;
-    border-radius: 5px;
+.containerx {
+	--border-left: 1px #428bca solid;
+	--margin:0px auto;
+	padding-left:2px;
+	padding-right:2px;
+    --border-radius: 5px;
 	-webkit-box-shadow: 0 5px 5px #777;
 	-moz-box-shadow: 0 5px 5px #777;
-	box-shadow: 0 5px 5px #777;
-	min-height:600px;	
+	--box-shadow: 0 5px 5px #777;
+	--min-height:600px;	
+	--background-color:#ffffff;
 }
 #sidebar{
  
@@ -505,6 +508,7 @@ background: url(../../images/welcome_bg.png) no-repeat center top;
 	background-color: #428bca;
 	color: #ffffff;
 	border-radius: 1px;
+	margin-bottom: 2px;	
 }
 .navbar-default .navbar-nav > li > a {
 	color: #F7F0F0;
@@ -522,6 +526,7 @@ background: url(../../images/welcome_bg.png) no-repeat center top;
 	height:200px;
 	margin-top:10px;
 	border-top: rgb(78, 101, 175) 2px solid;	
+	border-radius: 4px;
 }
 
 .tabs-header, .tabs-tool {
@@ -558,7 +563,13 @@ padding-left: 5px;
 
 @media (max-width: 767px) {
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-  color: #FFFCFC;
+		color: #FFFCFC;
+	}
 }
-
+.alert {
+	padding: 5px;
+	margin-bottom: 5px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+}
   

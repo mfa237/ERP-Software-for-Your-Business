@@ -19,7 +19,7 @@
 				</a>
 			</div>
 			
-<?=load_view("maxon_chat/chatbox"); ?>  
+<? echo load_view("maxon_chat/chatbox"); ?>  
 			
 </div>
  

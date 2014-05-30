@@ -26,11 +26,13 @@ if(!isset($_right_menu))$_right_menu="";
 </script>
 </head>
 <body>
-<div class="container" >
 	<? if(!$ajaxed) { ?> 
+		 
 		<div class="row" style="background-repeat:no-repeat; background-image:url('<?=base_url()?>images/header2.jpg')">
-			<img src="<?=base_url()?>images/logo_maxon.png">
+			<div class='col-md-5'><img src="<?=base_url()?>images/logo_maxon.png"></div>
+			<div class="clearfix"></div>
 			<?=$_header?>
+			<div id='msg-box-wrap'></div>
 		</div>
 		<div class="row" >
 			<div class="col-md-9">
@@ -40,8 +42,9 @@ if(!isset($_right_menu))$_right_menu="";
 			<? if($visible_right!=""){?>
 				<div id="__section_right" class="col-md-3" >
 					<div class="panel panel-primary " style="margin-bottom:10px">
-						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">USER LOGIN</h3>
+						<div class="panel-heading"> 
+							<h3 class="panel-title   glyphicon glyphicon-log-in "  style="padding:10px;color:white"> USER LOGIN</h3>
+							 
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<?
@@ -52,7 +55,7 @@ if(!isset($_right_menu))$_right_menu="";
 					</div>
 					<div class="panel panel-primary "  style="margin-bottom:10px" >
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">MAIN MENU</h3>
+							<h3 class="panel-title glyphicon glyphicon-th"  style="padding:10px;color:white"> MAIN MENU</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<?=$_left_menu?>
@@ -61,7 +64,7 @@ if(!isset($_right_menu))$_right_menu="";
 
 					<div class="panel panel-primary "  style="margin-bottom:10px">
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">HELP BOX</h3>
+							<h3 class="panel-title glyphicon glyphicon-question-sign"  style="padding:10px;color:white"> HELP BOX</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<div id="help"></div>
@@ -69,7 +72,7 @@ if(!isset($_right_menu))$_right_menu="";
 					</div>
 					<div class="panel panel-primary "  style="margin-bottom:10px">
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">LAST RUNING</h3>
+							<h3 class="panel-title glyphicon glyphicon-facetime-video"  style="padding:10px;color:white"> LAST RUNING</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							<?=$sys_log_run?>
@@ -78,7 +81,7 @@ if(!isset($_right_menu))$_right_menu="";
 					
 					<div class="panel panel-primary "  style="margin-bottom:10px">
 						<div class="panel-heading">
-							<h3 class="panel-title"  style="padding:10px;color:white">DONATE</h3>
+							<h3 class="panel-title glyphicon glyphicon-euro"  style="padding:10px;color:white"> DONATE</h3>
 						</div>
 						<div class="panel-body"   style="padding:10px;">
 							 <h4>DONASI</h4>
@@ -94,17 +97,20 @@ if(!isset($_right_menu))$_right_menu="";
 							</form>
 						</div>	
 					</div>
+
 				</div>	
 			<? } ?>
 			
 		</div>
 		<div class="row-fluid footer"><div style="margin:10px 10px;"><?=$_footer?></div></div>
+		 
+
+
 	<? } else { ?>
 		 
 		<?php echo $_content;?>  
 		 
 	<? } ?>
-</div>
 
 
 </body>
@@ -124,6 +130,7 @@ if(!isset($_right_menu))$_right_menu="";
 					closable: true
 				});
 			}	
+			 window.top.scrollTo(0,0);
 		}
 		function remove(){
 			var tab = $('#tt').tabs('getSelected');
@@ -149,5 +156,25 @@ $(document).ready(function(){
 				add(title,url);
 			}
 	});
+		
 });
+var t=0;
+	function hide_log(){
+		$("#msg-box").slideUp( 300 ).delay( 800 ).fadeOut( 400 );
+	}
+	function log_msg(msg) {
+		t=setTimeout(function(){hide_log()}, 8000);
+		var s="<div id='msg-box' class='alert alert-success  thumbnail'>";
+		s=s+"<button type='button' class='close' data-dismiss='alert'>x</button>";
+		s=s+"<div id='msg-text' class=' glyphicon glyphicon-retweet'> "+msg+"</div></div>";			
+		window.parent.$("#msg-box-wrap").html(s);
+	}
+	function log_err(msg) {
+		t=setTimeout(function(){hide_log()}, 8000);
+		var s="<div id='msg-box' class='alert alert-danger thumbnail'>";
+		s=s+"<button type='button' class='close' data-dismiss='alert'>x</button>";
+		s=s+"<div id='msg-text'  class='glyphicon glyphicon-retweet'> "+msg+"</div></div>";			
+		window.parent.$("#msg-box-wrap").html(s);
+	}
+
 </script>

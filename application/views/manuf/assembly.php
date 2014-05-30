@@ -26,7 +26,7 @@
 <div class="thumbnail">	
 
 <?php if (validation_errors()) { ?>
-	<div class="alert alert-error">
+	<div class="">
 	<button type="button" class="close" data-dismiss="alert">x</button>
 	<h4>Terjadi Kesalahan!</h4> 
 	<?php echo validation_errors(); ?>

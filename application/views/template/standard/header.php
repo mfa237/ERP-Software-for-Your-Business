@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -9,7 +8,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand glyphicon glyphicon-th  border-hover" href="<?=base_url()?>index.php"> Home</a>
+      <a class="navbar-brand glyphicon glyphicon-home border-hover" href="<?=base_url()?>index.php"> Home</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -67,13 +66,13 @@
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search">
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-info">Search</button>
       </form>
       
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="<?=base_url()?>index.php/login/logout">Logout</a></li>
+        <li><a href="<?=base_url()?>index.php/login/logout" class="glyphicon glyphicon-log-in"> Logout</a></li>
         <li class="dropdown  border-hover">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setting <b class="caret"></b></a>
+          <a href="#" class="dropdown-toggle glyphicon glyphicon-wrench" data-toggle="dropdown"> Setting <b class="caret"></b></a>
           <ul class="dropdown-menu">
 			<li><a href="<?=base_url()?>index.php/company"  class="info_link" >Perusahaan</a></li>
 			<li><a href="<?=base_url()?>index.php/user"  class="info_link" >User Login</a></li>
@@ -98,7 +97,13 @@
 ?> 
 <script>
 	$(document).ready(function(){
-		$("#divMenu").show();	
+		//$("#divMenu").show();
+/* 			$('ul.nav li.dropdown').hover(function() {
+			  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
+			}, function() {
+			  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
+			}); */
+		
 	});
 	 function load_menu(path){
 	     xurl='<?=base_url()?>index.php/menu/load/'+path;

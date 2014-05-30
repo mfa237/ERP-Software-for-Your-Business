@@ -1,4 +1,5 @@
-<div><h3>PROSES PENGELUARAN BARANG NON PO<div class="thumbnail">
+<div><h4>PROSES PENGELUARAN BARANG LAINNYA</H4>
+<div class="thumbnail">
 	<?
 	echo link_button('Print', 'print_delivery()','print');		
 	echo link_button('Help', 'load_help()','help');		
@@ -10,13 +11,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/delivery");
-		}
-	</script>
-	
-</div></H3>
+</div>
 <div class="thumbnail">	
 <form id="frmItem" method='post' >
    <table>
@@ -98,3 +93,9 @@
 	}
     
  </script>
+ 	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/delivery");
+		}
+	</script>
+	

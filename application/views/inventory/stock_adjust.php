@@ -1,4 +1,5 @@
-<div><h1>ADJUSTMENT STOCK<div class="thumbnail">  
+<div><h4>ADJUSTMENT STOCK</H4>
+<div class="thumbnail">  
 	<? 
 	echo link_button("Print","print_adjust()","print");
 	echo link_button('Help', 'load_help()','help');		
@@ -11,13 +12,8 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_adjust");
-		}
-	</script>
 
-</div></H1>
+</div>
 <div class="thumbnail">	
 <form id="frmItem" method='post' >
    <table>
@@ -95,3 +91,9 @@
 	}
     
  </script>
+
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_adjust");
+		}
+	</script>

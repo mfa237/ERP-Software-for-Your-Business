@@ -257,14 +257,9 @@
 						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
 						$('#dg').datagrid('reload');
-						$.messager.show({
-							title:'Success',msg:'Data sudah tersimpan. Silahkan pilih nama barang.'
-						});
+						log_msg('Data sudah tersimpan. Silahkan pilih nama barang.');
 					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
+						log_err(result.msg);
 					}
 				}
 			});

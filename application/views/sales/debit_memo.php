@@ -133,15 +133,10 @@
 					url='<?=base_url()?>index.php/crdb/items/'+nomor+'/json';
 					$('#dgItemMemo').datagrid({url:url});
 					$('#dgItemMemo').datagrid('reload');
-					$.messager.show({
-						title:'Success',msg:'Data sudah tersimpan. Silahkan pilih kode perkiraan.'
-					});
-				} else {
-					$.messager.show({
-						title: 'Error',
-						msg: result.msg
-					});
-				}
+						log_msg('Data sudah tersimpan. ');
+					} else {
+						log_err(result.msg);
+					}
 			}
 		});
     }
@@ -163,15 +158,9 @@
 						$('#description').val('');
 						$('#line_number').val('');
 						$('#amount').val('');
-						$.messager.show({
-							title: 'Success',
-							msg: 'Success'
-						});
+						log_msg('Data sudah tersimpan. Silahkan pilih nama barang');
 					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
+						log_err(result.msg);
 					}
 				}
 			});

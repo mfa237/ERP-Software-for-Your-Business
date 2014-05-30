@@ -20,16 +20,17 @@
 					$success=false;
 				}
 		}
+		
 		$sql="DROP DATABASE ".$database;
 		//	mysql_query($sql);
 		//echo "<br>".mysql_error();
-		
+		/*
 		if($success){
 			$msg.="Konek ke server .. OK\n <br>";
 			if(mysql_select_db($database)){
 				$msg.="Database ". $database . " sudah ada! <br>
 				Tidak bisa diteruskan, silahkan kembali dan ganti nama database.";
-				$success=false;		
+				$success=false;	// teruskan saja kalau sudah ada		
 			}
 		}
 		if($success) {
@@ -47,7 +48,7 @@
 				$success=false;		
 			}
 		}
-		
+		*/
 		if($success) {
 			// write ../application/config/database.php
 			$content="<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');

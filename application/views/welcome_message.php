@@ -61,7 +61,7 @@ function add_shortcut($label,$icon,$color='#cdc',$nomor='0') {
 		var  url='purchase';
 		switch(nomor){
 		case 1:url='purchase';break;
-		case 2:url='sales';
+		case 2:url='sales';break;
 		case 3:url='inventory';break;
 		case 4:url='bank';break;
 		case 5:url='aktiva';break;

@@ -255,14 +255,9 @@
 					var result = eval('('+result+')');
 					if (result.success){
 						$("#mode").val("view");
-						$.messager.show({
-							title:'Success',msg:'Data sudah tersimpan.'
-						});
+						log_msg('Data sudah tersimpan.');
 					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
+						log_err(result.msg);
 					}
 				}
 			});

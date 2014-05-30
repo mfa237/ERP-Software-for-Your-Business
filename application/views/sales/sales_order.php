@@ -201,6 +201,7 @@
 <script type="text/javascript">
 	var url;	
     function save_so(){
+	
         if($('#sales_order_number').val()==''){alert('Isi nomor sales order !');return false;}
         if($('#sold_to_customer').val()==''){alert('Pilih pelanggan !');return false;}
         if($('#salesman').val()==''){alert('Pilih salesman !');return false;}        
@@ -218,14 +219,9 @@
 						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/sales_order/items/'+so+'/json'});
 						$('#dg').datagrid('reload');
-						$.messager.show({
-							title:'Success',msg:'Data sudah tersimpan. Silahkan pilih nama barang.'
-						});
+						log_msg('Data sudah tersimpan. Silahkan pilih nama barang');
 					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
+						log_err(result.msg);
 					}
 				}
 			});

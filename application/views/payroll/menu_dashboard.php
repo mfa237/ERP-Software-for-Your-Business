@@ -22,7 +22,7 @@
 			<area shape="circle" alt="" coords="271,212,31" href="<?=base_url()?>index.php/payroll/periode" class="info_link"  title="Seting Periode Penggajian" />
 			<area shape="circle" alt="" coords="92,323,30" href="<?=base_url()?>index.php/pph21" class="info_link"  title="Proses PPH 21" />
 			<area shape="circle" alt="" coords="221,322,29" href="<?=base_url()?>index.php/pengobatan" class="info_link"  title="Pengobatan" />
-			<area shape="circle" alt="" coords="354,321,28" href="<?=base_url()?>index.php/payroll/level" class="info_link"  title="Group Level Penggajian" />
+			<area shape="circle" alt="" coords="354,321,28" href="<?=base_url()?>index.php/employee/group" class="info_link"  title="Group Level Penggajian" />
 			<area shape="circle" alt="" coords="470,317,29" href="<?=base_url()?>index.php/cuti" class="info_link" title="Data Cuti Karyawan" />
 			<area shape="default" nohref="nohref" alt="" />
 			</map>

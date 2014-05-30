@@ -1,4 +1,4 @@
-<div><h2>MUTASI STOCK ANTAR LOKASI<div class="thumbnail"> 
+<div><h4>MUTASI STOCK ANTAR LOKASI</h4><div class="thumbnail"> 
 	<?
 	echo link_button("Print","print_mutasi()","print");
 	echo link_button('Help', 'load_help()','help');		
@@ -11,13 +11,9 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_mutasi");
-		}
-	</script>
 	
-</div></H2>
+	
+</div> 
 <div class="thumbnail">	
 <form id="frmItem" method='post' >
    <table>
@@ -100,3 +96,9 @@
 	}
     
  </script>
+ <script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_mutasi");
+		}
+	</script>
+	

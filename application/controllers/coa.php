@@ -19,10 +19,10 @@ class Coa extends CI_Controller {
 	{	
         $this->browse();
 	}
-    function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
+    function browse($offset=0,$limit=50,$order_column='account',$order_type='asc'){
 		$data['controller']='coa';
-		$data['fields_caption']=array('Type Akun','Kelompk','Kode Akun','Nama Akun Perkiraan',
-			'Db/Cr','Sald Awal');
+		$data['fields_caption']=array('Type Akun','Kelompok','Kode Akun','Nama Akun Perkiraan',
+			'Db/Cr','Saldo Awal');
 		$data['fields']=array('account_type','group_type','account','account_description','db_or_cr'
 			,'beginning_balance');
 		$data['field_key']='account';

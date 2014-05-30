@@ -141,15 +141,9 @@
 						$('#debit').val('0');
 						$('#credit').val('0');
 						$('#transaction_id').val('');
-						$.messager.show({
-							title: 'Success',
-							msg: 'Success'
-						});
+						log_msg('Data sudah tersimpan.');
 					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
+						log_err(result.msg);
 					}
 				}
 			});

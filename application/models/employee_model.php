@@ -28,6 +28,10 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
+	function info($id){
+		$emp=$this->get_by_id($id)->row();
+		return $emp->nama.' '.$emp->alamat;
+	}
 	function save($data){
 		if(isset($data['hireddate']))$data['hireddate']= date('Y-m-d H:i:s', strtotime($data['hireddate']));
 		if(isset($data['tgllahir']))$data['tgllahir']= date('Y-m-d H:i:s', strtotime($data['tgllahir']));
@@ -55,3 +59,5 @@ function __construct(){
 	}
 		
 }
+
+?>

@@ -160,21 +160,25 @@ $(document).ready(function(){
 });
 var t=0;
 	function hide_log(){
-		$("#msg-box").slideUp( 300 ).delay( 800 ).fadeOut( 400 );
+		window.parent.$("#msg-box-wrap").slideUp( 300 ).delay( 800 ).fadeOut( 400 );
+	}
+	function show_log(){
+		window.parent.$("#msg-box-wrap").slideUp( 300 ).delay( 50 ).fadeIn( 100 );
+		t=setTimeout(function(){hide_log()}, 5000);
 	}
 	function log_msg(msg) {
-		t=setTimeout(function(){hide_log()}, 8000);
 		var s="<div id='msg-box' class='alert alert-success  thumbnail'>";
 		s=s+"<button type='button' class='close' data-dismiss='alert'>x</button>";
 		s=s+"<div id='msg-text' class=' glyphicon glyphicon-retweet'> "+msg+"</div></div>";			
 		window.parent.$("#msg-box-wrap").html(s);
+		show_log();
 	}
 	function log_err(msg) {
-		t=setTimeout(function(){hide_log()}, 8000);
 		var s="<div id='msg-box' class='alert alert-danger thumbnail'>";
 		s=s+"<button type='button' class='close' data-dismiss='alert'>x</button>";
 		s=s+"<div id='msg-text'  class='glyphicon glyphicon-retweet'> "+msg+"</div></div>";			
 		window.parent.$("#msg-box-wrap").html(s);
+		show_log();
 	}
 
 </script>

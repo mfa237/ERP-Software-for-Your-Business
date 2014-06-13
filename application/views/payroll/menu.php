@@ -10,6 +10,7 @@
 			<li><?=anchor('salary/generate','Generate Slip Gaji','class="info_link"');?></li>
 			<li><?=anchor('pph21','Proses PPH 21','class="info_link"');?></li>
 			<li><?=anchor('absensi','Absensi','class="info_link"');?></li>
+			<li><?=anchor('absensi/detail','Absensi Data','class="info_link"');?></li>
 			<li><?=anchor('overtime','Overtime','class="info_link"');?></li>
 			<li><?=anchor('cuti','Cuti','class="info_link"');?></li>
 			<li><?=anchor('pinjaman','Pinjaman','class="info_link"');?></li>

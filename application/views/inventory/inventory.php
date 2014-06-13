@@ -325,6 +325,7 @@
 
 						
 <?=load_view('gl/select_coa_link')?>   	
+
 <div id="dlgGambar" class="easyui-dialog"  
  style="width:300px;height:200px;padding:5px 5px" closed="true" >
 	<div class="thumbnail">

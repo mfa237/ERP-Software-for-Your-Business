@@ -22,6 +22,8 @@ if(isset($_form)){
 	echo load_view($_form,array('mode'=>'add'));
 }
 
+$controller_name=str_replace("/","_",$controller);
+
 ?>
 <script type="text/javascript">    
     CI_CONTROL='<?=$controller?>';
@@ -31,27 +33,27 @@ if(isset($_form)){
     CI_HEIGHT='<?=$height?>';
 </script>
 
-<table id="dg_<?=$controller?>" class="easyui-datagrid", title="<?=$caption?>"
+<table id="dg_<?=$controller_name?>" class="easyui-datagrid", title="<?=$caption?>"
       style="height:'<?=$height?>';width:'<?=$width?>'", 
       data-options="rownumbers:true,pagination:true,pageSize:100,
-      loadFilter:pagerFilter_<?=$controller?>,
+      loadFilter:pagerFilter_<?=$controller_name?>,
       singleSelect:true,collapsible:true,
       url:'',
-      toolbar:'#tb_<?=$controller?>'">
+      toolbar:'#tb_<?=$controller_name?>'">
       
       <?=$table_head?>
       
 </table>
        
- <div id="tb_<?=$controller?>" style="padding:5px;height:auto" class='thumbnail'>
+ <div id="tb_<?=$controller_name?>" style="padding:5px;height:auto" class='thumbnail'>
 		<div class='thumbnail'>
-			<?=link_button("Add", "addnew_$controller();return false;","add","true");?>
-			<?=link_button("Edit", "edit_$controller();return false;","edit","true");?>
-			<?=link_button("Del", "del_row_$controller();return false;","remove","true");?>
-			<?=link_button('Cari','cari_'.$controller."();return false;",'search');?>
+			<?=link_button("Add", "addnew_$controller_name();return false;","add","true");?>
+			<?=link_button("Edit", "edit_$controller_name();return false;","edit","true");?>
+			<?=link_button("Del", "del_row_$controller_name();return false;","remove","true");?>
+			<?=link_button('Cari','cari_'.$controller_name."();return false;",'search');?>
 		</div>
 		<div>
-			<form id='frmSearch_<?=$controller?>'>
+			<form id='frmSearch_<?=$controller_name?>'>
 			<?
 //			var_dump($faa);
 			$i=0;
@@ -92,12 +94,12 @@ if(isset($_form)){
 
 	
 <script type="text/javascript">
-    function pagerFilter_<?=$controller?>(data){
+    function pagerFilter_<?=$controller_name?>(data){
             if (typeof data.length == 'number' && typeof data.splice == 'function'){	// is array
                     data = {
                             total: data.length,
                             rows: data,
-                            search: $('#search_<?=$controller?>').val()
+                            search: $('#search_<?=$controller_name?>').val()
                     }
             }
             var dg = $(this);
@@ -122,21 +124,21 @@ if(isset($_form)){
             data.rows = (data.originalRows.slice(start, end));
             return data;
     }
-    function addnew_<?=$controller?>(){
+    function addnew_<?=$controller_name?>(){
         xurl=CI_ROOT+CI_CONTROL+'/add';
         window.open(xurl,"_self");
 		
 
     };
-    function edit_<?=$controller?>(){
-        var row = $('#dg_<?=$controller?>').datagrid('getSelected');
+    function edit_<?=$controller_name?>(){
+        var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
         if (row){
             xurl=CI_ROOT+CI_CONTROL+'/view/'+row[FIELD_KEY];
 	        window.open(xurl,"_self");
         }
     }
-    function del_row_<?=$controller?>(){
-			var row = $('#dg_<?=$controller?>').datagrid('getSelected');
+    function del_row_<?=$controller_name?>(){
+			var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
 	                xurl=CI_ROOT+CI_CONTROL+'/delete/'+row[FIELD_KEY];                             
@@ -152,7 +154,7 @@ if(isset($_form)){
 										$.messager.show({
 											title:'Success',msg:result.msg
 										});
-										$('#dg_<?=$controller?>').datagrid('reload');	 
+										$('#dg_<?=$controller_name?>').datagrid('reload');	 
 									} else {
 										$.messager.show({
 											title:'Error',msg:result.msg
@@ -160,7 +162,7 @@ if(isset($_form)){
 									};
 								} catch (exception) {		
 									// reload kalau output bukan json
-									$('#dg_<?=$controller?>').datagrid('reload');	 
+									$('#dg_<?=$controller_name?>').datagrid('reload');	 
 								}
 	                        },
 	                        error: function(msg){$.messager.alert('Info',msg);}
@@ -168,10 +170,10 @@ if(isset($_form)){
 				});
 		}
 	}
-    function cari_<?=$controller?>(){
-    	xsearch=$('#frmSearch_<?=$controller?>').serialize();
+    function cari_<?=$controller_name?>(){
+    	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
 	    xurl=CI_ROOT+CI_CONTROL+'/browse_data?'+xsearch;
-        $('#dg_<?=$controller?>').datagrid({url:xurl});
+        $('#dg_<?=$controller_name?>').datagrid({url:xurl});
         //$('#dg_<?=$controller?>').datagrid('reload');
     }
 		

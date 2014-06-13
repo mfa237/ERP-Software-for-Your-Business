@@ -240,9 +240,9 @@ echo $script_head;
                         <div class="col-md-7">
 							<div style="float:right;">
 								<a href="http://www.facebook.com/maxon51" target="_new" title="Follow Facebook">
-										<img src="http://www.talagasoft.com/img/fb.png"></a>
+										<img src="images/fb.png"></a>
 								<a href="http://www.twitter.com/talagasoft" target="_new" title="Follow Twitter">
-									<img src="http://www.talagasoft.com/img/twitter.png">
+									<img src="images/twitter.png">
 								</a>
 							</div> 
                         </div>

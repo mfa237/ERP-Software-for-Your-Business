@@ -37,6 +37,8 @@ add_shortcut('Buku Kas','ico_bank.png','#D8EC70',4);
 add_shortcut('Aktiva Tetap','ico_asset.png','#EC9A73',5);
 add_shortcut('Manufacture','ico_manuf.png','#A1A8DD',6);
 add_shortcut('Payroll','ico_payroll.png','#DFABE9',7);
+add_shortcut('Koperasi','ico_customer.png','#DFABE9',11);
+
 add_shortcut('Akuntansi','ico_bank.png','#D8EC70',10);
 add_shortcut('Setting','ico_setting.png','#A2B1A2',8);
 ?>
@@ -70,6 +72,7 @@ function add_shortcut($label,$icon,$color='#cdc',$nomor='0') {
 		case 8:url='admin';break;
 		case 9:url='customer';break;
 		case 10:url='gl';break;
+		case 11:url='koperasi';break;
 		}
 		if(url!='') load_menu(url);
 	}

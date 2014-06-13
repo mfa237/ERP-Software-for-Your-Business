@@ -6,6 +6,7 @@
  		<div class="thumbnail"> 
 			<li><?=anchor('salary','Slip Gaji');?></li>
 			<li><?=anchor('absensi','Absensi');?></li>
+			<li><?=anchor('absensi/detail','Absensi Data');?></li>
 			<li><?=anchor('overtime','Overtime');?></li>
 			<li><?=anchor('cuti','Cuti');?></li>
 			<li><?=anchor('pinjaman','Pinjaman');?></li>

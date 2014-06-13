@@ -49,23 +49,25 @@ class Absensi extends CI_Controller {
 		if($ok){echo json_encode(array("success"=>true));} 
 		else {echo json_encode(array("msg"=>"Error ".mysql_error()));}
 	}
-	function detail($nip){
+	function detail($nip=''){
 		$data['nip']=$nip;
 		$this->load->model('periode_model');
 		$data['periode']=date("Y-m");	///$this->periode_model->current_periode();
 		$data['periode_list']=$this->periode_model->dropdown();
 		$this->load->model('employee_model');
+
+		$data['nama']='Not Found !';
+		$data['dept']='';
+		$data['divisi']='';
+
 		$q=$this->employee_model->get_by_id($nip);
 		if($q){
-			$emp=$q->row();
-			$data['nama']=$emp->nama;
-			$data['dept']=$emp->dept;
-			$data['divisi']=$emp->divisi;			
-		} else {
-			$data['nama']='Not Found !';
-			$data['dept']='';
-			$data['divisi']='';
-		}	
+			if($emp=$q->row()){
+				$data['nama']=$emp->nama;
+				$data['dept']=$emp->dept;
+				$data['divisi']=$emp->divisi;		
+			}
+		}
 		$this->template->display('payroll/absensi_data',$data);
 	}
 }

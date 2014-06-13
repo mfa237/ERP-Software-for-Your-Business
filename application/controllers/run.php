@@ -17,18 +17,19 @@ class Run extends CI_Controller {
         $flds=$query->list_fields();
 
 
-        $thead='';$fields_input="";
+        $thead='';$fields_input="<table>";
         for($i=0;$i<count($flds);$i++){
             $fld=$flds[$i];
             $fld=str_replace('_',' ',$fld);
             $fld=ucfirst($fld);
             $thead.='<th data-options="field:\''.$flds[$i].'\'">'.$fld.'</th>';
 			
-			if(($i % 5)==0)$fields_input.="<div class='col-md-3'>";
-			$fields_input.="<div class='fitem '><label>" . $fld . ":</label> <input name='" . $flds[$i] . "'></div>";
-			if($i==4 or $i==9  or $i==14)$fields_input.="</div>";
+			$fields_input.="<tr>";
+			$fields_input.="<td>" . $fld . ":</td><td><input name='" . $flds[$i] . "'></td>";
+			$fields_input.="</td>";
 			
         }
+		$fields_input.="</table>";
      	$offset=1; $limit=50;
 		$data['fields']=$thead;
 		$data['fields_input']=$fields_input;

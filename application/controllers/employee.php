@@ -219,4 +219,28 @@ class Employee extends CI_Controller {
 			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
 		}
 	}
+	function education($cmd,$id=''){
+		if($cmd=="save"){
+			 
+			$data=$this->input->post();
+			if($data['id']=="" or $data['id']=="0") {
+				unset($data['id']);
+				$ok=$this->db->insert("employeeeducations",$data);
+			} else {
+				$id=$data['id'];
+				$this->db->where("id",$id);
+				$ok=$this->db->update("employeeeducations",$data);
+			}
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));}   	
+		}
+		if($cmd=="load") {
+			$sql="select * from employeeeducations where employeeid='$id'";
+			echo datasource($sql);
+		}
+		if($cmd=="delete") {
+			$this->db->where("id",$id);
+			$ok=$this->db->delete("employeeeducations");
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}	
 }

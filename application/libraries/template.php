@@ -110,6 +110,7 @@ class Template {
 					$data['_content']="Dashboard view not found! <br>".$dashboard;
 				}
 			} else {
+				 
 				$data['_content']=$this->_ci->load->view($template,$data, true);
 			}
 			$this->_ci->load->view('template/standard/template',$data);              

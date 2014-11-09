@@ -38,20 +38,21 @@ function __construct(){
             return $ret;
         }
 	function save($data){
-		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){
-		$jobs=$data['jobs'];
+		/*
+		$jobs=$_POST['jobs'];
 		unset($data['jobs']);
-		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
 		if($jobs){
 			$this->load->model('user_jobs_model');
 			$data_jobs['jobs']=$jobs;
 			$data_jobs['user_id']=$id;
 			$this->user_jobs_model->update($id,$data_jobs);
 		}
+		*/
+		$this->db->where($this->primary_key,$id);
+		return $this->db->update($this->table_name,$data);
 		
 	}
 	function delete($id){

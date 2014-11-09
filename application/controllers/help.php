@@ -34,7 +34,10 @@ class Help extends CI_Controller {
 	}
 	 
 	function load($modul) {
-		echo "<div class='widget-help'><div class=' glyphicon glyphicon-info-sign thumbnail'> HELP_MOD : ".$modul."</div>";
+		$modul=urldecode($modul);
+		echo "<div class='widget-help'><div class=' glyphicon glyphicon-info-sign thumbnail'> 
+			HELP_MOD : ".$modul." - [".link_button("EDIT","add('help/edit/$modul','"
+			.base_url()."index.php/help/edit/".$modul."');","save","false")."]</div>";
 		$this->load->model('article_model');
 		$article=$this->article_model->get_by_id($modul);
 		if($article){
@@ -43,12 +46,15 @@ class Help extends CI_Controller {
 			if($content=="") {
 				echo "<p>Tampaknya untuk modul ini belum ada helpnya gan, mau ikut berkonstribusi membuatkan helpnya 
 				dan tatacara input transaksi ini silahkan klik tautan [Edit] dibawah ini.</p>";
+			} else {
+				$content=str_replace('\r','</br>',$content);
+				echo $content;
 			}
-		} 
-		echo "[".link_button("Edit",
-			"add('help/edit/$modul','".base_url()."index.php/help/edit/".$modul."');","save","false")."...] </div>";
+		} 	
+		echo " </div>";
 	}
 	function edit($modul) {
+		$modul=urldecode($modul);
 		 $model=$this->article_model->get_by_id($modul)->row();
 		 $data=$this->set_defaults($model);
  		 $data['doc_name']=$modul;

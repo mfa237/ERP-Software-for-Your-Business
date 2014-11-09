@@ -22,7 +22,6 @@ function __construct(){
 	function get_by_id($id){
 		$this->db->where($this->primary_key,$id);
 		$ok=$this->db->get($this->table_name);
-		
 		return $ok;
 	}
 	function save($data){
@@ -42,6 +41,46 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->delete($this->table_name);
 		
+	}
+	function update_item_release($mat_rel_no) {
+		$ok=false;
+		$woe_no='';
+		if($q=$this->get_by_id($mat_rel_no)){
+			$row=$q->row();
+			$woe_no=$row->exec_number;
+			if($woe_no!=''){
+				$this->load->model('work_exec_detail_model');
+				$this->load->model('inventory_assembly_model');
+				$this->load->model('mat_release_detail_model');
+				if($qexec=$this->work_exec_detail_model->lineitems($woe_no)) {
+					foreach($qexec->result() as $rexec) {
+						$exec_item=$rexec->item_number;
+						$exec_qty=$rexec->quantity;
+						$exec_unit=$rexec->unit;
+						if($qasm=$this->inventory_assembly_model->get_by_id($exec_item)){
+							foreach($qasm->result() as $rasm){
+								$asm_item=$rasm->assembly_item_number;
+								$asm_qty=$rasm->quantity;
+								$asm_unit=$rasm->unit;
+								$cost=$rasm->default_cost;
+								
+								$data['mat_rel_no']=$mat_rel_no;
+								$data['item_number']=$asm_item;
+								$data['description']='';
+								$data['cost']='0';
+								$data['quantity']=$asm_qty*$exec_qty;
+								$data['unit']=$asm_unit;
+								
+								$this->mat_release_detail_model->save($data);
+								$ok=true;
+							}
+						}
+					}
+				}
+				
+			}
+		}
+		return $ok;
 	}
 
 }

@@ -55,7 +55,7 @@
 			onclick="select_customer()"></a>
 			<? } ?>     
 		</td>
-		<td rowspan="5">
+		<td rowspan="5" colspan='6'>
 				<div class="thumbnail" id="customer_info" style="width:300px;height:100px"><?=$customer_info?></div>
 			</td>
 	</tr>
@@ -90,8 +90,6 @@
              class="easyui-datetimebox" required style="width:150px"');
 	    ?></td>
 		
-	</tr>
-	<tr>
 		<td>Nomor Surat Jalan</td>
 		<td><?         
 			echo form_input('sales_order_number',$sales_order_number,'id=sales_order_number');                 
@@ -101,16 +99,18 @@
 		 </td>		
 	</tr>
      <tr>
-		<td>Keterangan</td><td colspan="4">
+		<td>Keterangan</td><td colspan="6">
 			<?
          echo form_input('comments',$comments,'id=comments style="width:300px"');
 		 	?>
 		</td>
     </tr>
 	</table>	
+
+				
 </form>
     
-<div class="easyui-tabs" style="height:450px">
+<div class="easyui-tabs" >
 	<div id='divItem' title='Items'>
 		<div id='dgItem'>
 			<? include_once "invoice_add_item_simple.php"; ?>
@@ -149,27 +149,7 @@
 			</thead>
 		</table>
 		
-				<h5>INVOICE - TOTAL</H5>
-				<div id='divTotal'> 
-					<table>
-						<tr>
-							<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
-							<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
-						</tr>
-						<tr>
-							<td>Pajak PPN %: </td><td><input id='sales_tax_percent' value='<?=$sales_tax_percent?>' style='width:50px'></td>
-							<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
-						</tr>
-						<tr>
-							<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
-							<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
-								 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-								   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
-								
-							</td>
-						</tr>
-					</table>		
-				</div>
+			
 		
 	</div>
 
@@ -180,7 +160,7 @@
 	</div>
 	<div id='divRetur' title='Retur'>
 		<table id="dgRetur" class="easyui-datagrid"  
-			style="width:800px;min-height:600px"
+			style="min-height:600px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
@@ -208,7 +188,7 @@
 	<DIV title="Memo" style="padding:10px">
 	
 		<table id="dgCrdb" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,toolbar:'#tbCrdb',
@@ -229,7 +209,7 @@
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
 		<table id="dgCrdb" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,toolbar:'#tbCrdb',
@@ -263,7 +243,43 @@
 	
 	
 </div>
+<div id='divTotal' class='thumbnail'> 
+	<table>
+		<tr>
+			<td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
+			<td>Discount %: </td><td><input id='disc_total_percent' 
+				value='<?=$discount?>' style='width:50px'>
+			</td>
+			<td>Disc Amount:</td>
+			<td>
+				<input id='disc_amount_1' 
+				value='<?=number_format($disc_amount_1)?>' style='width:100px'>
+			</td>
+		</tr>
+		<tr>
+			<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
+			<td>Pajak PPN %: </td><td><input id='sales_tax_percent' 
+				value='<?=$sales_tax_percent?>' style='width:50px'>
+			</td>
+			<td>Tax Amount:</td>
+			<td>
+				<input id='tax' 
+				value='<?=number_format($tax)?>' style='width:100px'>
+			</td>
 
+		</tr>
+		<tr>
+			<td>Biaya Lain: </td><td><input id='others' value='<?=number_format($other)?>' style='width:80px'></td>
+			<td>&nbsp</td><td>&nbsp</td>
+			<td>JUMLAH: </td><td><input id='total' value='<?=number_format($amount)?>' style='width:100px;'>
+				 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
+				   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
+				
+			</td>
+		</tr>
+	</table>		
+</div>
+		
 <? include_once 'customer_select.php' ?>
 <? include_once 'delivery_select.php' ?>
 
@@ -278,6 +294,7 @@
   		if($('#sold_to_customer').val()==''){alert('Isi pelanggan !');return false;}
   		if($('#salesman').val()==''){alert('Isi salesman; !');return false;}
   		if($('#payment_terms').val()==''){alert('Isi termin pembayaran !');return false;}
+		hitung_jumlah();
 		url='<?=base_url()?>index.php/invoice/save';
 			$('#frmInvoice').form('submit',{
 				url: url,
@@ -554,6 +571,9 @@
                     $('#total_crdb').val(obj.crdb);
                     $('#total_payment').val(obj.payment);
                     $('#saldo').val(obj.saldo);
+                    $('#disc_amount_1').val(obj.disc_amount_1);
+                    $('#tax').val(obj.tax);
+					
                 },
                 error: function(msg){alert(msg);}
 		    });

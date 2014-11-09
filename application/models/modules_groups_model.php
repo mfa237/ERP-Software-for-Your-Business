@@ -51,9 +51,21 @@ class Modules_groups_model extends CI_Model {
 		$q=$this->db->query($sql)->row();
 		return $q->cnt>0;
 	}
-	function save_modules($group_id,$modules){
+	function add_module($group_id,$module_id){
+		$sql="insert into user_group_modules(group_id,module_id) 
+		values('$group_id','$module_id')";
+		$this->db->query($sql);
+		echo "add";
+	}
+	function delete_module($group_id,$module_id){
+		$sql="delete from user_group_modules 	
+		where group_id='$group_id' and module_id='$module_id'";
+		$this->db->query($sql);
+		echo "delete";
+	}
+	
+	function save_module($group_id,$modules){
 		//hapus dulu sebelum masuk
-		 
 		$query=$this->db->query("delete from user_group_modules where group_id='$group_id'");
 		for($i=0;$i<count($modules);$i++){
 			$data['group_id']=$group_id;

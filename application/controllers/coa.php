@@ -27,6 +27,7 @@ class Coa extends CI_Controller {
 			,'beginning_balance');
 		$data['field_key']='account';
 		$data['caption']='DAFTAR KODE AKUN / COA / PERKIRAAN';
+		$data['list_info_visible']=true;
 
 		$this->load->library('search_criteria');
 		$faa[]=criteria("Kode Akun","sid_no");
@@ -38,16 +39,31 @@ class Coa extends CI_Controller {
     function browse_data($offset=0,$limit=100,$nama=''){
 		$no=$this->input->get('sid_no');
         $sql=$this->sql.' where 1=1';
-		if($no!=''){
-			$sql.=" and account='".$no."'";
-		} else {
-			if($this->input->get('sid_nama')!='')$sql.=" and account_description like '".$this->input->get('sid_nama')."%'";
-			if($this->input->get('sid_kel')!='')$sql.=" and group_type like '".$this->input->get('sid_kel')."%'";
-		}
+		if($no!='')$sql.=" and account like '".$no."%'";
+		if($this->input->get('sid_nama')!='')$sql.=" and account_description like '".$this->input->get('sid_nama')."%'";
+		if($this->input->get('sid_kel')!='')$sql.=" and group_type like '".$this->input->get('sid_kel')."%'";
 		$sql.=" order by account";
         echo datasource($sql);
     }	      
-    
+	function list_info($offset=0){
+		if(isset($_GET['offset'])){
+			$offset=$_GET['offset'];
+		}
+		$data['offset']=$offset;
+		$this->load->library('search_criteria');
+
+		$faa[]=criteria("Kode Akun","sid_no");
+		$faa[]=criteria("Nama Akun","sid_nama");
+		$faa[]=criteria("Kelompok","sid_kel");
+	
+		$data['criteria']=$faa;
+		$data['criteria_text']=criteria_text($faa);
+		$data['sid_nama']=$this->session->userdata('sid_nama');
+		$data['sid_kel']=$this->session->userdata('sid_kel');
+		$data['sid_no']=$this->session->userdata('sid_no');
+		
+		$this->template->display_form_input('gl/info_list_coa',$data);	
+	}	    
 	function add()
 	{
 		 $data=$this->set_defaults();
@@ -112,10 +128,13 @@ class Coa extends CI_Controller {
 		 $this->form_validation->set_rules('account','Account', 'required|trim');
 	}
     function delete($id){
+		$id=urldecode($id);
 	 	$this->chart_of_accounts_model->delete($id);
 	 	$this->browse();
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
+		$message=urldecode($message);
 		 $data['id']=$id;
 		 $rst=$this->chart_of_accounts_model->get_by_id($id)->row();
 		 if(count($rst)){
@@ -146,12 +165,14 @@ class Coa extends CI_Controller {
 		}	  	
 	}        
 	function select($account=''){
+		$account=urldecode($account);
 		$sql="select account,account_description,id from chart_of_accounts where 1=1";
 		if($account!="")$sql.=" and (account like '$account%' or account_description like '%$account%')";
 		echo datasource($sql);	
 	}
 	function card($account_id) {
 	{
+		$account_id=urldecode($account_id);
 		$account_id=$this->chart_of_accounts_model->get_by_id($account_id)->row()->id;
 		$date_from= $this->input->get('d1');
 		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));

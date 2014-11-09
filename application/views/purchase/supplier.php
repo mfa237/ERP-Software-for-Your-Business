@@ -27,7 +27,7 @@
 </div>
  
 
-<div class="easyui-tabs" style="width:700px;height:auto">
+<div class="easyui-tabs" style="height:auto">
 	<div title="General" style="padding:10px">
 		<form id="myform"  method="post">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -92,9 +92,7 @@
 			  <td>Aktif</td>
 			  <td><?=form_radio('active',1,$active=='1'?TRUE:FALSE);?>
 				Yes <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE);?> No </td>
-
 		  </tr>	 
-
 		   </table>
 		   </form>
 	</div>  
@@ -113,7 +111,7 @@
 			</form>
 		</div>
 		<table id="dgCard" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,  
@@ -173,11 +171,13 @@
 					var result = eval('('+result+')');
 					if(result.success){
 						$.messager.show({
-							title:'Success',msg:result.msg
+							title:'Success',msg:result.msg,
+							style:{bottom:''}
 						});	
 					} else {
 						$.messager.show({
-							title:'Error',msg:result.msg
+							title:'Error',msg:result.msg,
+							style:{bottom:''}
 						});							
 					};
 				},

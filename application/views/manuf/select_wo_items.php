@@ -41,12 +41,14 @@
 			data-options="
 				toolbar: '#tb_search',
 				singleSelect: true,
-				url: '<?=base_url()?>index.php/workorder/items'
+				url: ''
 			">
 			<thead>
 				<tr>
 					<th data-options="field:'description',width:150">Nama Barang</th>
 					<th data-options="field:'item_number',width:80">Kode Barang</th>
+					<th data-options="field:'cost',width:80">Cost</th>
+					<th data-options="field:'total',width:80">Total</th>
 				</tr>
 			</thead>
 		</table>
@@ -127,9 +129,14 @@
 		}
 		function searchItem()
 		{
+			var wo=$("#purchase_order_number").val();
+			if(wo==''){
+				alert("Pilih nomor work order !");
+				return false;
+			}
 			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang');
 			nama=$('#search_item').val();
-			xurl='<?=base_url()?>index.php/workorder/items/'+nama;
+			xurl='<?=base_url()?>index.php/workorder/items/'+wo;
 			$('#dgItemSearch').datagrid({url:xurl});
 			$('#dgItemSearch').datagrid('reload');
 		}

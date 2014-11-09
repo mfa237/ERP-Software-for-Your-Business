@@ -27,6 +27,7 @@ class Receive_po extends CI_Controller {
 	}
 	function index()
 	{
+		if(!allow_mod2('_80050'))return false;
         $this->browse();
 	}
 	function nomor_bukti($add=false)
@@ -51,6 +52,7 @@ class Receive_po extends CI_Controller {
 	        
     function add($po_number='')
     {
+		$po_number=urldecode($po_number);
         $this->_set_rules();
         $data=$this->set_defaults(); 
         $data['mode']='add';
@@ -121,6 +123,7 @@ class Receive_po extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
             $model=$this->inventory_products_model->get_by_id($id)->row();
             $data=$this->set_defaults($model);
             $data['mode']='view';
@@ -130,8 +133,9 @@ class Receive_po extends CI_Controller {
     }
          
     function receive_items($id){
+		$id=urldecode($id);
         $sql="select i.item_number,s.description,i.quantity_received,
-            i.unit,i.id
+            i.unit,i.id,i.cost,i.total_amount
             from inventory_products i
             left join inventory s on s.item_number=i.item_number
             where shipment_id='".$id."'";
@@ -191,6 +195,7 @@ class Receive_po extends CI_Controller {
         echo datasource($sql);
     }
 	function delete($id){
+		$id=urldecode($id);
 		$nomor_po=$this->inventory_products_model->get_by_id($id)->row()->purchase_order_number;
 		if($this->inventory_products_model->validate_delete_receive_po($id) and $this->inventory_products_model->delete($id)){
 
@@ -204,12 +209,14 @@ class Receive_po extends CI_Controller {
 	}	
 	function delete_receive($shipment_id)
         {
+		$shipment_id=urldecode($shipment_id);
 			$nomor_po=$this->inventory_products_model->get_by_id($shipment_id)->row()->purchase_order_number;
             $this->inventory_products_model->delete($shipment_id);
 			$this->load->model('purchase_order_model');
 			$this->purchase_order_model->recalc_qty_recvd($nomor_po);
         }
 	function add_item($recv_id){                
+		$recv_id=urldecode($recv_id);
                 $data['shipment_id']=$recv_id;
                 $data['quantity_received']=$_GET['qty'];
                 $data['item_number']=$_GET['item'];
@@ -219,11 +226,14 @@ class Receive_po extends CI_Controller {
                 echo $this->receive_items($recv_id);
 	}
 	function del_item($id,$recv_id){
+		$id=urldecode($id);
+		$recv_id=urldecode($recv_id);
         $this->db->where('id',$id);
 		$this->db->delete('inventory_products');
         echo $this->receive_items($recv_id);
 	}	
 	function print_bukti($nomor){
+		$nomor=urldecode($nomor);
 		$rcv=$this->inventory_products_model->get_by_id($nomor)->row();
 		$data['shipment_id']=$rcv->shipment_id;
 		$data['date_received']=$rcv->date_received;
@@ -278,6 +288,7 @@ class Receive_po extends CI_Controller {
 	}
 	function add_with_po($purchase_order_number)
 	{
+		$purchase_order_number=urldecode($purchase_order_number);
 		$this->load->model('purchase_order_model');
 		$this->load->model('purchase_order_lineitems_model');
 		$data=$this->set_defaults(); 
@@ -294,6 +305,7 @@ class Receive_po extends CI_Controller {
 	}
 	function list_open($supplier_number)
 	{
+		$supplier_number=urldecode($supplier_number);
 		$sql="select distinct shipment_id,date_received,warehouse_code
 		from inventory_products
 		where receipt_type='PO' and (selected=false or isnull(selected))
@@ -313,6 +325,7 @@ class Receive_po extends CI_Controller {
 	}
 	function create_new_invoice($invoice_number)
 	{
+		$invoice_number=urldecode($invoice_number);
 		$nomor=$this->input->post('nomor');
 		for($i=0;$i<count($nomor);$i++)
 		{
@@ -324,6 +337,8 @@ class Receive_po extends CI_Controller {
 	
 	function insert_invoice_items_receive($shipment_id,$invoice_number)
 	{
+		$shipment_id=urldecode($shipment_id);
+		$invoice_number=urldecode($invoice_number);
 		$this->load->model('inventory_products_model');
 		$this->load->model('purchase_order_lineitems_model');
 		$query=$this->inventory_products_model->get_by_id($shipment_id);
@@ -352,6 +367,7 @@ class Receive_po extends CI_Controller {
 	}
 	function list_by_po($nomor_po)
 	{
+		$nomor_po=urldecode($nomor_po);
 		$sql="select shipment_id,date_received,warehouse_code,receipt_by,selected ,ip.item_number,
 		i.description,quantity_received
 		from inventory_products ip left join inventory i on i.item_number=ip.item_number 

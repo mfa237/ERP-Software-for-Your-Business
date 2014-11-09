@@ -56,7 +56,7 @@ class Delivery_order extends CI_Controller {
 	}
 	function index()
 	{          
-            $this->browse();
+		$this->browse();
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -104,7 +104,10 @@ class Delivery_order extends CI_Controller {
 			$ok=$this->invoice_model->save($data);
 			$this->invoice_model->save_from_so_items($data['invoice_number'],
 			$this->input->post('qty_order'),
-			$this->input->post('line_number'),$this->input->post('warehouse_code'));
+			$this->input->post('line_number'),
+			$this->input->post('warehouse_code'),
+			$this->input->post('invoice_date')
+			);
 		} else {
 			$ok=$this->invoice_model->update($id,$data);
 		}
@@ -178,10 +181,13 @@ class Delivery_order extends CI_Controller {
         return $this->invoice_lineitems_model->save($data);
     }        
     function delete_item($id){
+		$id=urldecode($id);
         $this->load->model('invoice_lineitems_model');
         return $this->invoice_lineitems_model->delete($id);
     }        
 	function view($id,$message=null){
+		$id=urldecode($id);
+		$message=urldecode($message);
 		$this->load->model('invoice_lineitems_model');
 		$this->load->model('shipping_locations_model');
 		 $data['id']=$id;
@@ -265,11 +271,16 @@ class Delivery_order extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
-		$so=$this->invoice_model->get_by_id($id)->row()->sales_order_number;
+		$id=urldecode($id);
+		$so='';
+		if($q=$this->invoice_model->get_by_id($id)->row()){
+			$so=$q->sales_order_number;
+		}
 	 	$this->invoice_model->delete($id);
-
-		$this->load->model('sales_order_model');
-		$this->sales_order_model->recalc_ship_qty($so);
+		if($so!='') {
+			$this->load->model('sales_order_model');
+			$this->sales_order_model->recalc_ship_qty($so);
+		}
         $this->browse();
 
 	}
@@ -285,6 +296,7 @@ class Delivery_order extends CI_Controller {
 		redirect("/delivery_order/view/".$data['invoice_number']);
     }
 	function view_detail($nomor){
+		$nomor=urldecode($nomor);
         $sql="select p.item_number,i.description,p.quantity 
         ,p.unit,p.price,p.amount,p.line_number
         from invoice_lineitems p
@@ -293,6 +305,7 @@ class Delivery_order extends CI_Controller {
         echo browse_simple($sql);
    }
     function print_faktur($nomor){
+		$nomor=urldecode($nomor);
         $invoice=$this->invoice_model->get_by_id($nomor)->row();
 		$saldo=$this->invoice_model->recalc($nomor);
 		$data['invoice_number']=$invoice->invoice_number;
@@ -305,25 +318,29 @@ class Delivery_order extends CI_Controller {
     }    
 	function items($nomor,$type='')
 	{
-            $sql="select p.item_number,i.description,p.quantity 
-            ,p.unit,p.price,p.discount,p.amount,p.line_number
-            from invoice_lineitems p
-            left join inventory i on i.item_number=p.item_number
-            where invoice_number='$nomor'";
-			$rs = mysql_query($sql);
-			$result = array();
-			while($row = mysql_fetch_object($rs)){
-			    array_push($result, $row);
-			}
-			echo json_encode($result);
+		$nomor=urldecode($nomor);
+		$sql="select p.item_number,i.description,p.quantity 
+		,p.unit,p.price,p.discount,p.amount,p.line_number
+		from invoice_lineitems p
+		left join inventory i on i.item_number=p.item_number
+		where invoice_number='$nomor'";
+		$rs = mysql_query($sql);
+		$result = array();
+		while($row = mysql_fetch_object($rs)){
+			array_push($result, $row);
+		}
+		echo json_encode($result);
 	}
 	function select_do_open($cust) {
+		$cust=urldecode($cust);
 		$sql="select invoice_number,invoice_date,salesman,shipped_via,warehouse_code,due_date
 		from invoice where invoice_type='D'
 		and sold_to_customer='$cust' and (do_invoiced is null or do_invoiced=0)";
 		echo datasource($sql);
 	}
 	function insert_invoice($nomor_do,$nomor_faktur) {
+		$nomor_do=urldecode($nomor_do);
+		$nomor_faktur=urldecode($nomor_faktur);
 		$sql="insert into invoice_lineitems(invoice_number,item_number,description,quantity,unit,
 		warehouse_code,from_line_number,from_line_type,from_line_doc,price,discount,cost,amount)
 		

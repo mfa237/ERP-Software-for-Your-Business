@@ -39,6 +39,8 @@
 			$('#company').val(row.company);
 			$('#customer_info').html(row.company+'<br>'+row.street+'<br>'+row.city);
 			$('#customer_number').val(row.customer_number);
+			$('#salesman').val(row.salesman);
+			$('#payment_terms').val(row.payment_terms);
 			$('#dlgSelectCust').dialog('close');
 		} else {
 			alert("Pilih salah satu nomor customer !");

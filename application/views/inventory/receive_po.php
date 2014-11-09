@@ -1,4 +1,4 @@
-<div><h3>RECEIVE PURCHASEORDER ITEMS</H3><div class="thumbnail">
+<div><h4>RECEIVE P.O. ITEMS</H4><div class="thumbnail">
 	<?
 	echo link_button('Save', 'simpan()','save');		
 	echo link_button('Help', 'load_help()','help');		

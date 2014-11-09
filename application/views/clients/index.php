@@ -21,7 +21,7 @@
 	background-color: lightgray;
 }
 </style>
-<div  style="height:auto;;padding:10px">
+<div  style="col-md-10 height:auto;;padding:10px">
 	<div class="welcome_line welcome_t"></div>
 
 	<div class="panel panel-primary " >

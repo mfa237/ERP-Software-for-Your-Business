@@ -1,4 +1,5 @@
-<? if(($mode=="add" or $mode=="edit")) { ?>
+<? 
+if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 
 <table>
 	<tr>

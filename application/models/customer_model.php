@@ -90,5 +90,15 @@ function select_list(){return $this->customer_list();}
 		$this->db->where("id",$id);
 		return $this->db->delete("customer_shipto");
 	}
+	function list_travel(){
+		$ret['']='- Select -';
+		if($query=$this->db->query("select customer_number,company
+			from customers order by company")) {
+			foreach ($query->result() as $row){
+				$ret[$row->customer_number]=$row->company;
+			}		 
+		}
+		return $ret;
+	}
 		
 }

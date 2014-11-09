@@ -29,8 +29,11 @@ function __construct(){
 		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){
+		$this->load->model('work_exec_detail_model');
+		$this->work_exec_detail_model->update_items($id);
 		$data['start_date']= date( 'Y-m-d H:i:s', strtotime($data['start_date']));
 		$data['expected_date']= date( 'Y-m-d H:i:s', strtotime($data['expected_date']));
+		
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);
 	}

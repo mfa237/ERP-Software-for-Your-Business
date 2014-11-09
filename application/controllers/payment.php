@@ -112,6 +112,7 @@ class Payment extends CI_Controller {
     
     }
    function view($no_bukti,$message=""){
+		$no_bukti=urldecode($no_bukti);
 		$this->load->model('customer_model');
    		$this->load->model('check_writer_model');
 		$rcek=$this->check_writer_model->get_by_id($no_bukti)->row();
@@ -287,6 +288,7 @@ class Payment extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->delete($id);
 		$this->load->model('payment_model');
@@ -295,20 +297,22 @@ class Payment extends CI_Controller {
 	}
 	function data($nomor)
 	{
-            $sql="select p.no_bukti,p.date_paid,p.how_paid 
-            ,p.amount_paid,p.line_number
-            from payments p
-            where invoice_number='$nomor'";
+		$nomor=urldecode($nomor);
+		$sql="select p.no_bukti,p.date_paid,p.how_paid 
+		,p.amount_paid,p.line_number
+		from payments p
+		where invoice_number='$nomor'";
 
-			$rs = mysql_query($sql);
-			$result = array();
-			while($row = mysql_fetch_object($rs)){
-			    array_push($result, $row);
-			}
-			 
-			echo json_encode($result);
+		$rs = mysql_query($sql);
+		$result = array();
+		while($row = mysql_fetch_object($rs)){
+			array_push($result, $row);
+		}
+		 
+		echo json_encode($result);
 	}
     function delete_payment($id=0){
+		$id=urldecode($id);
     	if($id==0)$id=$this->input->post('line_number');
         $this->load->model('payment_model');
         if($this->payment_model->delete_id($id)) {
@@ -319,6 +323,7 @@ class Payment extends CI_Controller {
     }        
    function delete_no_bukti($no_bukti)
    {
+		$no_bukti=urldecode($no_bukti);
 		$this->load->model("periode_model");
 		$this->load->model("check_writer_model");
 
@@ -342,6 +347,7 @@ class Payment extends CI_Controller {
 		$this->browse();
    }
     function load_nomor($voucher){
+		$voucher=urldecode($voucher);
 		$sql="select i.invoice_number,i.invoice_date,p.date_paid,i.amount,
 		p.amount_paid from payments p left join invoice i on i.invoice_number=p.invoice_number
 		where p.no_bukti='$voucher'";
@@ -349,11 +355,13 @@ class Payment extends CI_Controller {
     }
 
 	function posting($voucher) {
+		$voucher=urldecode($voucher);
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->posting($voucher);
 		$this->view($voucher);
 	}
 	function unposting($voucher) {
+		$voucher=urldecode($voucher);
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->unposting($voucher);
 		$this->view($voucher);

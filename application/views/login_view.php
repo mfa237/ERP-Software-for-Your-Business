@@ -38,6 +38,7 @@ echo $script_head;
        
 </head>
 <body>
+<div class='bodyx'>
 <div class="container">
 	<div class="row" style="padding:10px">
 		<div class="col-md-2">
@@ -53,10 +54,10 @@ echo $script_head;
 	
 	<div class="row" style="padding-left:10px;padding-right:10px">
 		<div class="row">
-			<div class="col-md-7"  style="padding:10px" >
+			<div class="col-md-6"  style="padding:10px" >
 					  <? include "slider.php" ?>	
 			</div>
-			<div class="panel panel-primary col-md-5"  style="border:0px solid white">
+			<div class="panel panel-primary col-md-4"  style="margin:5px;border:0px solid white">
 					<div class="panel-heading">
 						<h3 class="panel-title"  style="padding:10px;color:white">USER LOGIN</h3>
 					</div>
@@ -84,10 +85,10 @@ echo $script_head;
 				</div>	 
 			</div>
 		</div>
-			<div class=" " style="min-height:200px;">
-					<div class="welcome_line welcome_t"></div>
-					<img alt="..." src="<?=base_url()?>images/download.gif" 
-					style="float:right;margin-right:10px;" width="200px">			
+		<div class="welcome_line welcome_t"></div>								
+			<div class="col-md-5">
+				<img alt="..." src="<?=base_url()?>images/gwget.png" 
+				style="float:left;margin-right:10px;">			
 			<div class="caption">
 				<p><strong>DOWNLOAD</strong></p>
 				<p>
@@ -105,12 +106,10 @@ echo $script_head;
 				</p>
 	       </div>
 	       </div>
-			<div class="clearfix"></div>
-			
-			<div class=" " style="min-height:200px;">
-					<div class="welcome_line welcome_t"></div>
-					<img alt="..." src="<?=base_url()?>images/profle.png" 
-					style="float:left;margin-right:10px;">			
+	<div class="welcome_line welcome_t"></div>
+			<div class="col-md-5" >
+				<img alt="..." src="<?=base_url()?>images/profle.png" 
+				style="float:left;margin-right:10px;">			
 			<div class="caption">
 				<p><strong>KEAMANAN</strong></p>
 				<p>
@@ -125,12 +124,13 @@ echo $script_head;
 	       </div>
 	       </div>
 
+		   <div class="welcome_line welcome_t clear"></div>
 
 			<?
 				include_once "clients/index.php";
 			?>
 
-		<div class="clear"  style="min-height:200px;;padding:10px ">
+		<div class="clear col-md-5"  style="min-height:200px;;padding:10px ">
 				<div class="welcome_line welcome_t"></div>
 				<img alt="..." src="<?=base_url()?>images/rocket.png" 
 					style="float:left;margin-right:10px">			
@@ -143,10 +143,10 @@ echo $script_head;
 	       </div>
 
    	
-			<div class="clear"  style="min-height:200px; ;padding:10px">
+			<div class="col-md-5"  style="min-height:200px; ;padding:10px">
 			<div class="welcome_line welcome_t"></div>
 				<img alt="..." src="<?=base_url()?>images/gear.png" 
-					style="float:right;margin-right:10px;">			
+					style="float:left;margin-right:10px;">			
 					
 			<div class="caption">
 				<p><strong>MODULES</strong></p>
@@ -161,12 +161,13 @@ echo $script_head;
 				</p>
 	       </div>
 	       </div>
+		   <div class="welcome_line welcome_t clear"></div>
 
 			<?
 				include_once "donate/index.php";
 			?>
 			
-			<div class="clear"  style="min-height:200px;;padding:10px ">
+			<div class="clear col-md-5"  style="min-height:200px;;padding:10px ">
 			<div class="welcome_line welcome_t"></div>
 				<img alt="..." src="<?=base_url()?>images/rocket.png" 
 					style="float:left;margin-right:10px">			
@@ -186,10 +187,10 @@ echo $script_head;
 		   
 
 
-		<div class="clear"  style="min-height:200px;padding:10px ">
+		<div class="col-md-5"  style="min-height:200px;padding:10px ">
 		<div class="welcome_line welcome_t"></div>
 				<img alt="..." src="<?=base_url()?>images/flame.png" 
-					style="float:right;margin-right:10px">			
+					style="float:left;margin-right:10px">			
 			<div class="caption">
 				<p><strong>ONLINE HELP</strong></p>
 				<p>
@@ -204,6 +205,7 @@ echo $script_head;
 		</div>
 		
 		
+		   <div class="welcome_line welcome_t clear"></div>
 			<?
 				include_once "team.php";
 			?>
@@ -212,7 +214,7 @@ echo $script_head;
 			<div class="clear"  style="min-height:200px;;padding:10px">
 				<div class="welcome_line welcome_t"></div>
 				<img alt="..." src="<?=base_url()?>images/frames.png" 
-					style="float:right;margin-right:10px">			
+					style="float:left;margin-right:10px">			
 				
 			<div class="caption">
 				<p><strong>LAPORAN</strong></p>
@@ -227,7 +229,6 @@ echo $script_head;
 	       </div>
 		   
 		   
-</div>   
 
 <div class="wrap">
             <div id="footer" class="footer">
@@ -251,6 +252,8 @@ echo $script_head;
             </div>
         </div>
 		
+</div>   
+</div>   
 		
 </body>
 <?

@@ -4,13 +4,16 @@
   $CI =& get_instance();
  ?>
 <div class="easyui-tabs" id="tt">	 
+	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
+	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 	<div title="DASHBOARD" style="padding:10px">
 		<div class="thumbnail">
 
  
 <div style="margin:10px 0;"></div>
 	<div title="Sales Dashboard" style="padding:10px">
-		<div class="thumbnail">
+		<div class='row'>
+		<div class='thumbnail col-md-9'  style='margin:5px'>
 			<img src="<?=base_url()?>images/sales.png" usemap="#sales" class="map">
 			<map id="sales" name="sales">
 			<area shape="circle" alt="Customer" coords="70,56,31" href="<?=base_url()?>index.php/customer" class="info_link" title="Customer" />
@@ -27,6 +30,7 @@
 			<area shape="default" nohref="nohref" alt="" />
 			</map>
 			 
+		</div>
 		</div>
 		<div class="row">
 			<div class="thumbnail col-md-6 " >
@@ -102,7 +106,7 @@
 <script  language="javascript">
 
 $().ready(function(){
-
+	$("#tt").tabs("select","DASHBOARD");
 		$('.map').maphilight({fade: false});
 	
 		//void get_this(CI_ROOT+'customer/grafik_saldo','','divCustomer');

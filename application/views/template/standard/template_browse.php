@@ -6,7 +6,10 @@
 <?
 echo $library_src;
 echo $script_head;
-
+function is_assoc($a){	
+   $a = array_keys($a);
+   return ($a != array_keys($a));
+}
 $width=isset($width)?$width." px":"auto";
 $height=isset($height)?$height." px":"auto";
 $caption=isset($caption)?$caption:$controller;
@@ -14,7 +17,15 @@ $offset=0;
 $limit=100;
 $table_head="<thead><tr>";
 for($i=0;$i<count($fields);$i++){
-    $table_head.='<th data-options="field:\''.$fields[$i].'\'">'.$fields_caption[$i].'</th>';
+	$aFld=$fields[$i];
+	if(is_string($aFld)){
+		$fld_name=$fields[$i];
+		$fld_caption=$fields_caption[$i];
+	} else {
+		$fld_name=$fields[$i]['name'];
+		$fld_caption=$fields[$i]['caption'];
+	}
+    $table_head.='<th data-options="field:\''.$fld_name.'\'">'.$fld_caption.'</th>';
 }
 $table_head.="</tr></thead>";
 
@@ -38,7 +49,7 @@ $controller_name=str_replace("/","_",$controller);
       data-options="rownumbers:true,pagination:true,pageSize:100,
       loadFilter:pagerFilter_<?=$controller_name?>,
       singleSelect:true,collapsible:true,
-      url:'',
+      url:'<?=base_url()?>index.php/<?=$controller?>/browse_data',
       toolbar:'#tb_<?=$controller_name?>'">
       
       <?=$table_head?>
@@ -51,6 +62,15 @@ $controller_name=str_replace("/","_",$controller);
 			<?=link_button("Edit", "edit_$controller_name();return false;","edit","true");?>
 			<?=link_button("Del", "del_row_$controller_name();return false;","remove","true");?>
 			<?=link_button('Cari','cari_'.$controller_name."();return false;",'search');?>
+			<? 
+			if(isset($posting_visible)){
+				echo link_button('Posting','posting_'.$controller_name."();return false;",'save');
+			};
+			if(isset($list_info_visible)){
+				echo link_button('Info','cari_info_'.$controller_name."();return false;",'form');
+			};
+			?>
+			
 		</div>
 		<div>
 			<form id='frmSearch_<?=$controller_name?>'>
@@ -66,7 +86,7 @@ $controller_name=str_replace("/","_",$controller);
 					if(strpos($fa->field_id,"date_to"))$val=date("Y-m-d 23:59:59");
 					echo " ".$fa->caption.'
 					<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
-					class="'.$fa->field_class.'" style="width:80px">';
+					class="'.$fa->field_class.'" style="width:110px">';
 					echo " ";
 				} else if($fa->field_class=="checkbox"){
 					echo " 
@@ -87,6 +107,9 @@ $controller_name=str_replace("/","_",$controller);
 			?>
 			 
 			</form>
+		</div>
+		<div>
+			<i>***Apabila data tidak tampil ditabel ini, silahkan persempit pencarian (isi kriteria) dan tekan tombol search.</i>
 		</div>
 </div>
 
@@ -121,14 +144,14 @@ $controller_name=str_replace("/","_",$controller);
             }
             var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
             var end = start + parseInt(opts.pageSize);
-            data.rows = (data.originalRows.slice(start, end));
+			if(data.originalRows){
+				data.rows = (data.originalRows.slice(start, end));
+			}
             return data;
     }
     function addnew_<?=$controller_name?>(){
         xurl=CI_ROOT+CI_CONTROL+'/add';
         window.open(xurl,"_self");
-		
-
     };
     function edit_<?=$controller_name?>(){
         var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
@@ -159,6 +182,7 @@ $controller_name=str_replace("/","_",$controller);
 										$.messager.show({
 											title:'Error',msg:result.msg
 										});
+										log_err(result.msg);
 									};
 								} catch (exception) {		
 									// reload kalau output bukan json
@@ -174,8 +198,18 @@ $controller_name=str_replace("/","_",$controller);
     	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
 	    xurl=CI_ROOT+CI_CONTROL+'/browse_data?'+xsearch;
         $('#dg_<?=$controller_name?>').datagrid({url:xurl});
-        //$('#dg_<?=$controller?>').datagrid('reload');
+        //$('#dg_<?=$controller_name?>').datagrid('reload');
     }
-		
-
+    function posting_<?=$controller_name?>(){
+    	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
+	    xurl=CI_ROOT+CI_CONTROL+'/posting_all?'+xsearch;
+		$.messager.confirm('Confirm','Are you sure you want to posting all date ?',function(r){
+	        window.open(xurl,"_self");
+		});
+    }
+    function cari_info_<?=$controller_name?>(){
+    	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
+	    xurl=CI_ROOT+CI_CONTROL+'/list_info?'+xsearch;
+		window.open(xurl,"_self");
+	}
 </script>

@@ -91,6 +91,7 @@ class CrDb extends CI_Controller {
 		}
 	}
 	function items($kode,$type="json"){
+		$kode=urldecode($kode);
 		$sql="select c.account,c.account_description as description,d.amount,d.lineid as line_number 
 		from crdb_memo_dtl d left join chart_of_accounts c 
 		on c.id=d.accountid

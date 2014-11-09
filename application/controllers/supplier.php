@@ -45,6 +45,7 @@ class Supplier extends CI_Controller {
 	}
 	function index()
 	{	
+		if(!allow_mod2('_40010'))return false;
 		$this->browse();		 
 	}
 	function get_posts(){
@@ -53,6 +54,10 @@ class Supplier extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod('_40011')){
+			echo "<span class='not_access'>Anda tidak diijinkan menjalankan proses module ini.</span>";
+			return false;
+		};			
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -79,7 +84,7 @@ class Supplier extends CI_Controller {
 		if($ok){
 			echo json_encode(array("success"=>true));
 		} else {
-			echo json_encode(array("msg"=>"Error ".mysql_error()));
+			echo json_encode(array("success"=>false,"msg"=>"Error ".mysql_error()));
 		}
 		
 	}
@@ -100,10 +105,12 @@ class Supplier extends CI_Controller {
 	}
 	
 	function view($id="",$message=null){
+		$id=urldecode($id);
 		if($id=="") { 
 			echo "Supplier Number not found !";
 			return false;
 		}
+		 $id=urldecode($id);
 		 $model=$this->supplier_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['saldo']=$this->supplier_model->saldo($id);
@@ -124,8 +131,11 @@ class Supplier extends CI_Controller {
 		$data['fields_caption']=array('Kode','Nama Supplier','Kontak','Alamat','Gedung','Negara','Provinsi','Kota');
 		$data['fields']=array('supplier_number','supplier_name','first_name','street','suite','country','state','city');
 		$data['field_key']='supplier_number';
+		$data['list_info_visible']=true;
+		
 		$this->load->library('search_criteria');
 		
+		$faa[]=criteria("Kode","sid_kode");
 		$faa[]=criteria("Nama","sid_nama");
 		$faa[]=criteria("Kota","sid_city");
 		$data['criteria']=$faa;
@@ -133,11 +143,17 @@ class Supplier extends CI_Controller {
     }
     function browse_data($offset=0,$limit=10,$nama=''){
     	$sql=$this->sql;
+		if($this->input->get('sid_kode'))$sql.=" and supplier_number like '".$this->input->get('sid_kode')."%'";
 		if($this->input->get('sid_nama'))$sql.=" and supplier_name like '".$this->input->get('sid_nama')."%'";
 		if($this->input->get('sid_city'))$sql.=" and city='".$this->input->get('city')."'";		
         echo datasource($sql);		
     }
 	function delete($id){
+		$id=urldecode($id);
+		if(!allow_mod('_40013')){
+			echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan menjalankan proses module ini."));
+			return false;
+		};			
 	 	$cnt=$this->supplier_model->delete($id);
 		if($cnt){
 			echo json_encode(array("success"=>false,"msg"=>"Masih ada transaksi tidak bisa dihapus"));
@@ -167,6 +183,7 @@ class Supplier extends CI_Controller {
 	}
 	function kartu_hutang($supplier_number)
 	{
+		$supplier_number=urldecode($supplier_number);
 		$date_from= $this->input->get('d1');
 		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));
 		$date_to= $this->input->get('d2');
@@ -196,5 +213,33 @@ class Supplier extends CI_Controller {
                     
         echo json_encode($data);
 
+	}
+	function list_info($offset=0){
+		if(isset($_GET['offset'])){
+			$offset=$_GET['offset'];
+		}
+		$data['offset']=$offset;
+		$this->load->library('search_criteria');
+		if($this->input->get('sid_nama') or $this->input->get('sid_nama')==''){
+			$sid_nama=$this->input->get('sid_nama');
+			$this->session->set_userdata('sid_nama',$sid_nama);
+		} else {
+			$sid_nama=$this->session->userdata('sid_nama');		
+		}
+		if($this->input->get('sid_city')  or $this->input->get('sid_city')==''){
+			$sid_city=$this->input->get('sid_city');
+			$this->session->set_userdata('sid_city',$sid_city);
+		} else {
+			$sid_city=$this->session->userdata('sid_city');
+		}
+	
+		$faa[]=criteria("Nama","sid_nama",null,$sid_nama);
+		$faa[]=criteria("Kota","sid_city",null,$sid_city);
+		$data['criteria']=$faa;
+		$data['criteria_text']=criteria_text($faa);
+		$data['sid_nama']=$sid_nama;
+		$data['sid_city']=$sid_city;
+		
+		$this->template->display_form_input('purchase/supplier_info_list',$data);	
 	}
 }

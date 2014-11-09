@@ -99,15 +99,16 @@
 
    </form>
     </div>
-<div class="easyui-tabs" style="width:700px;height:450px">
+<div class="easyui-tabs" style="height:450px">
 	<div id='divItem' title='Items'>
 		<div id='dgItem'><? include_once "invoice_add_item_simple.php"; ?></div>
 		
 		<table id="dg" class="easyui-datagrid"  
-			style="width:800px;min-height:800px"
+			style="min-height:800px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
+				width: '100%',
 				toolbar: '#tb',
 				url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
 			">
@@ -133,9 +134,9 @@
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
 		<table id="dgCrdb" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',width: '100%',
 				singleSelect: true,toolbar:'',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
 			">

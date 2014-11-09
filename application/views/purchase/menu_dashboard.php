@@ -6,6 +6,9 @@
   $CI =& get_instance();
  ?>
 <div class="easyui-tabs" id="tt">	 
+	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
+	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
+
 	<div title="DASHBOARD" style="padding:10px">
 		<div class="thumbnail">
 			<div class="thumbnail ">

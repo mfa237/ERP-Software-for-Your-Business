@@ -8,7 +8,7 @@
 		$user_id=$_POST['user_id'];
 		$user_pass=$_POST['user_pass'];
 		if($server=="" or $database=="" or $user_id==""){
-			$msg.="<div class='error'>Isi nama server,database,userid !\n<br>";
+			$msg.="<div class='error'>Isi nama server,database,userid !<br>";
 			$msg.= "Silahkan kembali atau tekan tombol back browser.</div>";
 			$success=false;
 		}
@@ -22,33 +22,39 @@
 		}
 		
 		$sql="DROP DATABASE ".$database;
-		//	mysql_query($sql);
+		//mysql_query($sql);
 		//echo "<br>".mysql_error();
-		/*
+		$exist_db=false;
 		if($success){
-			$msg.="Konek ke server .. OK\n <br>";
+			$msg.="Konek ke server .. OK<br> <br>";
 			if(mysql_select_db($database)){
 				$msg.="Database ". $database . " sudah ada! <br>
-				Tidak bisa diteruskan, silahkan kembali dan ganti nama database.";
-				$success=false;	// teruskan saja kalau sudah ada		
+				Nama database [$database] akan dipakai, dan mungkin akan menimpa tabel yang sudah anda buat sebelumnya.<br>
+				Bila anda tidak yakin silahkan kembali -back- dan ganti nama database baru.<br>
+				Apabila anda jalankan install ini di hosting dan yakin databasenya kosong silahkan teruskan saja.<br>";
+				$exist_db=true;
+				$success=true;	// true = teruskan saja kalau sudah ada		
+				
 			}
 		}
-		if($success) {
+		if($success) {	// apabila database belum ada bikin database
+			if(!$exist_db) {
 			$sql = 'CREATE DATABASE '.$database;
-			if (mysql_query($sql, $link)) {
-				$msg.= "Membuat database baru $database ... OK\n <br>";
-			} else {
-				$msg.= "Database " . $database . " tidak bisa dibuat! <br>";
-				$msg.= mysql_error();
-				$success=false;		
-			}		
+				if (mysql_query($sql, $link)) {
+					$msg.= "Membuat database baru $database ... OK<br>";
+				} else {
+					$msg.= "Database " . $database . " tidak bisa dibuat! <br>";
+					$msg.= "Error: ".mysql_error()."<br>";
+					$success=false;		
+				}		
+			}
 			if(!mysql_select_db($database)){
 				$msg.="Database ". $database . " belum ada! <br>
-				Tidak bisa diteruskan, silahkan kembali dan ganti nama database.";
+				Tidak bisa diteruskan, silahkan kembali dan ganti nama database.<br>";
 				$success=false;		
 			}
 		}
-		*/
+		
 		if($success) {
 			// write ../application/config/database.php
 			$content="<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
@@ -76,22 +82,23 @@
 			$filename="../application/config/database.php";
 			if (is_writable($filename)) {
 			   if (!$handle = fopen($filename, 'w')) {
-					$msg.="Cannot open file ($filename)";
+					$msg.="Tidak bisa buka file ($filename)<br>";
 					$success=false;
 			   }
 			   if($success){
 				   if (fwrite($handle, $content) === FALSE) {
-					   $msg.="Cannot write to file ($filename)";
+						$msg.="Tidak bisa menulis ke file ($filename) <br> 
+						Periksa seting folder application config <br>>";
 						$success=false;
 				   }
 			   }
 			   if($success){
-					$msg.="<br>Success, wrote ($somecontent) to file ($filename)";
+					$msg.="Success, dapat menulis isi ($somecontent) ke file configurasi ($filename) <br>";
 			   }
 			   fclose($handle);
 			
 			} else {
-			   $msg.="<br>The file $filename is not writable, check permission file or directory.";
+			   $msg.="The file $filename is not writable, check permission file or directory. <br>";
 			   $success=false;
 			}
 		
@@ -117,26 +124,26 @@
 			}
 		}
 		if($success){
-			$msg.="<br>Finish create database $database";
-			$msg.="<br>Next step click link to create tables..";
+			$msg.="Finish create database $database<br>";
+			$msg.="Next step click link to create tables..<br>";
 		}
 		// buat koneksi local
 		$filename="./koneksi.php";
 		if (is_writable($filename)) {
 		   if (!$handle = fopen($filename, 'w')) {
-				$msg.="Cannot open file ($filename)";
+				$msg.="Cannot open file ($filename) <br>";
 				$success=false;
 		   }
 		   if($success){
-				$content="<?php mysql_connect($server,$user_id,$user_pass);mysql_select_db($database); ?>";
+				$content="<?php mysql_connect('$server','$user_id','$user_pass');mysql_select_db('$database'); ?>";
 			   if (fwrite($handle, $content) === FALSE) {
-				   $msg.="Cannot write to file ($filename)";
+				   $msg.="Cannot write to file ($filename) <br>";
 					$success=false;
 			   }
 		   }
 		   fclose($handle);
 		} else {
-		   $msg.="<br>The file $filename is not writable, check permission file or directory.";
+		   $msg.="The file $filename is not writable, check permission file or directory. <br>";
 		   $success=false;
 		}
 		
@@ -149,12 +156,7 @@
 		$data['count']=0;
 		$data['table']=$table;
 		$data['sql']='';
-		$data['msg']=$msg;
-	
+		$data['msg']=$msg;	
 		//echo json_encode($data);
 	};
-
-	
-			
-		
 ?>

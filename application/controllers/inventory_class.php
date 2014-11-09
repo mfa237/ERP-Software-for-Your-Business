@@ -70,6 +70,7 @@ class Inventory_class extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->inventory_class_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -116,6 +117,7 @@ class Inventory_class extends CI_Controller {
         echo datasource($sql);		
     }
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->inventory_class_model->delete($id);
 	 	$this->browse();
 	}

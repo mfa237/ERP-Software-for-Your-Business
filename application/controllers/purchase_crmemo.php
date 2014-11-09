@@ -40,6 +40,7 @@ class Purchase_CrMemo extends CI_Controller {
 	}
 	function index()
 	{	
+		if(!allow_mod2('_40090'))return false;   
             $this->browse();
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
@@ -97,6 +98,7 @@ class Purchase_CrMemo extends CI_Controller {
 	
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);

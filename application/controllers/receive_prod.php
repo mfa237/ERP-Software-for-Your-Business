@@ -99,6 +99,7 @@ class Receive_prod extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['shipment_id']=$id;
 		 $model=$this->inventory_products_model->get_by_id($id)->row();	
 		 $data=$this->set_defaults($model);
@@ -156,6 +157,7 @@ class Receive_prod extends CI_Controller {
         echo datasource($sql);
     }
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->inventory_products_model->delete($id);
 	 	$this->browse();
 	}
@@ -169,6 +171,7 @@ class Receive_prod extends CI_Controller {
         $this->template->display('inventory/receive_detail',$data);
     }
 	function view_detail($nomor){
+		$nomor=urldecode($nomor);
         $sql="select ip.item_number,i.description,ip.quantity_received as qty
         ,ip.unit,ip.cost,ip.id
         from inventory_products ip
@@ -201,7 +204,7 @@ class Receive_prod extends CI_Controller {
 		$data['receipt_type']='RCV_PROD';
 		$data['date_received']=$this->input->post('date_received');;
 		$data['comments']=$this->input->post('comments');;
-		
+		$data['purchase_order_number']=$this->input->post('purchase_order_number');	//nomor WO
 		$ok=$this->inventory_products_model->save($data);
 		if ($ok){
 			echo json_encode(array('success'=>true,'shipment_id'=>$id));
@@ -213,6 +216,7 @@ class Receive_prod extends CI_Controller {
         
 	}         
     function print_bukti($nomor){
+		$nomor=urldecode($nomor);
         $adj=$this->inventory_products_model->get_by_id($nomor)->row();
 		$data['shipment_id']=$adj->shipment_id;
 		$data['date_received']=$adj->date_received;
@@ -233,8 +237,9 @@ class Receive_prod extends CI_Controller {
 	
 	function items($nomor,$type='')
 	{
+		$nomor=urldecode($nomor);
             $sql="select p.item_number,i.description,p.quantity_received, 
-            p.unit,p.cost,p.id as line_number
+            p.unit,p.cost,p.id as line_number,p.total_amount
             from inventory_products p
             left join inventory i on i.item_number=p.item_number
             where shipment_id='$nomor'";

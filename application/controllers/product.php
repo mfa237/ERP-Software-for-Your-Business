@@ -45,6 +45,7 @@ class Product extends CI_Controller {
         $this->template->display_form_input($this->file_view,$data,'');
    }        
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->inventory_model->delete($id);
 	 	$this->browse();
 	}
@@ -81,6 +82,7 @@ class Product extends CI_Controller {
 		  
 	}
 	function acc_id($account){
+		$account=urldecode($account);
 		$data=explode(" - ", $account);
 		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();
 		if($coa){
@@ -91,6 +93,7 @@ class Product extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $inventory=$this->inventory_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($inventory);
 		 $data['id']=$id;
@@ -117,7 +120,7 @@ class Product extends CI_Controller {
 	}
 	
 	function valid_exist($id){
-	  echo 'exist='.$this->inventory_model->exist($id);
+		$id=urldecode($id);
 	   if($this->inventory_model->exist($id)>0) {
 		   $this->form_validation->set_message('item_number', 'Nomor ini sudah dipakai, silahkan diganti !');
 		   return false;
@@ -157,11 +160,13 @@ class Product extends CI_Controller {
                 $order_column,$order_type);
     }
 	function filter($nama='',$type='json'){
+		$nama=urldecode($nama);
 		$sql="select item_number,description
 		 from inventory  where 1=1 and description like '".$nama."%' limit 100";
 		 echo datasource($sql);
 	}
 	function find($item_number=''){
+		$item_number=urldecode($item_number);
 		$query=$this->db->query("select item_number,description,retail,
 		unit_of_measure,cost from inventory where item_number='$item_number'");
 		echo json_encode($query->row_array());

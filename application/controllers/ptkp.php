@@ -84,11 +84,13 @@ class Ptkp extends CI_Controller {
     }
       
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->load->model("ptkp_model");
 	 	$this->ptkp_model->delete($id);
 	 	$this->browse();
 	}
 	function select($search=''){
+		$search=urldecode($search);
 		$sql="select kode,keterangan,jumlah from hr_ptkp 
 		where kode like '$search%')
 		order by kode limit 100";

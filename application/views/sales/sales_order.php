@@ -36,7 +36,7 @@
 				<?php echo form_input('sales_order_number',
                         $sales_order_number,"id=sales_order_number"); ?>
             </td>
-			<td rowspan="5">
+			<td rowspan="4" colspan='6'>
 				<div class="thumbnail" id="customer_info" style="width:300px;height:100px"><?=$customer_info?></div>
 			</td>
 	</tr>
@@ -60,11 +60,11 @@
        <tr>
        		<td>Salesman: </td>
        		<td><?php echo form_dropdown('salesman',$salesman_list,$salesman,'id=salesman');?></td>
-	</tr>
-	<tr>
             <td>Termin</td><td><?php echo form_dropdown('payment_terms'
                     ,$payment_terms_list,$payment_terms,"id=payment_terms");?>
             </td>
+	</tr>
+	<tr>
        	</tr>
        <tr>
              
@@ -73,8 +73,6 @@
             <td>Keterangan</td><td colspan="6"><?php echo form_input('comments'
                     ,$comments,'id=comments style="width:400px"');?>
             </td>
-            <td>        
-            </td>
        </tr>
        <tr><td colspan="4"> </td></tr>
    </table>
@@ -82,7 +80,7 @@
 
 
 <!-- SALES_ORDER_LINEITEMS -->	
-<div class="easyui-tabs" style="width:700px;height:450px">
+<div class="easyui-tabs" style="height:450px">
 	<div id='divItem' title="Items" style="padding:10px">
 		<div id='dgItem'>
 			<table>
@@ -141,27 +139,45 @@
 			</thead>
 		</table>
 	<!-- END SALES_ORDER_LINEITEMS -->
-		
-		<h5>TOTAL</H5>
 		<div id='divTotal'> 
 					<table>
 						<tr>
-							<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
+							<td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
 							<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
-							<td>Pajak PPN %: </td><td><input id='sales_tax_percent' value='<?=$sales_tax_percent?>' style='width:50px'></td>
-						</tr><tr>
+							<td>Discount  : </td><td><input id='disc_amount_1' value='<?=number_format($disc_amount_1)?>' style='width:100px'></td>
+						</tr>
+						<tr>
 							<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
+							<td>Pajak PPN %: </td><td><input id='sales_tax_percent' value='<?=$sales_tax_percent?>' style='width:50px'></td>
+							<td>Pajak PPN  : </td><td><input id='tax' value='<?=number_format($tax)?>' style='width:100px'></td>
+						</tr>
+						<tr>
 							<td>Biaya Lain: </td><td><input id='others' value='<?=$other?>' style='width:80px'></td>
-							<td>JUMLAH: </td><td><input id='total' value='<?=$amount?>' style='width:100px'>
+							<td>&nbsp</td><td>&nbsp</td>
+							<td>JUMLAH: </td><td><input id='total' value='<?=number_format($amount)?>' style='width:100px'>
 								 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
 								   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
 								
 							</td>
+						
 						</tr>
+
 					</table>		
 		</div>
 	</div>
 	<div title="Delivery" style="padding:10px">
+		<table>
+		   <tr>
+				<td>        
+					Barang Terkirim : 
+				</td>
+				<td><?=form_radio('delivered',1,$delivered=='1'?TRUE:FALSE);?>Yes 
+				<?php echo form_radio('delivered',0,$delivered=='0'?TRUE:FALSE);?>No
+				</td>
+				<td>Tanggal Kirim : </td>
+				<td><?=$ship_date?></td>
+			</tr>
+		</table>
 		<table id="dgDo" class="easyui-datagrid"  
 			style="width:auto;height:300px"
 			data-options="
@@ -205,6 +221,7 @@
         if($('#sales_order_number').val()==''){alert('Isi nomor sales order !');return false;}
         if($('#sold_to_customer').val()==''){alert('Pilih pelanggan !');return false;}
         if($('#salesman').val()==''){alert('Pilih salesman !');return false;}        
+		hitung_jumlah();
 		url='<?=base_url()?>index.php/sales_order/save';
 			$('#frmSo').form('submit',{
 				url: url,
@@ -267,6 +284,8 @@
                     var obj=jQuery.parseJSON(msg);
                     $('#sub_total').val(obj.sub_total);
                     $('#total').val(obj.amount);
+                    $('#disc_amount_1').val(obj.disc_amount_1);
+                    $('#tax').val(obj.tax);
                 },
                 error: function(msg){alert(msg);}
 		    });			
@@ -354,5 +373,5 @@
             so=$('#sales_order_number').val(); 
             window.open("<?=base_url().'index.php/sales_order/print_so/'?>"+so,"new");  		
   	}
-    
+ 
 </script>

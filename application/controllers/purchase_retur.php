@@ -2,7 +2,7 @@
 
 class Purchase_retur extends CI_Controller {
         private $limit=10;
-        private $sql="select purchase_order_number,po_date,amount, i.po_ref,
+        private $sql="select purchase_order_number,po_date,amount,i.posted, i.po_ref,
                 i.supplier_number,c.supplier_name,c.city,i.warehouse_code
                 from purchase_order i
                 left join suppliers c on c.supplier_number=i.supplier_number
@@ -61,6 +61,7 @@ class Purchase_retur extends CI_Controller {
 	}
 	function index()
 	{	
+		if(!allow_mod2('_40060'))return false;   
         $this->browse();
            
 	}
@@ -139,6 +140,7 @@ class Purchase_retur extends CI_Controller {
 	}
 	function add_single($nomor_faktur)
 	{
+		$nomor_faktur=urldecode($nomor_faktur);
 		$this->load->model('purchase_order_lineitems_model');
 	    $data=$this->set_defaults();
 		$data['mode']='add';
@@ -170,6 +172,7 @@ class Purchase_retur extends CI_Controller {
 	 
         
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->purchase_order_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -199,12 +202,13 @@ class Purchase_retur extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Faktur','Kode Supplier',
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Posted','Faktur','Kode Supplier',
 		'Nama Supplier','Kota','Gudang');
-		$data['fields']=array('purchase_order_number','po_date','amount','po_ref', 
+		$data['fields']=array('purchase_order_number','po_date','amount','posted','po_ref', 
                 'supplier_number','supplier_name','city','warehouse_code');
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR PURCHASE RETUR';
+		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
 		
@@ -212,6 +216,8 @@ class Purchase_retur extends CI_Controller {
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Nomor BUkti","sid_po_number");
 		$faa[]=criteria("Supplier","sid_supplier");
+		$faa[]=criteria("Posted","sid_posted");
+
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -223,11 +229,19 @@ class Purchase_retur extends CI_Controller {
 			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
 			$sql=$this->sql." and po_date between '".$d1."' and '".$d2."'";
 			if($this->input->get('sid_supplier'))$sql.=" and supplier_name like '".$this->input->get('sid_supplier')."%'";
+			if($this->input->get('sid_posted')!=''){
+				if($this->input->get('sid_posted')=='1'){
+					$sql.=" and posted=true";
+				} else {
+					$sql.=" and (posted=false or posted is null)";				
+				}
+			}
 		}
         echo datasource($sql);
     }	 
   
 	function delete($id){
+		$id=urldecode($id);
 		$this->load->model('jurnal_model');
 		if($q=$this->jurnal_model->get_by_gl_id($id)){
 			if($r=$q->row()){
@@ -240,6 +254,7 @@ class Purchase_retur extends CI_Controller {
 		$this->browse();
 	}
 	function lineitems($nomor){
+		$nomor=urldecode($nomor);
 		$this->load->model('purchase_order_lineitems_model');
 		echo $this->purchase_order_lineitems_model->browse($nomor);
     }
@@ -269,11 +284,13 @@ class Purchase_retur extends CI_Controller {
             $this->purchase_order_lineitems_model->save($data);
         }        
         function delete_item($id){
+			$id=urldecode($id);
             $this->load->model('purchase_order_lineitems_model');
             return $this->purchase_order_lineitems_model->delete($id);
         }        
         function print_retur($nomor){
-		    $this->load->helper('mylib');
+		    $nomor=urldecode($nomor);
+			$this->load->helper('mylib');
 			$this->load->helper('pdf_helper');			
             $invoice=$this->purchase_order_model->get_by_id($nomor)->row();
 			$saldo=$this->purchase_order_model->recalc($nomor);
@@ -293,79 +310,39 @@ class Purchase_retur extends CI_Controller {
 			$this->load->view('purchase/print_retur',$data);
         }
 		function posting($nomor)	{
-
-			$this->purchase_order_model->recalc($nomor);
-			$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
-
-			$this->load->model("periode_model");
-			if($this->periode_model->closed($faktur->po_date)){
-				echo "ERR_PERIOD";
-				return false;
-			}
-			$this->load->model('purchase_order_lineitems_model');
-			$this->load->model('jurnal_model');
-			$this->load->model('chart_of_accounts_model');
-			$this->load->model('company_model');
-			$this->load->model('supplier_model');
-			$this->load->model('inventory_model');
-			
-			$date=$faktur->po_date;
-			$supplier=$this->supplier_model->get_by_id($faktur->supplier_number)->row();
-			$akun_hutang=$faktur->account_id;
-			$gl_id=$nomor;
-			$debit=0; $credit=0;$operation="";$source="";
-			// posting hutang / ap
-			if($akun_hutang=="")$akun_hutang=$supplier->supplier_account_number;
-			if($akun_hutang=="")$akun_hutang=$this->company_model->setting("accounts_payable");
-			
-			$account_id=$akun_hutang; $debit=$faktur->amount; $credit=0;
-			$operation="AP Posting"; $source=$faktur->comments;
-			
-			$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
-			
-			// posting persediaan
-			$items=$this->purchase_order_lineitems_model->get_by_nomor($nomor);
-			foreach($items->result() as $row) {
-				$item=$this->inventory_model->get_by_id($row->item_number)->row();
-				
-				$account_id=$item->inventory_account; 
-				if(!$account_id)$account_id=$this->company_model->setting('inventory');
-				
-				$debit=0; $credit=$row->total_price;
-				$operation="Inventory Posting"; $source=$row->description;
-				$custsuppbank=$row->item_number;
-				$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source,'',$custsuppbank);
-				
-			}
-			
-			// validate jurnal
-			if($this->jurnal_model->validate($nomor)) {
-				$data['posted']=true;
-			} else {
-				$data['posted']=false;
-			}
-			$this->purchase_order_model->update($nomor,$data);
-			
+			$nomor=urldecode($nomor);
+			$this->load->model('purchase_retur_model');
+			$this->purchase_retur_model->posting($nomor);			
 			$this->view($nomor);
 		}
 	function unposting($nomor) {
-		$this->purchase_order_model->recalc($nomor);
-		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
-
-		$this->load->model("periode_model");
-		if($this->periode_model->closed($faktur->po_date)){
-			echo "ERR_PERIOD";
-			return false;
-		}
-		// validate jurnal
-		$this->load->model('jurnal_model');
-		if($this->jurnal_model->del_jurnal($nomor)) {
-			$data['posted']=false;
-		} else {
-			$data['posted']=true;
-		}
-		$this->purchase_order_model->update($nomor,$data);
-		
+		$nomor=urldecode($nomor);
+		$this->load->model('purchase_retur_model');
+		$this->purchase_retur_model->unposting($nomor);			
 		$this->view($nomor);
 	}		
+	function posting_all() {
+		$this->load->model("purchase_retur_model");
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		$sql="select distinct purchase_order_number from purchase_order"; 
+		$sql.=" where potype='R'
+		and (posted is null or posted=false) 
+		and po_date  between '$d1' and '$d2'";
+		
+		if($q=$this->db->query($sql)){
+			foreach($q->result() as $r){
+				echo "<p>Posting..
+				<a href=".base_url()."index.php/purchase_retur/view/".$r->purchase_order_number."
+				class='info_link'>".$r->purchase_order_number."</a> : ";
+				$message=$this->purchase_retur_model->posting($r->purchase_order_number);
+				if($message!=''){
+					echo ': '.$message;
+				}
+				echo "</p>";
+			}
+		}
+		echo "<p>Finish.</p>";
+	}	
+		
 }

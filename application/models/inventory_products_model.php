@@ -23,7 +23,7 @@ function __construct(){
 	function update($id,$data){
 		$data['date_received']= date( 'Y-m-d H:i:s', strtotime($data['date_received']));
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		return $this->db->update($this->table_name,$data);
 	}
 	function validate_delete_receive_po($nomor_receive)
 	{

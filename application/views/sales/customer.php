@@ -44,7 +44,7 @@
          </td>
   </tr>
 </table>
-<div class="easyui-tabs" style="width:700px;height:350px">
+<div class="easyui-tabs" style="height:350px">
 	<div title="General" style="padding:10px">
 		<table>
        <tr>
@@ -89,7 +89,10 @@
 			 <td><?php echo form_input('customer_record_type',$customer_record_type);?></td>
 			 <td>Sales Type/Price List</td><td><?=form_input('pricing_type',$pricing_type);?></td>
 			</tr>
-			<tr><td>Salesman</td><td><?=form_input('salesman',$salesman);?></td>
+			<tr><td>Salesman</td><td>
+			<? 
+				echo form_dropdown('salesman',$salesman_list,$salesman);
+			?></td>
 			 <td>Termin Jual</td><td><?=form_dropdown('payment_terms',$termin_list,$payment_terms);?></td>
 			 </tr>
 			 <tr>
@@ -120,8 +123,8 @@
 
 <!-- SHIPTO -->
 	<div title="Ship To" style="padding:10px">
-		<table id="dgShipTo" class="easyui-datagrid" style="width:600px;"
-			data-options="iconCls: 'icon-edit',singleSelect: true,toolbar: '#tbShipTo',
+		<table id="dgShipTo" class="easyui-datagrid" 
+			data-options="iconCls: 'icon-edit',singleSelect: true,width: '100%',toolbar: '#tbShipTo',
 				url: '<?=base_url()?>index.php/customer/list_shipto/<?=$customer_number?>'">
 			<thead>
 				<tr>
@@ -152,10 +155,10 @@
 			</form>
 		</div>
 		<table id="dgCard" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
-				singleSelect: true,  
+				singleSelect: true,  width: '100%',
 				url: '',toolbar:'',
 			">
 			<thead>
@@ -180,7 +183,10 @@
 	<?=link_button('','edit_shipto()','edit')?>
 	<?=link_button('','del_shipto()','remove')?>
 </div>
-<?=load_view('gl/select_coa_link')?>   	
+
+<?=load_view('gl/select_coa_link')?> 
+ 
+  	
 <div id='divShipTo'class="easyui-dialog" style="width:400px;padding: 10px" 
 	closed="true" buttons="#divShipToButtons">
 	<form id='frmShipTo' method='post'><table>

@@ -101,6 +101,7 @@ private $limit=10;
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->machine_model->delete($id);
 	 	$this->browse();
 	}

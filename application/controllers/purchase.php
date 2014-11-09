@@ -21,6 +21,7 @@ class Purchase extends CI_Controller {
     function index(){	
 	}
     function rpt($id){
+		$id=urldecode($id);
     	 switch ($id) {
 			 case 'po_list':
 				 $data['date_from']=date('Y-m-d 00:00:00');
@@ -35,7 +36,14 @@ class Purchase extends CI_Controller {
 				 $data['date_to']=date('Y-m-d 23:59:59');
 				 $data['select_date']=true;
 				 break;
-			 
+			 case 'cards_detail':
+				 $data['date_from']=date('Y-m-d 00:00:00');
+				 $data['date_to']=date('Y-m-d 23:59:59');
+				 $data['select_date']=true;
+				 $data['criteria1']=true;
+				 $data['label1']='Supplier';
+				 $data['text1']='';				 
+				 break;			 
 			 default:
 				 
 				 break;

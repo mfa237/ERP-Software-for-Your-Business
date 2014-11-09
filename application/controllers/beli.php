@@ -17,20 +17,18 @@ class Beli extends CI_Controller {
 		 
 	}
 	function set_defaults($record=NULL){
-                $data['library_src'] = $this->jquery->script();
-                $data['script_head'] = $this->jquery->_compile();
+		$data['library_src'] = $this->jquery->script();
+		$data['script_head'] = $this->jquery->_compile();
 		$data['mode']='';
 		$data['message']='';
-                 $data['lineitems']='';
-                 $data['beli_list']='';
-                 $data['warehouse_code']=$this->access->cid;
-                 $data['sum_info']='';
+		$data['lineitems']='';
+		$data['beli_list']='';
+		$data['warehouse_code']=$this->access->cid;
+		$data['sum_info']='';
 		if($record==NULL){
- 
 			$data['purchase_order_number']=$this->sysvar
                                 ->autonumber($this->access->cid." Pembelian Numbering",0,
                                 '!FB'.$this->access->cid.'~$00001');
-                         
 			$data['supplier_number']='';
 			$data['po_date']= date("Y-m-d");
                         $data['potype']='I';
@@ -102,50 +100,53 @@ class Beli extends CI_Controller {
  		$this->view($id,$message);		
 	}
 	function add_item($id){
-            $item=$this->input->get('item');  
-            $qty=$this->input->get('qty');  
-            $this->purchase_order_model->add_item($id,$item,$qty);
-            echo $this->lineitems($id);
-        }
-        function del_item($line,$id){
-            $this->purchase_order_model->del_item($line);
-            echo $this->lineitems($id);
-        }
-	function view($id,$message=null){
-                 $this->load->model('inventory_model');
-		 $data['id']=$id;
-		 $model=$this->purchase_order_model->get_by_id($id)->row();
-		 $data=$this->set_defaults($model);
-		 $data['mode']='view';
-                 $data['message']=$message;
-                 $data['supplier_list']=$this->supplier_model->lookup();  
-                 $data['table']=$this->inventory_model->lookup();
-                 $data['pagination']='';
-                 $data['lineitems']=$this->lineitems($id);                 
-                 $this->load->model('supplier_model');
-                 $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
-                 $this->purchase_order_model->recalc($id);
-                 $data['sum_info']= '
-                        Jumlah Faktur Rp. '.number_format($this->purchase_order_model->amount)
-                         .'<br/>Jumlah Bayar   Rp. '.number_format($this->purchase_order_model->amount_paid)
-                         .'<br/>Jumlah Saldo   Rp. '.number_format($this->purchase_order_model->saldo);
-
-                 
-		 $this->template->display_form_input('beli',$data,'purchase_order_menu');
+		$id=urldecode($id);
+		$item=$this->input->get('item');  
+		$qty=$this->input->get('qty');  
+		$this->purchase_order_model->add_item($id,$item,$qty);
+		echo $this->lineitems($id);
 	}
-        function lineitems($id){
-            $sql="select item_number,description,price,
-                quantity,total_price,line_number
-                from purchase_order_lineitems where purchase_order_number='".$id."' 
-                order by line_number    
-                ";
-            $s=browse_select(array('sql'=>$sql,
-                'hidden'=>array('line_number','price'),
-                'field_key'=>'line_number'
-            ));
-           return $s;
+	function del_item($line,$id){
+		$id=urldecode($id);
+		$this->purchase_order_model->del_item($line);
+		echo $this->lineitems($id);
+	}
+	function view($id,$message=null){
+		$id=urldecode($id);
+		$this->load->model('inventory_model');
+		$data['id']=$id;
+		$model=$this->purchase_order_model->get_by_id($id)->row();
+		$data=$this->set_defaults($model);
+		$data['mode']='view';
+		$data['message']=$message;
+		$data['supplier_list']=$this->supplier_model->lookup();  
+		$data['table']=$this->inventory_model->lookup();
+		$data['pagination']='';
+		$data['lineitems']=$this->lineitems($id);                 
+		$this->load->model('supplier_model');
+		$data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
+		$this->purchase_order_model->recalc($id);
+		$data['sum_info']= '
+		Jumlah Faktur Rp. '.number_format($this->purchase_order_model->amount)
+		 .'<br/>Jumlah Bayar   Rp. '.number_format($this->purchase_order_model->amount_paid)
+		 .'<br/>Jumlah Saldo   Rp. '.number_format($this->purchase_order_model->saldo);
 
-        }
+
+		$this->template->display_form_input('beli',$data,'purchase_order_menu');
+	}
+	function lineitems($id){
+		$id=urldecode($id);
+		$sql="select item_number,description,price,
+			quantity,total_price,line_number
+			from purchase_order_lineitems where purchase_order_number='".$id."' 
+			order by line_number    
+			";
+		$s=browse_select(array('sql'=>$sql,
+			'hidden'=>array('line_number','price'),
+			'field_key'=>'line_number'
+		));
+	   return $s;
+    }
          
 	function _set_rules(){	
 		 $this->form_validation->set_rules('purchase_order_number','Nomor Faktur', 'required|trim');
@@ -163,56 +164,58 @@ class Beli extends CI_Controller {
 	 	return true;
 	 }
 	}
-        function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
-            //var_dump($_GET);
-            $header=array('Nomor','Tanggal','Jumlah','Supplier','Supplier Name','Kota','Toko');
-            $caption="DAFTAR FAKTUR PEMBELIAN";
-            $data['_content']=browse("select purchase_order_number, 
-                po_date, amount, 
-                i.supplier_number,c.supplier_name,c.city,i.warehouse_code
-                from purchase_order i
-                left join suppliers c on c.supplier_number=i.supplier_number
-                where potype='i' and warehouse_code='".$this->access->cid."'
-                ",$caption,'beli'
-                ,$offset,$limit,$order_column,$order_type,$header
-                    
-                );
-            $this->template->display_browse('template_browse',$data);
-        }
+	function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
+		//var_dump($_GET);
+		$header=array('Nomor','Tanggal','Jumlah','Supplier','Supplier Name','Kota','Toko');
+		$caption="DAFTAR FAKTUR PEMBELIAN";
+		$data['_content']=browse("select purchase_order_number, 
+			po_date, amount, 
+			i.supplier_number,c.supplier_name,c.city,i.warehouse_code
+			from purchase_order i
+			left join suppliers c on c.supplier_number=i.supplier_number
+			where potype='i' and warehouse_code='".$this->access->cid."'
+			",$caption,'beli'
+			,$offset,$limit,$order_column,$order_type,$header
+				
+			);
+		$this->template->display_browse('template_browse',$data);
+	}
 	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->purchase_order_model->delete($id);
-                $this->browse();
+		$this->browse();
 	}
         
-        function print_faktur($nomor){
-            $this->load->helper('mylib');
-            $invoice=$this->purchase_order_model->get_by_id($nomor)->row();
-            $data['purchase_order_number']=$invoice->purchase_order_number;
-            $data['po_date']=$invoice->po_date;
-            $data['supplier_number']=$invoice->supplier_number;
-            $data['amount']=$invoice->amount;
-            $caption='';
-            $sql="select item_number,description,
-                quantity,unit,price,amount 
-                from purchase_order_lineitems i
-                where purchase_order_number='".$nomor."'";
-            $caption='';$class='';$field_key='';$offset='0';$limit=100;
-            $order_column='';$order_type='asc';
-            $item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
-                        $order_column, $order_type,false);
-            $data['lineitems']=$item;
-            $this->load->model('suppliers_model');
-            $data['supplier_info']=$this->suppliers_model->info($data['supllier_number']);
-            $data['header']=company_header();
-            
-            $this->load->view('purchase_order_print',$data);
-        }
-        function sum_info(){
-            $nomor=$_GET['nomor'];
-            $saldo=$this->purchase_order_model->recalc($nomor);
-            echo 'Jumlah Faktur: Rp. '.  number_format($this->purchase_order_model->amount);
-            echo '<br/>Jumlah Bayar : Rp. '.  number_format($this->purchase_order_model->amount_paid);
-            echo '<br/>Jumlah Sisa  : Rp. '.  number_format($saldo);            
-        }
+	function print_faktur($nomor){
+		$nomor=urldecode($nomor);
+		$this->load->helper('mylib');
+		$invoice=$this->purchase_order_model->get_by_id($nomor)->row();
+		$data['purchase_order_number']=$invoice->purchase_order_number;
+		$data['po_date']=$invoice->po_date;
+		$data['supplier_number']=$invoice->supplier_number;
+		$data['amount']=$invoice->amount;
+		$caption='';
+		$sql="select item_number,description,
+			quantity,unit,price,amount 
+			from purchase_order_lineitems i
+			where purchase_order_number='".$nomor."'";
+		$caption='';$class='';$field_key='';$offset='0';$limit=100;
+		$order_column='';$order_type='asc';
+		$item=browse_select($sql, $caption, $class, $field_key, $offset, $limit, 
+					$order_column, $order_type,false);
+		$data['lineitems']=$item;
+		$this->load->model('suppliers_model');
+		$data['supplier_info']=$this->suppliers_model->info($data['supllier_number']);
+		$data['header']=company_header();
+		
+		$this->load->view('purchase_order_print',$data);
+	}
+	function sum_info(){
+		$nomor=$_GET['nomor'];
+		$saldo=$this->purchase_order_model->recalc($nomor);
+		echo 'Jumlah Faktur: Rp. '.  number_format($this->purchase_order_model->amount);
+		echo '<br/>Jumlah Bayar : Rp. '.  number_format($this->purchase_order_model->amount_paid);
+		echo '<br/>Jumlah Sisa  : Rp. '.  number_format($saldo);            
+	}
 }

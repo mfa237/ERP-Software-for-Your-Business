@@ -20,7 +20,7 @@
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
 <? if($with_header) { ?>	
      <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>LAPORAN LABA RUGI</h2></td>     	
+     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>LAPORAN NERACA</h2></td>     	
      </tr>
      <tr>
      	<td colspan='2'><?=$model->street?></td><td></td>     	
@@ -75,7 +75,8 @@
 					if($row_coa->id==$coa_rl) {	// apabila akun rugi laba berjalan tambah 
 						$sql="select sum(g.debit)-sum(g.credit) as saldo 
 						from gl_transactions g left join chart_of_accounts c on c.id=g.account_id
-						where c.account_type>3 and g.date<='$date2' and year(g.date)=".substr($date2,0,4); 
+						where c.account_type>3 and g.date<='$date2'";
+//						and year(g.date)=".substr($date2,0,4); 
 						
 						if($query=$CI->db->query($sql)->row()){
 							$saldo=$saldo+$query->saldo;

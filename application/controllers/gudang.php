@@ -15,7 +15,7 @@ class Gudang extends CI_Controller {
  		$this->load->helper(array('url','form'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
-		$this->load->model('shipping_location_model');
+		$this->load->model('shipping_locations_model');
 	}
 	function set_defaults($record=NULL){
 		$data['mode']='';
@@ -61,7 +61,7 @@ class Gudang extends CI_Controller {
  		 $id=$this->input->post('kode');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
-			$this->inventory_class_model->update($id,$data);
+			$this->shipping_locations_model->update($id,$data);
                         $message='Update Success';
                         $this->browse();
 		} else {
@@ -71,8 +71,9 @@ class Gudang extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
-		 $model=$this->inventory_class_model->get_by_id($id)->row();
+		 $model=$this->shipping_locations_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
                  $data['message']=$message;
@@ -120,7 +121,8 @@ class Gudang extends CI_Controller {
     }
  
 	function delete($id){
-	 	$this->shipping_location_model->delete($id);
+		$id=urldecode($id);
+	 	$this->shipping_locations_model->delete($id);
 	 	$this->browse();
 	}
 	

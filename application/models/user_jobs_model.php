@@ -64,6 +64,14 @@ private $user_id='';
 	function delete_by_user($user_id){
 		return $this->db->query("delete from user_job where user_id='".$user_id."'");		
 	}
+	function add_job($user_id,$group_id){
+		if(!$this->db->query("select * from user_job where user_id='$user_id' 
+			and group_id='$group_id'")->row()){
+            $sql="insert into user_job set user_id='".$user_id."',
+            group_id='".$group_id."'";
+            return $this->db->query($sql);
+		}
+	}
 
 }
 ?>

@@ -20,8 +20,8 @@
 </div>
 <div id="toolbar-search-faktur" style="height:auto">
 	Enter Text: <input  id="search_supp" style='width:180' name="search_supp">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_faktur()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_faktur()">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_faktur();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_faktur();return false;">Select</a>
 </div>
 <SCRIPT language="javascript">
 

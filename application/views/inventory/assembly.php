@@ -1,6 +1,11 @@
 <h4 class="thumbnail">ASSEMBLY ITEM NUMBER</h4>
 	<div class="thumbnail">
-		Kode Barang : <strong><?=$item_number?></strong>  Nama Barang Jadi: <strong><?=$description?></strong>
+		Kode Barang : <strong>
+		<? 
+		   echo link_button($item_number,'','reload','true',base_url().'index.php/product/view/'.$item_number);		
+		?>
+		
+		</strong>  Nama Barang Jadi: <strong><?=$description?></strong>
 	</div>
 
 	<div class="thumbnail">
@@ -25,8 +30,8 @@
 				</tr>
 				<tr>	
 					<td>Keterangan</td> 
-					<td>
-						<input type="text" name="comment" id="comment" style="width:200px" placeholder="Comment">
+					<td colspan='6'>
+						<input type="text" name="comment" id="comment" style="width:100%" placeholder="Comment">
 					</td>
 				</tr>
 			</table>
@@ -70,12 +75,13 @@
 <?
 
 ?>
-<div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#dlg-buttons">
+<div id='dlgSearchItem'class="easyui-dialog" 
+		style="width:500px;height:380px;padding:10px 20px"
+        closed="true" buttons="#tb_search">
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#tb_search',
+				toolbar: '',
 				singleSelect: true,
 				url: '<?=base_url()?>index.php/inventory/filter'
 			">

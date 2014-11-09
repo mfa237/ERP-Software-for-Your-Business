@@ -22,7 +22,15 @@ class Modules extends CI_Controller {
 	}
 	function index()
 	{	
-		$this->browse();
+		$this->modules('0');
+	}
+	function modules($parent_id) {
+		$parent_id=urldecode($parent_id);
+		$data['parent_id']=$parent_id;
+		$this->template->display_form_input("admin/module_list",$data);
+	}
+	function list_json(){
+		$this->modules_model->module_list();
 	}
 	function get_posts(){
         $data=data_table_post($this->table_name);
@@ -50,6 +58,30 @@ class Modules extends CI_Controller {
             "admin/modules",$data,$this->table_name.'_menu');			
 		}
 	}
+	function save()
+	{   
+		 $data=$this->set_defaults();
+		 $this->_set_rules();
+ 		 $id=$this->input->post('module_id');
+		  
+		 if ($this->form_validation->run()=== TRUE){
+			$data=$this->get_posts();
+			$mode=$this->input->post("mode");
+			unset($data["mode"]);
+			if($mode=="view"){
+				$ok=$this->modules_model->update($id,$data);			
+			} else {
+				$ok=$this->modules_model->save($data);
+			}
+		} else {
+			$ok=false;
+		}	
+		if ($ok){
+			echo json_encode(array('success'=>true,'module_id'=>$id));
+		} else {
+			echo json_encode(array('msg'=>"Ada kesalahan input !"));
+		}
+	}		
 	function update()
 	{
 		 $data=$this->set_defaults();
@@ -66,6 +98,7 @@ class Modules extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $model=$this->modules_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['id']=$id;
@@ -96,8 +129,15 @@ class Modules extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->modules_model->delete($id);
 	 	$this->browse();
 	}
+	function find($module_id=''){
+		$module_id=urldecode($module_id);
+		if($query=$this->db->query($this->sql." where module_id='$module_id'")){
+			echo json_encode($query->row_array());
+		}
+ 	}
 	
 }

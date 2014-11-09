@@ -57,6 +57,8 @@ class Sales_order extends CI_Controller {
 			if($data['sales_date']=='')$data['sales_date']= date("Y-m-d H:i:s");
 			if($data['due_date']=='')$data['due_date']= date("Y-m-d H:i:s");
 			$data['customer_info']="";
+			$data['delivered']="0";
+			
             return $data;
 	}
 	function index()
@@ -103,6 +105,7 @@ class Sales_order extends CI_Controller {
 			$data['due_date']=$this->input->post('due_date');
 			$data['comments']=$this->input->post('comments');			
 			$data['sales_order_number']=$id;
+			$data['delivered']=$this->input->post('delivered');
 
 	        $this->session->set_userdata('sales_order_number',$id);
 			 
@@ -133,6 +136,7 @@ class Sales_order extends CI_Controller {
  		$this->view($id,$message);		
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->sales_order_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -146,6 +150,7 @@ class Sales_order extends CI_Controller {
 		 $data['subtotal']=$model->subtotal;
 		 $data['discount']=$model->discount;
 		 $data['sales_tax_percent']=$model->sales_tax_percent;
+		 $data['delivered']=$model->delivered;
 
 		$this->sales_order_model->recalc_ship_qty($id);
 
@@ -209,6 +214,7 @@ class Sales_order extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->sales_order_model->delete($id);
         $this->browse();
 	}
@@ -225,7 +231,8 @@ class Sales_order extends CI_Controller {
 		header("location: ".base_url()."index.php/sales_order/view/".$data['sales_order_number']);
     }
 	function view_detail($nomor){
-            $sql="select p.item_number,i.description,p.quantity 
+		$nomor=urldecode($nomor);
+            $sql="select p.item_number,p.description,p.quantity 
             ,p.unit,p.price,p.amount,p.line_number
             from sales_order_lineitems p
             left join inventory i on i.item_number=p.item_number
@@ -234,7 +241,8 @@ class Sales_order extends CI_Controller {
     }
 	function items($nomor,$type='')
 	{
-		$sql="select p.item_number,i.description,p.quantity 
+		$nomor=urldecode($nomor);
+		$sql="select p.item_number,p.description,p.quantity 
 		,p.unit,p.price,p.discount,p.amount,p.line_number,p.ship_qty,p.ship_date
 		from sales_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
@@ -293,9 +301,11 @@ class Sales_order extends CI_Controller {
 		}
     }        
 	function recalc($nomor){
+		$nomor=urldecode($nomor);
 		$this->sales_order_model->recalc($nomor);
 	}
     function delete_item($id=0){
+		$id=urldecode($id);
     	if($id==0)$id=$this->input->post('line_number');
         $this->load->model('sales_order_lineitems_model');
         if($this->sales_order_lineitems_model->delete($id)) {
@@ -305,6 +315,7 @@ class Sales_order extends CI_Controller {
 		}
     }        
     function print_so($nomor){
+		$nomor=urldecode($nomor);
         $invoice=$this->sales_order_model->get_by_id($nomor)->row();
 		$saldo=$this->sales_order_model->recalc($nomor);
 		$data['sales_order_number']=$invoice->sales_order_number;
@@ -323,6 +334,7 @@ class Sales_order extends CI_Controller {
         $this->load->view('sales/rpt/print_so',$data);
    	}
 	function list_open_so($customer){
+		$customer=urldecode($customer);
 		$sql="select p.sales_order_number,p.sales_date,p.due_date,p.payment_terms,p.salesman 
 		from sales_order  p
 		where p.sold_to_customer='$customer'";
@@ -333,7 +345,7 @@ class Sales_order extends CI_Controller {
 		$search=urldecode($search);
 		$sql="select sales_order_number,sales_date,sold_to_customer,company
 		 from sales_order so left join customers c on c.customer_number=so.sold_to_customer
-		 where sold_to_customer like '$search%'";
+		 where (delivered=false or delivered is null) and sold_to_customer like '$search%'";
 		 $sql.=" limit 100";
 		 
 		  
@@ -343,9 +355,10 @@ class Sales_order extends CI_Controller {
 	}
 
 	function list_item_delivery($nomor){
+		$nomor=urldecode($nomor);
 		$this->load->model('sales_order_lineitems_model');
 		$query=$this->db->query("select * from sales_order_lineitems where sales_order_number='$nomor'");
-		$table="<table class='table1' style='width:500px'>
+		$table="<table class='table' style='width:500px'>
 		<thead><tr><th>Item Number</th>
 			<th>Description</th>
 			<th>Qty Order</th>
@@ -359,13 +372,14 @@ class Sales_order extends CI_Controller {
 		<tbody>";
 		foreach($query->result() as $row){
 			$qty_sisa=$row->quantity-$row->ship_qty;
-			
-			$table.="<tr><td>".$row->item_number."</td><td>".$row->description."</td><td>"
-			.$row->quantity."</td><td>".$row->unit."</td>
-			<td>".$row->ship_qty."</td><td>".$qty_sisa."</td>
-			<td><input type='text' name='qty_order[]' style='width:30px' value='' '</td>
-			<input type='hidden' name='line_number[]' value='".$row->line_number."'>
-			</tr>";
+			if($qty_sisa>0) {
+				$table.="<tr><td>".$row->item_number."</td><td>".$row->description."</td><td>"
+				.$row->quantity."</td><td>".$row->unit."</td>
+				<td>".$row->ship_qty."</td><td>".$qty_sisa."</td>
+				<td><input type='text' name='qty_order[]' style='width:30px' value='' '</td>
+				<input type='hidden' name='line_number[]' value='".$row->line_number."'>
+				</tr>";
+			}
 		}
 		$table.="</tbody>
 		</table>";
@@ -373,6 +387,7 @@ class Sales_order extends CI_Controller {
 
 	}
 	function delivery($sales_order_number) {
+		$sales_order_number=urldecode($sales_order_number);
 		$sql="select i.invoice_number,invoice_date,il.warehouse_code,il.item_number,il.description,il.quantity,il.unit
 			from invoice i left join invoice_lineitems il on il.invoice_number=i.invoice_number
 			where invoice_type='D' 
@@ -382,6 +397,7 @@ class Sales_order extends CI_Controller {
 	}
 	function view_delivery($sales_order_number)
 	{             
+		$sales_order_number=urldecode($sales_order_number);
 		$this->load->model('invoice_model');
 		$sql="select distinct invoice_number as nomor_surat_jalan,
 			invoice_date as tanggal,sales_order_number,warehouse_code 
@@ -398,17 +414,24 @@ class Sales_order extends CI_Controller {
 		$this->template->display('sales/list_delivery',$data);            
 	}
 	function sub_total($nomor){
-		if(($_GET['discount'])){
-			$sql="update sales_order set discount=".$_GET['discount'].",sales_tax_percent=".$_GET['tax']
-			.",freight=".$_GET['freight'].",other=".$_GET['others']." where sales_order_number='$nomor'";
-			$rs=mysql_query($sql);
-		}
+		$nomor=urldecode($nomor);
+		$disc_prc=$_GET['discount'];
+		if($disc_prc=='')$disc_prc=0;
+		$tax=$_GET['tax'];if($tax=='')$tax=0;
+		
+		$sql="update sales_order set discount='".$disc_prc."',sales_tax_percent='".$tax
+			."',freight='".$_GET['freight']."',other='".$_GET['others']."'
+			where sales_order_number='$nomor'";
+			
+		$rs=mysql_query($sql);
 		$saldo=$this->sales_order_model->recalc($nomor);
 		$sub_total=$this->sales_order_model->sub_total;
-		$data=array('sub_total'=>$sub_total,'amount'=>$this->sales_order_model->amount);
+		$data=array('sub_total'=>$sub_total,'amount'=>$this->sales_order_model->amount,
+		'disc_amount_1'=>$this->sales_order_model->disc_amount_1,'tax'=>$this->sales_order_model->tax);
 		echo json_encode($data);				
 	}
 	function find($sales_order_number=''){
+		$sales_order_number=urldecode($sales_order_number);
 		$query=$this->db->query("select s.sales_order_number,s.sales_date,s.sold_to_customer,
 		c.company from sales_order s left join customers c on s.sold_to_customer=c.customer_number");
 		echo json_encode($query->row_array());

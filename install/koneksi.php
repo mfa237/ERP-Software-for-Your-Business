@@ -1,1 +1,1 @@
-<?php mysql_connect(localhost,root,simak);mysql_select_db(maxon1); ?>
+<?php mysql_connect('localhost','root','');mysql_select_db('maxon'); ?>

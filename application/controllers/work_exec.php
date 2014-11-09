@@ -49,6 +49,12 @@ private $limit=10;
 		if($record==NULL)$data['work_exec_no']=$this->nomor_bukti();
 		if($data['start_date']=='')$data['start_date']= date("Y-m-d H:i:s");
 		if($data['expected_date']=='')$data['expected_date']= date("Y-m-d H:i:s");						
+		 $data['wo_customer']='';
+		 $data['wo_date_from']='';
+		 $data['wo_date_to']='';
+		 $data['wo_comment']='';
+		 $data['wo_so_number']='';
+		
 		return $data;
 	}
 	function index()
@@ -109,16 +115,36 @@ private $limit=10;
 			 $data['mode']='add';
 			 $data['id']='';
 		 } else {
+			$id=urldecode($id);
 			 $model=$this->work_exec_model->get_by_id($id)->row();
 			 $data=$this->set_defaults($model);
 			 $data['id']=$id;
 			 $data['mode']='view';
 		 }
-		 $data['detail']=$this->load_detail($id);
+		 if($data['wo_number']!=''){
+			$this->load->model('workorder_model');
+			if($wo=$this->workorder_model->get_by_id($data['wo_number'])){
+				$row=$wo->row();
+				$data['wo_date_from']=$row->start_date;
+				$data['wo_date_to']=$row->expected_date;
+				$data['wo_so_number']=$row->sales_order_number;
+				$data['wo_comment']=$row->comments;
+				$data['wo_customer']=$row->customer_number;
+				if($data['wo_customer']!=''){
+					$this->load->model('customer_model');
+					if($q=$this->customer_model->get_by_id($data['wo_customer'])){
+						$row=$q->row();
+						$data['wo_customer'] = '<strong>'.$data['wo_customer'].' - ' . $row->company . '</strong>';
+					}
+				
+				}
+			}
+		 }
 		 $this->template->display_form_input($this->file_view,$data,'');
 	}
 	function load_detail($id)
 	{
+		$id=urldecode($id);
 		$sql="select item_number,description,quantity,unit,id
 		from work_exec_detail where work_exec_no='$id'";
 		$query=$this->db->query($sql);
@@ -151,25 +177,39 @@ private $limit=10;
 
 		$this->load->library('search_criteria');
 		
+		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
+		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Kode WOE","sid_woe");
 		$faa[]=criteria("Kode WO","sid_wo");
+		
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
     	$sql=$this->sql." where 1=1";
-		if($this->input->get('sid_woe')!='')$sql.=" and work_exec_no='".$this->input->get('sid_woe')."'";	
-		if($this->input->get('sid_wo')!='')$sql.=" work_order_no = '".$this->input->get('sid_wo')."'";
+		$no=$this->input->get('sid_woe');
+		if($no!='') {
+			$sql.=" and work_exec_no='".$no."'";	
+		} else {
+			if($this->input->get('sid_wo')!='')$sql.=" work_order_no = '".$this->input->get('sid_wo')."'";
+			$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+			$sql.=" and start_date between '$d1' and '$d2'";
+		}
+
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->work_exec_model->delete($id);
 	 	$this->browse();
 	}
 	function items($nomor)
 	{
-		$sql="select p.item_number,i.description,p.quantity,p.id as line_number,p.unit
+		$nomor=urldecode($nomor);
+		$sql="select p.item_number,i.description,p.quantity,p.id as line_number,p.unit,
+		p.price,p.total
 		from work_exec_detail p
 		left join inventory i on i.item_number=p.item_number
 		where work_exec_no='$nomor'";
@@ -205,6 +245,7 @@ private $limit=10;
     }        
 	function save_item_wo_detail($exec_no, $arLine,$arQtyExec)
 	{
+		$exec_no=urldecode($exec_no);
 		$this->load->model('work_order_detail_model');
 		$this->load->model('work_exec_detail_model');
 		for($i=0;$i<count($arLine);$i++)
@@ -232,6 +273,7 @@ private $limit=10;
 		}
 	}
     function delete_item($id=0){
+		$id=urldecode($id);
     	if($id==0)$id=$this->input->post('line_number');
         $this->load->model('work_exec_detail_model');
         if($this->work_exec_detail_model->delete($id)) {

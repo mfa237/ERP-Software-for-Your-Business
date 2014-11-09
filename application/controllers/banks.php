@@ -54,6 +54,7 @@ class Banks extends CI_Controller {
 		}
 	}
 	function acc_id($account){
+		$account=urldecode($account);
 		$data=explode(" - ", $account);
 		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();
 		if($coa){
@@ -139,10 +140,12 @@ class Banks extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->bank_accounts_model->delete($id);
 	 	$this->browse();
 	}
 	function find($nomor){
+		$nomor=urldecode($nomor);
 		$query=$this->db->query("select bank_name from bank_accounts where bank_account_number='$nomor'");
 		echo json_encode($query->row_array());
  	}

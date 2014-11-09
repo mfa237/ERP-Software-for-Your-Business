@@ -56,7 +56,8 @@ class Delivery extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_80070'))return false;   
+        $this->browse();
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -101,6 +102,7 @@ class Delivery extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['shipment_id']=$id;
 		 $model=$this->inventory_products_model->get_by_id($id)->row();	
 		 $data=$this->set_defaults($model);
@@ -160,32 +162,48 @@ class Delivery extends CI_Controller {
         echo datasource($sql);
     }
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->inventory_products_model->delete($id);
 	 	$this->browse();
 	}
-        function detail(){
-            $data['shipment_id']=isset($_GET['shipment_id'])?$_GET['shipment_id']:'';
-			$data['shipment_id']=$this->nomor_bukti();
-			$this->nomor_bukti(true);
-            $data['date_received']=isset($_GET['date_received'])?$_GET['date_received']:'';
-            $data['supplier_number']=isset($_GET['supplier_number'])?$_GET['supplier_number']:'';
-            $data['comments']=isset($_GET['comments'])?$_GET['comments']:'';
-            $this->template->display('inventory/delivery_detail',$data);
-        }
+	function detail(){
+		$data['shipment_id']=isset($_GET['shipment_id'])?$_GET['shipment_id']:'';
+		$data['shipment_id']=$this->nomor_bukti();
+		$this->nomor_bukti(true);
+		$data['date_received']=isset($_GET['date_received'])?$_GET['date_received']:'';
+		$data['supplier_number']=isset($_GET['supplier_number'])?$_GET['supplier_number']:'';
+		$data['comments']=isset($_GET['comments'])?$_GET['comments']:'';
+		$this->template->display('inventory/delivery_detail',$data);
+	}
 	function view_detail($nomor){
-            $sql="select ip.item_number,i.description,ip.quantity_received as qty
-            ,ip.unit,ip.cost,ip.id
-            from inventory_products ip
-            left join inventory i on i.item_number=ip.item_number
-            where shipment_id='$nomor'";
-            $s="
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
-                <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
-            ";
-            echo $s." ".browse_simple($sql);
-        }
+		$nomor=urldecode($nomor);
+		$sql="select ip.item_number,i.description,ip.quantity_received as qty
+		,ip.unit,ip.cost,ip.id,ip.total_amount
+		from inventory_products ip
+		left join inventory i on i.item_number=ip.item_number
+		where shipment_id='$nomor'";
+		$s="
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
+			<script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
+		";
+		echo $s." ".browse_simple($sql);
+	}
+	function save() {
+		$this->load->model('inventory_products_model');
+		$id=$this->input->post('shipment_id');
+		$data['warehouse_code']=$this->input->post('warehouse_code');
+		$data['date_received']=$this->input->post('date_received');
+		$data['supplier_number']=$this->input->post('supplier_number');
+		$ok=$this->inventory_products_model->update($id,$data);
+		if ($ok){
+			echo json_encode(array('success'=>true,'shipment_id'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+		
+	}
     function save_item(){
         $item_no=$this->input->post('item_number');
 		$id=$this->input->post('shipment_id');
@@ -205,25 +223,22 @@ class Delivery extends CI_Controller {
 		$data['receipt_type']='ETC_OUT';
 		$data['date_received']=$this->input->post('date_received');;
 		$data['comments']=$this->input->post('comments');;
-		
+		$data['supplier_number']=$this->input->post('supplier_number');
 		$ok=$this->inventory_products_model->save($data);
 		if ($ok){
 			echo json_encode(array('success'=>true,'shipment_id'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
-            
-        
-        
 	}         
     function print_bukti($nomor){
+		$nomor=urldecode($nomor);
         $adj=$this->inventory_products_model->get_by_id($nomor)->row();
 		$data['shipment_id']=$adj->shipment_id;
 		$data['date_received']=$adj->date_received;
 		$data['warehouse_code']=$adj->warehouse_code;
 		$data['comments']=$adj->comments;
 		$this->load->view('inventory/rpt/print_delivery_etc',$data);
-
     }
     function del_item(){
     	$id=$this->input->post('line_number');
@@ -237,18 +252,13 @@ class Delivery extends CI_Controller {
 	
 	function items($nomor,$type='')
 	{
-            $sql="select p.item_number,i.description,p.quantity_received, 
-            p.unit,p.cost,p.id as line_number
-            from inventory_products p
-            left join inventory i on i.item_number=p.item_number
-            where shipment_id='$nomor'";
-			 
-			echo datasource($sql);
+		$nomor=urldecode($nomor);
+		$sql="select p.item_number,i.description,p.quantity_received, 
+		p.unit,p.cost,p.id as line_number,p.total_amount
+		from inventory_products p
+		left join inventory i on i.item_number=p.item_number
+		where shipment_id='$nomor'";
+		 
+		echo datasource($sql);
 	}
-	
-	
-	
-	
-	
-			
 }

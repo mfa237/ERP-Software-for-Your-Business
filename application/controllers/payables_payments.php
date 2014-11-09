@@ -66,7 +66,7 @@ class Payables_payments extends CI_Controller {
     }	 
 	
    function index(){
-   
+		if(!allow_mod2('_40070'))return false;   
        $this->browse();
    }
     function _set_rules(){	
@@ -224,6 +224,7 @@ class Payables_payments extends CI_Controller {
    }
    function delete_no_bukti($no_bukti)
    {
+		$no_bukti=urldecode($no_bukti);
 		$this->load->model("periode_model");
 		$this->load->model("check_writer_model");
 
@@ -248,6 +249,7 @@ class Payables_payments extends CI_Controller {
    }
    function list_by_invoice($invoice)
    {
+		$invoice=urldecode($invoice);
 		$s="
 		<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
 		<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
@@ -263,6 +265,7 @@ class Payables_payments extends CI_Controller {
    }
         
    function view($no_bukti,$message=""){
+		$no_bukti=urldecode($no_bukti);
    		$this->load->model('check_writer_model');
    		$this->load->model('supplier_model');
 		$rcek=$this->check_writer_model->get_by_id($no_bukti)->row();
@@ -317,6 +320,7 @@ class Payables_payments extends CI_Controller {
 		}
    }
     function load_nomor($voucher){
+		$voucher=urldecode($voucher);
 		$sql="select i.purchase_order_number,i.po_date,p.date_paid,i.amount,
 		p.amount_paid from payables_payments p left join purchase_order i 
 		on i.purchase_order_number=p.purchase_order_number
@@ -325,11 +329,13 @@ class Payables_payments extends CI_Controller {
     }
 	
 	function posting($voucher) {
+		$voucher=urldecode($voucher);
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->posting($voucher);
 		$this->view($voucher);
 	}
 	function unposting($voucher) {
+		$voucher=urldecode($voucher);
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->unposting($voucher);
 		$this->view($voucher);

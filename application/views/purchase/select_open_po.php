@@ -20,8 +20,8 @@
 </div>
 <div id="button-select-faktur" style="height:auto">
 	Enter Text: <input  id="search_supp" style='width:180' name="search_supp">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_po()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_po()">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_po();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_po();return false;">Select</a>
 </div>
 <SCRIPT language="javascript">
 	function select_po(){

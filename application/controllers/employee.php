@@ -122,23 +122,27 @@ class Employee extends CI_Controller {
     }
       
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->load->model("employee_model");
 	 	$this->employee_model->delete($id);
 	 	$this->browse();
 	}
 	function select($search=''){
+		$search=urldecode($search);
 		$sql="select nama,nip,dept,divisi	from employee 
 		where nama like '$search%')
 		order by nama limit 100";
 		echo datasource($sql);
 	}
 	function find($nip=""){
+		$nip=urldecode($nip);
 		$sql="select nama,nip,dept,divisi,emptype,nip_id	from employee";
 		if($nip!="")$sql.=" where nip='$nip'";
 		$query=$this->db->query($sql);	
 		echo json_encode($query->row_array());
 	}
 	function find2($nip=""){
+		$nip=urldecode($nip);
 		$sql="select nama,nip,dept,divisi,emptype,nip_id	from employee";
 		if($nip!="")$sql.=" where nip='$nip'";
 		echo datasource($sql);
@@ -154,6 +158,7 @@ class Employee extends CI_Controller {
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
    function level_delete($kode){
+		$kode=urldecode($kode);
    		$kode=htmlspecialchars_decode($kode);
 		$this->load->model('employee_level_model');
 		$ok=$this->employee_level_model->delete($kode);
@@ -170,7 +175,7 @@ class Employee extends CI_Controller {
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
    function jenis_delete($kode){
-   		$kode=htmlspecialchars_decode($kode);
+		$kode=urldecode($kode);
 		$this->load->model('employee_type_model');
 		$ok=$this->employee_type_model->delete($kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
@@ -186,12 +191,13 @@ class Employee extends CI_Controller {
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
    function group_delete($kode){
-   		$kode=htmlspecialchars_decode($kode);
+		$kode=urldecode($kode);
 		$this->load->model('employee_group_model');
 		$ok=$this->employee_group_model->delete($kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
 	function experience($cmd,$id=''){
+		$id=urldecode($id);
 		if($cmd=="save"){
 			 
 			$data=$this->input->post();
@@ -220,6 +226,7 @@ class Employee extends CI_Controller {
 		}
 	}
 	function education($cmd,$id=''){
+		$id=urldecode($id);
 		if($cmd=="save"){
 			 
 			$data=$this->input->post();

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default " role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -8,14 +8,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand glyphicon glyphicon-home border-hover" href="<?=base_url()?>index.php"> Home</a>
+      <a class="navbar-brand glyphicon glyphicon-home border-hover" href="<?=base_url()?>index.php"> MaxOn</a>
     </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav border-hover" >
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Transaksi <b class="caret"></b></a>
+          <a href="#" class="dropdown-toggle glyphicon glyphicon-calendar" data-toggle="dropdown"> Transaksi <b class="caret"></b></a>
           <ul class="dropdown-menu">
 		        <li><a onclick="load_menu('sales')" href="#" >Penjualan</a></li>
 		        <li><a onclick="load_menu('purchase')"  href="#" >Pembelian</a></li>
@@ -33,7 +31,7 @@
 
       <ul class="nav navbar-nav  border-hover">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Master<b class="caret"></b></a>
+          <a href="#" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown"> Master <b class="caret"></b></a>
           <ul class="dropdown-menu">
 				<li><a href="<?=base_url()?>index.php/customer" class="info_link" >Pelanggan</a></li>
 				<li><a href="<?=base_url()?>index.php/supplier"  class="info_link" >Supplier</a></li>
@@ -47,7 +45,7 @@
 
       <ul class="nav navbar-nav  border-hover">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Laporan<b class="caret"></b></a>
+          <a href="#" class="dropdown-toggle glyphicon glyphicon-folder-open" data-toggle="dropdown"> Laporan  <b class="caret"></b></a>
           <ul class="dropdown-menu">
 				<li><a href="<?=base_url()?>index.php/sales/reports"  class="info_link">Penjualan</a></li>
 				<li><a href="<?=base_url()?>index.php/purchase/reports" class="info_link">Pembelian</a></li>
@@ -85,7 +83,6 @@
   </div><!-- /.container-fluid -->
 </nav>
 <?
- 
 	function menu($title,$url,$func=false){
 		if(!$func){
 			echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	
@@ -93,7 +90,17 @@
 			echo "<div><a href='#' onclick=\"load_menu('$url')\"  class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";
 		}
 	}
- 
+	function add_menu_drop($menu_id,$caption,$mod_id) {
+		if(allow_mod($mod_id)){
+			echo "<li><a onclick=load_menu('$menu_id') href='#'>$caption</a></li>";
+		}
+	}
+	function add_menu_drop_2($menu_id,$caption,$mod_id) {
+		if(allow_mod($mod_id)){
+			echo "<li><a href='".base_url()."index.php/$menu_id'
+			class='info_link' >$caption</a></li>";
+		}
+	}
 ?> 
 <script>
 	$(document).ready(function(){

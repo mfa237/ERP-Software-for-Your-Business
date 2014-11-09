@@ -11,6 +11,8 @@ public $saldo=0;
 public $amount=0;
 public $sub_total=0;
 public $warehouse_code='';
+public $disc_amount_1=0;
+public $tax=0;
 function __construct(){
 	parent::__construct();
 }
@@ -25,11 +27,19 @@ function recalc($nomor){
     if($inv) {
 		$this->invoice_lineitems_model->check_revenue_acct($nomor,$inv->invoice_type);
 	    $this->sub_total=$this->invoice_lineitems_model->sum_total_price($nomor);
+		if($inv->discount=='')$inv->discount=0;
+		if($inv->sales_tax_percent=='')$inv->sales_tax_percent=0;
 		
-		$disc_amount=$inv->discount*$this->sub_total;
-	    $this->amount=$this->sub_total-$disc_amount;
-		$tax_amount=$inv->sales_tax_percent*$this->amount;
-		$this->amount=$this->amount+$tax_amount;
+		if($inv->discount>1)$inv->discount=$inv->discount/100;
+		$this->disc_amount_1=$inv->discount*$this->sub_total;
+		
+	    $this->amount=$this->sub_total-$this->disc_amount_1;
+		
+		if($inv->sales_tax_percent>1)$inv->sales_tax_percent=$inv->sales_tax_percent/100;
+		$this->tax=$inv->sales_tax_percent*$this->amount;
+		
+		$this->amount=$this->amount+$this->tax;
+		
 		$this->amount=$this->amount+$inv->freight;
 		$this->amount=$this->amount+$inv->other;
 	
@@ -48,7 +58,9 @@ function recalc($nomor){
 			$sql.="false";
 		}
 		$sql.=",amount=".$this->amount.",subtotal=".$this->sub_total
-		.",saldo_invoice=".$this->saldo.",disc_amount='".$disc_amount."',tax='".$tax_amount."' 
+		.",saldo_invoice=".$this->saldo.",disc_amount_1='".$this->disc_amount_1."',
+		discount='".$inv->discount."',sales_tax_percent='".$inv->sales_tax_percent."',
+		disc_amount='".$this->disc_amount_1."',tax='".$this->tax."' 
 			where invoice_number='$nomor'";
 		//var_dump($sql);
 		
@@ -173,7 +185,7 @@ function delete($id){
         $query=$this->db->query("delete from invoice_lineitems
             where line_number=".$line);
     }
-	function save_from_so_items($faktur,$qty_order,$from_so_line,$gudang){
+	function save_from_so_items($faktur,$qty_order,$from_so_line,$gudang,$ship_date){
 		$this->load->model('sales_order_lineitems_model');
 		$this->load->model('inventory_model');
 		$this->load->model('invoice_lineitems_model');
@@ -182,24 +194,29 @@ function delete($id){
 			$qty_do=$qty_order[$i];
 			
 			if($line_number>0){
-				$so=$this->sales_order_lineitems_model->get_by_id($line_number)->row();
-		        $item=$this->inventory_model->get_by_id($so->item_number)->row();
-				
-				$data['invoice_number']=$faktur;
-				$data['item_number']=$so->item_number;
-				$data['description']=$so->description;
-				$data['unit']=$so->unit;
-				if($data['unit']=='')$data['unit']=$item->unit_of_measure;
-				$data['quantity']=$qty_do;
-				$data['price']=$so->price;
-				$data['discount']=$so->discount;
-				
-		        $data['amount']=$data['quantity']*$data['price'];
-				$data['warehouse_code']=$gudang;
-				$data['from_line_number']=$line_number;
-				$data['from_line_doc']=$so->sales_order_number;
-				$data['from_line_type']="SO";
-				$this->invoice_lineitems_model->save($data);
+				if($qty_do>0) {
+					$so=$this->sales_order_lineitems_model->get_by_id($line_number)->row();
+					$item=$this->inventory_model->get_by_id($so->item_number)->row();
+					
+					$data['invoice_number']=$faktur;
+					$data['item_number']=$so->item_number;
+					$data['description']=$so->description;
+					$data['unit']=$so->unit;
+					if($data['unit']=='')$data['unit']=$item->unit_of_measure;
+					$data['quantity']=$qty_do;
+					$data['price']=$so->price;
+					$data['discount']=$so->discount;
+					
+					$data['amount']=$data['quantity']*$data['price'];
+					$data['warehouse_code']=$gudang;	
+					$data['from_line_number']=$line_number;
+					$data['from_line_doc']=$so->sales_order_number;
+					$data['from_line_type']="SO";
+					$data['ship_date']=date('Y-m-d H:i:s', strtotime($ship_date));
+					$this->invoice_lineitems_model->save($data);
+					$this->db->query("update sales_order_lineitems set ship_date='".$data['ship_date']."' 
+					 where line_number='".$so->line_number."'");
+				 }
 			}
 		}
 	}
@@ -295,15 +312,14 @@ function delete($id){
 					$faktur->invoice_date,$hpp_amt,0,"Cogs",$faktur->comments,$cid,$item->item_number);
 			}
 			//-- posting penjualan
-			if($sales_amt>0){
-				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_sales, 
+			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_sales, 
 					$faktur->invoice_date,0,$sales_amt,"Sales",$faktur->comments,$cid,$item->item_number);
-			}
-			//-- posting discount item
+
 			if($disc_amt>0){
+			//-- posting discount item
 				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_disc, 
 					$faktur->invoice_date,$disc_amt,0,"Sales Discount",$faktur->comments,$cid,$item->item_number);
-			}						
+			} 
 		}
 		//-- posting piutang
 		$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_ar, 
@@ -314,7 +330,7 @@ function delete($id){
 		}
 		if($faktur->tax!=0){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_tax, 
-				$faktur->invoice_date,$faktur->tax,0,"Sales Tax",$faktur->comments,$cid,$faktur->sold_to_customer);					
+				$faktur->invoice_date,0,$faktur->tax,"Sales Tax",$faktur->comments,$cid,$faktur->sold_to_customer);					
 		}
 		if($faktur->freight!=0){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_freight, 

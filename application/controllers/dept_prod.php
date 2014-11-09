@@ -71,6 +71,7 @@ private $limit=10;
 			 $data=$this->set_defaults();
 			 $data['mode']='add';
 		 } else {
+			$id=urldecode($id);
 			 $model=$this->department_model->get_by_id($id)->row();
 			 $data=$this->set_defaults($model);
 			 $data['mode']='view';
@@ -100,6 +101,7 @@ private $limit=10;
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->department_model->delete($id);
 	 	$this->browse();
 	}

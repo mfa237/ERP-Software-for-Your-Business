@@ -88,6 +88,7 @@ class Aktiva extends CI_Controller {
 
 	}
 	function view($id,$message=null){
+		 $id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->aktiva_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -140,10 +141,12 @@ class Aktiva extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		 $id=urldecode($id);
 	 	$this->aktiva_model->delete($id);
 	 	$this->browse();
 	}
 	function find($nomor){
+		 $id=urldecode($id);
 		$query=$this->db->query("select description,depn_method,useful_lives from fa_asset where id='$nomor'");
 		echo json_encode($query->row_array());
  	}

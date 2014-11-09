@@ -35,15 +35,15 @@ function __construct(){
 	function save($data){
 		if(isset($data['hireddate']))$data['hireddate']= date('Y-m-d H:i:s', strtotime($data['hireddate']));
 		if(isset($data['tgllahir']))$data['tgllahir']= date('Y-m-d H:i:s', strtotime($data['tgllahir']));
-		if($data['gp']=="")$data['gp']=0;
-		if($data['tjabatan']=="")$data['tjabatan']=0;
+		//if($data['gp']=="")$data['gp']=0;
+		//if($data['tjabatan']=="")$data['tjabatan']=0;
 		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){
 		if(isset($data['hireddate']))$data['hireddate']= date('Y-m-d H:i:s', strtotime($data['hireddate']));
 		if(isset($data['tgllahir']))$data['tgllahir']= date('Y-m-d H:i:s', strtotime($data['tgllahir']));
-		if($data['gp']=="")$data['gp']=0;
-		if($data['tjabatan']=="")$data['tjabatan']=0;
+		//if($data['gp']=="")$data['gp']=0;
+		//if($data['tjabatan']=="")$data['tjabatan']=0;
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);
 	}

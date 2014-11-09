@@ -74,23 +74,23 @@ function exist($id){
    return $this->db->count_all($this->table_name." where item_number='".$id."'")>0;
 }
 function save($data){
-	$data['active']=='1'?$data['active']=true:$data['active']=false;
-	$data['serialized']=='1'?$data['serialized']=true:$data['serialized']=false;
-	$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
-	$data['multiple_pricing']=='1'?$data['multiple_pricing']=true:$data['multiple_pricing']=false;
-	$data['style']=='1'?$data['style']=true:$data['style']=false;
-    if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
-    if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
+	if(isset($data['active']))$data['active']=='1'?$data['active']=true:$data['active']=false;
+	if(isset($data['serialized']))$data['serialized']=='1'?$data['serialized']=true:$data['serialized']=false;
+	if(isset($data['assembly']))$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
+	if(isset($data['multiple_pricing']))$data['multiple_pricing']=='1'?$data['multiple_pricing']=true:$data['multiple_pricing']=false;
+	if(isset($data['style']))$data['style']=='1'?$data['style']=true:$data['style']=false;
+    if(isset($data['last_order_date']))if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
+    if(isset($data['expected_delivery']))if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
 	return $this->db->insert($this->table_name,$data);
 }
 function update($id,$data){
-	$data['active']=='1'?$data['active']=true:$data['active']=false;
-	$data['serialized']=='1'?$data['serialized']=true:$data['serialized']=false;
-	$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
-	$data['multiple_pricing']=='1'?$data['multiple_pricing']=true:$data['multiple_pricing']=false;
-	$data['style']=='1'?$data['style']=true:$data['style']=false;
-    if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
-    if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
+	if(isset($data['active']))$data['active']=='1'?$data['active']=true:$data['active']=false;
+	if(isset($data['serialized']))$data['serialized']=='1'?$data['serialized']=true:$data['serialized']=false;
+	if(isset($data['assembly']))$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
+	if(isset($data['multiple_pricing']))$data['multiple_pricing']=='1'?$data['multiple_pricing']=true:$data['multiple_pricing']=false;
+	if(isset($data['style']))$data['style']=='1'?$data['style']=true:$data['style']=false;
+    if(isset($data['last_order_date']))if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
+    if(isset($data['expected_delivery']))if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
 	$this->db->where($this->primary_key,$id);
 	return $this->db->update($this->table_name,$data);
 }
@@ -130,6 +130,37 @@ function delete($id){
 		}		 
 		return $ret;
 	}
+	function brand_list_object(){
+		$query=$this->db->query("select distinct manufacturer  as brand from inventory");
+		$ret=array();
+ 		foreach ($query->result() as $row)
+		{
+			$ret[]=$row;
+		}		 
+		return $ret;
+	}
+	
+	function category_list_object(){
+		$query=$this->db->query("select kode,category from inventory_categories");
+		$ret=array();
+ 		foreach ($query->result() as $row)
+		{
+			$ret[]=$row;
+		}		 
+		return $ret;
+	}
+	function item_list_object(){
+		$query=$this->db->query("select item_number,description,special_features,item_picture,
+		retail
+		from inventory");
+		$ret=array();
+ 		foreach ($query->result() as $row)
+		{
+			$ret[]=$row;
+		}		 
+		return $ret;
+	}
+	
 	function paling_laku_old()
 	{
 		$sql="select il.item_number,il.description,sum(il.quantity) as sum_qty 

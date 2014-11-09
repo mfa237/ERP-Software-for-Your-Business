@@ -10,7 +10,7 @@
 	echo link_button('Search','','search','true',base_url().'index.php/purchase_invoice');		
 	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
 	echo link_button('Delete', 'delete_nomor()','cut');
-	echo link_button('Doc Receive', 'select_receive()','search');
+	echo link_button('Doc Receive', 'select_receive();return false;','search');
 	
 	if($posted) {
 		echo link_button('UnPosting','','cut','true',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
@@ -20,13 +20,6 @@
 	echo link_button('Help', 'load_help()','help');		
 	
 	?>
-	
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="select_receive()">Select Doc Receive</div>
-		<div onclick="load_help()">Help</div>
-		<div>Update</div>
-	</div>
 	
 </div>
 <div class="thumbnail">	

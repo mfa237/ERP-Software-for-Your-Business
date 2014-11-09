@@ -3,7 +3,7 @@
 class Cash_in extends CI_Controller {
     private $limit=10;
     private $table_name='check_writer';
-    private $sql="select voucher,check_date,deposit_amount
+    private $sql="select voucher,check_date,deposit_amount,posted
             ,account_number,payee,trans_type,check_number,memo,trans_id
                 from check_writer
                 where trans_type in ('cash in','trans in','cheque in')
@@ -124,12 +124,13 @@ class Cash_in extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Rekening','Diterima Dari'
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Posted','Rekening','Diterima Dari'
 		,'Jenis Transaksi','Nomor Giro','Keterangan','Trans Id');
-		$data['fields']=array('voucher','check_date','deposit_amount'
+		$data['fields']=array('voucher','check_date','deposit_amount','posted'
             ,'account_number','payee','trans_type','check_number','memo','trans_id');
 		$data['field_key']='voucher';
 		$data['caption']='DAFTAR TRANSAKSI KAS/BANK MASUK';
+		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
 		
@@ -138,6 +139,8 @@ class Cash_in extends CI_Controller {
 		$faa[]=criteria("Nomor Bukti","sid_number");
 		$faa[]=criteria("Rekening","sid_rek");
 		$faa[]=criteria("Jenis","sid_type");
+		$faa[]=criteria("Posted","sid_posted");
+		
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -152,7 +155,14 @@ class Cash_in extends CI_Controller {
 		} else {
 			$sql.=" and check_date between '$d1' and '$d2'";
 			if($rek!='')$sql.=" and account_number like '$rek%'";	
-			if($this->input->get('sid_type')!='')$sql.=" trans_type='".$this->input->get('sid_type')."'";
+			if($this->input->get('sid_type')!='')$sql.=" and trans_type='".$this->input->get('sid_type')."'";
+			if($this->input->get('sid_posted')!=''){
+				if($this->input->get('sid_posted')=='1'){
+					$sql.=" and posted=true";
+				} else {
+					$sql.=" and posted=false";				
+				}
+			}
 		}
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
@@ -209,4 +219,27 @@ class Cash_in extends CI_Controller {
 		} 
 		$this->browse();
 	}
+	function posting_all() {
+		$this->load->model('check_writer_model');
+    	$rek=$this->input->get('sid_rek');
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		$sql="select distinct voucher from check_writer"; 
+		$sql.=" where trans_type in ('cash in','trans in','cheque in') and (posted is null or posted=false) and check_date between '$d1' and '$d2'";
+		if($rek!='')$sql.=" and account_number like '$rek%'";	
+		if($this->input->get('sid_type')!='')$sql.=" and trans_type='".$this->input->get('sid_type')."'";
+		if($q=$this->db->query($sql)){
+			foreach($q->result() as $r){
+				echo "<p>Posting..".$r->voucher;
+				$message=$this->check_writer_model->posting($r->voucher);
+				if($message!=''){
+					echo ': '.$message;
+				}
+				echo "</p>";
+			}
+		}
+		echo "<p>Finish.</p>";
+		
+	}
+	
 }

@@ -6,6 +6,9 @@
  ?>
  <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 <div class="easyui-tabs" id="tt">	 
+	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
+	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
+
 	<div title="DASHBOARD" style="padding:10px">
 		<div class="col-md-12 thumbnail">
 

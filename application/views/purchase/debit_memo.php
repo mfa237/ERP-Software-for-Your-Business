@@ -104,12 +104,12 @@
 			         <td><input id="account" style='width:80px' 
 			         	name="account"   class="easyui-validatebox" required="true">
 						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-						onclick="lookup_coa()"></a>
+						onclick="lookup_coa();return false;"></a>
 			         </td>
 			         <td><input id="description" name="description" style='width:280px'></td>
 			        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
 			        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-             		   plain='true'	onclick='save_item()'></a>
+             		   plain='true'	onclick='save_item();return false;'></a>
 					</td>
 			        <input type='hidden' id='kodecrdb_no' name='kodecrdb_no'>
 			        <input type='hidden' id='line_number' name='line_number'>

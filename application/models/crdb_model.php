@@ -144,16 +144,17 @@ private $table_name='crdb_memo';
 		} else {
 			$this->load->model('supplier_model');
 			$this->load->model('purchase_order_model');
-			$faktur=$this->purchase_order_model->get_by_id($docnumber)->row();
-			if($accountid=="")$accountid=$faktur->account_id;
-			if($accountid==""){
-				$accountid=$this->company_model->setting("accounts_payable");
-				$this->db->query("update purchase_order set account_id='".$accountid."' 
-					where purchase_order_number='".$docnumber."'");
-				$this->db->query("update payables set account_id='".$accountid."' 
-					where purchase_order_number='".$docnumber."'");
+			if($faktur=$this->purchase_order_model->get_by_id($docnumber)->row()){
+				if($accountid=="")$accountid=$faktur->account_id;
+				if($accountid==""){
+					$accountid=$this->company_model->setting("accounts_payable");
+					$this->db->query("update purchase_order set account_id='".$accountid."' 
+						where purchase_order_number='".$docnumber."'");
+					$this->db->query("update payables set account_id='".$accountid."' 
+						where purchase_order_number='".$docnumber."'");
+				}
+				$custsuppbank=$faktur->supplier_number;
 			}
-			$custsuppbank=$faktur->supplier_number;
 		}
 		
 		$debit=0; $credit=0;$operation="";$source="";

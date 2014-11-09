@@ -1,25 +1,37 @@
-<div><h1>PO RECEIVE<div class="thumbnail">
+<div><h4>RECEIVE P.O. ITEMS</H4>
+<div class="thumbnail">
 	<?
+	echo link_button('Add','','add','true',base_url().'index.php/receive_po/add');		
 	echo link_button('Print', 'print_receive()','print');		
-	echo link_button('Delete', 'delete_receive()','cut');		
+	echo link_button('Delete', 'delete_receive()','remove');	
+	echo link_button('Search','','search','true',base_url().'index.php/receive_po');		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/receive_po/view/'.$shipment_id);		
+	echo link_button('Help', 'load_help()','help');		
 	?>
-</div></H1>
+	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help()">Help</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	<script type="text/javascript">
+		function load_help() {
+			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/receive_po");
+		}
+	</script>
+</div>
 <div class="thumbnail">	
    <table >
        <tr>
-           <td>Receipt No:</td><td><strong><?=$shipment_id?></strong>
-                        
+           <td>Receipt No:</td><td><strong><?=$shipment_id?></strong>                        
            </td>
-           
-                       
        </tr>
        <tr>
             <td>Nomor PO:</td><td><strong><a href="<?=base_url()?>index.php/purchase_order/view/<?=$purchase_order_number?>"><?=$purchase_order_number?></a></strong></td>
-                       
        </tr>
        <tr>
             <td>Tanggal:</td><td><?=$date_received?></td>
-                       
        </tr>
        <tr>
             <td>Gudang:</td><td><?=$warehouse_code?></td>
@@ -50,6 +62,9 @@
 					<th data-options="field:'description',width:180">Description</th>
 					<th data-options="field:'quantity_received',width:80">Qty</th>
 					<th data-options="field:'unit',width:50">Unit</th>
+					<th data-options="field:'cost',width:50">Cost</th>
+					<th data-options="field:'total_amount',width:50">Total</th>
+					
 					<th data-options="field:'id',width:50">Id</th>
 				</tr>
 			</thead>

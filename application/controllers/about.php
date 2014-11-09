@@ -5,7 +5,7 @@ class About extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-		$this->load->library('template');
+		$this->load->library('template');;
 	}
 	function index()
 	{	

@@ -62,7 +62,8 @@
 					// year to date
 	 		        $sql="select sum(g.debit) as sum_debit,sum(g.credit) as sum_credit 
 	                from gl_transactions g
-	                where g.account_id='".$row_coa->id."' and g.date<='$date2' and year(g.date)=".substr($date2,0,4); 
+	                where g.account_id='".$row_coa->id."' and g.date<='$date2'";
+					//and year(g.date)=".substr($date2,0,4); 
 					
 			        $query=$CI->db->query($sql)->row();
 					

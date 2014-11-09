@@ -22,13 +22,27 @@ function get_by_nomor($nomor){
 
 function save($data){
 	if($data['discount']=='')$data['discount']=0;
+	if($data['quantity']=='')$data['quantity']=0;
+	if($data['amount']=='')$data['amount']=0;
+	if($data['price']=='')$data['price']=0;
 	$this->db->insert($this->table_name,$data);
-	return $this->db->insert_id();
+	if($data['quantity']>"0"){
+		return $this->db->insert_id();
+	} else {
+		return true;
+	}
 }
 function update($id,$data){
 	if($data['discount']=='')$data['discount']=0;
-	$this->db->where($this->primary_key,$id);
-	return $this->db->update($this->table_name,$data);
+	if($data['quantity']=='')$data['quantity']=0;
+	if($data['amount']=='')$data['amount']=0;
+	if($data['price']=='')$data['price']=0;
+	if($data['quantity']>"0"){
+		$this->db->where($this->primary_key,$id);
+		return $this->db->update($this->table_name,$data);
+	} else {
+		return true;
+	}
 }
 function delete($id){
 	$this->db->where($this->primary_key,$id);
@@ -46,21 +60,22 @@ function sum_total_price($nomor)
 }
 function check_revenue_acct($nomor,$type="I") {
 
-	$set=$this->db->query("select inventory_sales,inventory_cogs  from preferences 
-	where not (inventory_sales='0' or inventory_sales is null)")->row();
+	if($set=$this->db->query("select inventory_sales,inventory_cogs  from preferences 
+		where not (inventory_sales='0' or inventory_sales is null)")->row()) {
 
-	$sql="update invoice_lineitems 
-	left join inventory i on i.item_number=invoice_lineitems.item_number 
-	set revenue_acct_id=sales_account
-	where  invoice_number='$nomor'
-	and (revenue_acct_id is null or revenue_acct_id='0')";
-	$this->db->query($sql);
-	
-	$sql="update invoice_lineitems set revenue_acct_id='".$set->inventory_sales."' 
-		where invoice_number='$nomor' 
+		$sql="update invoice_lineitems 
+		left join inventory i on i.item_number=invoice_lineitems.item_number 
+		set revenue_acct_id=sales_account
+		where  invoice_number='$nomor'
 		and (revenue_acct_id is null or revenue_acct_id='0')";
+		$this->db->query($sql);
 		
-	$this->db->query($sql);
+		$sql="update invoice_lineitems set revenue_acct_id='".$set->inventory_sales."' 
+			where invoice_number='$nomor' 
+			and (revenue_acct_id is null or revenue_acct_id='0')";
+			
+		$this->db->query($sql);
+	}
 }
 
 function browse($nomor)

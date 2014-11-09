@@ -75,6 +75,7 @@ class Inventory_prices extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->inventory_prices_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -118,6 +119,7 @@ class Inventory_prices extends CI_Controller {
         echo datasource($sql);		
     }
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->inventory_prices_model->delete($id);
 	 	$this->browse();
 	}

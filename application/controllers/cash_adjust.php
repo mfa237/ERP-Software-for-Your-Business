@@ -94,6 +94,7 @@ class Cash_adjust extends CI_Controller {
         header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->check_writer_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -128,6 +129,7 @@ class Cash_adjust extends CI_Controller {
             ,'account_number','payee','trans_type','check_number','memo','trans_id');
 		$data['field_key']='voucher';
 		$data['caption']='DAFTAR TRANSAKSI KAS/BANK KELUAR';
+		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
 		
@@ -156,6 +158,7 @@ class Cash_adjust extends CI_Controller {
         echo datasource($sql);
     }	 
 	function items($voucher) {
+		$voucher=urldecode($voucher);
 		$sql="select cwi.account_id,coa.account,coa.account_description as description,
 			amount,comments,invoice_number,ref1,line_number	
 			from check_writer_items cwi
@@ -192,14 +195,17 @@ class Cash_adjust extends CI_Controller {
 		}
 	}
 	function unposting($voucher) {
+		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->unposting($voucher);
 		$this->view($voucher,$message);
 	}
 	function posting($voucher) {
+		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->posting($voucher);
 		$this->view($voucher,$message);
 	}
 	function delete($voucher) {
+		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->delete($voucher);
 		if($message!=""){
 			$this->view($voucher,$message);

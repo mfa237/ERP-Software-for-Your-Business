@@ -28,6 +28,7 @@ class Stock_adjust extends CI_Controller {
 	}
 	function index()
 	{
+		if(!allow_mod2('_80120'))return false;   
         $this->browse();
 	}
 	function nomor_bukti($add=false)
@@ -105,6 +106,7 @@ class Stock_adjust extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['shipment_id']=$id;
 		 $model=$this->inventory_products_model->get_by_id($id)->row();	
 		 $data=$this->set_defaults($model);
@@ -114,32 +116,34 @@ class Stock_adjust extends CI_Controller {
 	}
 	function items($nomor,$type='')
 	{
-            $sql="select p.item_number,i.description,p.quantity_received, 
-            p.unit,p.cost,p.id as line_number
-            from inventory_products p
-            left join inventory i on i.item_number=p.item_number
-            where shipment_id='$nomor'";
-			 
-			echo datasource($sql);
+		$nomor=urldecode($nomor);
+		$sql="select p.item_number,i.description,p.quantity_received, 
+		p.unit,p.cost,p.id as line_number
+		from inventory_products p
+		left join inventory i on i.item_number=p.item_number
+		where shipment_id='$nomor'";
+		 
+		echo datasource($sql);
 	}
 	
          
-        function load_items($id){
-            $this->load->model('inventory_moving_model');
-            $this->inventory_moving_model->recalc($id);
-            $sql="select i.item_number,s.description,i.from_qty as qty,i.id
-                from inventory_moving i
-                left join inventory s on s.item_number=i.item_number
-                where transfer_id='".$id."'";
-             
-            $data=browse_select(array('sql'=>$sql,'show_action'=>true,
-                'action_button'=>'<input value="Del" type="button" onclick="del_row(#id);return false;"/>',
-                'fields_input'=>array('sumber','tujuan'),
-                'field_key'=>'id'
-                ));
-           // <input  value="Upd" type="button" onclick="upd_row(#id);return false;"/>''
-            return $data; 
-        }
+	function load_items($id){
+		$id=urldecode($id);
+		$this->load->model('inventory_moving_model');
+		$this->inventory_moving_model->recalc($id);
+		$sql="select i.item_number,s.description,i.from_qty as qty,i.id
+			from inventory_moving i
+			left join inventory s on s.item_number=i.item_number
+			where transfer_id='".$id."'";
+		 
+		$data=browse_select(array('sql'=>$sql,'show_action'=>true,
+			'action_button'=>'<input value="Del" type="button" onclick="del_row(#id);return false;"/>',
+			'fields_input'=>array('sumber','tujuan'),
+			'field_key'=>'id'
+			));
+	   // <input  value="Upd" type="button" onclick="upd_row(#id);return false;"/>''
+		return $data; 
+    }
         
          
 	 // validation rules
@@ -190,6 +194,7 @@ class Stock_adjust extends CI_Controller {
     }
 	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->inventory_products_model->delete($id);
 	 	$this->browse();
 	}	
@@ -225,6 +230,7 @@ class Stock_adjust extends CI_Controller {
             
 		}         
         function print_adjust($nomor){
+			$nomor=urldecode($nomor);
             $adj=$this->inventory_products_model->get_by_id($nomor)->row();
 			$data['shipment_id']=$adj->shipment_id;
 			$data['date_received']=$adj->date_received;

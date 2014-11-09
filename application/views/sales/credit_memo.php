@@ -85,7 +85,7 @@
        </td></tr>
    </table>
 </form>
-<div class="easyui-tabs" style="width:700px;height:550px">
+<div class="easyui-tabs" style="height:550px">
 	<div id="divItem" title="Kode Perkiraan" style="padding:10px">
 		<div id='dgItem'>
 			<table>
@@ -111,7 +111,7 @@
 			</table>		
 		</div>
 		<table id="dgItemMemo" class="easyui-datagrid"  		
-			style="width:600;height:400"
+			style="height:400"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
@@ -134,7 +134,7 @@
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
 		<table id="dgCrdb" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,toolbar:'#tbCrdb',

@@ -7,7 +7,7 @@ class Login extends CI_Controller {
  {
    parent::__construct();
     $this->load->library('template');
- $this->load->helper(array('url','form','mylib_helper'));
+    $this->load->helper(array('url','form','mylib_helper'));
    $this->load->model('user','',TRUE);
    $this->load->library('form_validation');
 
@@ -15,7 +15,8 @@ class Login extends CI_Controller {
 
  function index() {
  	// cek file maxon_installed.php
- 	
+ 	$login_view="login_view";
+	$login_view="login_view_simple";
 	$filename="./application/config/maxon_installed.php";
 	$handle = fopen($filename, "r");
 	$contents = fread($handle, filesize($filename));
@@ -28,7 +29,7 @@ class Login extends CI_Controller {
 		$this->welcome();		
 	} else {
 		$data['message']='';
-		$this->template->display_single('login_view',$data);
+		$this->template->display_single($login_view,$data);
 	}
  }
  
@@ -59,6 +60,7 @@ function welcome(){
     redirect(base_url());
  }
  function check_database($password)  {
+	$password=urldecode($password);
    $user_id = $this->input->post('user_id');
    $result = $this->user->login($user_id, $password);
    if($result)  {

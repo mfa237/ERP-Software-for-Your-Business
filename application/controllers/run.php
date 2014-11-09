@@ -119,5 +119,6 @@ class Run extends CI_Controller {
 			if(mysql_query($sql))echo "..OK<br>";else echo "<div class='error'>" . mysql_error()."<br>".$sql."</div>";
         	
         }
+
  }
 	 

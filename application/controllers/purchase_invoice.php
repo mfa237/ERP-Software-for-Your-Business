@@ -2,7 +2,7 @@
 
 class Purchase_invoice extends CI_Controller {
     private $limit=10;
-    private $sql="select purchase_order_number,i.terms,po_date,amount, 
+    private $sql="select purchase_order_number,i.terms,po_date,amount,i.posted, 
             i.supplier_number,c.supplier_name,c.city,i.warehouse_code
             from purchase_order i
             left join suppliers c on c.supplier_number=i.supplier_number
@@ -37,9 +37,8 @@ class Purchase_invoice extends CI_Controller {
 	}
 	function index()
 	{	
-            
-            $this->browse();
-           
+		if(!allow_mod2('_40130'))return false;
+        $this->browse();
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -110,13 +109,14 @@ class Purchase_invoice extends CI_Controller {
 	}
 	function items($nomor,$type='')
 	{
-            $sql="select p.item_number,i.description,p.quantity 
-            ,p.unit,p.price,p.discount,p.total_price,p.line_number
-            from purchase_order_lineitems p
-            left join inventory i on i.item_number=p.item_number
-            where purchase_order_number='$nomor'";
-			 
-			echo datasource($sql);
+		$nomor=urldecode($nomor);
+		$sql="select p.item_number,i.description,p.quantity 
+		,p.unit,p.price,p.discount,p.total_price,p.line_number
+		from purchase_order_lineitems p
+		left join inventory i on i.item_number=p.item_number
+		where purchase_order_number='$nomor'";
+		 
+		echo datasource($sql);
 	}
 	
 	function update()
@@ -139,6 +139,7 @@ class Purchase_invoice extends CI_Controller {
 	 
         
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $this->purchase_order_model->recalc($id);
 		 $model=$this->purchase_order_model->get_by_id($id)->row();
@@ -186,11 +187,12 @@ class Purchase_invoice extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Kode Supplier','Nama Supplier','Kota','Gudang');
-		$data['fields']=array('purchase_order_number','po_date','amount', 
+		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Posted','Kode Supplier','Nama Supplier','Kota','Gudang');
+		$data['fields']=array('purchase_order_number','po_date','amount','posted', 
                 'supplier_number','supplier_name','city','warehouse_code');
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR FAKTUR PEMBELIAN';
+		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
 		
@@ -198,6 +200,8 @@ class Purchase_invoice extends CI_Controller {
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Nomor PO","sid_po_number");
 		$faa[]=criteria("Supplier","sid_supplier");
+		$faa[]=criteria("Posted","sid_posted");
+
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -209,10 +213,18 @@ class Purchase_invoice extends CI_Controller {
 			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
 			$sql=$this->sql." and po_date between '".$d1."' and '".$d2."'";
 			if($this->input->get('sid_supplier')!='')$sql.=" and supplier_name like '".$this->input->get('sid_supplier')."%'";
+			if($this->input->get('sid_posted')!=''){
+				if($this->input->get('sid_posted')=='1'){
+					$sql.=" and posted=true";
+				} else {
+					$sql.=" and (posted=false or posted is null)";				
+				}
+			}
 		}
         echo datasource($sql);
     }	 
 	function delete($id){
+		$id=urldecode($id);
 		$this->load->model('jurnal_model');
 		$bill=$this->purchase_order_model->get_bill_id($id);
 		$cnt_pay=$this->db->query("select count(1) as cnt from payables_payments where bill_id=".$bill)->row()->cnt;
@@ -244,6 +256,7 @@ class Purchase_invoice extends CI_Controller {
 		$this->template->display('purchase/purchase_invoice_detail',$data);
 	}
 	function view_detail($nomor){
+		$nomor=urldecode($nomor);
 		$this->load->model('purchase_order_lineitems_model');
 		echo $this->purchase_order_lineitems_model->browse($nomor);
     }
@@ -270,10 +283,12 @@ class Purchase_invoice extends CI_Controller {
             $this->purchase_order_lineitems_model->save($data);
         }        
         function delete_item($id){
+			$id=urldecode($id);
             $this->load->model('purchase_order_lineitems_model');
             return $this->purchase_order_lineitems_model->delete($id);
         }        
         function print_faktur($nomor){
+			$nomor=urldecode($nomor);
 		    $this->load->helper('mylib');
 			$this->load->helper('pdf_helper');			
             $invoice=$this->purchase_order_model->get_by_id($nomor)->row();
@@ -294,6 +309,7 @@ class Purchase_invoice extends CI_Controller {
 			$this->load->view('purchase/print_faktur',$data);
         }
         function summary_info($nomor){
+			$nomor=urldecode($nomor);
             $saldo=$this->purchase_order_model->recalc($nomor);
             return "<table class='table'><tr><td>Jumlah Faktur: Rp. ".  number_format($this->purchase_order_model->amount)
 				."</td><tr><td>Jumlah Bayar : Rp. ".  number_format($this->purchase_order_model->amount_paid)
@@ -305,6 +321,7 @@ class Purchase_invoice extends CI_Controller {
         }
         function payments($purchase_order_number)
         {
+			$purchase_order_number=urldecode($purchase_order_number);
         	 $model=$this->purchase_order_model->get_by_id($purchase_order_number)->row();
 			 $data=$this->set_defaults($model);
 	         $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
@@ -335,6 +352,7 @@ class Purchase_invoice extends CI_Controller {
 //			$this->load->model('payables_payments_model');
 //			echo $this->payables_payments_model->browse($purchase_order_number);	
 			
+			$purchase_order_number=urldecode($purchase_order_number);
 			$bill=$this->purchase_order_model->get_bill_id($purchase_order_number);
 			$sql="select * from payables_payments where bill_id=".$bill;
 			 
@@ -348,12 +366,14 @@ class Purchase_invoice extends CI_Controller {
 		}
 		function delete_retur($nomor)
 		{
+			$nomor=urldecode($nomor);
 			$this->db->query("delete from purchase_order_lineitems where purchase_order_number='$nomor'");
 			$this->db->query("delete from purchase_order where purchase_order_number='$nomor'");
 			
 		}
 		function list_retur($purchase_order_number)
 		{
+			$purchase_order_number=urldecode($purchase_order_number);
 			$sql="select purchase_order_number as nomor,po_date as tanggal, amount, 
                 i.supplier_number,c.supplier_name,c.city,i.warehouse_code
                 from purchase_order i
@@ -372,12 +392,14 @@ class Purchase_invoice extends CI_Controller {
 		}
 		function delete_crdb($nomor_bukti)
 		{
+			$purchase_order_number=urldecode($purchase_order_number);
 			$this->db->query("delete from crdb_memo_dtl where kodecrdb='$nomor_bukti'");
 			$this->db->query("delete from crdb_memo where kodecrdb='$nomor_bukti'");
 			
 		}
 		function list_crdb($purchase_order_number)
 		{
+			$purchase_order_number=urldecode($purchase_order_number);
 			$sql="select kodecrdb as nomor,tanggal, amount 
                 from crdb_memo i
                 where docnumber='$purchase_order_number'";
@@ -510,6 +532,7 @@ class Purchase_invoice extends CI_Controller {
 		
 	}
 	function invoice_not_paid($supplier_number){
+		$supplier_number=urldecode($supplier_number);
 
 		$this->load->model('purchase_order_model');
 
@@ -541,6 +564,7 @@ class Purchase_invoice extends CI_Controller {
 	}
 	
 	function select($supplier=''){
+		$supplier=urldecode($supplier);
 		$s="select purchase_order_number,po_date,terms from purchase_order 
 		where potype='I'";
 		if($supplier!="")$s.=" and supplier_number='".$supplier."'";
@@ -548,6 +572,7 @@ class Purchase_invoice extends CI_Controller {
 		echo datasource($s);
 	}
 	function list_by_po($nomor_po){
+		$nomor_po=urldecode($nomor_po);
 		$s="select  distinct p.purchase_order_number,p.po_date,p.terms,p.amount 
 			from purchase_order_lineitems pol
 			left join purchase_order p on p.purchase_order_number=pol.purchase_order_number
@@ -556,6 +581,7 @@ class Purchase_invoice extends CI_Controller {
 		echo datasource($s);
 	}
 	function unposting($nomor) {
+		$nomor=urldecode($nomor);
 		$this->purchase_order_model->recalc($nomor);
 		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
 
@@ -578,6 +604,7 @@ class Purchase_invoice extends CI_Controller {
 	function posting($nomor)
 	{
 	
+		$nomor=urldecode($nomor);
 		$this->purchase_order_model->recalc($nomor);
 		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
 
@@ -632,4 +659,28 @@ class Purchase_invoice extends CI_Controller {
 		
 		$this->view($nomor);
 	}
+	function posting_all() {
+		$this->load->model("purchase_invoice_model");
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		$sql="select distinct purchase_order_number from purchase_order"; 
+		$sql.=" where potype='I'
+		and (posted is null or posted=false) 
+		and po_date  between '$d1' and '$d2'";
+		
+		if($q=$this->db->query($sql)){
+			foreach($q->result() as $r){
+				echo "<p>Posting..
+				<a href=".base_url()."index.php/purchase_invoice/view/".$r->purchase_order_number."
+				class='info_link'>".$r->purchase_order_number."</a> : ";
+				$message=$this->purchase_invoice_model->posting($r->purchase_order_number);
+				if($message!=''){
+					echo ': '.$message;
+				}
+				echo "</p>";
+			}
+		}
+		echo "<p>Finish.</p>";
+	}	
+	
 }

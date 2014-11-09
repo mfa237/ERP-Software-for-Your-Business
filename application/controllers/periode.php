@@ -65,6 +65,7 @@ class Periode extends CI_Controller {
 	}
 	
 	function view($id,$message=null){           
+		$id=urldecode($id);
 		 $data['period']=$id;
 		 $model=$this->periode_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -77,7 +78,7 @@ class Periode extends CI_Controller {
 	 // validation rules
 	function _set_rules(){	
 		 $this->form_validation->set_rules('year_id','Tahun', 'required|trim');
-		 $this->form_validation->set_rules('period','Bulan', 'required|trim');
+		 $this->form_validation->set_rules('period','Periode Id', 'required|trim');
 	}
 	
 	 // date_validation callback
@@ -107,10 +108,12 @@ class Periode extends CI_Controller {
         echo datasource($sql);
     }	      
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->periode_model->delete($id);
 	 	$this->browse();
 	}
 	function select($periode="") {
+		$periode=urldecode($periode);
 		$sql="select * from financial_periods";
 		if($periode!="")$sql.=" where period like '$periode%'";
 		

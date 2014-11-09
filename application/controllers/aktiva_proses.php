@@ -28,12 +28,16 @@ class Aktiva_proses extends CI_Controller {
 		$this->template->display_form_input('aktiva/proses',$data);
 	}
 	function exist($asset_id) {
+		 $asset_id=urldecode($asset_id);
 	
 	}
 	function save($asset_id) {
+		 $asset_id=urldecode($asset_id);
 	
 	}
 	function straight_line($asset_id,$period="") {
+		$asset_id=urldecode($asset_id);
+		$period=urldecode($period);
 		$data['amount']=0;
 		$data['book']=0;
 		$s = "select * from fa_asset_depreciation_schedule
@@ -102,6 +106,8 @@ class Aktiva_proses extends CI_Controller {
 	} 	
 
 	function sum_of_year($asset_id,$period="") {
+		$asset_id=urldecode($asset_id);
+		$period=urldecode($period);
 		$data['amount']=0;
 		$data['book']=0;
 		$s = "select * from fa_asset_depreciation_schedule
@@ -155,6 +161,8 @@ class Aktiva_proses extends CI_Controller {
 		}
 	}
 	function declining_balance($asset_id,$period="") {
+		$asset_id=urldecode($asset_id);
+		$period=urldecode($period);
 		$data['amount']=0;
 		$data['book']=0;
 		$s = "select * from fa_asset_depreciation_schedule
@@ -224,12 +232,15 @@ class Aktiva_proses extends CI_Controller {
 		return $data;
 	}
 	function no_method($asset_id,$period="") {
+		$asset_id=urldecode($asset_id);
+		$period=urldecode($period);
 		$data['amount']=0;
 		$data['book']=0;
 		return $data;
 	}
 	
 	function load($periode) {
+		$period=urldecode($period);
 		$aktiva=$this->aktiva_model->load_all();
 		$rows=null;
 		foreach($aktiva->result() as $row_aktiva) {

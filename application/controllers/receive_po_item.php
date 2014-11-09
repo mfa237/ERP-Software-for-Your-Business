@@ -55,6 +55,7 @@ private $limit=10;
 
 	function add($recv_id)
 	{
+		$recv_id=urldecode($recv_id);
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 

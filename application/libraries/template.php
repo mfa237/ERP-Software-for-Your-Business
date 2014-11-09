@@ -16,11 +16,10 @@ class Template {
 	
 	
 	';
-	$this->library_src=$this->_ci->jquery->script(base_url().'js/jquery/jquery-1.8.0.min.js',true);
+	$this->library_src=$this->_ci->jquery->script(base_url().'js/jquery/jquery-1.9.min.js',true);
     $this->library_src.=$this->_ci->jquery->script(base_url().'assets/bootstrap/js/bootstrap.js',true);
+    $this->library_src.=$this->_ci->jquery->script(base_url().'assets/datepicker/bootstrap-datepicker.js',true);
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/jquery-ui/jquery.easyui.min.js',true);
-
-  
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/autocomplete/jquery.autocomplete.min.js',true);
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/lib.js',true);
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/jquery.formatNumber.js',true);
@@ -29,11 +28,12 @@ class Template {
   /// $this->script_head=$this->_ci->jquery->_compile();
 	$this->script_head='
 	
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap/css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/autocomplete/jquery.autocomplete.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/default/easyui.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/icon.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/standard/style.css">
+	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/datepicker/datepicker.css">
+	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap/css/bootstrap.css">
 
 	
 	';
@@ -58,7 +58,7 @@ class Template {
 	  
 	 if(!$this->is_ajax())
 	 {
-	 
+		$data['user_id']=$this->_ci->access->user_id();
 	  	$data['library_src']=$this->library_src;
 	  	$data['script_head']=$this->script_head;
 
@@ -82,41 +82,40 @@ class Template {
 		}
 		$data['sys_log_run']=$sys_log_run;
 
+		if($template=="pos/menu")$data['sidebar_show']=false;
 
-		if($template=="welcome_message"){
-			$data["visible_right"]="";
-			$data['_content']=$this->_ci->load->view($template,$data, true);
-			$this->_ci->load->view('template/standard/welcome',$data);              
+		if(isset($data['_right_menu'])){
+			$fm=$data['_right_menu'];
+			$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
 		} else {
-			if(isset($data['_right_menu'])){
-				$fm=$data['_right_menu'];
+		   $data['_right_menu']='';
+		}				
+		$fm=$this->_ci->session->userdata('_right_menu');
+		if($fm!='')$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+		$fm=$this->_ci->session->userdata('_left_menu');
 
-				$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+		if($fm!='')$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+		$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
+
+		if($template==$fm){
+			$dashboard=$fm."_dashboard";
+			if(file_exists(APPPATH."views/$dashboard.php")){
+				$data['_content']=$this->_ci->load->view($dashboard,$data, true);						
 			} else {
-			   $data['_right_menu']='';
-			}				
-			$fm=$this->_ci->session->userdata('_right_menu');
-			if($fm!='')$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
-			$fm=$this->_ci->session->userdata('_left_menu');
-
-			if($fm!='')$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
-			$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
-
-			if($template==$fm){
-				$dashboard=$fm."_dashboard";
-				if(file_exists(APPPATH."views/$dashboard.php")){
-					$data['_content']=$this->_ci->load->view($dashboard,$data, true);						
-				} else {
-					$data['_content']="Dashboard view not found! <br>".$dashboard;
-				}
-			} else {
-				 
-				$data['_content']=$this->_ci->load->view($template,$data, true);
+				$data['_content']="Dashboard view not found! <br>".$dashboard;
 			}
-			$this->_ci->load->view('template/standard/template',$data);              
-		}
-			
-	 } else {
+			$data['body_class']='bodyx';
+		} else {
+			if($template=="welcome_message"){
+				$data["sidebar_show"]=false;
+				$data['body_class']='bodyx';
+			} else {
+				$data['body_class']='';
+			}
+			$data['_content']=$this->_ci->load->view($template,$data, true);
+		} 						
+		$this->_ci->load->view('template/standard/template',$data);              
+	 } else  {
 		$this->_ci->load->view($template,$data);
 	 }
  }
@@ -252,5 +251,15 @@ function browse_sql($sql){
 	$this->_ci->load->view('template/standard/template.php',$data);
 }
 
-
+ function pos($template,$data=null)
+ {
+	  	$data['library_src']=$this->library_src;
+	  	$data['script_head']=$this->script_head;
+		$data['_header']=$this->_ci->load->view('template/pos/header',$data, true);
+		$data['_footer']=$this->_ci->load->view('template/pos/footer',$data, true);
+		$this->_ci->load->view('template/pos/template',$data);              
+	 
+ }
+ 
+ 
 }

@@ -6,12 +6,12 @@
 	</tr>
 	<tr>
 	    <form id="frmItem" method='post' >
-	         <td><input onblur='find()' id="item_number" style='width:80px' 
+	         <td><input onblur='find()' id="item_number" style='width:50px' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 				onclick="searchItem()"></a>
 	         </td>
-	         <td><input id="description" name="description" style='width:180px'></td>
+	         <td><input id="description" name="description" style='width:100px'></td>
 	         <td><input id="quantity"  style='width:30px'  name="quantity" onblur="hitung()"></td>
 	         <td><input id="unit" name="unit"  style='width:30px' ></td>
 	         <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>

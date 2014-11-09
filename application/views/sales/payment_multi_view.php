@@ -69,7 +69,7 @@
 		</tr>
 	</table>
 	
-	<div class="easyui-tabs" style="width:700px;height:550px">
+	<div class="easyui-tabs" style="height:550px">
 		<div title="Nomor Faktur" style="padding:10px">
 		<table id="dgItems" class="easyui-datagrid" 
 			data-options="
@@ -98,7 +98,7 @@
 		<DIV title="Jurnal" style="padding:10px">
 			<div id='divJurnal' class='thumbnail'>
 			<table id="dgCrdb" class="easyui-datagrid"  
-				style="width:700px;min-height:700px"
+				style="min-height:700px"
 				data-options="
 					iconCls: 'icon-edit',
 					singleSelect: true,toolbar:'#tbCrdb',

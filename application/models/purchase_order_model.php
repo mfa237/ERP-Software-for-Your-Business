@@ -40,13 +40,16 @@ public $sub_total=0;
 		}
 		$disc_amount=$po->discount*$this->sub_total;
 	    $this->amount=$this->sub_total-$disc_amount;
+		if($po->tax>1)$po->tax=$po->tax/100;
+		
 		$tax_amount=$po->tax*$this->amount;
 		$this->amount=$this->amount+$tax_amount;
 		$this->amount=$this->amount+$po->freight;
 		$this->amount=$this->amount+$po->other;
 
 		$this->db->where($this->primary_key,$nomor);
-		$this->db->update($this->table_name,array('amount'=>$this->amount,'subtotal'=>$this->sub_total));
+		$this->db->update($this->table_name,array('amount'=>$this->amount,
+		'tax_amount'=>$tax_amount,'subtotal'=>$this->sub_total));
 		
 		$this->add_payables($nomor);
 	    $this->amount_paid=$this->payables_payments_model->total_amount($nomor);

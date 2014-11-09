@@ -2,7 +2,7 @@
 
 class sales_crmemo extends CI_Controller {
     private $limit=10;
-    private $sql="select kodecrdb,tanggal,docnumber,amount,keterangan,c.account, c.account_description
+    private $sql="select kodecrdb,tanggal,docnumber,amount,posted,keterangan,c.account, c.account_description
      from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='SO-CREDIT MEMO'";
     private $controller='sales_crmemo';
     private $primary_key='kodecrdb';
@@ -44,16 +44,18 @@ class sales_crmemo extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Keterangan','Kode Akun','Perkiraan');
-		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','keterangan','account','account_description');
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Posted','Keterangan','Kode Akun','Perkiraan');
+		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','posted','keterangan','account','account_description');
 		$data['field_key']='kodecrdb';
 		$data['caption']='DAFTAR CREDIT MEMO';
+		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Nomor Bukti","sid_number");
+		$faa[]=criteria("Posted","sid_posted");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -64,6 +66,13 @@ class sales_crmemo extends CI_Controller {
 			$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
 			$sql=$this->sql." and tanggal between '".$d1."' and '".$d2."'";
+			if($this->input->get('sid_posted')!=''){
+				if($this->input->get('sid_posted')=='1'){
+					$sql.=" and posted=true";
+				} else {
+					$sql.=" and (posted=false or posted is null)";				
+				}
+			}
 		}
         echo datasource($sql);
     }	 
@@ -99,6 +108,7 @@ class sales_crmemo extends CI_Controller {
 	
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
@@ -126,15 +136,38 @@ class sales_crmemo extends CI_Controller {
 		return $data;
 	}
 	function posting($nomor) {
+		$nomor=urldecode($nomor);
 		$this->crdb_model->posting($nomor);
 		$this->view($nomor);
 	}	
 	function unposting($nomor) {
+		$nomor=urldecode($nomor);
 		$this->crdb_model->unposting($nomor);
 		$this->view($nomor);
 	}	
 	function delete($nomor) {
+		$nomor=urldecode($nomor);
 		$this->crdb_model->delete($nomor);
 	}
-	
+	function posting_all() {
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		$sql="select distinct kodecrdb from crdb_memo"; 
+		$sql.=" where  transtype='SO-CREDIT MEMO'
+		and (posted is null or posted=false) and tanggal between '$d1' and '$d2'";
+		
+		if($q=$this->db->query($sql)){
+			foreach($q->result() as $r){
+				echo "<p>Posting..
+				<a href=".base_url()."index.php/sales_crmemo/view/".$r->kodecrdb."
+				class='info_link'>".$r->kodecrdb."</a> : ";
+				$message=$this->crdb_model->posting($r->kodecrdb);
+				if($message!=''){
+					echo ': '.$message;
+				}
+				echo "</p>";
+			}
+		}
+		echo "<p>Finish.</p>";
+	}	
 }

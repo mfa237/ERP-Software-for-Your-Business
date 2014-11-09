@@ -22,7 +22,7 @@
 		}
 	</script>
 	
-</div></H1>
+</div> 
 <div class="thumbnail">	
 
 <?php if (validation_errors()) { ?>

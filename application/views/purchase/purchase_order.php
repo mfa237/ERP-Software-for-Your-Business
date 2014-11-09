@@ -1,5 +1,5 @@
  
-<div class="max-tool"><h1>PURCHASE ORDER</H1><div class="thumbnail tool">
+<div class="max-tool"><h4>PURCHASE ORDER</h4><div class="thumbnail tool">
 	<?
 	$disabled="";$disabled_edit="";
 	if(!($mode=="add" or $mode=="edit"))$disabled=" disabled";
@@ -85,7 +85,7 @@
 </form>
 </div> 
  
-<div class="easyui-tabs" style="width:700px;height:550px">
+<div class="easyui-tabs" style="height:550px">
 	<div title="Items" style="padding:10px">
 	<!-- PURCASE_ORDER_LINEITEMS -->	
 	<div id='divItem'>
@@ -94,7 +94,7 @@
 			<? include_once "purchase_order_items.php"; ?>
 		</div>
 		<table id="dg" class="easyui-datagrid"  
-			style="width:600px;min-height:800px"
+			style="min-height:800px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
@@ -139,7 +139,7 @@
 	</div>
 	<div title='Receive' style="padding:10px">
 		<table id="dgRcv" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true, toolbar: '#tbRcv',
@@ -163,7 +163,7 @@
 
 	<div title='Invoice' style="padding:10px">
 		<table id="dgInvoice" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+			style="min-height:700px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true, toolbar: '#tbInvoice',

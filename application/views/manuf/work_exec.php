@@ -41,18 +41,54 @@
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<table>
 		<tbody>
-			<tr><td>WOE Number</td><td><?=form_input("work_exec_no",$work_exec_no,"id='work_exec_no'")?></td></tr>
-			<tr><td>WO Number</td><td><?=form_input("wo_number",$wo_number,"id='wo_number'")?>
+			<tr><td>WOE Number</td>
+				<td><?=form_input("work_exec_no",$work_exec_no,"id='work_exec_no'")?></td>
+				<td colspan='6' rowspan='7'>
+					<div class='thumbnail'>
+					<p><h4>Workorder Information</h4></p>
+					<p>Customer : <?=$wo_customer?></p>
+					<p>Date From : <?=$wo_date_from?> To : <?=$wo_date_to?></p>
+					<p>SO Number : <?=$wo_so_number?></p>
+					<p>Comments  : <?=$wo_comment?></p>
+					</div>
+				</td>
+				
+			</tr>
+			<tr>
+				<td>WO Number</td><td><?=form_input("wo_number",$wo_number,"id='wo_number'")?>
 				<?=link_button('','lookup_work_order()','search');?>
-			</td></tr>
+				</td>
+			</tr>
 			<tr><td>Start Date</td><td><?=form_input("start_date",$start_date,"id='start_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
 			<tr><td>Expect Date</td><td><?=form_input("expected_date",$expected_date,"id='expected_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
 			<tr><td>Department</td><td><?=form_input("dept_code",$dept_code,"id='dept_code'")?></td></tr>
 			<tr><td>Person</td><td><?=form_input("person_in_charge",$person_in_charge,"id='person_in_charge'")?></td></tr>
-			<tr><td>Comments</td><td><?=form_input("comments",$comments,"id='comments'")?></td></tr>
+			<tr><td>Status</td><td><?=form_input("status",$status,"id='status'")?></td></tr>
+			<tr><td>Comments</td><td colspan='6'><?=form_input("comments",$comments,"id='comments' style='width:500px'")?></td></tr>
 		</tbody>
 	</table>
-	<div id="divWoItem"><?=$detail?></div>
+	<div id="divWoItem">
+			<table id="dg" class="easyui-datagrid"  
+			style="width:auto;min-height:auto"
+			data-options="
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tb',
+				url: '<?=base_url()?>index.php/work_exec/items/<?=$work_exec_no?>'
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'item_number',width:80">Kode Barang</th>
+					<th data-options="field:'description',width:150">Nama Barang</th>
+					<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+					<th data-options="field:'price',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Price</th>
+					<th data-options="field:'total',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Total</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+				</tr>
+			</thead>
+		</table>	
+	</div>
 <!-- WORK ORDER PRODUCT - kode,nama barang, wo_qty, unit, exe_qty, saldo_qty, warehouse -->
 <!-- MATERIAL USE - kode,nama barang, qty,unit,cost,total_cost,number,tanggal,id -->
 <!-- PRODUCT RESULT - kode,nama,qty,unit,cost,total,number,tanggal,id -->

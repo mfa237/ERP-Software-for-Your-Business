@@ -28,6 +28,7 @@ class Stock_mutasi extends CI_Controller {
 	}
 	function index()
 	{
+		if(!allow_mod2('_80040'))return false;   
         $this->browse();
 	}
 	function nomor_bukti($add=false)
@@ -106,6 +107,7 @@ class Stock_mutasi extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['transfer_id']=$id;
 		 $model=$this->inventory_moving_model->get_by_id($id)->row();	
 		 $data=$this->set_defaults($model);
@@ -115,6 +117,7 @@ class Stock_mutasi extends CI_Controller {
 	}
 	function items($nomor,$type='')
 	{
+		$nomor=urldecode($nomor);
             $sql="select p.item_number,i.description,p.from_qty, 
             p.unit,p.cost,p.id as line_number
             from inventory_moving p
@@ -170,6 +173,7 @@ class Stock_mutasi extends CI_Controller {
     }
 	 
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->inventory_moving_model->delete($id);
 	 	$this->browse();
 	}	
@@ -203,6 +207,7 @@ class Stock_mutasi extends CI_Controller {
 			}
 	}         
     function print_bukti($nomor){
+		$nomor=urldecode($nomor);
         $mov=$this->inventory_moving_model->get_by_id($nomor)->row();
 		$data['transfer_id']=$mov->transfer_id;
 		$data['item_number']=$mov->item_number;

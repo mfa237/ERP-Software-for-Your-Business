@@ -15,12 +15,12 @@ function get_by_id($id){
     return $this->db->get($this->table_name);
 }
 function save($data){
-    $this->db->insert($this->table_name,$data);
-    return $this->db->insert_id();
+    return $this->db->insert($this->table_name,$data);
+    //return $this->db->insert_id();
 }
 function update($id,$data){
     $this->db->where($this->primary_key,$id);
-    $this->db->update($this->table_name,$data);
+    return $this->db->update($this->table_name,$data);
 }
 function delete($id){
     $this->db->where($this->primary_key,$id);
@@ -55,4 +55,32 @@ function build_menu(){
     $menu.="</ul></nav>";
     return $menu;
 }
+	function module_list($group_id='') {
+		$this->load->model('modules_groups_model');
+		$s="select module_id as id,module_name as text
+		from modules where (parentid='0' or parentid is null) 
+		order by module_id";
+        if($q=$this->db->query($s)){
+			$rows=array();
+			foreach($q->result() as $r){
+				$s="select module_id as id,module_name as text
+				from modules where parentid='".$r->id."' 
+				order by module_id";
+				$rows1=array();
+				if($q1=$this->db->query($s)){
+					foreach($q1->result() as $r1){
+						$checked=$this->modules_groups_model->exist($group_id,$r1->id);
+						$rows1[]=array('id'=>$r1->id,'text'=>$r1->text.' ('.$r1->id.')',"checked"=>$checked);
+					};
+				};
+				$checked=$this->modules_groups_model->exist($group_id,$r->id);
+				if($rows1) { 
+					$rows[]=array("id"=>$r->id,"text"=>$r->text.' ('.$r->id.')',"state"=>"open",
+					"checked"=>$checked,"children"=>$rows1);
+				}
+			};
+		}
+		$data[]=array('id'=>'1','text'=>'Root','children'=>$rows);
+        echo json_encode($data);
+	}
 }

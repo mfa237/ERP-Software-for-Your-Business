@@ -3,7 +3,7 @@
 class Cash_out extends CI_Controller {
     private $limit=10;
     private $table_name='check_writer';
-    private $sql="select voucher,check_date,payment_amount
+    private $sql="select voucher,check_date,payment_amount,posted
             ,account_number,payee,trans_type,check_number,memo,trans_id
                 from check_writer
                 where trans_type in ('cash out','trans out','cheque out')
@@ -100,6 +100,7 @@ class Cash_out extends CI_Controller {
 //        header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->check_writer_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -128,12 +129,13 @@ class Cash_out extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Rekening','Untuk'
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Posted','Rekening','Untuk'
 		,'Jenis Transaksi','Nomor Giro','Keterangan','Trans Id');
-		$data['fields']=array('voucher','check_date','payment_amount'
+		$data['fields']=array('voucher','check_date','payment_amount','posted'
             ,'account_number','payee','trans_type','check_number','memo','trans_id');
 		$data['field_key']='voucher';
 		$data['caption']='DAFTAR TRANSAKSI KAS/BANK KELUAR';
+		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
 		
@@ -142,6 +144,7 @@ class Cash_out extends CI_Controller {
 		$faa[]=criteria("Nomor Bukti","sid_number");
 		$faa[]=criteria("Rekening","sid_rek");
 		$faa[]=criteria("Jenis","sid_type");
+		$faa[]=criteria("Posted","sid_posted");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -156,12 +159,20 @@ class Cash_out extends CI_Controller {
 		} else {
 			$sql.=" and check_date between '$d1' and '$d2'";
 			if($rek!='')$sql.=" and account_number like '$rek%'";	
-			if($this->input->get('sid_type')!='')$sql.=" trans_type='".$this->input->get('sid_type')."'";
+			if($this->input->get('sid_type')!='')$sql.=" and trans_type='".$this->input->get('sid_type')."'";
+			if($this->input->get('sid_posted')!=''){
+				if($this->input->get('sid_posted')=='1'){
+					$sql.=" and posted=true";
+				} else {
+					$sql.=" and posted=false";				
+				}
+			}
 		}
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 	function items($voucher) {
+		$voucher=urldecode($voucher);
 		$sql="select cwi.account_id,coa.account,coa.account_description as description,
 			amount,comments,invoice_number,ref1,line_number	
 			from check_writer_items cwi
@@ -198,14 +209,17 @@ class Cash_out extends CI_Controller {
 		}
 	}
 	function unposting($voucher) {
+		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->unposting($voucher);
 		$this->view($voucher,$message);
 	}
 	function posting($voucher) {
+		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->posting($voucher);
 		$this->view($voucher,$message);
 	}
 	function delete($voucher) {
+		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->delete($voucher);
 		if($message!=""){
 			$this->view($voucher,$message);
@@ -213,5 +227,25 @@ class Cash_out extends CI_Controller {
 		} 
 		$this->browse();
 	}
-	
+	function posting_all() {
+		$this->load->model('check_writer_model');
+    	$rek=$this->input->get('sid_rek');
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		$sql="select distinct voucher from check_writer"; 
+		$sql.=" where trans_type in ('cash out','trans out','cheque out') and (posted is null or posted=false) and check_date between '$d1' and '$d2'";
+		if($rek!='')$sql.=" and account_number like '$rek%'";	
+		if($this->input->get('sid_type')!='')$sql.=" and trans_type='".$this->input->get('sid_type')."'";
+		if($q=$this->db->query($sql)){
+			foreach($q->result() as $r){
+				echo "<p>Posting..".$r->voucher;
+				$message=$this->check_writer_model->posting($r->voucher);
+				if($message!=''){
+					echo ': '.$message;
+				}
+				echo "</p>";
+			}
+		}
+		echo "<p>Finish.</p>";
+	}	
 }

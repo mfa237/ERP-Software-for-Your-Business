@@ -7,6 +7,8 @@ class Sales_order_model extends CI_Model
 	public $saldo=0;
 	public $amount=0;
 	public $sub_total=0;
+	public $disc_amount_1=0;
+	public $tax=0;
 	private $sql="select s.sales_order_number,s.sales_date,s.sold_to_customer,
 	c.company,s.amount 
 	from sales_order_number";
@@ -22,8 +24,12 @@ class Sales_order_model extends CI_Model
 
     	$so=$this->get_by_id($nomor)->row();
 		$disc_amount=$so->discount*$this->sub_total;
+		$this->disc_amount_1=$disc_amount;
+		
 	    $this->amount=$this->sub_total-$disc_amount;
 		$tax_amount=$so->sales_tax_percent*$this->amount;
+		$this->tax=$tax_amount;
+		
 		$this->amount=$this->amount+$tax_amount;
 		$this->amount=$this->amount+$so->freight;
 		$this->amount=$this->amount+$so->other;
@@ -31,7 +37,7 @@ class Sales_order_model extends CI_Model
 
 		$this->db->where($this->primary_key,$nomor);
 		$this->db->update($this->table_name,array('amount'=>$this->amount,
-		'subtotal'=>$this->sub_total));
+		'subtotal'=>$this->sub_total,'disc_amount_1'=>$disc_amount,'tax'=>$tax_amount));
 		
 	    $this->amount_paid=$this->payment_model->total_amount($nomor);
 	    $this->saldo= $this->amount-$this->amount_paid;
@@ -58,12 +64,14 @@ class Sales_order_model extends CI_Model
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
+		$data['delivered']=='1'?$data['delivered']=true:$data['delivered']=false;
 		$data['sales_date']= date( 'Y-m-d H:i:s', strtotime($data['sales_date']));
 		$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
 		return $this->db->insert($this->table_name,$data);
 		//return $this->db->insert_id();
 	}
 	function update($id,$data){
+		$data['delivered']=='1'?$data['delivered']=true:$data['delivered']=false;
 		$data['sales_date']= date( 'Y-m-d H:i:s', strtotime($data['sales_date']));
 		$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
 		$this->db->where($this->primary_key,$id);
@@ -127,6 +135,15 @@ class Sales_order_model extends CI_Model
 		$s="update sales_order_lineitems set shipped=false where quantity=ship_qty 
 		and sales_order_number='$nomor_so'";
 		$this->db->query($s);
+		
+		$s="select i.invoice_date from invoice i 
+		where invoice_type='D' and sales_order_number='$nomor_so'
+		order by invoice_date desc  limit 1";
+		$ship_date='Null';
+		if($q=$this->db->query($s)->row()){
+			
+			$ship_date=$q->invoice_date;
+		}
 
 
 		$s="update sales_order 
@@ -138,9 +155,9 @@ class Sales_order_model extends CI_Model
 		group by sales_order_number) il
 		on il.sales_order_number=sales_order.sales_order_number
 		
-		set delivered=true 
+		set delivered=true,ship_date='$ship_date' 
 		
-		where z_qty=z_ship_qty 
+		where z_ship_qty>=z_qty 
 		and sales_order.sales_order_number='$nomor_so'";
 		
 		$this->db->query($s);
@@ -154,9 +171,9 @@ class Sales_order_model extends CI_Model
 		group by sales_order_number) il
 		on il.sales_order_number=sales_order.sales_order_number
 		
-		set delivered=false
+		set delivered=false,ship_date='$ship_date'
 		
-		where z_qty>z_ship_qty 
+		where z_ship_qty<z_ship_qty 
 		and sales_order.sales_order_number='$nomor_so'";
 
 		$this->db->query($s);

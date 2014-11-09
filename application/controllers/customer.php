@@ -19,6 +19,8 @@ class Customer extends CI_Controller {
 		$this->load->model('customer_model');
         $this->load->model('chart_of_accounts_model');
         $this->load->model('type_of_payment_model');
+        $this->load->model('salesman_model');
+		
 
 	}
 	function set_defaults($record=NULL){
@@ -26,6 +28,7 @@ class Customer extends CI_Controller {
 		$data['mode']='';
 		$data['message']='';
         $data['termin_list']=$this->type_of_payment_model->select_list();
+		$data['salesman_list']=$this->salesman_model->select_list();
 		return $data;
 	}
 	function index()
@@ -61,6 +64,7 @@ class Customer extends CI_Controller {
 		}
 	}
 	function acc_id($account){
+		$account=urldecode($account);
 		$data=explode(" - ", $account);
 		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();
 		if($coa){
@@ -111,16 +115,20 @@ class Customer extends CI_Controller {
 		$data['fields_caption']=array('Kode','Nama Pelanggan','Kota','Telp','Fax','Salesman','Kelompok');
 		$data['fields']=array('customer_number','company','city','phone','fax','salesman','customer_record_type');
 		$data['field_key']='customer_number';
+		
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Nama","sid_cust");
+		$faa[]=criteria("Kode","sid_kode");
 		$faa[]=criteria("Salesman","sid_sales");
 		$faa[]=criteria("Kota","sid_city");
+		$data['list_info_visible']=true;
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){
 		$sql=$this->sql." where 1=1";
+		if($this->input->get('sid_kode')!='')$sql.=" and customer_number like '".$this->input->get('sid_kode')."%'";
 		if($this->input->get('sid_cust')!='')$sql.=" and company like '".$this->input->get('sid_cust')."%'";
 		if($this->input->get('sid_sales')!='')$sql.=" and salesman='".$this->input->get('salesman')."'";
 		if($this->input->get('sid_city')!='')$sql.=" and city='".$this->input->get('city')."'";
@@ -129,6 +137,7 @@ class Customer extends CI_Controller {
     }
       
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->customer_model->delete($id);
 	 	$this->browse();
 	}
@@ -168,21 +177,25 @@ class Customer extends CI_Controller {
 		
 	}	
 	function select($search=''){
-		$sql="select company,customer_number, city,region,country,street,suite,salesman 
+		$search=urldecode($search);
+		$sql="select company,customer_number, city,region,country,street,suite,salesman,payment_terms  
 		from customers where  (company like '$search%' or customer_number like '$search%')
 		order by company";
 	 
  		echo datasource($sql);
 	}
 	function filter($search=''){
+		$search=urldecode($search);
 		echo datasource('select company,customer_number from customers');
 	}
 	function list_shipto($search=''){
+		$search=urldecode($search);
 		$sql="select *	from customer_shipto 
 		where customer_code='$search'";
 		echo datasource($sql);
 	}
 	function shipto_add($cust){
+		$cust=urldecode($cust);
 		$data=$this->input->post();
 		$data['customer_code']=$cust;
 		if($this->customer_model->shipto_add($data)){
@@ -201,6 +214,7 @@ class Customer extends CI_Controller {
 	}
 	function kartu_piutang($customer_number)
 	{
+		$customer_number=urldecode($customer_number);
 		$date_from= $this->input->get('d1');
 		$date_from=  date('Y-m-d H:i:s', strtotime($date_from));
 		$date_to= $this->input->get('d2');
@@ -234,5 +248,26 @@ class Customer extends CI_Controller {
                     
         echo json_encode($data);
 
+	}	
+	function list_info($offset=0){
+		if(isset($_GET['offset'])){
+			$offset=$_GET['offset'];
+		}
+		$data['offset']=$offset;
+		$this->load->library('search_criteria');
+
+		$faa[]=criteria("Kode","sid_kode");
+		$faa[]=criteria("Nama","sid_cust");
+		$faa[]=criteria("Kota","sid_city");
+		$faa[]=criteria("Kota","sid_sales");
+	
+		$data['criteria']=$faa;
+		$data['criteria_text']=criteria_text($faa);
+		$data['sid_kode']=$this->session->userdata('sid_kode');
+		$data['sid_cust']=$this->session->userdata('sid_cust');
+		$data['sid_city']=$this->session->userdata('sid_city');
+		$data['sid_sales']=$this->session->userdata('sid_sales');
+		
+		$this->template->display_form_input('sales/info_list',$data);	
 	}	
 }

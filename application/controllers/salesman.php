@@ -82,6 +82,7 @@ class Salesman extends CI_Controller {
 		}
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->salesman_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -127,10 +128,12 @@ class Salesman extends CI_Controller {
         echo datasource($sql);       
     }        
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->salesman_model->delete($id);
 	 	$this->browse();
 	}
 	function select($search=""){
+		$search=urldecode($search);
 		echo datasource("select salesman from salesman");
 	}
 	

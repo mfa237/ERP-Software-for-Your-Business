@@ -1,4 +1,4 @@
-<div><h3>PROSES PENERIMAAN BARANG PRODUKSI<div class="thumbnail">
+<div><h4>PROSES PENERIMAAN BARANG PRODUKSI</H4><div class="thumbnail">
 	<?
 	echo link_button('print', 'print_receive()','print');		
 	echo link_button('Search','','search','true',base_url().'index.php/receive_prod');		
@@ -17,7 +17,7 @@
 		}
 	</script>
 	
-</div></H1>
+</div>
 <div class="thumbnail">	
 <form id="frmItem" method='post' >
    <table>
@@ -75,6 +75,8 @@
 				<th data-options="field:'description',width:150">Nama Barang</th>
 				<th data-options="field:'quantity_received',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
 				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+				<th data-options="field:'cost',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Cost</th>
+				<th data-options="field:'total_amount',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Total</th>
 				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 			</tr>
 		</thead>

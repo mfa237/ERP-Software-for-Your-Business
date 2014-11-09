@@ -31,4 +31,17 @@ function lineitems($wo){
 	$this->db->where('work_exec_no',$wo);
 	return $this->db->get($this->table_name);
 }
+function update_items($exec_no) {
+	if($q=$this->lineitems($exec_no)){
+		foreach($q->result() as $row){
+			if($row->price==null){
+				$qstk=$this->db->query("select cost from inventory where item_number='".$row->item_number."'")->row();
+				$data['price']=$qstk->cost;
+				$data['total']=$qstk->cost*$row->quantity;
+				$this->update($row->id,$data);		
+				
+			}
+		}
+	}
+}
 }

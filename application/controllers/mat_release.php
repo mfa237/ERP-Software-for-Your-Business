@@ -97,6 +97,7 @@ private $limit=10;
 		} else {
 			$ok=$this->mat_release_model->update($id,$data);			
 		}
+		$this->mat_release_model->update_item_release($id);
 		if ($ok){
 			if($mode=="add") $this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'mat_rel_no'=>$id));
@@ -110,16 +111,17 @@ private $limit=10;
 			 $data['mode']='add';
 			 $data['id']='';
 		 } else {
+			$id=urldecode($id);
 			 $model=$this->mat_release_model->get_by_id($id)->row();
 			 $data=$this->set_defaults($model);
 			 $data['id']=$id;
 			 $data['mode']='view';
 		 }
-		 $data['detail']=$this->load_detail($id);
 		 $this->template->display_form_input($this->file_view,$data,'');
 	}
 	function load_detail($id)
 	{
+		$id=urldecode($id);
 		$sql="select item_number,description,quantity,unit,id
 		from work_exec_detail where work_exec_no='$id'";
 		$query=$this->db->query($sql);
@@ -152,26 +154,46 @@ private $limit=10;
 
 		$this->load->library('search_criteria');
 		
+		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
+		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Release No","sid_rel_no");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
     	$sql=$this->sql." where 1=1";
-		if($this->input->get('sid_rel_no')!='')$sql.=" and mat_rel_no='".$this->input->get('sid_rel_no')."'";	
+		$no=$this->input->get('sid_rel_no');
+		if($no!=''){
+			$sql.=" and mat_rel_no='".$no."'";	
+		} else {
+			$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+			$sql.=" and date_rel between '$d1' and '$d2'";		
+		}
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 	function delete($id){
-	 	$this->work_exec_model->delete($id);
+		$id=urldecode($id);
+	 	$this->mat_release_model->delete($id);
 	 	$this->browse();
+	}
+	function delete_material_release() {
+		$mat_rel_no=$_POST['mat_rel_no'];
+        $this->load->model('mat_release_detail_model');
+        if($this->mat_release_detail_model->delete_by_number($mat_rel_no)) {
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}		
 	}
 	function items($nomor)
 	{
-		$sql="select p.item_number,i.description,p.quantity,p.id as line_number,p.unit
-		from work_exec_detail p
+		$nomor=urldecode($nomor);
+		$sql="select p.item_number,i.description,p.quantity,p.id,p.unit,p.cost,p.amount
+		from mat_release_detail p
 		left join inventory i on i.item_number=p.item_number
-		where work_exec_no='$nomor'";
+		where mat_rel_no='$nomor' and mat_rel_no<>''";
 		echo datasource($sql);
 	}
     function save_item(){
@@ -189,7 +211,6 @@ private $limit=10;
 			if($data['unit']=='')$data['unit']=$item->unit_of_measure;
 		}
 		if($data['unit']=='')$data['unit']=$item->unit_of_measure;
-        $this->load->model('work_exec_detail_model');
         
 		if($id!=''){
 			$ok=$this->mat_release_detail_model->update($id,$data);
@@ -204,6 +225,7 @@ private $limit=10;
     }        
 	function save_item_exec_detail($exec_no, $arLine,$arQtyExec)
 	{
+		$exec_no=urldecode($exec_no);
 		$this->load->model('mat_release_detail_model');
 		for($i=0;$i<count($arLine);$i++)
 		{
@@ -226,6 +248,7 @@ private $limit=10;
 		}
 	}
     function delete_item($id=0){
+		$id=urldecode($id);
     	if($id==0)$id=$this->input->post('line_number');
         $this->load->model('mat_release_detail_model');
         if($this->mat_release_detail_model->delete($id)) {

@@ -5,11 +5,11 @@ class search_criteria{
 	public $caption='';
 	public $field_id='';
 	public $field_class='';
+	public $field_value='';
 
 	 function __construct()
 	 {
 	 }
 }
-
 ?>
 

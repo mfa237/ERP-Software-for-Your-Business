@@ -19,5 +19,11 @@ function __construct(){
 		and assembly_item_number='".$kode."'");
 		return true;
 	}
+	function get_by_id($id){
+		$this->db->where($this->primary_key,$id);
+		$ok=$this->db->get($this->table_name);
+		return $ok;
+	}
+	
 
 }

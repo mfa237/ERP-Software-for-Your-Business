@@ -36,7 +36,7 @@ case 1:
 	  KEY `x1` (`bank_account_number`)
 	) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 	";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 	$table="bank_accounts";
 	$sql="
@@ -45,7 +45,7 @@ case 1:
 	('BNI', 'Bank', 'BNI', '', '', 'JL. RAYA PURWAKARTA NO. 38', '', '', '', '', '', '', '', '', '', '0000-00-00 00:00:00', 0, 1374, '', 'A', 'B', '', ''),
 	('BRI', 'Bank', 'BRI', '', '', 'JL. RAYA PURWAKARTA NO. 38', '', '', '', '', '', '', '', '', '', '2013-08-12 00:00:00', 0, 0, '', '', '', '', '')
 	";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 4:
@@ -69,7 +69,7 @@ $sql="CREATE TABLE IF NOT EXISTS `bill_detail` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
 
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 5:
@@ -87,7 +87,7 @@ $sql="CREATE TABLE IF NOT EXISTS `bill_header` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 6:
@@ -115,7 +115,7 @@ $sql="CREATE TABLE IF NOT EXISTS `budget` (
   KEY `x1` (`account_id`,`budget_year`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 7:
@@ -135,7 +135,7 @@ $sql="CREATE TABLE IF NOT EXISTS `chart_account_link` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 8:
@@ -167,7 +167,7 @@ $sql="CREATE TABLE IF NOT EXISTS `chart_of_accounts` (
   KEY `x2` (`account_description`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1505 ;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 9:
@@ -186,7 +186,7 @@ CREATE TABLE IF NOT EXISTS `chart_of_account_types` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 INSERT INTO `chart_of_account_types` (`account_type_num`, `account_type`, `income_statement_num`, `sub_acc_income`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -199,7 +199,7 @@ INSERT INTO `chart_of_account_types` (`account_type_num`, `account_type`, `incom
 (7, 'Pendapatan Lain', NULL, NULL, NULL, NULL, NULL),
 (8, 'Baya Lain', NULL, NULL, NULL, NULL, NULL);
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 10:
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `check_writer` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=83 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_deposit_detail` (
@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_deposit_detail` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_items` (
@@ -292,7 +292,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_items` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_print_settings` (
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_print_settings` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $ql="
 CREATE TABLE IF NOT EXISTS `check_writer_recurring_payments` (
@@ -329,7 +329,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_recurring_payments` (
   `sourcefile` varchar(255) character set utf8 default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_recurring_payment_items` (
@@ -344,7 +344,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_recurring_payment_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_undeposited_checks` (
@@ -362,7 +362,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_undeposited_checks` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 11:
@@ -377,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `city` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -399,7 +399,7 @@ CREATE TABLE IF NOT EXISTS `crdb_memo` (
   PRIMARY KEY  (`linenumber`,`docnumber`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -415,7 +415,7 @@ CREATE TABLE IF NOT EXISTS `crdb_memo_dtl` (
   PRIMARY KEY  (`lineid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=32 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -432,7 +432,7 @@ CREATE TABLE IF NOT EXISTS `credit_card_type` (
   PRIMARY KEY  (`id`,`card_type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -443,7 +443,7 @@ INSERT INTO `credit_card_type` (`id`, `card_type`, `update_status`, `sourceauton
 (3, 'Mandiri Master', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (8, 'Amex', NULL, NULL, NULL, 'Amex Card', '2010-02-11 00:00:00', '2009-07-24 00:00:00', 10);
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -454,7 +454,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   PRIMARY KEY  (`currency_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -463,7 +463,7 @@ INSERT INTO `currencies` (`currency_code`, `description`, `update_status`) VALUE
 ('USD', 'Dollar', NULL);
 ";
 
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 12:
@@ -528,7 +528,7 @@ CREATE TABLE IF NOT EXISTS `customers` (
   PRIMARY KEY  (`customer_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -543,7 +543,7 @@ INSERT INTO `customers` (`customer_number`, `active`, `customer_record_type`, `t
 ('C1021', 1, '', '', '', '', '', '', '', 'ADI BIN SLAMET', 'Jl. Raya Serang Km. 200', '', 'Purwakarta', '', '', '', '0264-9399393', '0299200111', '', 'zadr50@yahoo.com', 0, '', '', 0, 0, 0, 0, '', '', 0, '60 Hari', 0, '', '', '', 0, '', b'0', '2014-03-02 00:00:00', 1373, 0, '', 0, '', '', 0, '', '2014-03-02 00:00:00', '', '2014-03-02 00:00:00', '', '', '2014-03-02 00:00:00'),
 ('aaa', 1, '', '', '', '', '', '', '', 'dfasfs', 'dfasdf', 'dfasdf', 'Purwakarta', '', '', '', '', '', '', 'dfasd', 0, '', '', 0, 0, 0, 0, '', '', 0, 'Kredi 90 Hari', 0, '', '', '', 0, '', b'0', '2014-03-16 00:00:00', 1373, 0, '', 0, '', '', 0, '', '2014-03-16 00:00:00', '', '2014-03-16 00:00:00', '', '', '2014-03-16 00:00:00');
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -560,7 +560,7 @@ CREATE TABLE IF NOT EXISTS `customers_other_info` (
   PRIMARY KEY  (`cust_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
  
 $sql="
 
@@ -578,7 +578,7 @@ CREATE TABLE IF NOT EXISTS `customer_beginning_balance` (
   PRIMARY KEY  (`tanggal`,`customer_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -599,7 +599,7 @@ CREATE TABLE IF NOT EXISTS `customer_shipto` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
  
 $sql="
@@ -631,7 +631,7 @@ CREATE TABLE IF NOT EXISTS `customer_statement_defaults` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 13:
@@ -652,7 +652,7 @@ CREATE TABLE IF NOT EXISTS `departments` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 14:
@@ -706,7 +706,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -727,7 +727,7 @@ CREATE TABLE IF NOT EXISTS `employeeeducations` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -751,7 +751,7 @@ CREATE TABLE IF NOT EXISTS `employeeexperience` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -771,7 +771,7 @@ CREATE TABLE IF NOT EXISTS `employeefamily` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -789,7 +789,7 @@ CREATE TABLE IF NOT EXISTS `employeelicense` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -804,7 +804,7 @@ CREATE TABLE IF NOT EXISTS `employeemedical` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -821,7 +821,7 @@ CREATE TABLE IF NOT EXISTS `employeerewardpunish` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -836,7 +836,7 @@ CREATE TABLE IF NOT EXISTS `employeeskill` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -854,7 +854,7 @@ CREATE TABLE IF NOT EXISTS `employeetraining` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -868,7 +868,7 @@ CREATE TABLE IF NOT EXISTS `employee_level` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -880,7 +880,7 @@ CREATE TABLE IF NOT EXISTS `employee_type` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -895,7 +895,7 @@ CREATE TABLE IF NOT EXISTS `exchange_rate` (
 
 ";
 
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 15:
@@ -925,7 +925,7 @@ CREATE TABLE IF NOT EXISTS `fa_asset` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -944,7 +944,7 @@ CREATE TABLE IF NOT EXISTS `fa_asset_depreciation` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -962,7 +962,7 @@ CREATE TABLE IF NOT EXISTS `fa_asset_depreciation_schedule` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -985,7 +985,7 @@ CREATE TABLE IF NOT EXISTS `fa_asset_group` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1007,7 +1007,7 @@ CREATE TABLE IF NOT EXISTS `fa_asset_service_log` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -1029,7 +1029,7 @@ CREATE TABLE IF NOT EXISTS `fa_asset_transaction` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1054,7 +1054,7 @@ CREATE TABLE IF NOT EXISTS `fa_cards` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1068,7 +1068,7 @@ CREATE TABLE IF NOT EXISTS `fa_setting` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1088,7 +1088,7 @@ CREATE TABLE IF NOT EXISTS `fb_room` (
   KEY `room_code` (`room_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1099,7 +1099,7 @@ INSERT INTO `fb_room` (`room_code`, `room_name`, `regular_hour`, `happy_hour`, `
 
 ";
 
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 16:
@@ -1121,7 +1121,7 @@ CREATE TABLE IF NOT EXISTS `finance_charge_defaults` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1137,7 +1137,7 @@ CREATE TABLE IF NOT EXISTS `financial_periods` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1152,7 +1152,7 @@ INSERT INTO `financial_periods` (`year_id`, `sequence`, `period`, `startdate`, `
 (2013, 8, '2013-08', '2013-08-01 00:00:00', '2013-08-31 00:00:00', 0, 0, 21),
 (2014, 1, '2014-01', '2014-01-01 00:00:00', '2014-01-31 23:59:00', 0, 0, 22);
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1169,7 +1169,7 @@ CREATE TABLE IF NOT EXISTS `gl_begbalarc_year` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1186,7 +1186,7 @@ CREATE TABLE IF NOT EXISTS `gl_beginning_balance_archive` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 17:
@@ -1224,7 +1224,7 @@ CREATE TABLE IF NOT EXISTS `gl_projects` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1252,7 +1252,7 @@ CREATE TABLE IF NOT EXISTS `gl_projects_budget` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1269,7 +1269,7 @@ CREATE TABLE IF NOT EXISTS `gl_projects_saldo` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `gl_report_groups` (
@@ -1290,7 +1290,7 @@ CREATE TABLE IF NOT EXISTS `gl_report_groups` (
   UNIQUE KEY `x1` (`group_type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=271 ;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 18:
@@ -1312,7 +1312,7 @@ INSERT INTO `gl_report_groups` (`id`, `company_code`, `account_type`, `group_typ
 (270, NULL, 1, '11020', 'Kas Besar', '10000', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1343,7 +1343,7 @@ CREATE TABLE IF NOT EXISTS `gl_transactions` (
   KEY `x1` (`gl_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1012 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
  
 $sql="
 
@@ -1364,7 +1364,7 @@ INSERT INTO `gl_transactions` (`transaction_id`, `company_code`, `gl_id`, `date_
 (845, 'C01', 'PJL00086', NULL, 1373, '2013-05-09 00:00:00', 0, 2000, NULL, 'Sales', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1384,7 +1384,7 @@ CREATE TABLE IF NOT EXISTS `gl_transactions_archive` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 19:
@@ -1499,7 +1499,7 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   UNIQUE KEY `ix_item` (`item_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1517,7 +1517,7 @@ INSERT INTO `inventory` (`item_number`, `active`, `class`, `category`, `sub_cate
 ('ffsdg', b'1', 'Stock Item', 'MINUMAN', 'MINUMAN', 0, 'ALFAMART', 'fgsdf', '', '', '2014-03-16 00:00:00', 0, 1000, 1200, '', '', '2014-03-16 00:00:00', '2014-03-16 00:00:00', '', 0, 'Pcs', '', '', 0, '', '', '', b'0', b'0', b'0', b'0', b'0', 1417, 1415, 0, 0, 0, 0, 0, 0, 0, b'0', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b'0', '', 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, b'0', b'0', 0, 0, 0, 0, 0, 0, 0, b'0', b'0', 0, 0, 0, '2014-03-16 00:00:00', '', '2014-03-16 00:00:00', '', 1396);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1531,7 +1531,7 @@ CREATE TABLE IF NOT EXISTS `inventorysource` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1550,7 +1550,7 @@ CREATE TABLE IF NOT EXISTS `inventory_assembly` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1607,7 +1607,7 @@ CREATE TABLE IF NOT EXISTS `inventory_beginning_balance` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1635,7 +1635,7 @@ CREATE TABLE IF NOT EXISTS `inventory_categories` (
   PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1651,7 +1651,7 @@ INSERT INTO `inventory_categories` (`kode`, `category`, `update_status`, `custom
 ('MOBIL', 'MOBIL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1666,7 +1666,7 @@ CREATE TABLE IF NOT EXISTS `inventory_class` (
   UNIQUE KEY `x1` (`kode`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
  
 $sql="
@@ -1678,7 +1678,7 @@ INSERT INTO `inventory_class` (`kode`, `class`, `id`, `update_status`, `sourceau
 ('Material', 'Material', 14, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1702,7 +1702,7 @@ CREATE TABLE IF NOT EXISTS `inventory_moving` (
   UNIQUE KEY `x1` (`transfer_id`,`item_number`,`date_trans`,`from_location`,`to_location`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=34 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1712,7 +1712,7 @@ INSERT INTO `inventory_moving` (`transfer_id`, `item_number`, `date_trans`, `fro
 ('TRX00002', 'DJISAMSU', '2014-03-26 11:08:52', 'Ambon', 1, 'Bali', 1, NULL, 10000, NULL, 31, '', NULL, 10000, 'Bks');
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1729,7 +1729,7 @@ CREATE TABLE IF NOT EXISTS `inventory_prices` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1744,7 +1744,7 @@ CREATE TABLE IF NOT EXISTS `inventory_price_history` (
 
 ";
 
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 21:
@@ -1797,7 +1797,7 @@ CREATE TABLE IF NOT EXISTS `inventory_products` (
   KEY `x1` (`item_number`,`shipment_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=467 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1814,7 +1814,7 @@ INSERT INTO `inventory_products` (`id`, `item_number`, `shipment_id`, `date_rece
 (466, 'DJISAMSU', 'DOX00012', '2014-03-26 09:39:47', 10000, NULL, 'Surabaya', NULL, NULL, NULL, NULL, 1, 10000, NULL, NULL, 'ETC_OUT', NULL, 'Keluar barang bonus', NULL, 'Bks', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1839,7 +1839,7 @@ CREATE TABLE IF NOT EXISTS `inventory_promotion` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1859,7 +1859,7 @@ CREATE TABLE IF NOT EXISTS `inventory_sales_disc` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1889,7 +1889,7 @@ CREATE TABLE IF NOT EXISTS `inventory_serialized_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -1904,7 +1904,7 @@ CREATE TABLE IF NOT EXISTS `inventory_suppliers` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -1952,7 +1952,7 @@ CREATE TABLE IF NOT EXISTS `inventory_warehouse` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 22:
@@ -2029,7 +2029,7 @@ CREATE TABLE IF NOT EXISTS `invoice` (
   PRIMARY KEY  (`invoice_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2042,7 +2042,7 @@ INSERT INTO `invoice` (`invoice_number`, `invoice_type`, `sales_order_number`, `
 ('PJL00113', 'I', '', 'Simple', NULL, 'ANDRI', NULL, '2014-03-27 07:00:00', NULL, NULL, '60 Hari', 'Andri', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 13000, 13000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 13000, '2014-03-27 07:00:00');
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2057,7 +2057,7 @@ CREATE TABLE IF NOT EXISTS `invoice_delivery_order_info` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2135,7 +2135,7 @@ CREATE TABLE IF NOT EXISTS `invoice_lineitems` (
   KEY `ix_invoice_lineitems_1` (`invoice_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=595 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2148,7 +2148,7 @@ INSERT INTO `invoice_lineitems` (`invoice_number`, `line_number`, `item_number`,
 ('PJL00113', 594, 'SAMP', 1, 'Bks', 'Sampoerna Hijau', 8000.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 7000, NULL, NULL, NULL, NULL, 8000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2166,7 +2166,7 @@ CREATE TABLE IF NOT EXISTS `invoice_serialized_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -2212,7 +2212,7 @@ CREATE TABLE IF NOT EXISTS `invoice_shipment` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2232,7 +2232,7 @@ CREATE TABLE IF NOT EXISTS `invoice_shipment_export` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2252,7 +2252,7 @@ CREATE TABLE IF NOT EXISTS `invoice_tax_serial` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2269,7 +2269,7 @@ CREATE TABLE IF NOT EXISTS `kas_kasir` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2290,7 +2290,7 @@ CREATE TABLE IF NOT EXISTS `kendaraan` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 23:
@@ -2312,8 +2312,597 @@ CREATE TABLE IF NOT EXISTS `modules` (
   PRIMARY KEY  (`module_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
+$sql="
+INSERT INTO `modules` (`module_id`, `module_name`, `type`, `form_name`, `description`, `parentid`, `update_status`, `sequence`, `visible`, `controller`) VALUES
+	('frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', 'Form', 'frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', '_30010', 0, NULL, NULL, NULL),
+	('frmMain.Addnew', 'xxxxxx', 'Form', 'frmMain.Addnew', 'xxxxxxxxxx', '_00000', 0, 0, b'00000000', ''),
+	('frmRptCriteria', 'frmRptCriteria', 'Form', 'frmRptCriteria', 'Please entry this', '_90000', 0, NULL, NULL, NULL),
+	('ID_ExportImport', 'ID_ExportImport', 'Form', 'ID_ExportImport', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('ID_ItemPrices', 'Item Prices', 'Form', 'ID_ItemPrices', '', 'ID_ItemPrices', 0, 0, b'00000000', ''),
+	('ID_JasaKiriman', 'ID_JasaKiriman', 'Form', 'ID_JasaKiriman', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('\\CEK\\BANKCEK2.RPT', '004. Cek keluar - Status Belum Cair / Gantung', 'Form', '\\CEK\\BANKCEK2.RPT', '004. Cek Keluar - Status Belum Cair', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\BANKCEKGL.RPT', '011. Laporan Cek Keluar (Dengan Kode Perkiraan)', 'Form', '\\CEK\\BANKCEKGL.RPT', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\BANKCEKM2.RPT', '005. Cek Masuk - Status Belum Cair / Gantung', 'Form', '\\CEK\\BANKCEKM2.RPT', 'A005. Cek Masuk - Status Belum Cair', '_90010', 0, NULL, NULL, NULL),
+	('\\cek\\BANKCODE.rpt', '001. Daftar Bank', 'Form', '\\cek\\BANKCODE.rpt', 'A004. Cek Keluar - Status Cair', '_90010', 0, NULL, NULL, NULL),
+	('\\Cek\\BankMutasiBank.rpt', '012. Laporan Mutasi Transaksi Bank', 'Form', '\\Cek\\BankMutasiBank.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\ChInSum.Rpt', '006. Daftar Penerimaan Cek/Giro', 'Form', '\\CEK\\ChInSum.Rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\ChOutSum.Rpt', '007. Daftar Pengeluran Cek/Giro', 'Form', '\\CEK\\ChOutSum.Rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\KasInSum.Rpt', '002. Daftar Penerimaan Kas', 'Form', '\\CEK\\KasInSum.Rpt', 'Daftar Penerimaan Kas', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\KasOutSum.Rpt', '003. Daftar Pengeluran Kas', 'Form', '\\CEK\\KasOutSum.Rpt', 'Daftar Pengeluaran Kas', '_90010', 0, NULL, NULL, NULL),
+	('\\Cek\\MutasiKas_Saldo.rpt', '008. Laporan Mutasi Kas/Bank', 'Form', '\\Cek\\MutasiKas_Saldo.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\transfer_in.rpt', '009. Daftar Penerimaan transfer', 'Form', '\\CEK\\transfer_in.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\CEK\\transfer_out.rpt', '010. Daftar Pengeluaran transfer', 'Form', '\\CEK\\transfer_out.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\gl\\balancesheet2.rpt', '009. Laporan Neraca', 'Form', '\\gl\\balancesheet2.rpt', '009. Laporan Neraca', '_90010', 0, NULL, NULL, NULL),
+	('\\gl\\neracaT.rpt', 'Laporan Neraca T-Form', 'Form', '\\gl\\neracaT.rpt', 'Laporan Neraca T-Form', '_90010', 0, NULL, NULL, NULL),
+	('\\gl\\RLCompare.rpt', 'Laporan Rugi Laba Comparison', 'Form', '\\gl\\RLCompare.rpt', 'Laporan Rugi Laba Comparison', '_90010', 0, NULL, NULL, NULL),
+	('\\Inv\\AsmItem.Rpt', 'Laporan Assembly item', 'Form', '\\Inv\\AsmItem.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\AsmItem17.Rpt', '022. Laporan Assembly item - Summary', 'Form', '\\Inv\\AsmItem17.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\DaftarBarang.Rpt', 'Laporan Daftar  Barang', 'Form', '\\Inv\\DaftarBarang.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\FisikInventory.rpt', 'Laporan Fisik Inventory', 'Form', '\\Inv\\FisikInventory.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\HargaBeli.Rpt', 'Laporan Daftar Harga Beli', 'Form', '\\Inv\\HargaBeli.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\HargaJual.Rpt', 'Laporan Daftar Harga Jual', 'Form', '\\Inv\\HargaJual.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\InventoryMoving.rpt', 'Laporan Keluar Masuk Barang', 'Form', '\\Inv\\InventoryMoving.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\InvPriceHistory.rpt', 'Laporan History Harga', 'Form', '\\Inv\\InvPriceHistory.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\InvTranCategory.Rpt', '023. Inventory Transaction by Category', 'Form', '\\Inv\\InvTranCategory.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\InvTranItem.Rpt', '024. Inventory Transaction by Item Number', 'Form', '\\Inv\\InvTranItem.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\inv\\invvalue.rpt', 'Laporan Nilai Persediaan Inventory', 'Form', '\\inv\\invvalue.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\inv\\KeluarReturPembelian.rpt', 'Pengeluaran Barang Retur Pembelian', 'Form', '\\inv\\KeluarReturPembelian.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\MutasiGudang.rpt', 'Mutasi Per Barang Per Gudang', 'Form', '\\Inv\\MutasiGudang.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\StokMgmtLow.rpt', 'Stock Mgmt - Inventory Low Stock', 'Form', '\\Inv\\StokMgmtLow.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\StokMgMtOnBOrder.rpt', 'Stock MgMt - Inventory on Back Order', 'Form', '\\Inv\\StokMgMtOnBOrder.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\StokMgMtOut.rpt', 'Stock MgMt - Inventory Out Of Stock', 'Form', '\\Inv\\StokMgMtOut.rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Inv\\StokMgMtRecon.Rpt', 'Stock MgMt - Inventory Reconsiliation', 'Form', '\\Inv\\StokMgMtRecon.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\Po\\DaftarHutang.rpt', 'A0041. Hutang Supplier dan Pembayaran', 'Form', '\\Po\\DaftarHutang.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\po\\DaftarSupplier.rpt', 'A002. Daftar Supplier Urut Nama', 'Form', '\\po\\DaftarSupplier.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\po\\DaftarSupplierUtama.rpt', 'Daftar Hutang per Supplier', 'Form', '\\po\\DaftarSupplierUtama.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\Po\\HistoryHargaItemSupplier.rpt', '020. History Harga Item Per Supplier', 'Form', '\\Po\\HistoryHargaItemSupplier.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\PO\\Keluar.rpt', 'Laporan Pengeluaran Barang', 'Form', '\\PO\\Keluar.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\KeluarPerPO.rpt', 'Laporan Pengeluaran Barang/Retur - Per PO', 'Form', '\\PO\\KeluarPerPO.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\OpenPO.rpt', 'Open Purchase Order by PO Number', 'Form', '\\PO\\OpenPO.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\Po\\OrderPembelian.rpt', 'Order Pembelian / PO', 'Form', '\\Po\\OrderPembelian.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\Po\\OrderPembelianItemSupplierDetail.rpt', 'A008. Pembelian  per Item, Supplier - Detail ', 'Form', '\\Po\\OrderPembelianItemSupplierDetail.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\PayAnaSupplier.Rpt', 'A016. Total Pembayaran per Supplier - Detail', 'Form', '\\PO\\PayAnaSupplier.Rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\PO\\PayDetailDaily.Rpt', 'A014. Total Pembayaran Harian', 'Form', '\\PO\\PayDetailDaily.Rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\PO\\PayDetailMonthly.Rpt', 'A015. Total Pembayaran Bulanan', 'Form', '\\PO\\PayDetailMonthly.Rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\PO\\PODaily.rpt', 'A009. Total Faktur Pembelian dibuat - Harian - Summary', 'Form', '\\PO\\PODaily.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\PODetailDaily.rpt', 'A010. Total Faktur Pembelian dibuat - Harian - Detail', 'Form', '\\PO\\PODetailDaily.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\POItemNoRecvItem.rpt', 'Purchase Order Items Not Received- by Item', 'Form', '\\PO\\POItemNoRecvItem.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\POItemNoRecvSupplier.rpt', 'Purchase Order Items Not Received- by Supplier', 'Form', '\\PO\\POItemNoRecvSupplier.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\POItemOverItem.rpt', 'Purchase Order Items Overdue - by Item', 'Form', '\\PO\\POItemOverItem.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\POItemOverSupplier.rpt', 'Purchase Order Items Overdue - by Supplier', 'Form', '\\PO\\POItemOverSupplier.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\PO\\POMonthly.rpt', 'A011. Total Faktur Pembelian dibuat - Bulanan - Summary', 'Form', '\\PO\\POMonthly.rpt', 'Please entry this', '_90070', 0, NULL, NULL, NULL),
+	('\\Po\\SaldoHutang.rpt', 'A005. Daftar Saldo Hutang Supplier', 'Form', '\\Po\\SaldoHutang.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\po\\SelisihKursHutang1.Rpt', '015. Selisih Kurs Pembelian', 'Form', '\\po\\SelisihKursHutang1.Rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\po\\sisa_hutang.rpt', '011. Daftar Sisa Hutang - Per Invoice', 'Form', '\\po\\sisa_hutang.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\po\\sisa_hutang_bulan.rpt', '012. Daftar Sisa Hutang - Per Bulan', 'Form', '\\po\\sisa_hutang_bulan.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\po\\supplierEnvelop.rpt', 'Supplier Envelope', 'Form', '\\po\\supplierEnvelop.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\Po\\SupplierLstFinancial.rpt', 'Supplier Financial Listing', 'Form', '\\Po\\SupplierLstFinancial.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\Po\\SupplierLstNumber.Rpt', 'Supplier List by Supplier Number', 'Form', '\\Po\\SupplierLstNumber.Rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\Po\\SupplierPayables.rpt', 'Supplier Total Period Payables', 'Form', '\\Po\\SupplierPayables.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\PO\\Terima.Rpt', '021. Penerimaan Barang - Detail', 'Form', '\\PO\\Terima.Rpt', 'Please entry this', '_90040', 0, NULL, NULL, NULL),
+	('\\PO\\TotalPayableSupplier.rpt', 'Total Period Payable Paid by Supplier', 'Form', '\\PO\\TotalPayableSupplier.rpt', 'Please entry this', '_90120', 0, NULL, NULL, NULL),
+	('\\So\\AnalisaPenjualanPerCustomerPerbulan.rpt', 'A003. Penjualan per Customer - Summary', 'Form', '\\So\\AnalisaPenjualanPerCustomerPerbulan.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\AnalisaPenjualanPerJenisPembayaranDetail.rpt', 'A012. Penjualan per Jenis Pembayaran - Detail', 'Form', '\\So\\AnalisaPenjualanPerJenisPembayaranDetail.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\AnalisaPenjualanPerJenisPembayaranPerbulan.rpt', 'A011. Penjualan per Jenis Pembayaran - Summary', 'Form', '\\So\\AnalisaPenjualanPerJenisPembayaranPerbulan.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\AnalisaPenjualanPerKategoryCustomer.rpt', 'Laporan analisa penjualan per kategory customer', 'Form', '\\So\\AnalisaPenjualanPerKategoryCustomer.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\AnalisaPenjualanPerSalesmanPerbulan.rpt', 'Laporan analisa penjualan per salesman - perbulan', 'Form', '\\So\\AnalisaPenjualanPerSalesmanPerbulan.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\AnalisaPenjualanPerSourcePerbulan.rpt', 'Laporan analisa penjualan per source of order - perbulan', 'Form', '\\So\\AnalisaPenjualanPerSourcePerbulan.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\AnalisaPenjualanPerWilayah.rpt', 'Laporan analisa penjualan per wilayah', 'Form', '\\So\\AnalisaPenjualanPerWilayah.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\CustCredit.rpt', 'Customer on Credit Hold', 'Form', '\\so\\CustCredit.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\so\\CustCreditAll.rpt', 'Customer on Credit Hold - Columns Style', 'Form', '\\so\\CustCreditAll.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\So\\CustHighest.Rpt', 'Customer Sales by Highest Total', 'Form', '\\So\\CustHighest.Rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\so\\CustListCompany.rpt', 'Customer Listing by Company', 'Form', '\\so\\CustListCompany.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\so\\CustListCustomer.rpt', 'Customer Listing by Customer Number', 'Form', '\\so\\CustListCustomer.rpt', 'Please entry this', '_90010', 0, NULL, NULL, NULL),
+	('\\so\\customerEnvelop.rpt', 'Customer Envelope/Label', 'Form', '\\so\\customerEnvelop.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\CustPayHistory2.rpt', 'A0061. Piutang Customer dan Pembayaran', 'Form', '\\so\\CustPayHistory2.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\CustPayHistoryByCust.rpt', 'A003. Daftar pembayaran piutang - group by customer', 'Form', '\\So\\CustPayHistoryByCust.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\CustSalesHistory.rpt', 'Customer Sales History', 'Form', '\\So\\CustSalesHistory.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\CustSalesHistoryLast.rpt', 'Customer Sales History - Last Order', 'Form', '\\So\\CustSalesHistoryLast.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\daftarcustomer.rpt', 'A001. Daftar Customer urut Nama', 'Form', '\\so\\daftarcustomer.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\DaftarPiutang.rpt', 'A006. Piutang Customer dan Pembayaran', 'Form', '\\so\\DaftarPiutang.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\DaftarTagihan.rpt', 'Daftar Tagihan dan Pembayaran', 'Form', '\\So\\DaftarTagihan.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\DODetail100.Rpt', 'Laporan Pengiriman Barang / DO', 'Form', '\\So\\DODetail100.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPelunasanPiutang.Rpt', 'A009. Pelunasan Piutang - per Invoice (All)', 'Form', '\\So\\FakturPelunasanPiutang.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanDetailTanggal.Rpt', 'A2.Faktur Penjualan - Summary', 'Form', '\\So\\FakturPenjualanDetailTanggal.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanDetailtem.Rpt', 'A006. Penjualan per Item - Detail', 'Form', '\\So\\FakturPenjualanDetailtem.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanSummary.Rpt', 'Faktur Penjualan - Summary - Jenis Pembayaran', 'Form', '\\So\\FakturPenjualanSummary.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanSummaryBayar.Rpt', 'Faktur Penjualan - Summary - Per Status Pembayaran', 'Form', '\\So\\FakturPenjualanSummaryBayar.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanSummaryItemCust.Rpt', 'A012. Penjualan per Customer per Item - Detail', 'Form', '\\So\\FakturPenjualanSummaryItemCust.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanSummarySupplier.Rpt', 'Faktur Penjualan - Summary - Per Supplier', 'Form', '\\So\\FakturPenjualanSummarySupplier.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanSummaryTanggal.Rpt', 'Faktur Penjualan - Summary -  per tanggal', 'Form', '\\So\\FakturPenjualanSummaryTanggal.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FakturPenjualanSummaryWilayah.Rpt', 'Faktur Penjualan - Summary - Per Wilayah', 'Form', '\\So\\FakturPenjualanSummaryWilayah.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FB_RoomResv.rpt', 'F&B Room Reservation - Daily', 'Form', '\\So\\FB_RoomResv.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FB_RoomResv2.rpt', 'F&B Room Reservation - Daily - By Waiter', 'Form', '\\So\\FB_RoomResv2.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FB_RoomResv3.rpt', 'F&B Room Reservation - Daily - By Room', 'Form', '\\So\\FB_RoomResv3.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FB_RoomResvSumDay.rpt', 'F&B Room Reservation Summary - Daily', 'Form', '\\So\\FB_RoomResvSumDay.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\FB_TableResv.rpt', 'F&B Table Reservation - Daily', 'Form', '\\So\\FB_TableResv.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\HargaHistoryMonthly.rpt', 'Laporan History Harga Monthly', 'Form', '\\SO\\HargaHistoryMonthly.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\HistoryHargaItemCustomer.rpt', '019. History Harga Item Per Customer', 'Form', '\\So\\HistoryHargaItemCustomer.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\InvoiceAllTypePerCustomer.rpt', 'Invoice - All Type - per Customers', 'Form', '\\So\\InvoiceAllTypePerCustomer.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\InvoicePerTypePerCustomer.rpt', 'Invoice - InvoiceType - per Customers', 'Form', '\\So\\InvoicePerTypePerCustomer.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\Jual100.Rpt', 'Laporan Penjualan Detail', 'Form', '\\So\\Jual100.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\JualCustSum.Rpt', 'Penjualan per Customer', 'Form', '\\so\\JualCustSum.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\JualKasirDateTime.Rpt', 'Laporan penjualan kasir with Date, Time', 'Form', '\\SO\\JualKasirDateTime.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\JualKonsinyasiTglMonthly.Rpt', 'Laporan Penjualan Konsinyasi Bulanan', 'Form', '\\SO\\JualKonsinyasiTglMonthly.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\JualReturTglMonthly.Rpt', 'Laporan Retur Penjualan Bulanan', 'Form', '\\SO\\JualReturTglMonthly.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\JualTglMonthly.Rpt', 'Laporan Penjualan Bulanan', 'Form', '\\SO\\JualTglMonthly.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\JualTglMonthlyDept.Rpt', 'Laporan Penjualan per Department', 'Form', '\\SO\\JualTglMonthlyDept.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\JualTglMonthlySales.Rpt', 'Laporan Penjualan Bulanan per Salesman', 'Form', '\\SO\\JualTglMonthlySales.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\KomisiSalesmanMonthly.rpt', 'Laporan Komisi Salesman - per Bulan', 'Form', '\\So\\KomisiSalesmanMonthly.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\KomisiSalesmanSummary.rpt', 'Laporan Komisi Salesman - Total Periode', 'Form', '\\So\\KomisiSalesmanSummary.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\KreditMemoSummary.rpt', 'Kredit Memo Summary', 'Form', '\\So\\KreditMemoSummary.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\MutasiStock.Rpt', 'Laporan Mutasi Stock Bulanan', 'Form', '\\SO\\MutasiStock.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\MutasiStockPrice.Rpt', 'Laporan Mutasi Stock, Price Bulanan ', 'Form', '\\SO\\MutasiStockPrice.Rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\PenjualanCustomer.rpt', 'Penjualan per Customer - Detail', 'Form', '\\So\\PenjualanCustomer.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\PenjualanCustomerDetail.rpt', 'A002. Penjualan per Customer - Detail', 'Form', '\\So\\PenjualanCustomerDetail.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\PenjualanPerbulanDetail.rpt', 'A002. Penjualan perbulan - Detail', 'Form', '\\So\\PenjualanPerbulanDetail.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\So\\SaldoPiutang.rpt', 'A007. Daftar Saldo Piutang Customer', 'Form', '\\So\\SaldoPiutang.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\SalesKomisi.exe', 'Query Komisi Salesman', 'Form', '\\SO\\SalesKomisi.exe', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\SalesOrder.rpt', 'Sales Order Summary', 'Form', '\\SO\\SalesOrder.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\SalesOrderDetail.rpt', 'Sales Order Detail', 'Form', '\\so\\SalesOrderDetail.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\salesorder_do.rpt', 'Sales Order - Delivery Order - Summary', 'Form', '\\so\\salesorder_do.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\salesorder_do_item.rpt', 'Sales Order - Delivery Order - Item - Detail', 'Form', '\\so\\salesorder_do_item.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\sisa_piutang.rpt', '011. Daftar Sisa Piutang - Per Invoice', 'Form', '\\so\\sisa_piutang.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\so\\sisa_piutang_bulan.rpt', '012. Daftar Sisa Piutang - Per Bulan', 'Form', '\\so\\sisa_piutang_bulan.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\SOOpenItem.rpt', 'Open Sales Order - by Item', 'Form', '\\SO\\SOOpenItem.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('\\SO\\SOOpenTanggal.rpt', 'Open Sales Order - by Tanggal', 'Form', '\\SO\\SOOpenTanggal.rpt', 'Please entry this', '_90090', 0, NULL, NULL, NULL),
+	('_00000', 'Setting', 'Form', '_00000', 'Setup data perusahaan atau aturan-aturan umum lainnya.', '0', 0, 7, b'00000000', ''),
+	('_00010', 'Job Responsibility', 'Form', 'jobs', 'Job Responsibility', '_00000', 1, 3, b'10000000', NULL),
+	('_00011', 'Create', 'Form', '_00011', '.', '_00010', 1, NULL, NULL, NULL),
+	('_00012', 'Edit', 'Form', '_00012', '.', '_00010', 1, NULL, NULL, NULL),
+	('_00013', 'Delete', 'Form', '_00013', '.', '_00010', 1, NULL, NULL, NULL),
+	('_00020', 'User Access', 'Form', 'user', 'User Access', '_00000', 1, 2, b'10000000', NULL),
+	('_00021', 'Create', 'Form', '_00021', '.', '_00020', 1, NULL, NULL, NULL),
+	('_00022', 'Edit', 'Form', '_00022', '.', '_00020', 1, NULL, NULL, NULL),
+	('_00023', 'Delete', 'Form', '_00023', '.', '_00020', 1, NULL, NULL, NULL),
+	('_00030', 'Global Setting', 'Form', 'seting', 'Global Setting', '_00000', 1, 1, b'10000000', NULL),
+	('_00031', 'Save', 'Form', '_00031', '.', '_00030', 1, NULL, NULL, NULL),
+	('_00032', 'Remove All Database', 'Form', '_00032', 'Remove All Database', '_00030', 1, NULL, NULL, NULL),
+	('_00040', 'Report List System', 'Form', 'report_list', 'Report List System', '_00000', 1, 4, b'10000000', NULL),
+	('_00041', 'Add', 'Form', 'frmReportList.cmdAdd', '.', '_00040', 1, NULL, NULL, NULL),
+	('_00042', 'Edit', 'Form', 'frmReportList.cmdEdit', '.', '_00040', 1, NULL, NULL, NULL),
+	('_00043', 'Delete', 'Form', 'frmReportList.cmdDelete', '.', '_00040', 1, NULL, NULL, NULL),
+	('_00050', 'List Modules System', 'Form', 'modules', 'List Modules System', '_00000', 1, 5, b'10000000', NULL),
+	('_10000', 'General Ledger', 'Form', '_10000', 'Modul General Ledger atau Akuntansi.', '0', 1, 6, b'10000000', NULL),
+	('_10010', 'Perkiraan (COA)', 'Form', '_10010', '.', '_10000', 1, NULL, b'00000000', NULL),
+	('_10011', 'Create', 'Form', '_10011', '.', '_10010', 1, NULL, NULL, NULL),
+	('_10012', 'Edit', 'Form', '_10012', '.', '_10010', 1, NULL, NULL, NULL),
+	('_10013', 'Delete', 'Form', '_10013', '.', '_10010', 1, NULL, NULL, NULL),
+	('_10015', 'Create New COA Group', 'Form', '_10015', 'Create New COA Group', '_10010', 1, NULL, NULL, NULL),
+	('_10016', 'Remove COA Group', 'Form', '_10016', 'Remove COA Group', '_10010', 1, NULL, NULL, NULL),
+	('_10020', 'Budgeting ', 'Form', 'budget', 'Budgeting Cost', '_10000', 1, 5, b'10000000', NULL),
+	('_10021', 'Save', 'Form', '_10021', '.', '_10020', 1, NULL, NULL, NULL),
+	('_10030', 'Periode Akuntansi', 'Form', 'periode', 'Periode Akuntansi', '_10000', 1, 4, b'10000000', NULL),
+	('_10031', 'Save', 'Form', '_10031', '.', '_10030', 1, NULL, NULL, NULL),
+	('_10032', 'Copy To New Periode', 'Form', '_10032', '.', '_10030', 1, NULL, NULL, NULL),
+	('_10035', 'Closing Periode', 'Form', '_10035', '.', '_10030', 1, NULL, NULL, NULL),
+	('_10036', 'Re-Opening Periode', 'Form', '_10036', '.', '_10030', 1, NULL, NULL, NULL),
+	('_10060', 'Jurnal Entry', 'Form', 'jurnal', 'Jurnal Umum', '_10000', 1, 3, b'10000000', NULL),
+	('_10060A', '_10060A', 'Form', '_10060A', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_10061', 'Create', 'Form', '_10061', '.', '_10060', 1, NULL, NULL, NULL),
+	('_10062', 'Edit', 'Form', '_10062', '.', '_10060', 1, NULL, NULL, NULL),
+	('_10063', 'Delete', 'Form', '_10063', '.', '_10060', 1, NULL, NULL, NULL),
+	('_10064', 'Jenis Perkiraan / COA', 'Form', 'coa', 'Jenis Perkiraan / COA', '_10000', 1, 1, b'10000000', NULL),
+	('_10065', 'Kelompok Perkiraan', 'Form', 'coa_group', 'Kelompok Perkiraan', '_10000', 1, 2, b'10000000', NULL),
+	('_10066', 'View Arsip Saldo Perkiraan', 'Form', 'gl_arsip', 'View Arsip Saldo Perkiraan', '_10000', 1, 6, b'10000000', NULL),
+	('_10067', 'Setting Autonumber Jurnal Entry', 'Form', '_10067', 'Setting Autonumber Jurnal Entry', '_10000', 1, NULL, NULL, NULL),
+	('_10068', 'Setting Hotkey Jurnal Entry', 'Form', '_10068', 'Setting Hotkey Jurnal Entry', '_10000', 1, NULL, NULL, NULL),
+	('_10069', 'Neraca Design Report', 'Form', '_10069', 'Neraca Design Report', '_10000', 1, NULL, NULL, NULL),
+	('_10070', 'Rugi Laba Design Report', 'Form', '_10070', 'Rugi Laba Design Report', '_10000', 1, NULL, NULL, NULL),
+	('_11000', 'Manufacturer', 'Form', '_11000', 'Manufacture dan pabrikasi module', '0', 0, 0, b'00000000', ''),
+	('_12000', 'Payroll', 'Form', '_12000', 'Payroll and Human Resource Development', '0', 0, 0, b'00000000', ''),
+	('_13000', 'Koperasi', 'Form', '_13000', 'Module Koperasi Simpan Pinjam', '0', 0, 0, b'00000000', ''),
+	('_30000', 'Penjualan', 'Form', '_30000', 'Modul Penjualan, A/R, Pelanggan dan Pembayaran.', '0', 1, 1, b'10000000', NULL),
+	('_30000.0', 'Point Of Sales - MyPOS', 'Form', '_30000', 'Point Of Sales - MyPOS', '_30000', 0, NULL, b'00000000', NULL),
+	('_30000.001', 'Buat nota baru', 'Form', '_30000.001', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.002', 'Void atau pembatalan nota', 'Form', '_30000.002', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.003', 'Input discount nota', 'Form', '_30000.003', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.004', 'Input PPN nota', 'Form', '_30000.004', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.005', 'Input service charge', 'Form', '_30000.005', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.006', 'Laporan penjualan harian kasir', 'Form', '_30000.006', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.007', 'Input penerimaan barang ', 'Form', '_30000.007', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.008', 'Lihat daftar penerimaan barang', 'Form', '_30000.008', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.009', 'Input pengeluran barang ', 'Form', '_30000.009', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.010', 'Lihat daftar penerimaan barang', 'Form', '_30000.010', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.011', 'Cetak label / barcode barang  ', 'Form', '_30000.011', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.012', 'Buka cash drawer  ', 'Form', '_30000.012', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.013', 'Input master barang dan kelompok  ', 'Form', '_30000.013', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.014', 'Input master pelanggan', 'Form', '_30000.014', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.015', 'Input master waiter ', 'Form', '_30000.015', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.016', 'Input master table / meja / room  ', 'Form', '_30000.016', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.017', 'Input master salesman ', 'Form', '_30000.017', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.018', 'Input price manager ', 'Form', '_30000.018', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.019', 'Input barang promosi  ', 'Form', '_30000.019', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.020', 'Backup database', 'Form', '_30000.020', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.021', 'Seting nota dan perangkat keras', 'Form', '_30000.021', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.022', 'Seting pemakai dan user level ', 'Form', '_30000.022', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.023', 'Hapus semua data transaksi penjualan  ', 'Form', '_30000.023', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.024', 'Hapus semua data master barang', 'Form', '_30000.024', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.025', 'Export / Import data barang ', 'Form', '_30000.025', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.026', 'Reset nomor nota  ', 'Form', '_30000.026', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.027', 'Seting nomor nota ', 'Form', '_30000.027', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.028', 'Input kas awal, pengambilan kas ', 'Form', '_30000.028', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.029', 'Laporan: penjualan per nota ', 'Form', '_30000.029', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.030', 'Laporan: penjualan per kasir  ', 'Form', '_30000.030', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.031', 'Laporan: penjualan per item ', 'Form', '_30000.031', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.032', 'Laporan: penjualan per kategory ', 'Form', '_30000.032', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.033', 'Laporan: penjualan per waiter ', 'Form', '_30000.033', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.034', 'Laporan: penjualan per customer ', 'Form', '_30000.034', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.035', 'Laporan: Daftar nota  ', 'Form', '_30000.035', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.036', 'Laporan: Daftar pembayaran', 'Form', '_30000.036', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.037', 'Laporan: Kartu stock  ', 'Form', '_30000.037', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.038', 'Laporan: Item Paling laku ', 'Form', '_30000.038', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.039', 'Laporan: Item paling tidak laku ', 'Form', '_30000.039', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.040', 'Laporan: Rugi / laba penjualan', 'Form', '_30000.040', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.041', 'Laporan: Daftar barang', 'Form', '_30000.041', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.050', 'Penyesuaian Stock (Adjustment)', 'Form', '_30000.050', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.051', 'Proses Produksi Jadi (Assembly)', 'Form', '_30000.051', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.052', 'Laporan Proses Produksi Jadi (Assembly)', 'Form', '_30000.052', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.053', 'Laporan Penyesuaian Stock (Adjustment)', 'Form', '_30000.053', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.054', 'Daftar piutang customer', 'Form', '_30000.054', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.055', 'Formulir Stock Opname', 'Form', '_30000.055', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.056', 'Proses retur barang', 'Form', '_30000.056', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.057', 'Proses import master barang file MDB', 'Form', '_30000.057', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.058', 'Laporan penjualan item minus', 'Form', '_30000.058', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.059', 'Laporan kartu stock', 'Form', '_30000.059', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.060', 'Input discount bertingkat', 'Form', '_30000.060', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.061', 'Input ppn percent', 'Form', '_30000.061', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.062', 'Input discount percent nota', 'Form', '_30000.062', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.063', 'Daftar user level/job', 'Form', '_30000.063', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.064', 'Export master barang to excel', 'Form', '_30000.064', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.065', 'Import master barang dari excel', 'Form', '_30000.065', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.066', 'Daftar Kategori Barang', 'Form', '_30000.066', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.067', 'Laporan Penjualan per Customer, Item', 'Form', '_30000.067', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.068', 'Laporan Penjualan per Nota, Pembayaran', 'Form', '_30000.068', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30000.100', 'Proses Pelunasan ONACCOUNT', 'Form', '_30000.100', '.', '_30000.0', 0, NULL, NULL, NULL),
+	('_30010', 'Master Data Customer', 'Form', 'customer/browse', '.', '_30000', 1, 1, b'10000000', 'customer'),
+	('_30011', 'Create', 'Form', '_30011', '.', '_30010', 1, NULL, NULL, NULL),
+	('_30012', 'Edit', 'Form', '_30012', '.', '_30010', 1, NULL, NULL, NULL),
+	('_30013', 'Delete', 'Form', '_30013', '.', '_30010', 1, NULL, NULL, NULL),
+	('_30020', 'Master Salesman', 'Form', 'salesman', '.', '_30000', 1, 2, b'10000000', 'salesman'),
+	('_30030', 'Setting Saldo Awal Piutang Customer', 'Form', 'customer/saldo_awal', '.', '_30000', 1, 3, b'10000000', NULL),
+	('_30031', 'Proses', 'Form', '_30031', '.', '_30030', 1, NULL, NULL, NULL),
+	('_30033', 'Delete', 'Form', '_30033', '.', '_30030', 1, NULL, NULL, NULL),
+	('_30040', 'Arsip Bulanan Piutang Customer', 'Form', 'customer/proses_bulanan', '.', '_30000', 1, 4, b'10000000', NULL),
+	('_30041', 'Proses', 'Form', '_30041', '.', '_30040', 1, NULL, NULL, NULL),
+	('_30042', 'Delete', 'Form', '_30042', '.', '_30040', 1, NULL, NULL, NULL),
+	('_30050', 'Pembuatan SO', 'Form', 'sales_order', '.', '_30000', 1, 5, b'10000000', NULL),
+	('_30051', 'Create', 'Form', '_30051', '.', '_30050', 1, NULL, NULL, NULL),
+	('_30052', 'Edit', 'Form', '_30052', '.', '_30050', 1, NULL, NULL, NULL),
+	('_30053', 'Delete', 'Form', '_30053', '.', '_30050', 1, NULL, NULL, NULL),
+	('_30054', 'Buat Invoice', 'Form', '_30054', '.', '_30050', 1, NULL, NULL, NULL),
+	('_30055', 'Buat Do', 'Form', '_30055', 'Buat Do', '_30000', 1, NULL, b'00000000', NULL),
+	('_30060', 'Pembuatan DO', 'Form', 'delivery_order', '.', '_30000', 1, 6, b'10000000', NULL),
+	('_30061', 'Create', 'Form', '_30061', '.', '_30060', 1, NULL, NULL, NULL),
+	('_30062', 'Edit', 'Form', '_30062', '.', '_30060', 1, NULL, NULL, NULL),
+	('_30063', 'Delete', 'Form', '_30063', '.', '_30060', 1, NULL, NULL, NULL),
+	('_30064', 'Print', 'Form', '_30064', '.', '_30060', 1, NULL, NULL, NULL),
+	('_30070', 'Pembuatan Invoice Kontan', 'Form', 'invoice/kontan', '.', '_30000', 1, 8, b'10000000', NULL),
+	('_30071', 'Create', 'Form', '_30071', '.', '_30070', 1, NULL, NULL, NULL),
+	('_30072', 'Edit', 'Form', '_30072', '.', '_30070', 1, NULL, NULL, NULL),
+	('_30073', 'Delete', 'Form', '_30073', '.', '_30070', 1, NULL, NULL, NULL),
+	('_30074', 'Print', 'Form', '_30074', '.', '_30070', 1, NULL, NULL, NULL),
+	('_30075', 'Posting', 'Form', '_30075', 'Posting', '_30070', 1, NULL, NULL, NULL),
+	('_30080', 'Pembuatan Invoice dari DO', 'Form', 'invoice/do', '.', '_30000', 1, 7, b'10000000', NULL),
+	('_30081', 'Save', 'Form', '_30081', '.', '_30080', 1, NULL, NULL, NULL),
+	('_30090', 'Pembuatan Retur Penjualan', 'Form', 'invoice/retur', '.', '_30000', 1, 11, b'10000000', NULL),
+	('_300900', '_300900', 'Form', '_300900', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_300901', '_300901', 'Form', '_300901', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_30091', 'Create', 'Form', '_30091', '.', '_30090', 1, NULL, NULL, NULL),
+	('_30092', 'Edit', 'Form', '_30092', '.', '_30090', 1, NULL, NULL, NULL),
+	('_30093', 'Delete', 'Form', '_30093', '.', '_30090', 1, NULL, NULL, NULL),
+	('_30094', 'Print', 'Form', '_30094', '.', '_30090', 1, NULL, NULL, NULL),
+	('_30095', 'Posting', 'Form', '_30095', '.', '_30090', 1, NULL, NULL, NULL),
+	('_30100', 'Batch Posting', 'Form', 'so_batch_posting', '.', '_30000', 1, 14, b'10000000', NULL),
+	('_30110', 'Pelunasan Piutang', 'Form', 'payments', '.', '_30000', 1, 10, b'10000000', NULL),
+	('_30112', 'Proses', 'Form', '_30112', '.', '_30110', 1, NULL, NULL, NULL),
+	('_30120', 'Kredit Nota', 'Form', 'so_credit_memo', '.', '_30000', 1, 12, b'10000000', NULL),
+	('_30121', 'Create', 'Form', '_30121', '.', '_30100', 1, NULL, NULL, NULL),
+	('_30122', 'Edit', 'Form', '_30122', '.', '_30120', 1, NULL, NULL, NULL),
+	('_30123', 'Delete', 'Form', '_30123', '.', '_30120', 1, NULL, NULL, NULL),
+	('_30124', 'Print', 'Form', '_30124', '.', '_30120', 1, NULL, NULL, NULL),
+	('_30125', 'Posting', 'Form', '_30125', '.', '_30120', 1, NULL, NULL, NULL),
+	('_30130', 'Debit Nota', 'Form', 'so_debit_memo', '.', '_30000', 1, 13, b'10000000', NULL),
+	('_30131', 'Create', 'Form', '_30131', '.', '_30100', 1, NULL, NULL, NULL),
+	('_30132', 'Edit', 'Form', '_30132', '.', '_30130', 1, NULL, NULL, NULL),
+	('_30133', 'Delete', 'Form', '_30133', '.', '_30130', 1, NULL, NULL, NULL),
+	('_30134', 'Print', 'Form', '_30134', '.', '_30130', 1, NULL, NULL, NULL),
+	('_30135', 'Posting', 'Form', '_30135', '.', '_30130', 1, NULL, NULL, NULL),
+	('_30140', 'Daftar Pelunasan Giro', 'Form', 'payments/giro', '.', '_30000', 1, 15, b'10000000', NULL),
+	('_30141', 'Cairkan', 'Form', '_30141', '.', '_30100', 1, NULL, NULL, NULL),
+	('_30142', 'Tolak', 'Form', '_30142', '.', '_30140', 1, NULL, NULL, NULL),
+	('_30143', 'Hapus', 'Form', '_30143', '.', '_30140', 1, NULL, NULL, NULL),
+	('_30150', 'Daftar Pelunasan Cash', 'Form', 'payments/cash', '.', '_30000', 1, 16, b'10000000', NULL),
+	('_30151', 'Delete', 'Form', '_30151', '.', '_30150', 1, NULL, NULL, NULL),
+	('_30160', 'Pembuatan Invoice Kredit', 'Form', 'invoice', '.', '_30000', 1, 8, b'10000000', NULL),
+	('_30161', 'Create', 'Form', '_30161', '.', '_30160', 1, NULL, NULL, NULL),
+	('_30162', 'Edit', 'Form', '_30162', '.', '_30160', 1, NULL, NULL, NULL),
+	('_30163', 'Delete', 'Form', '_30163', '.', '_30160', 1, NULL, NULL, NULL),
+	('_30164', 'Print', 'Form', '_30164', '.', '_30160', 1, NULL, NULL, NULL),
+	('_30165', 'Posting', 'Form', '_30165', 'Posting', '_30160', 1, NULL, NULL, NULL),
+	('_30170', '_30170', 'Form', '_30170', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_40000', 'Pembelian', 'Form', '_40000', 'Modul Hutang, A/P, Hutang, Pembayaran, Supplier dan Pembayaran.', '0', 1, 2, b'10000000', NULL),
+	('_40010', 'Master Data Supplier', 'Form', 'supplier/browse', '.', '_40000', 1, 1, b'10000000', NULL),
+	('_40011', 'Create', 'Form', '_40011', '.', '_40010', 1, NULL, NULL, NULL),
+	('_40012', 'Edit', 'Form', '_40012', '.', '_40010', 1, NULL, NULL, NULL),
+	('_40013', 'Delete', 'Form', '_40013', '.', '_40010', 1, NULL, NULL, NULL),
+	('_40020', 'Setting Saldo Awal Hutang Supplier', 'Form', 'supplier/saldo_awal', '.', '_40000', 1, 2, b'10000000', NULL),
+	('_40021', 'Proses', 'Form', '_40021', '.', '_40020', 1, NULL, NULL, NULL),
+	('_40023', 'Delete', 'Form', '_40023', '.', '_40020', 1, NULL, NULL, NULL),
+	('_40030', 'Arsip Bulanan Hutang Supplier', 'Form', 'supplier/proses_bulanan', '.', '_40000', 1, 13, b'10000000', NULL),
+	('_40031', 'Proses', 'Form', '_40031', '.', '_40030', 1, NULL, NULL, NULL),
+	('_40033', 'Delete', 'Form', '_40033', '.', '_40030', 1, NULL, NULL, NULL),
+	('_40040', 'Pembuatan PO', 'Form', 'purchase_order', '.', '_40000', 1, 3, b'10000000', NULL),
+	('_40041', 'Create', 'Form', '_40041', '.', '_40040', 1, NULL, NULL, NULL),
+	('_40042', 'Edit', 'Form', '_40042', '.', '_40040', 1, NULL, NULL, NULL),
+	('_40043', 'Delete', 'Form', '_40043', '.', '_40040', 1, NULL, NULL, NULL),
+	('_40044', 'Print', 'Form', '_40044', '.', '_40040', 1, NULL, NULL, NULL),
+	('_40045', 'Close PO Manual', 'Form', '_40045', 'Close PO Manual', '_40040', 1, NULL, NULL, NULL),
+	('_40046', 'Buat Faktur', 'Form', '_40046', 'Buat Faktur', '_40040', 1, NULL, NULL, NULL),
+	('_40047', 'Create Duplikat PO', 'Form', '_40047', 'Create Duplikat PO', '_40040', 1, NULL, NULL, NULL),
+	('_40048', 'Daftar Penerimaan PO', 'Form', '_40048', 'Daftar Penerimaan PO', '_40040', 1, NULL, NULL, NULL),
+	('_40049', 'Buat Faktur dari daftar penerimaan', 'Form', '_40049', 'Buat Faktur Dari daftar penerimaan', '_40040', 1, NULL, NULL, NULL),
+	('_40050', 'Faktur Pembelian Kontan', 'Form', 'beli/kontan', '.', '_40000', 1, 5, b'10000000', NULL),
+	('_40051', 'Create', 'Form', '_40051', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40052', 'Edit', 'Form', '_40052', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40053', 'Delete', 'Form', '_40053', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40054', 'Print', 'Form', '_40054', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40055', 'Posting', 'Form', '_40055', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40060', 'Pembuatan Retur Pembelian', 'Form', 'po_retur', '.', '_40000', 1, 7, b'10000000', NULL),
+	('_40061', 'Create', 'Form', '_40061', '.', '_40060', 1, NULL, NULL, NULL),
+	('_40062', 'Edit', 'Form', '_40062', '.', '_40060', 1, NULL, NULL, NULL),
+	('_40063', 'Delete', 'Form', '_40063', '.', '_40060', 1, NULL, NULL, NULL),
+	('_40064', 'Print', 'Form', '_40064', '.', '_40060', 1, NULL, NULL, NULL),
+	('_40065', 'Posting', 'Form', '_40065', '.', '_40060', 1, NULL, NULL, NULL),
+	('_40070', 'Pembayaran Hutang', 'Form', 'payables_payments', '.', '_40000', 1, 6, b'10000000', NULL),
+	('_40071', 'Proses', 'Form', '_40071', '.', '_40070', 1, NULL, NULL, NULL),
+	('_40080', 'Hutang Manager', 'Form', 'payables', '.', '_40000', 1, 8, b'10000000', NULL),
+	('_40081', 'Create', 'Form', '_40081', '.', '_40080', 1, NULL, NULL, NULL),
+	('_40082', 'Edit', 'Form', '_40082', '.', '_40080', 1, NULL, NULL, NULL),
+	('_40083', 'Delete', 'Form', '_40083', '.', '_40080', 1, NULL, NULL, NULL),
+	('_40084', 'Bayar Hutang', 'Form', '_40084', '.', '_40080', 1, NULL, NULL, NULL),
+	('_40085', 'Posting', 'Form', '_40085', '.', '_40080', 1, NULL, NULL, NULL),
+	('_40090', 'Kredit Memo', 'Form', 'po_credit_memo', '.', '_40000', 1, 9, b'10000000', NULL),
+	('_40091', 'Create', 'Form', '_40091', '.', '_40090', 1, NULL, NULL, NULL),
+	('_40092', 'Edit', 'Form', '_40092', '.', '_40090', 1, NULL, NULL, NULL),
+	('_40093', 'Delete', 'Form', '_40093', '.', '_40090', 1, NULL, NULL, NULL),
+	('_40094', 'Print', 'Form', '_40094', '.', '_40090', 1, NULL, NULL, NULL),
+	('_40095', 'Posting', 'Form', '_40095', 'Posting', '_40090', 1, NULL, NULL, NULL),
+	('_40100', 'Debit Memo', 'Form', 'po_debit_memo', '.', '_40000', 1, 10, b'10000000', NULL),
+	('_40101', 'Create', 'Form', '_40101', '.', '_40100', 1, NULL, NULL, NULL),
+	('_40102', 'Edit', 'Form', '_40102', '.', '_40100', 1, NULL, NULL, NULL),
+	('_40103', 'Delete', 'Form', '_40103', '.', '_40100', 1, NULL, NULL, NULL),
+	('_40104', 'Print', 'Form', '_40104', '.', '_40100', 1, NULL, NULL, NULL),
+	('_40105', 'Posting', 'Form', '_40105', 'Posting', '_40100', 1, NULL, NULL, NULL),
+	('_40110', 'Daftar Pembayaran Giro', 'Form', 'payables_payments/giro', '.', '_40000', 1, 11, b'10000000', NULL),
+	('_40113', 'Cair', 'Form', '_40113', '.', '_40110', 1, NULL, NULL, NULL),
+	('_40114', 'Tolak', 'Form', '_40114', '.', '_40110', 1, NULL, NULL, NULL),
+	('_40115', 'Delete', 'Form', '_40115', '.', '_40110', 1, NULL, NULL, NULL),
+	('_40120', 'Daftar Pembayaran Cash', 'Form', 'payables_payments/cash', '.', '_40000', 1, 12, b'10000000', NULL),
+	('_40123', 'Delete', 'Form', '_40123', '.', '_40120', 1, NULL, NULL, NULL),
+	('_40130', 'Faktur Pembelian Kredit', 'Form', 'beli', '.', '_40000', 1, 4, b'10000000', NULL),
+	('_40131', 'Create', 'Form', '_40131', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40132', 'Edit', 'Form', '_40132', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40134', 'Delete', 'Form', '_40134', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40135', 'Print', 'Form', '_40135', '.', '_40050', 1, NULL, NULL, NULL),
+	('_40136', 'Posting', 'Form', '_40136', '.', '_40050', 1, NULL, NULL, NULL),
+	('_60000', 'Cash & Bank', 'Form', '_60000', 'Modul untuk pencatatan semua aktifitas kas atau bank.', '0', 1, 3, b'10000000', NULL),
+	('_60010', 'Pembuatan Account Bank', 'Form', 'bank', '.', '_60000', 1, 1, b'10000000', NULL),
+	('_60011', 'Create', 'Form', '_60011', '.', '_60010', 1, NULL, NULL, NULL),
+	('_60012', 'Edit', 'Form', '_60012', '.', '_60010', 1, NULL, NULL, NULL),
+	('_60013', 'Delete', 'Form', '_60013', '.', '_60010', 1, NULL, NULL, NULL),
+	('_60020', 'Cash Masuk', 'Form', 'bank_cash/in', '.', '_60000', 1, 2, b'10000000', NULL),
+	('_60021', 'Create', 'Form', '_60021', '.', '_60020', 1, NULL, NULL, NULL),
+	('_60022', 'Edit', 'Form', '_60022', '.', '_60020', 1, NULL, NULL, NULL),
+	('_60023', 'Delete', 'Form', '_60023', '.', '_60020', 1, NULL, NULL, NULL),
+	('_60024', 'Print', 'Form', '_60024', '.', '_60020', 1, NULL, NULL, NULL),
+	('_60025', 'Posting', 'Form', '_60025', '.', '_60020', 1, NULL, NULL, NULL),
+	('_60030', 'Cash Keluar', 'Form', 'bank_cash/out', '.', '_60000', 1, 3, b'10000000', NULL),
+	('_60031', 'Create', 'Form', '_60031', '.', '_60030', 1, NULL, NULL, NULL),
+	('_60032', 'Edit', 'Form', '_60032', '.', '_60030', 1, NULL, NULL, NULL),
+	('_60033', 'Delete', 'Form', '_60033', '.', '_60030', 1, NULL, NULL, NULL),
+	('_60034', 'Print', 'Form', '_60034', '.', '_60030', 1, NULL, NULL, NULL),
+	('_60035', 'Posting', 'Form', '_60035', '.', '_60030', 1, NULL, NULL, NULL),
+	('_60040', 'Giro Masuk', 'Form', 'bank_giro/in', '.', '_60000', 1, 4, b'10000000', NULL),
+	('_60041', 'Create', 'Form', '_60041', '.', '_60040', 1, NULL, NULL, NULL),
+	('_60042', 'Edit', 'Form', '_60042', '.', '_60040', 1, NULL, NULL, NULL),
+	('_60043', 'Delete', 'Form', '_60043', '.', '_60040', 1, NULL, NULL, NULL),
+	('_60044', 'Print', 'Form', '_60044', '.', '_60040', 1, NULL, NULL, NULL),
+	('_60045', 'Posting', 'Form', '_60045', '.', '_60040', 1, NULL, NULL, NULL),
+	('_60050', 'Giro Keluar', 'Form', 'bank_giro/out', '.', '_60000', 1, 5, b'10000000', NULL),
+	('_60051', 'Create', 'Form', '_60051', '.', '_60050', 1, NULL, NULL, NULL),
+	('_60052', 'Edit', 'Form', '_60052', '.', '_60050', 1, NULL, NULL, NULL),
+	('_60053', 'Delete', 'Form', '_60053', '.', '_60050', 1, NULL, NULL, NULL),
+	('_60054', 'Print', 'Form', '_60054', '.', '_60050', 1, NULL, NULL, NULL),
+	('_60055', 'Posting', 'Form', '_60055', '.', '_60050', 1, NULL, NULL, NULL),
+	('_60060', 'Transfer Masuk', 'Form', 'bank_transfer/in', '.', '_60000', 1, 6, b'10000000', NULL),
+	('_60061', 'Create', 'Form', '_60061', '.', '_60060', 1, NULL, NULL, NULL),
+	('_60062', 'Edit', 'Form', '_60062', '.', '_60060', 1, NULL, NULL, NULL),
+	('_60063', 'Delete', 'Form', '_60063', '.', '_60060', 1, NULL, NULL, NULL),
+	('_60064', 'Print', 'Form', '_60064', '.', '_60060', 1, NULL, NULL, NULL),
+	('_60065', 'Posting', 'Form', '_60065', '.', '_60060', 1, NULL, NULL, NULL),
+	('_60070', 'Transfer Keluar', 'Form', 'bank_transfer/out', '.', '_60000', 1, 7, b'10000000', NULL),
+	('_60071', 'Create', 'Form', '_60071', '.', '_60070', 1, NULL, NULL, NULL),
+	('_60072', 'Edit', 'Form', '_60072', '.', '_60070', 1, NULL, NULL, NULL),
+	('_60073', 'Delete', 'Form', '_60073', '.', '_60070', 1, NULL, NULL, NULL),
+	('_60074', 'Print', 'Form', '_60074', '.', '_60070', 1, NULL, NULL, NULL),
+	('_60075', 'Posting', 'Form', '_60075', '.', '_60070', 1, NULL, NULL, NULL),
+	('_60080', 'Adjusment', 'Form', 'bank_adjust', '.', '_60000', 1, 8, b'10000000', NULL),
+	('_60081', 'Create', 'Form', '_60081', '.', '_60080', 1, NULL, NULL, NULL),
+	('_60082', 'Edit', 'Form', '_60082', '.', '_60080', 1, NULL, NULL, NULL),
+	('_60083', 'Delete', 'Form', '_60083', '.', '_60080', 1, NULL, NULL, NULL),
+	('_60085', 'Posting', 'Form', '_60085', '.', '_60080', 1, NULL, NULL, NULL),
+	('_80000', 'Inventory', 'Form', '_80000', 'Modul Pengelolaan dan transaksi barang dagangan.', '0', 1, 4, b'10000000', NULL),
+	('_80010', 'Master Data Stock', 'Form', 'inventory', '.', '_80000', 1, 1, b'10000000', NULL),
+	('_80010.01', '_80010.01', 'Form', '_80010.01', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_80010.02', '_80010.02', 'Form', '_80010.02', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_80010.03', '_80010.03', 'Form', '_80010.03', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_80010.04', '_80010.04', 'Form', '_80010.04', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_80010.05', '_80010.05', 'Form', '_80010.05', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_80010.06', '_80010.06', 'Form', '_80010.06', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_80010.07', '_80010.07', 'Form', '_80010.07', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
+	('_80011', 'Create', 'Form', '_80011', '.', '_80010', 1, NULL, NULL, NULL),
+	('_80012', 'Edit', 'Form', '_80012', '.', '_80010', 1, NULL, NULL, NULL),
+	('_80013', 'Delete', 'Form', '_80013', '.', '_80010', 1, NULL, NULL, NULL),
+	('_80014', 'Serial Number', 'Form', '_80014', '.', '_80010', 1, NULL, NULL, NULL),
+	('_80015', 'Ubah Kode', 'Form', '_80015', 'Ubah kode barang atau jasa', '_80010', 0, NULL, NULL, NULL),
+	('_80020', 'Master Kategory', 'Form', 'category', '.', '_80000', 1, 2, b'10000000', NULL),
+	('_80021', 'Create', 'Form', '_80021', '.', '_80020', 0, NULL, NULL, NULL),
+	('_80022', 'Edit', 'Form', '_80022', '.', '_80020', 0, NULL, NULL, NULL),
+	('_80023', 'Delete', 'Form', '_80023', '.', '_80020', 0, NULL, NULL, NULL),
+	('_80024', 'Print', 'Form', '_80024', '.', '_80020', 0, NULL, NULL, NULL),
+	('_80030', 'Master Gudang', 'Form', 'gudang', '.', '_80000', 1, 3, b'10000000', NULL),
+	('_80031', 'Create', 'Form', '_80031', '.', '_80030', 0, NULL, NULL, NULL),
+	('_80032', 'Edit', 'Form', '_80032', '.', '_80030', 0, NULL, NULL, NULL),
+	('_80033', 'Delete', 'Form', '_80033', '.', '_80030', 0, NULL, NULL, NULL),
+	('_80034', 'Print', 'Form', '_80034', '.', '_80030', 0, NULL, NULL, NULL),
+	('_80040', 'Transfer Stock', 'Form', 'transfer', '.', '_80000', 1, 4, b'10000000', NULL),
+	('_80041', 'Create', 'Form', '_80041', '.', '_80040', 0, NULL, NULL, NULL),
+	('_80042', 'Edit', 'Form', '_80042', '.', '_80040', 0, NULL, NULL, NULL),
+	('_80043', 'Delete', 'Form', '_80043', '.', '_80040', 0, NULL, NULL, NULL),
+	('_80044', 'Print', 'Form', '_80044', '.', '_80040', 0, NULL, NULL, NULL),
+	('_80050', 'Penerimaan dari PO', 'Form', 'receive', '.', '_80000', 1, 6, b'10000000', NULL),
+	('_80051', 'Create', NULL, '_80051', NULL, '_80050', 0, NULL, NULL, NULL),
+	('_80052', 'Edit', NULL, '_80052', NULL, '_80050', 0, NULL, NULL, NULL),
+	('_80053', 'Delete', NULL, '_80053', NULL, '_80050', 0, NULL, NULL, NULL),
+	('_80054', 'Print', NULL, '_80054', NULL, '_80050', 0, NULL, NULL, NULL),
+	('_80060', 'Penerimaan Lain-lain', NULL, 'stock_recv_etc', NULL, '_80000', 1, 7, b'10000000', NULL),
+	('_80061', 'Create', NULL, '_80061', NULL, '_80060', 0, NULL, NULL, NULL),
+	('_80062', 'Edit', NULL, '_80062', NULL, '_80060', 0, NULL, NULL, NULL),
+	('_80063', 'Delete', NULL, '_80063', NULL, '_80060', 0, NULL, NULL, NULL),
+	('_80064', 'Print', 'Form', '_80064', '.', '_80060', 1, NULL, NULL, NULL),
+	('_80070', 'Pengeluaran Lain-Lain', NULL, 'stock_send_etc', NULL, '_80000', 1, 8, b'10000000', NULL),
+	('_80071', 'Create', NULL, '_80071', NULL, '_80070', 0, NULL, NULL, NULL),
+	('_80072', 'Edit', NULL, '_80072', NULL, '_80070', 0, NULL, NULL, NULL),
+	('_80073', 'Delete', NULL, '_80073', NULL, '_80070', 0, NULL, NULL, NULL),
+	('_80074', 'Print', NULL, '_80074', NULL, '_80070', 0, NULL, NULL, NULL),
+	('_80080', 'Pengeluaran ke WIP', NULL, '_80080', NULL, '_80000', 1, NULL, b'00000000', NULL),
+	('_80081', 'Create', NULL, '_80081', NULL, '_80080', 1, NULL, NULL, NULL),
+	('_80082', 'Edit', NULL, '_80082', NULL, '_80080', 1, NULL, NULL, NULL),
+	('_80083', 'Delete', NULL, '_80083', NULL, '_80080', 1, NULL, NULL, NULL),
+	('_80084', 'Print', NULL, '_80084', NULL, '_80080', 1, NULL, NULL, NULL),
+	('_80090', 'Penerimaan dari WIP', NULL, '_80090', NULL, '_80000', 1, NULL, b'00000000', NULL),
+	('_80091', 'Create', NULL, '_80091', NULL, '_80090', 1, NULL, NULL, NULL),
+	('_80092', 'Edit', NULL, '_80092', NULL, '_80090', 1, NULL, NULL, NULL),
+	('_80093', 'Delete', NULL, '_80093', NULL, '_80090', 1, NULL, NULL, NULL),
+	('_80094', 'Print', NULL, '_80094', NULL, '_80090', 1, NULL, NULL, NULL),
+	('_80100', 'Proses Assembly', NULL, 'assembly', NULL, '_80000', 1, 9, b'10000000', NULL),
+	('_80101', 'Proses', NULL, '_80101', NULL, '_80100', 1, NULL, NULL, NULL),
+	('_80110', 'Proses DisAssembly', NULL, 'disassembly', NULL, '_80000', 1, 10, b'10000000', NULL),
+	('_80111', 'Proses', NULL, '_80111', NULL, '_80110', 1, NULL, NULL, NULL),
+	('_80120', 'Adjusment Stock', NULL, 'stock_adjust', NULL, '_80000', 1, 5, b'10000000', NULL),
+	('_80121', 'Proses', NULL, '_80121', NULL, '_80120', 1, NULL, NULL, NULL),
+	('_80130', 'Arsip Bulanan Stock', NULL, 'stock_proses_bulanan', NULL, '_80000', 1, 11, b'10000000', NULL),
+	('_80131', 'Proses', NULL, '_80131', NULL, '_80130', 1, NULL, NULL, NULL),
+	('_80132', 'Delete', NULL, '_80132', NULL, '_80130', 1, NULL, NULL, NULL),
+	('_80140', 'Setting Saldo Awal', NULL, 'stock_saldo_awal', NULL, '_80000', 1, 12, b'10000000', NULL),
+	('_80141', 'Proses', NULL, '_80141', NULL, '_80140', 1, NULL, NULL, NULL),
+	('_80200', 'Penerimaan barang non PO', NULL, '_80200', NULL, '_80000', 1, NULL, b'00000000', NULL),
+	('_80201', 'Save', NULL, '_80201', NULL, '_80200', 1, NULL, NULL, NULL),
+	('_80202', 'Print', NULL, '_80202', NULL, '_80200', 1, NULL, NULL, NULL),
+	('_90000', 'Laporan', NULL, '_90000', 'Modul Daftar Laporan', '0', 1, 8, b'10000000', NULL),
+	('_90010', 'General Ledger', 'Group', 'laporan/gl', 'Laporan General Ledger', '_90000', 1, 3, b'10000000', NULL),
+	('_90011', '001. Daftar Perkiraan / Chart Of Accounts', 'Report', '\\Gl\\chartofaccount1.rpt', 'Daftar Perkiraan', '_90010', 1, NULL, NULL, NULL),
+	('_90012', '002. Jurnal Transaksi - Sort by Kode Jurnal', NULL, '\\gl\\gltransactions1.rpt', NULL, '_90010', 1, NULL, NULL, NULL),
+	('_90013', '003. Jurnal Transaksi - Sort by Tanggal', NULL, '\\gl\\gltransactions2.rpt', NULL, '_90010', 1, NULL, NULL, NULL),
+	('_90014', '004. Kartu General Ledger', NULL, '\\Gl\\glCards.rpt', NULL, '_90010', 1, NULL, NULL, NULL),
+	('_90015', '005. Kartu General Ledger - All Date', NULL, '\\Gl\\glCards2.rpt', NULL, '_90010', 1, NULL, NULL, NULL),
+	('_90016', '006. Kartu General Ledger - All Date, Account', NULL, '\\Gl\\glCards3.rpt', NULL, '_90010', 1, NULL, NULL, NULL),
+	('_90017', '007. Neraca Percobaan', NULL, '\\gl\\trialbalances.rpt', NULL, '_90010', 1, NULL, NULL, NULL),
+	('_90018', '008. Laporan Rugi Laba', NULL, '\\gl\\incomestatement1.rpt', NULL, '_90010', 1, NULL, NULL, NULL),
+	('_90040', 'Inventory', NULL, 'laporan/stock', 'Laporan Inventory', '_90000', 1, 4, b'10000000', NULL),
+	('_90041', '001. Daftar Stock Item Number', NULL, '\\Inv\\InvListing.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90042', '002. Daftar Stock per Gudang', NULL, '\\Inv\\PosisiStockGudang.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90043', '003. Daftar Stock - With Financial', NULL, '\\Inv\\DaftarBarang12.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90044', '004. Daftar Stock - With to Order', NULL, '\\Inv\\DaftarBarang11.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90045', '005. Formulir Stock Opname', NULL, '\\Inv\\FStockOpname.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90046', '006. Price List', NULL, '\\Inv\\PriceList.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90047', '007. Kartu Stock', NULL, '\\Inv\\KartuStock.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90048', '008. Kartu Stock Summary', NULL, '\\Inv\\KartuStockSum.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90049', '009. Penerimaan Barang - Detail by No PO', NULL, '\\PO\\TerimaByPO.Rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90050', '010. Penerimaan Barang - Detail by No Bukti', NULL, '\\PO\\TerimaByRecvId.Rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90051', '011. Penerimaan Barang - Detail by Item', NULL, '\\PO\\TerimaByItem.Rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90052', '012. Penerimaan Barang dari WIP', NULL, '\\PO\\TerimaFG.Rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90053', '013. Pengeluaran Barang ke WIP', NULL, '\\Po\\KeluarWO.Rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90054', '014. Retur Barang Penjualan', NULL, '\\inv\\TerimaReturPenjualan.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90055', '015. Retur Barang Pembelian ', NULL, '\\Po\\ReturBarangPembelian.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90056', '016. Transfer Stok Antar Gudang ', NULL, '\\inv\\Transfer001.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90057', '017. Laporan Assembly & Disassembly', NULL, '\\Inv\\AsmItem18.Rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90058', '018. Daftar Transaksi Stock - per Gudang', NULL, '\\Inv\\TransaksiInventory.rpt', NULL, '_90040', 1, NULL, NULL, NULL),
+	('_90070', 'Pembelian', NULL, 'laporan/pembelian', 'Laporan Pembelian', '_90000', 1, 2, b'10000000', NULL),
+	('_90071', '001. Pembelian - Summary', NULL, '\\Po\\OrderPembelianSummary.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90072', '002. Pembelian  Per Supplier - Summary ', NULL, '\\Po\\OrderPembelianDetail.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90073', '003. Pembelian  Per Supplier  - Detail ', NULL, '\\Po\\BeliSuppSum.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90074', '004. Pembelian  Per Item Summary', NULL, '\\Po\\OrderPembelianSupplierDetail.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90075', '005. Pembelian  Per Item - Detail ', NULL, '\\Po\\PembelianItemSummary.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90076', '006. Pembelian  Per Katagori - Summary', NULL, '\\Po\\OrderPembelianItemDetail.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90077', '007. Pembelian  Per Kategori - Detail ', NULL, '\\Po\\OrderPembelianItemKategoriSum.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90078', '009. Pembelian per Mata Uang', NULL, '\\Po\\OrderPembelianItemKategoriDetail.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90079', '010. Laporan Pajak Masukan', NULL, '\\po\\BeliCurrency.Rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90080', '011. Daftar PO', NULL, '\\Po\\PajakMasukan.Rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90081', '012. Daftar PO - Detail', NULL, '\\PO\\DaftarPO.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90082', '013. Faktur Pembelian - Detail', NULL, '\\PO\\PODetailMonthly.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90083', '014. History Harga Per Supplier', NULL, '\\po\\PembelianDetail.Rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90084', '015. Selisih Kurs Pembelian', NULL, '\\Po\\HistoryHargaPerSupplier.rpt', NULL, '_90070', 1, NULL, NULL, NULL),
+	('_90090', 'Penjualan', NULL, 'laporan/penjualan', 'Laporan Penjualan', '_90000', 1, 1, b'10000000', NULL),
+	('_90091', '001. Penjualan - Summary ', NULL, '\\So\\AnalisaPenjualanPerJenisFakturPerbulan.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90092', '002. Penjualan By Customer - Summary ', NULL, '\\So\\PenjualanCustomerSum.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90093', '003. Penjualan by Customer - Detail ', NULL, '\\So\\SumJualByCust.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90094', '004. Penjualan per Item - Summary', NULL, '\\So\\FakturPenjualanSummaryTrading.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90095', '005. Penjualan per Item - Detail', NULL, '\\So\\PenjualanPeritemDetailTrading.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90096', '006. Penjualan per kategori Item - Summary', NULL, '\\So\\AnalisaPenjualanPerkategoriSummary.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90097', '007. Penjualan Per Kategori - Detail', NULL, '\\So\\AnalisaPenjualanPerkategori.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90098', '008. Penjualan per Salesman - Summary', NULL, '\\So\\FakturPenjualanMonthSales.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90099', '009. Penjualan per Salesman - Detail', NULL, '\\So\\FakturPenjualanSummarySales.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90100', '010. Penjualan per wilayah - Summary', NULL, '\\So\\AnalisaPenjualanPerWilayahPerbulan.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90101', '011. Penjualan per Mata Uang', NULL, '\\so\\JualCurrency.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90102', '012. Faktur Penjualan - Detail', NULL, '\\So\\FakturPenjualan.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90103', '013. Retur Penjualan', NULL, '\\So\\ReturPenjualan.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90104', '014. Komisi Salesman', NULL, '\\So\\KomisiSalesman.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90105', '015. Laporan Pajak Keluaran', NULL, '\\So\\PajakKeluaran.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90106', '017. Daftar DO Customer', NULL, '\\SO\\DODetail300.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90107', '018. Daftar DO - Detail', NULL, '\\SO\\DODetail200.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90108', '019. History Harga Per Customer', NULL, '\\So\\HistoryHargaPerCustomer.rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90109', '020. Selisih Kurs Penjualan', NULL, '\\so\\SelisihKursPiutang1.Rpt', NULL, '_90090', 1, NULL, NULL, NULL),
+	('_90120', 'Supplier / Hutang', NULL, 'laporan/supplier', 'Laporan Supplier atau Hutang', '_90000', 1, 5, b'10000000', NULL),
+	('_90121', '001. Daftar Supplier Urut Kode', NULL, '\\po\\DaftarSupplier2.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90122', '002. History Pembayaran Hutang Supplier', NULL, '\\po\\SuppPayHistory01.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90123', '003. Daftar Pembayaran Hutang', NULL, '\\po\\SuppPayHistory.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90124', '004. Kartu Hutang Supplier Summary', NULL, '\\po\\KartuHutangSum.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90125', '005. Kartu Hutang Supplier Detail', NULL, '\\Po\\KartuHutang.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90126', '006. Laporan Umur Hutang - Summary', NULL, '\\Po\\UmurHutang.Rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90127', '007. Laporan Umur Hutang Supplier - Summary', NULL, '\\Po\\UmurHutang_Supplier.Rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90128', '008. Laporan Umur Hutang Supplier - Detail', NULL, '\\Po\\UmurHutang_SupplierDetail.Rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90129', '009. Daftar Pembayaran Hutang - Currency', NULL, '\\PO\\BayarHutang0011.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90130', '010. Daftar Pembayaran Hutang per Supplier - Currency', NULL, '\\PO\\BayarHutang0012.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90131', '011. Daftar Hutang - Currency', NULL, '\\po\\DaftarHutang009.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90132', '012. Daftar Hutang per Supplier - Currency', NULL, '\\po\\DaftarHutang010.rpt', NULL, '_90120', 1, NULL, NULL, NULL),
+	('_90150', 'Customer / Piutang', NULL, 'laporan/customer', 'Laporan Customer atau Piutang', '_90000', 1, 6, b'10000000', NULL),
+	('_90151', '001. Daftar Customer urut Kode', NULL, '\\so\\daftarcustomerkode.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90152', '002. History Pembayaran Piutang Customer', NULL, '\\So\\CustPayHistory01.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90153', '003. Daftar Pembayaran Piutang', NULL, '\\So\\CustPayHistory.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90154', '004. Kartu Piutang Customer - Summary', NULL, '\\so\\KartuPiutangSum.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90155', '005. Kartu Piutang Customer - Detail', NULL, '\\so\\KartuPiutang.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90156', '006. Laporan Umur Piutang - Summary', NULL, '\\So\\UmurPiutang.Rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90157', '007. Laporan Umur Piutang Pelanggan - Summary', NULL, '\\So\\UmurPiutang_Customer.Rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90158', '008. Laporan Umur Piutang Pelanggan - Detail', NULL, '\\So\\UmurPiutang_CustomerDetail.Rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90159', '009. Daftar Pembayaran Piutang - Currency', NULL, '\\SO\\BayarPiutang0010.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90160', '010. Daftar Pembayaran Piutang per Customer - Currency', NULL, '\\SO\\BayarPiutang0011.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90161', '011. Daftar Piutang - Currency', NULL, '\\so\\DaftarPiutang0011.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_90162', '012. Daftar Piutang per Customer - Currency', NULL, '\\so\\DaftarPiutang0012.rpt', NULL, '_90150', 1, NULL, NULL, NULL),
+	('_60084', 'Mutasi Antar Rekening', 'Form', 'bank_mutasi', NULL, '_60000', NULL, 9, b'10000000', NULL),
+	('_14000', 'Fixed Asset', 'Form', '_14000', 'Aktiva Tetap', '0', 0, 0, b'00000000', ''),
+	('_14001', 'Master Aktiva Tetap', 'Form', '_14001', 'Master Aktiva Tetap', '_14000', 0, 0, b'00000000', ''),
+	('_12001', 'Employee Master', 'Form', '_12001', 'Data karyawan dan personel', '_12000', 0, 1, b'00000000', ''),
+	('_13001', 'Master Anggota', 'Form', '_13001', 'Master data anggota koperasi', '_13000', 0, 1, b'00000000', ''),
+	('_11001', 'Master Barang Jadi', 'Form', '_11001', 'Master Barang Jadi', '_11000', 0, 1, b'00000000', '');
+;
+";
+if(mysql_query($sql))$msg .="<br>Data $table..OK";else $msg .="<br>$table..<br>ERROR -" . mysql_error();
+
+$table="modules_group";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `modules_groups` (
@@ -2329,30 +2918,27 @@ CREATE TABLE IF NOT EXISTS `modules_groups` (
   UNIQUE KEY `x1` (`user_group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg .="<br>$table..OK";else $msg .="<br>$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
 INSERT INTO `modules_groups` (`user_group_id`, `user_group_name`, `creation_date`, `description`, `path_image`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
-('Administrator', 'Administrator', '2013-09-01 00:00:00', 'Administrator', '', 0, '', ''),
-('ANDRI', 'Khusus job untuk andri', '2013-09-07 00:00:00', 'Khusus Job untuk andri', '', 0, '', ''),
+('ADM', 'Admin', NULL, 'Admin', NULL, NULL, NULL, NULL),
 ('BYR', 'Buyer', '2013-08-31 00:00:00', 'Buyer', '', 0, '', ''),
 ('FIN', 'Financial', '2013-08-31 00:00:00', 'Kelompok finansial bertugas untuk mencatat data keuangan', '', 0, '', ''),
-('Gudang', 'Gudang', '2009-12-25 16:55:55', 'Bagian gudang', 'D:daftar.ico', NULL, NULL, NULL),
 ('INV', 'Inventory', '2001-10-09 15:11:08', NULL, NULL, 1, NULL, NULL),
 ('KSR', 'Kasir', '2003-11-14 20:41:59', NULL, NULL, 1, NULL, NULL),
 ('PUR', 'Purchasing', '2001-10-09 15:10:52', '', 'a1.ico', 1, NULL, NULL),
 ('SLS', 'Sales', '2001-10-09 15:11:00', NULL, NULL, 1, NULL, NULL),
 ('SPV', 'Supervisor', '2003-11-18 12:31:45', '', '', 1, NULL, NULL),
+('Administrator', 'Administrator', '2013-09-01 00:00:00', 'Administrator', '', 0, '', ''),
+('Gudang', 'Gudang', '2009-12-25 16:55:55', 'Bagian gudang', 'D:daftar.ico', NULL, NULL, NULL),
+('ANDRI', 'Khusus job untuk andri', '2013-09-07 00:00:00', 'Khusus Job untuk andri', '', 0, '', ''),
 ('SYSMENU', 'SYSMENU', '2006-09-23 20:59:05', 'aaaa', 'a1.ico', 1, NULL, NULL),
-('ADM', 'Admin', NULL, 'Admin', NULL, NULL, NULL, NULL),
 ('DRV', 'Driver', NULL, 'Driver', NULL, NULL, NULL, NULL),
 ('COL', 'Collector', NULL, 'Collector', NULL, NULL, NULL, NULL),
-('aaaa', 'aaaa', '2013-08-31 00:00:00', 'Kopi Susu Abc', '', 0, '', ''),
-('ddd', 'ddd', '2013-08-31 00:00:00', 'dd', '', 0, '', ''),
-('a', 'abbb', '2013-08-31 00:00:00', 'abbb', '', 0, '', '');
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg .="<br>Data $table..OK";else $msg .="<br>$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2375,7 +2961,7 @@ CREATE TABLE IF NOT EXISTS `org_struct` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg .="<br>$table..OK";else $msg .="<br>$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2404,7 +2990,7 @@ CREATE TABLE IF NOT EXISTS `other_vendors` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg .="<br>$table..OK";else $msg="<br>$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 24:
@@ -2452,7 +3038,7 @@ CREATE TABLE IF NOT EXISTS `payables` (
   PRIMARY KEY  (`bill_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=66 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2463,7 +3049,7 @@ INSERT INTO `payables` (`bill_id`, `vendor_type`, `supplier_number`, `other_numb
 (65, NULL, 'YOGYA', NULL, 1, 'PO00152', 'Purchase Order', NULL, 'PO00152', '2014-03-25 07:00:00', 1000, '2014-03-25 07:00:00', 'Kredit 30 Hari', NULL, 'Purchase Order', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2480,7 +3066,7 @@ CREATE TABLE IF NOT EXISTS `payables_items` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2492,7 +3078,7 @@ CREATE TABLE IF NOT EXISTS `payables_many_po` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2521,7 +3107,7 @@ CREATE TABLE IF NOT EXISTS `payables_payments` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -2535,7 +3121,7 @@ INSERT INTO `payables_payments` (`bill_id`, `line_number`, `date_paid`, `how_pai
 (57, 33, '2014-03-24 07:00:00', '0', 1374, NULL, 8000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'PI00014', NULL, NULL, NULL, NULL, 'APP00066', NULL),
 (57, 34, '2014-03-24 07:00:00', '1', 0, NULL, 50000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'PI00014', NULL, NULL, NULL, NULL, 'APP00067', NULL);
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 25:
@@ -2581,7 +3167,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=176 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -2597,7 +3183,7 @@ INSERT INTO `payments` (`invoice_number`, `line_number`, `date_paid`, `how_paid`
 ('PJL00153', 175, '2014-03-25 07:00:00', '0', 0, NULL, NULL, NULL, 9500, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00095', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2612,7 +3198,7 @@ CREATE TABLE IF NOT EXISTS `payroll_link` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2645,7 +3231,7 @@ CREATE TABLE IF NOT EXISTS `pending_stock_opname` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2658,7 +3244,7 @@ CREATE TABLE IF NOT EXISTS `pending_stock_opname_tmp` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 26:
@@ -2774,7 +3360,7 @@ CREATE TABLE IF NOT EXISTS `preferences` (
   PRIMARY KEY  (`company_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2785,7 +3371,7 @@ INSERT INTO `preferences` (`company_code`, `company_name`, `slogan`, `invoice_co
 ('C01', 'Head Office', '', '', '', 'Jl. Raya Kalibata No. 29', '', 'Jakarta', '021-2020022', '', '', '', 0, 0, 0, 0, 0, 0, '1485', '0', 0, 0, 1416, 1421, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 1373, 1417, 1482, 1396, 0, 1416, 1373, 1420, 1503, 1396, 0, 1421, 1374, 1415, 1419, 0, '', '', '', '', 0, 0, 0, '', '', 0, 0, 0, 0, '', '', '', '2013-09-08 00:00:00', 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 1483, 1408, 1411, 1370, 0, 0, 0, 0, 0),
 ('C02', 'Budidaya Lele', '', '', '', 'JL. RAYA SADANG NO. 29', '', 'Purwakarta', '08219292', '02192828', 'budi@localhost.com', '', 0, 0, 0, 0, 0, 0, '', '', 0, 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', 0, 0, 0, '', '', 0, 0, 0, 0, '', '', '', '2014-03-02 00:00:00', 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 27:
@@ -2821,7 +3407,7 @@ CREATE TABLE IF NOT EXISTS `promosi_disc` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2848,7 +3434,7 @@ CREATE TABLE IF NOT EXISTS `promosi_extra_item` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2866,7 +3452,7 @@ CREATE TABLE IF NOT EXISTS `promosi_item` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2878,7 +3464,7 @@ CREATE TABLE IF NOT EXISTS `promosi_item_category` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2890,7 +3476,7 @@ CREATE TABLE IF NOT EXISTS `promosi_item_customer` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2899,7 +3485,7 @@ CREATE TABLE IF NOT EXISTS `promosi_outlet` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2920,7 +3506,7 @@ CREATE TABLE IF NOT EXISTS `promosi_point_transactions` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -2929,7 +3515,7 @@ CREATE TABLE IF NOT EXISTS `promosi_time` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 28:
@@ -2987,7 +3573,7 @@ CREATE TABLE IF NOT EXISTS `purchase_order` (
   PRIMARY KEY  (`purchase_order_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3041,7 +3627,7 @@ CREATE TABLE IF NOT EXISTS `purchase_order_lineitems` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=313 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3080,7 +3666,7 @@ CREATE TABLE IF NOT EXISTS `quotation` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3125,7 +3711,7 @@ CREATE TABLE IF NOT EXISTS `quotation_lineitems` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 31:
@@ -3175,7 +3761,7 @@ CREATE TABLE IF NOT EXISTS `report_list` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3195,7 +3781,7 @@ CREATE TABLE IF NOT EXISTS `rpt_open_to_buy` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3212,7 +3798,7 @@ CREATE TABLE IF NOT EXISTS `salesman` (
   PRIMARY KEY  (`salesman`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3226,7 +3812,7 @@ CREATE TABLE IF NOT EXISTS `salesman_group` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3246,7 +3832,7 @@ CREATE TABLE IF NOT EXISTS `salesman_group_komisi` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3260,7 +3846,7 @@ CREATE TABLE IF NOT EXISTS `salesman_komisi` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 32:
@@ -3332,7 +3918,7 @@ CREATE TABLE IF NOT EXISTS `sales_order` (
   PRIMARY KEY  (`sales_order_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -3384,7 +3970,7 @@ CREATE TABLE IF NOT EXISTS `sales_order_lineitems` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=254 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3395,7 +3981,7 @@ CREATE TABLE IF NOT EXISTS `sales_tax_rates` (
   PRIMARY KEY  (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3418,7 +4004,7 @@ CREATE TABLE IF NOT EXISTS `service_jobs` (
   UNIQUE KEY `x1` (`job_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3436,7 +4022,7 @@ CREATE TABLE IF NOT EXISTS `service_job_sparepart` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3470,7 +4056,7 @@ CREATE TABLE IF NOT EXISTS `service_order` (
   PRIMARY KEY  (`no_bukti`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3486,7 +4072,7 @@ CREATE TABLE IF NOT EXISTS `shipped_via` (
   PRIMARY KEY  (`shipped_via`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3509,7 +4095,7 @@ CREATE TABLE IF NOT EXISTS `shipping_locations` (
   PRIMARY KEY  (`location_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3523,7 +4109,7 @@ INSERT INTO `shipping_locations` (`location_number`, `address_type`, `attention_
 ('Ambon', 'Penyimpanan', '', NULL, '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('Bali', 'Penyimpanan', 'Husni', NULL, 'Jl. Raya Sabrang', NULL, 'Bali', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3535,7 +4121,7 @@ CREATE TABLE IF NOT EXISTS `source_of_order` (
   PRIMARY KEY  (`source_of_order`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 33:
@@ -3585,7 +4171,7 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   PRIMARY KEY  (`supplier_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3595,7 +4181,7 @@ INSERT INTO `suppliers` (`supplier_number`, `active`, `supplier_other_vendor`, `
 ('INDOMART', 1, '', '1393', '', 'INDOMART', '', '', '', '', 'Purwakarta', '', '', '', '', '', '', '', '', '', 0, '', '', 0, 0, b'0', 0, 0, 0, b'0', '', 0, '', 0, '2013-08-14 00:00:00', '', '2013-08-14 00:00:00', '', 1423),
 ('YOGYA', 1, '', '1393', '', 'YOGYA Dept Store', '', '', '', '', 'Jl. Jend. Sudirman', 'Purwakarta', '', '', '', '', '', '', 'yogya@localhost', '60 Hari', 0, '', '', 0, 0, b'0', 0, 0, 0, b'0', '', 0, '', 0, '2014-03-24 00:00:00', '', '2014-03-24 00:00:00', '', 1423);
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3615,7 +4201,7 @@ CREATE TABLE IF NOT EXISTS `supplier_beginning_balance` (
   UNIQUE KEY `x1` (`tanggal`,`supplier_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3627,7 +4213,7 @@ CREATE TABLE IF NOT EXISTS `syslog` (
   `update_status` int(11) default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3649,7 +4235,7 @@ CREATE TABLE IF NOT EXISTS `sysreportdesign` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -3673,7 +4259,7 @@ CREATE TABLE IF NOT EXISTS `sysreportdesignfiles` (
   UNIQUE KEY `x1` (`filename`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 	break;
 
@@ -3695,7 +4281,7 @@ CREATE TABLE IF NOT EXISTS `system_variables` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=568 ;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -4000,7 +4586,7 @@ INSERT INTO `system_variables` (`varname`, `varlen`, `varvalue`, `keterangan`, `
 ('CoaGift', NULL, '0', 'auto', 565, NULL, NULL, NULL, NULL, NULL),
 ('Adjust Numbering', NULL, '!ADJ~$00006', 'Numbering', 567, NULL, NULL, NULL, NULL, NULL);
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 35:
@@ -4046,7 +4632,7 @@ CREATE TABLE IF NOT EXISTS `sys_grid` (
   PRIMARY KEY  (`selectionindex`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -4062,7 +4648,7 @@ CREATE TABLE IF NOT EXISTS `sys_objects` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -4079,7 +4665,7 @@ CREATE TABLE IF NOT EXISTS `sys_tooltip` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -4090,7 +4676,7 @@ CREATE TABLE IF NOT EXISTS `trans_type` (
   PRIMARY KEY  (`type_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -4102,7 +4688,7 @@ CREATE TABLE IF NOT EXISTS `type_of_account` (
   PRIMARY KEY  (`type_of_account`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -4117,7 +4703,7 @@ CREATE TABLE IF NOT EXISTS `type_of_payment` (
   PRIMARY KEY  (`type_of_payment`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 $sql="
 
 INSERT INTO `type_of_payment` (`type_of_payment`, `discount_percent`, `discount_days`, `days`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -4126,7 +4712,7 @@ INSERT INTO `type_of_payment` (`type_of_payment`, `discount_percent`, `discount_
 ('60 Hari', 0, 30, 60, 0, '', ''),
 ('Kredi 90 Hari', 0.1, 30, 90, 0, '', '');
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 3:
@@ -4150,7 +4736,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY  (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 
@@ -4166,8 +4752,10 @@ INSERT INTO `user` (`user_id`, `username`, `password`, `path_image`, `update_sta
 ('ujang', 'ujang', 'ujang', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'T01'),
 ('acong', 'acong', 'acong', '', 0, 0, 0, '', '', '', 0, 'T01');
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
+case 36:
+	$table='user_group_modules';
 $sql="
 
 CREATE TABLE IF NOT EXISTS `user_group_modules` (
@@ -4182,9 +4770,10 @@ CREATE TABLE IF NOT EXISTS `user_group_modules` (
   UNIQUE KEY `x1` (`group_id`,`module_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1655 ;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
+	
 $sql="
 
 INSERT INTO `user_group_modules` (`id`, `group_id`, `module_id`, `permission`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
@@ -4398,7 +4987,7 @@ INSERT INTO `user_group_modules` (`id`, `group_id`, `module_id`, `permission`, `
 (1633, 'ANDRI', 'ID_JasaKiriman', NULL, NULL, NULL, NULL),
 (1631, 'ANDRI', 'frmMain.Addnew', NULL, NULL, NULL, NULL);
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 37:
@@ -4418,7 +5007,7 @@ CREATE TABLE IF NOT EXISTS `user_job` (
   UNIQUE KEY `x1` (`user_id`,`group_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=203 ;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -4449,7 +5038,7 @@ INSERT INTO `user_job` (`id`, `user_id`, `group_id`, `update_status`, `sourceaut
 (116, 'andri', 'test', NULL, NULL, NULL),
 (201, 'admin', 'ADM', NULL, NULL, NULL);
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 38:
@@ -4476,7 +5065,7 @@ CREATE TABLE IF NOT EXISTS `voucher_master` (
   PRIMARY KEY  (`voucher_no`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `wilayah` (
@@ -4487,7 +5076,7 @@ CREATE TABLE IF NOT EXISTS `wilayah` (
   PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 
 $sql="
@@ -4500,7 +5089,7 @@ CREATE TABLE IF NOT EXISTS `yescalendaricons` (
   `sourcefile` varchar(255) character set utf8 default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE TABLE IF NOT EXISTS `yes_smartsearchdefinition` (
@@ -4523,7 +5112,7 @@ CREATE TABLE IF NOT EXISTS `yes_smartsearchdefinition` (
   PRIMARY KEY  (`line_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 39:
@@ -4538,46 +5127,46 @@ select `gl_report_groups`.`group_type` AS `group_type`,`gl_report_groups`.`group
 _utf8'H' AS `jenis`,_utf8'' AS `db_or_cr`,NULL AS `0`,`gl_report_groups`.`parent_group_type` AS `parent_group_type` 
 from `gl_report_groups`;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE VIEW `qry_kartustock_adj` AS select `i`.`date_trans` AS `tanggal`,_utf8'Adjustment' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,`s`.`description` AS `description`,abs(if((`i`.`to_qty` > 0),`i`.`to_qty`,0)) AS `qty_masuk`,abs(if((`i`.`to_qty` < 0),`i`.`to_qty`,0)) AS `qty_keluar`,0 AS `price`,`i`.`cost` AS `cost`,(`i`.`cost` * abs(`i`.`to_qty`)) AS `amount_masuk`,0 AS `amount_keluar`,`i`.`to_location` AS `gudang`,`i`.`comments` AS `comments` from (`inventory_moving` `i` left join `inventory` `s` on((`i`.`item_number` = `s`.`item_number`)));
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE  VIEW `qry_kartustock_delivery` AS select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Surat Jalan' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,0 AS `qty_masuk`,abs(`il`.`quantity`) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where (`i`.`invoice_type` = _utf8'D');
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE   VIEW `qry_kartustock_etc_out` AS select `pp`.`date_received` AS `tanggal`,`pp`.`receipt_type` AS `tipe`,`pp`.`receipt_type` AS `jenis`,_utf8'Unknown' AS `termin`,`pp`.`shipment_id` AS `no_sumber`,`pp`.`item_number` AS `item_number`,`s`.`description` AS `description`,0 AS `qty_masuk`,abs(`pp`.`quantity_received`) AS `qty_keluar`,`pp`.`unit` AS `unit`,`pp`.`cost` AS `price`,`pp`.`cost` AS `cost`,0 AS `discount`,0 AS `discount_amount`,`pp`.`total_amount` AS `amount`,`pp`.`warehouse_code` AS `gudang`,_utf8'IDR' AS `mata_uang`,1 AS `rate`,`pp`.`supplier_number` AS `supplier`,`pp`.`comments` AS `comments`,`pp`.`mu_qty` AS `mu_qty`,`pp`.`multi_unit` AS `multi_unit`,`pp`.`mu_price` AS `mu_price` from (`inventory_products` `pp` left join `inventory` `s` on((`pp`.`item_number` = `s`.`item_number`))) where (`pp`.`receipt_type` = _utf8'ETC_OUT');
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE   VIEW `qry_kartustock_invoice` AS select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Faktur Jual Kontan' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,if((`il`.`quantity` < 0),abs(`il`.`quantity`),0) AS `qty_masuk`,if((`il`.`quantity` > 0),abs(`il`.`quantity`),0) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where ((`i`.`invoice_type` = _utf8'I') and (`i`.`payment_terms` in (_utf8'Cash',_utf8'',_utf8'Tunai',_utf8'Kontan'))) union all select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Surat Jalan' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,if((`il`.`quantity` < 0),abs(`il`.`quantity`),0) AS `qty_masuk`,if((`il`.`quantity` > 0),abs(`il`.`quantity`),0) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where ((`i`.`invoice_type` = _utf8'D') and (`il`.`from_line_type` = _utf8'SO')) union all select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Retur Jual' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,abs(`il`.`quantity`) AS `qty_masuk`,0 AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where (`i`.`invoice_type` = _utf8'R') union all select `i`.`invoice_date` AS `tanggal`,`i`.`invoice_type` AS `tipe`,_utf8'Konsinyasi' AS `jenis`,`i`.`payment_terms` AS `termin`,`i`.`invoice_number` AS `no_sumber`,`il`.`item_number` AS `item_number`,`il`.`description` AS `description`,if((`il`.`quantity` < 0),abs(`il`.`quantity`),0) AS `qty_masuk`,if((`il`.`quantity` > 0),abs(`il`.`quantity`),0) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `price`,`il`.`cost` AS `cost`,`il`.`discount` AS `discount`,`il`.`discount_amount` AS `discount_amount`,`il`.`amount` AS `amount`,`il`.`warehouse_code` AS `gudang`,`il`.`currency_code` AS `mata_uang`,`il`.`currency_rate` AS `rate`,`i`.`sold_to_customer` AS `customer`,`i`.`comments` AS `comments`,`il`.`mu_qty` AS `mu_qty`,`il`.`multi_unit` AS `multi_unit`,`il`.`mu_harga` AS `mu_harga` from (`invoice` `i` left join `invoice_lineitems` `il` on((`i`.`invoice_number` = `il`.`invoice_number`))) where (`i`.`invoice_type` = _utf8'K');
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE VIEW `qry_kartustock_purchase` AS select `p`.`po_date` AS `tanggal`,_utf8'BELI_KONTAN' AS `tipe`,_utf8'Faktur Beli Kredit' AS `jenis`,`p`.`terms` AS `terms`,`pi`.`purchase_order_number` AS `no_sumber`,`pi`.`item_number` AS `item_number`,`pi`.`description` AS `description`,`pi`.`quantity` AS `qty_masuk`,0 AS `qty_keluar`,`pi`.`unit` AS `unit`,`pi`.`price` AS `price`,`pi`.`price` AS `cost`,`pi`.`discount` AS `discount`,`pi`.`disc_amount_1` AS `disc_amount_1`,`pi`.`total_price` AS `amount_masuk`,0 AS `amount_keluar`,`pi`.`warehouse_code` AS `gudang`,`pi`.`currency_code` AS `mata_uang`,`pi`.`currency_rate` AS `rate`,`p`.`supplier_number` AS `supplier_number`,`pi`.`mu_qty` AS `mu_qty`,`pi`.`multi_unit` AS `multi_unit`,`pi`.`mu_harga` AS `mu_harga`,`p`.`comments` AS `comments` from (`purchase_order_lineitems` `pi` left join `purchase_order` `p` on((`p`.`purchase_order_number` = `pi`.`purchase_order_number`))) where ((`p`.`potype` = _utf8'I') and (`p`.`terms` in (_utf8'',_utf8'CASH',_utf8'TUNAI',_utf8'KONTAN'))) union all select `p`.`po_date` AS `tanggal`,_utf8'RET_BELI' AS `tipe`,_utf8'Retur Beli Kredit' AS `jenis`,`p`.`terms` AS `terms`,`pi`.`purchase_order_number` AS `no_sumber`,`pi`.`item_number` AS `item_number`,`pi`.`description` AS `description`,0 AS `qty_masuk`,abs(`pi`.`quantity`) AS `qty_keluar`,`pi`.`unit` AS `unit`,`pi`.`price` AS `price`,`pi`.`price` AS `cost`,`pi`.`discount` AS `discount`,`pi`.`disc_amount_1` AS `disc_amount_1`,`pi`.`total_price` AS `amount_masuk`,0 AS `amount_keluar`,`pi`.`warehouse_code` AS `gudang`,`pi`.`currency_code` AS `mata_uang`,`pi`.`currency_rate` AS `rate`,`p`.`supplier_number` AS `supplier_number`,`pi`.`mu_qty` AS `mu_qty`,`pi`.`multi_unit` AS `multi_unit`,`pi`.`mu_harga` AS `mu_harga`,`p`.`comments` AS `comments` from (`purchase_order_lineitems` `pi` left join `purchase_order` `p` on((`p`.`purchase_order_number` = `pi`.`purchase_order_number`))) where (`p`.`potype` = _utf8'R');
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE  VIEW `qry_kartustock_receipt` AS select `pp`.`date_received` AS `tanggal`,`pp`.`receipt_type` AS `tipe`,`pp`.`receipt_type` AS `jenis`,_utf8'Unknown' AS `termin`,`pp`.`shipment_id` AS `no_sumber`,`pp`.`item_number` AS `item_number`,`s`.`description` AS `description`,abs(if((`pp`.`quantity_received` > 0),`pp`.`quantity_received`,0)) AS `qty_masuk`,abs(if((`pp`.`quantity_received` < 0),`pp`.`quantity_received`,0)) AS `qty_keluar`,`pp`.`unit` AS `unit`,`pp`.`cost` AS `price`,`pp`.`cost` AS `cost`,0 AS `discount`,0 AS `discount_amount`,`pp`.`total_amount` AS `amount`,`pp`.`warehouse_code` AS `gudang`,_utf8'IDR' AS `mata_uang`,1 AS `rate`,`pp`.`supplier_number` AS `supplier`,`pp`.`comments` AS `comments`,`pp`.`mu_qty` AS `mu_qty`,`pp`.`multi_unit` AS `multi_unit`,`pp`.`mu_price` AS `mu_price` from (`inventory_products` `pp` left join `inventory` `s` on((`pp`.`item_number` = `s`.`item_number`))) where (`pp`.`receipt_type` not in (_utf8'INVOICE',_utf8'RET_BELI',_utf8'ETC_OUT'));
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="
 CREATE VIEW `qry_kartustock_transfer` AS select `i`.`date_trans` AS `tanggal`,_utf8'Transfer' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,`s`.`description` AS `description`,0 AS `qty_masuk`,abs(`i`.`to_qty`) AS `qty_keluar`,0 AS `price`,0 AS `cost`,0 AS `amount_masuk`,(`i`.`cost` * abs(`i`.`to_qty`)) AS `amount_keluar`,`i`.`from_location` AS `gudang`,`i`.`comments` AS `comments` from (`inventory_moving` `i` left join `inventory` `s` on((`i`.`item_number` = `s`.`item_number`))) where (`i`.`from_location` <> `i`.`to_location`) union all select `i`.`date_trans` AS `tanggal`,_utf8'Transfer' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,`s`.`description` AS `description`,abs(`i`.`to_qty`) AS `qty_masuk`,0 AS `qty_keluar`,0 AS `price`,0 AS `cost`,(`i`.`cost` * abs(`i`.`to_qty`)) AS `amount_masuk`,0 AS `amount_keluar`,`i`.`to_location` AS `gudang`,`i`.`comments` AS `comments` from (`inventory_moving` `i` left join `inventory` `s` on((`i`.`item_number` = `s`.`item_number`))) where (`i`.`from_location` <> `i`.`to_location`);
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql="CREATE VIEW `qry_kartustock_union` AS select `i`.`tanggal` AS `tanggal`,`i`.`jenis` AS `jenis`,`i`.`no_sumber` AS `no_sumber`,`i`.`item_number` AS `item_number`,`i`.`description` AS `description`,`i`.`qty_masuk` AS `qty_masuk`,`i`.`qty_keluar` AS `qty_keluar`,`i`.`price` AS `price`,`i`.`cost` AS `cost`,if((`i`.`qty_masuk` > 0),(`i`.`cost` * `i`.`qty_masuk`),0) AS `amount_masuk`,if((`i`.`qty_masuk` > 0),0,(`i`.`cost` * `i`.`qty_keluar`)) AS `amount_keluar`,`i`.`gudang` AS `gudang`,`i`.`comments` AS `comments` from `qry_kartustock_invoice` `i` where (`i`.`item_number` is not null) union all select `r`.`tanggal` AS `tanggal`,`r`.`jenis` AS `jenis`,`r`.`no_sumber` AS `no_sumber`,`r`.`item_number` AS `item_number`,`r`.`description` AS `description`,`r`.`qty_masuk` AS `qty_masuk`,`r`.`qty_keluar` AS `qty_keluar`,`r`.`price` AS `price`,`r`.`cost` AS `cost`,if((`r`.`qty_masuk` > 0),(`r`.`cost` * `r`.`qty_masuk`),0) AS `amount_masuk`,if((`r`.`qty_masuk` > 0),0,(`r`.`cost` * `r`.`qty_keluar`)) AS `amount_keluar`,`r`.`gudang` AS `gudang`,`r`.`comments` AS `comments` from `qry_kartustock_receipt` `r` union all select `r`.`tanggal` AS `tanggal`,`r`.`jenis` AS `jenis`,`r`.`no_sumber` AS `no_sumber`,`r`.`item_number` AS `item_number`,`r`.`description` AS `description`,`r`.`qty_masuk` AS `qty_masuk`,`r`.`qty_keluar` AS `qty_keluar`,`r`.`price` AS `price`,`r`.`cost` AS `cost`,if((`r`.`qty_masuk` > 0),(`r`.`cost` * `r`.`qty_masuk`),0) AS `amount_masuk`,if((`r`.`qty_masuk` > 0),0,(`r`.`cost` * `r`.`qty_keluar`)) AS `amount_keluar`,`r`.`gudang` AS `gudang`,`r`.`comments` AS `comments` from `qry_kartustock_etc_out` `r` union all select `p`.`tanggal` AS `tanggal`,`p`.`jenis` AS `jenis`,`p`.`no_sumber` AS `no_sumber`,`p`.`item_number` AS `item_number`,`p`.`description` AS `description`,`p`.`qty_masuk` AS `qty_masuk`,`p`.`qty_keluar` AS `qty_keluar`,`p`.`price` AS `price`,`p`.`cost` AS `cost`,`p`.`amount_masuk` AS `amount_masuk`,`p`.`amount_keluar` AS `amount_keluar`,`p`.`gudang` AS `gudang`,`p`.`comments` AS `comments` from `qry_kartustock_purchase` `p` union all select `qry_kartustock_adj`.`tanggal` AS `tanggal`,`qry_kartustock_adj`.`jenis` AS `jenis`,`qry_kartustock_adj`.`no_sumber` AS `no_sumber`,`qry_kartustock_adj`.`item_number` AS `item_number`,`qry_kartustock_adj`.`description` AS `description`,`qry_kartustock_adj`.`qty_masuk` AS `qty_masuk`,`qry_kartustock_adj`.`qty_keluar` AS `qty_keluar`,`qry_kartustock_adj`.`price` AS `price`,`qry_kartustock_adj`.`cost` AS `cost`,`qry_kartustock_adj`.`amount_masuk` AS `amount_masuk`,`qry_kartustock_adj`.`amount_keluar` AS `amount_keluar`,`qry_kartustock_adj`.`gudang` AS `gudang`,`qry_kartustock_adj`.`comments` AS `comments` from `qry_kartustock_adj` union all select `qry_kartustock_transfer`.`tanggal` AS `tanggal`,`qry_kartustock_transfer`.`jenis` AS `jenis`,`qry_kartustock_transfer`.`no_sumber` AS `no_sumber`,`qry_kartustock_transfer`.`item_number` AS `item_number`,`qry_kartustock_transfer`.`description` AS `description`,`qry_kartustock_transfer`.`qty_masuk` AS `qty_masuk`,`qry_kartustock_transfer`.`qty_keluar` AS `qty_keluar`,`qry_kartustock_transfer`.`price` AS `price`,`qry_kartustock_transfer`.`cost` AS `cost`,`qry_kartustock_transfer`.`amount_masuk` AS `amount_masuk`,`qry_kartustock_transfer`.`amount_keluar` AS `amount_keluar`,`qry_kartustock_transfer`.`gudang` AS `gudang`,`qry_kartustock_transfer`.`comments` AS `comments` from `qry_kartustock_transfer`;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 30:
@@ -4611,7 +5200,7 @@ $sql="CREATE  VIEW qry_kartu_piutang AS
   left join invoice i on i.invoice_number=c.docnumber
   where transtype='SO-DEBIT MEMO' and invoice_type='I'
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 29:
@@ -4651,7 +5240,7 @@ left join purchase_order p on p.purchase_order_number=c.docnumber
 where c.transtype='PO-CREDIT MEMO'
 
 ";
-	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+	if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 40:
@@ -4666,7 +5255,7 @@ CREATE TABLE jenis_tunjangan (
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 CREATE TABLE jenis_potongan (
@@ -4678,7 +5267,7 @@ CREATE TABLE jenis_potongan (
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4688,7 +5277,7 @@ CREATE TABLE employee_type (
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4698,7 +5287,7 @@ CREATE TABLE employee_group (
 	update_status int NULL ,
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4708,7 +5297,7 @@ CREATE TABLE employee_status (
 	update_status int NULL ,
 	PRIMARY KEY  (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4717,7 +5306,7 @@ CREATE TABLE employee_level (
 	keterangan varchar (50) character set utf8 NULL ,
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4726,7 +5315,7 @@ CREATE TABLE divisions (
 	div_name varchar (50) character set utf8 NULL ,
 	PRIMARY KEY  (div_code)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 	break;
 
@@ -4750,7 +5339,7 @@ CREATE TABLE hr_emp_angsuran (
 	jenis_bayar int null,
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4761,7 +5350,7 @@ CREATE TABLE hr_emp_default_com (
 	def_com_value double NULL ,
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4775,7 +5364,7 @@ CREATE TABLE hr_emp_level_com (
 	salary_com_name varchar (50) character set utf8 NULL ,
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4796,7 +5385,7 @@ CREATE TABLE hr_emp_loan (
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 CREATE TABLE hr_pph (
@@ -4806,7 +5395,7 @@ CREATE TABLE hr_pph (
 	high_value double NULL ,
 	PRIMARY KEY  (kode)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4821,7 +5410,7 @@ CREATE TABLE hr_pph_form (
 	template varchar(50) null,
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 	break;
 
 case 2:
@@ -4837,7 +5426,7 @@ CREATE TABLE employee_pph (
 	bulan int null,
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 $sql=" 
 
 CREATE TABLE hr_shift (
@@ -4847,7 +5436,7 @@ CREATE TABLE hr_shift (
 	different_day bit NULL ,
 	PRIMARY KEY  (kode)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4860,7 +5449,7 @@ CREATE TABLE employee_shift (
 	tcid varchar(50) null,
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4870,7 +5459,7 @@ CREATE TABLE hr_ptkp (
 	jumlah double NULL ,
 	PRIMARY KEY  (kode)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4880,8 +5469,11 @@ values('K0','KAWIN ANAK 0',26326000),
 ('K2','KAWIN ANAK 2',30375000),
 ('K3','KAWIN ANAK 3',32400000),
 ('TK','BELUM KAWIN',24300000);";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
+case 41:
+	$table='time_card';
+	
 $sql=" 
 
 CREATE TABLE time_card_detail (
@@ -4914,7 +5506,7 @@ CREATE TABLE time_card_detail (
 	
 	PRIMARY KEY  (id) 
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4922,7 +5514,7 @@ create view qry_payroll_component as
 select 'income' as jenis, kode,keterangan,sifat,is_variable,ref_column from jenis_tunjangan
 union all
 select  'deduct' as jenis,  kode,keterangan,sifat,is_variable,ref_column from jenis_potongan;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 $sql=" 
 
@@ -4936,10 +5528,12 @@ create table sys_log_run (
 	param1 varchar(50),
 	PRIMARY KEY  (id) 
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-if(mysql_query($sql))$msg="$table..OK";else $msg="$table..ERROR" . mysql_error();
+if(mysql_query($sql))$msg="$table..OK";else $msg="$table..<br>ERROR -" . mysql_error();
 
 }
-	echo $nomor. " - " .$msg;
+	
+
+ECHO $nomor. " - " .$msg;
 
 
 ?>

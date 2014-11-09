@@ -95,6 +95,7 @@ class Aktiva_group extends CI_Controller {
 
 	}
 	function view($id,$message=null){
+		 $id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->aktiva_group_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -150,14 +151,17 @@ class Aktiva_group extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		 $id=urldecode($id);
 	 	$this->aktiva_group_model->delete($id);
 	 	$this->browse();
 	}
 	function find($nomor){
+		 $nomor=urldecode($nomor);
 		$query=$this->db->query("select name,depn_method,useful_lives from fa_asset_group where id='$nomor'");
 		echo json_encode($query->row_array());
  	}
 	function acc_id($account){
+		 $account=urldecode($account);
 		$this->load->model('chart_of_accounts_model');
 		$data=explode(" - ", $account);
 		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();

@@ -2,7 +2,7 @@
 
 class Sales_retur extends CI_Controller {
     private $limit=10;
-    private $sql="select i.invoice_number,i.invoice_date,i.amount,i.your_order__, 
+    private $sql="select i.invoice_number,i.invoice_date,i.amount,i.posted,i.your_order__, 
             i.sold_to_customer,c.company,c.city,i.warehouse_code
             from invoice i
             left join customers c on c.customer_number=i.sold_to_customer
@@ -36,12 +36,13 @@ class Sales_retur extends CI_Controller {
 	
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Faktur','Kode Cust','Nama Customer',
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Posted','Faktur','Kode Cust','Nama Customer',
 			'Salesman','Kota','Gudang');
-		$data['fields']=array('invoice_number','invoice_date','amount', 'your_order__',
+		$data['fields']=array('invoice_number','invoice_date','amount', 'posted','your_order__',
             'sold_to_customer','company','salesman','city','warehouse_code');
 		$data['field_key']='invoice_number';
 		$data['caption']='DAFTAR RETUR PENJUALAN';
+		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
 		
@@ -50,6 +51,8 @@ class Sales_retur extends CI_Controller {
 		$faa[]=criteria("Nomor","sid_number");
 		$faa[]=criteria("Pelanggan","sid_cust");
 		$faa[]=criteria("Salesman","sid_salesman");
+		$faa[]=criteria("Posted","sid_posted");
+
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -65,6 +68,13 @@ class Sales_retur extends CI_Controller {
 			$sql.=" and invoice_date between '$d1' and '$d2'";
 			if($nama!='')$sql.=" and company like '$nama%'";	
 			if($this->input->get('sid_salesman')!='')$sql.=" and salesman like '".$this->input->get('salesman')."%'";
+			if($this->input->get('sid_posted')!=''){
+				if($this->input->get('sid_posted')=='1'){
+					$sql.=" and posted=true";
+				} else {
+					$sql.=" and (posted=false or posted is null)";				
+				}
+			}
 		}
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
@@ -172,6 +182,7 @@ class Sales_retur extends CI_Controller {
 		}
 	}
 	function delete($id){
+		$id=urldecode($id);
 		$this->load->model("periode_model");
 		$q=$this->invoice_model->get_by_id($id);
 		if($this->periode_model->closed($q->row()->invoice_date)){
@@ -191,6 +202,7 @@ class Sales_retur extends CI_Controller {
 	 	$this->invoice_model->delete($id);
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $model=$this->invoice_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
@@ -206,13 +218,34 @@ class Sales_retur extends CI_Controller {
          $this->template->display('sales/retur',$data);                 
 	}
 	function unposting($nomor) {
+		$nomor=urldecode($nomor);
 		$message=$this->invoice_model->unposting($nomor);		
 		$this->view($nomor);
 	}
 	function posting($nomor)
 	{
+		$nomor=urldecode($nomor);
 		$message=$this->invoice_model->posting_retur($nomor);
 		$this->view($nomor);
 	}		
+	function posting_all() {
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		$sql="select distinct invoice_number from invoice"; 
+		$sql.=" where invoice_type in ('R') and (posted is null or posted=false) and invoice_date between '$d1' and '$d2'";
 		
+		if($q=$this->db->query($sql)){
+			foreach($q->result() as $r){
+				echo "<p>Posting..
+				<a href=".base_url()."index.php/sales_retur/view/".$r->invoice_number."
+				class='info_link'>".$r->invoice_number."</a> : ";
+				$message=$this->invoice_model->posting($r->invoice_number);
+				if($message!=''){
+					echo ': '.$message;
+				}
+				echo "</p>";
+			}
+		}
+		echo "<p>Finish.</p>";
+	}			
 }

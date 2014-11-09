@@ -116,6 +116,7 @@ class Type_of_payment extends CI_Controller {
         echo datasource($sql);
     }
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->type_of_payment_model->delete($id);
 	 	$this->browse();
 	}

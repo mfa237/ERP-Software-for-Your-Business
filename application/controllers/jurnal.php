@@ -46,6 +46,7 @@ class Jurnal extends CI_Controller {
 	}
 	function index()
 	{	
+		if(!allow_mod2('_10060'))return false;   
        $this->browse();     
 	}
 	function get_posts(){
@@ -93,6 +94,7 @@ class Jurnal extends CI_Controller {
 	}
 	function view($gl_id,$message="")
 	{
+		$gl_id=urldecode($gl_id);
 		$data=$this->set_defaults();
 		$this->_set_rules();
 		$data['mode']='view';
@@ -134,17 +136,18 @@ class Jurnal extends CI_Controller {
 	}
 	
 	function view_jurnal($gl_id){
-            $sql="select account,account_description
-            ,debit,credit,custsuppbank as ref,org_id,transaction_id as id from gl_transactions g
-            left join chart_of_accounts c on c.id=g.account_id
-            where gl_id='$gl_id'";
-            $s="
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
-                <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
-            ";
-            echo $s." ".browse_simple($sql);
+		$gl_id=urldecode($gl_id);
+		$sql="select account,account_description
+		,debit,credit,custsuppbank as ref,org_id,transaction_id as id from gl_transactions g
+		left join chart_of_accounts c on c.id=g.account_id
+		where gl_id='$gl_id'";
+		$s="
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
+			<script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
+		";
+		echo $s." ".browse_simple($sql);
 
 	}
 	 // validation rules
@@ -209,7 +212,8 @@ class Jurnal extends CI_Controller {
         //echo $sql;
         echo datasource($sql);
     }	      
-	function delete($id){
+	function delete($id=''){
+		$id=urldecode($id);
 		$this->load->model("periode_model");
 		$q=$this->jurnal_model->get_by_gl_id($id);
 		if($this->periode_model->closed($q->row()->date)){
@@ -224,6 +228,7 @@ class Jurnal extends CI_Controller {
 		}
 	}
     function delete_item($id){
+		$id=urldecode($id);
         if($this->jurnal_model->delete_item($id)){
 			echo json_encode(array('success'=>true));
 		} else {
@@ -266,6 +271,7 @@ class Jurnal extends CI_Controller {
 		}
 	}
 	function items($kode){
+		$kode=urldecode($kode);
 		$sql="select c.account,c.account_description,g.debit,g.credit,
 		g.source,g.operation,g.transaction_id,g.custsuppbank
 		from gl_transactions g left join chart_of_accounts c 

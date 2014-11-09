@@ -1,4 +1,4 @@
-<div class=""><h1>MASTER BARANG JADI<div class="thumbnail">
+<div class=""><h4>MASTER BARANG JADI</h4><div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print_item()','print');		
@@ -20,7 +20,7 @@
 		}
 	</script>
 	
-</div></H1>
+</div>
 <div class="thumbnail">	
 	<form id="frmBarang"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -31,25 +31,11 @@
 					.form_radio('active',0,$active=='0'?TRUE:FALSE).' No'?>
 				</td>
 			</tr>
-			<tr><td>Nama Barang</td><td><?=form_input("description",$description,"id='description' style='width:200px'")?>
-			
-			
-				</td>
-			   <td>Gambar <?php echo form_hidden('item_picture',$item_picture,"id='item_picture'");?>
-					<?php echo form_open_multipart('inventory/do_upload_picture');?>
-					<input type="file" name="userfile" size="20" /><br>
-					<input type="submit" value="upload" />
-					</form>
-			   </td>
+			<tr><td>Nama Barang</td>
+			<td><?=form_input("description",$description,"id='description' style='width:200px'")?>
+			</td>
 			</tr>
 			<tr><td>Category</td><td><?=form_dropdown('category',$category_list,$category);?></td>
-				 
-			   <td rowspan="8">
-					<img src="" style="width:200px;height:200px;border:1px solid lightgray">
-			   </td>  
-			
-			
-			
 			</tr>
 			<tr><td>Sub Category</td><td><?=form_dropdown('sub_category',$category_list,$sub_category);?></td></tr>
 			<tr><td>Satuan</td><td><?=form_input("unit_of_measure",$unit_of_measure,"id='unit_of_measure'")?></td></tr>
@@ -88,6 +74,22 @@
 				   </td>
 			      </tr>
 			     <tr>
+			<tr>
+			   <td>Gambar <?php echo form_hidden('item_picture',$item_picture,"id='item_picture'");?>
+					<?php echo form_open_multipart('inventory/do_upload_picture');?>
+					<input type="file" name="userfile" size="20" /><br>
+					<input type="submit" value="upload" />
+					</form>
+			   </td>
+			</tr>
+			<tr>
+			   <td>
+					<img src="" style="width:200px;height:200px;border:1px solid lightgray">
+			   </td>  
+			</tr>
+			
+			
+			
 		</tbody>
 	</table>
 	</form>
@@ -116,13 +118,9 @@
 					var result = eval('('+result+')');
 					if (result.success){
 						$('#mode').val('view');
-						$.messager.show({
-							title:'Success',msg:'Data sudah tersimpan.'
-						});
+						log_msg('Data sudah tersimpan.');
 					} else {
-						$.messager.show({
-							title:'Error',msg:result.msg
-						});
+						log_err(result.msg);
 					}
 				}
 			});

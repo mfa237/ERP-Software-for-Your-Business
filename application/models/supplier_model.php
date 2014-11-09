@@ -53,6 +53,7 @@ function select_list(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
+		if($data['acc_biaya']=='')$data['acc_biaya']=0;
 		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){

@@ -26,7 +26,7 @@
 			<li><?=anchor('gl/rpt/cards','Laporan Kartu GL','class="info_link"')?></li>
 			<li><?=anchor('gl/rpt/jurnal','Laporan Jurnal Transaksi','class="info_link"')?></li>
 			<li><?=anchor('gl/rpt/neraca','Laporan Neraca','class="info_link"')?></li>
-			<li><?=anchor('gl/rpt/rugi_laba','Laporan Rugi Laba','class="info_link"')?></li>
+			<li><?=anchor('gl/rpt/laba_rugi','Laporan Rugi Laba','class="info_link"')?></li>
 			<li><?=anchor('gl/rpt/neraca_saldo','Laporan Neraca Saldo','class="info_link"')?></li>
 					</ul>
 				</li>

@@ -75,7 +75,7 @@
         <td>Nomor Faktur</td><td class='field'> 
         	<?
         	echo form_input("po_ref",$po_ref,"id='po_ref'");
-        	echo link_button('','select_faktur()',"search","true"); 
+        	echo link_button('','select_faktur();return false;',"search","true"); 
         	?>
         </td>
     </tr>
@@ -130,7 +130,10 @@
 					<tr>
 						<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
 						<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
-						<td>Pajak PPN %: </td><td><input id='po_tax_percent' value='<?=$tax?>' style='width:50px'></td>
+						<td>Pajak PPN %: </td><td>
+							<input id='po_tax_percent' value='<?=$tax?>' style='width:50px'>
+							<input id='po_tax_amount' value='<?=$tax_amount?>' style='width:100px'>
+						</td>
 					</tr>
 					<tr>
 						<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>

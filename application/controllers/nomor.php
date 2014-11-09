@@ -31,6 +31,7 @@ class Nomor extends CI_Controller {
         $this->template->display_browse2($data);            
 	}
     function browse_data($nama=''){
+		$nama=urldecode($nama);
     	$sql="select varname,varvalue,keterangan from system_variables 
     	where varname like '% numbering' ";
 		if($this->input->get('sid_nama')!='')$sql.=" and varname like '".$this->input->get('sid_nama')."% numbering'";

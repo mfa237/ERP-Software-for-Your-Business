@@ -32,7 +32,7 @@
 		<tr>
 			<td>Supplier: </td><td><?=form_input('supplier_number',$supplier_number,"id=supplier_number");?>
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-				onclick="select_supplier()"></a>			
+				onclick="select_supplier();return false;"></a>			
 			</td>
 			<td colspan="2"><div id="supplier_info"></div></td>
 		</tr>

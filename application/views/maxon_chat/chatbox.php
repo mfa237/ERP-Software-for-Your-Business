@@ -1,4 +1,8 @@
 <style>
+@media all and (max-width: 720px) {
+    .xchat-min {display:none;}
+    .xchat {display:none;}
+}
 .xchat {
 	position: fixed;
 	right: 10px;
@@ -9,21 +13,21 @@
 	background: #EFF5F7;
 	border: 1px solid rgb(143, 143, 235);
 	font-size: 10px;
-	border-radius: 4px;
+	-border-radius: 4px;
 	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+	-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .xchat-min {
 	position: fixed;
 	right: 10px;
-	bottom: 2px;
-	height: 30px;
+	bottom: -1px;
+	height: 35px;
 	width: 200px;
 	padding: 10px;
 	background: #EFF5F7;
 	border: 1px solid rgb(143, 143, 235);
 	font-size: 10px;
-	border-radius: 4px;
+	-border-radius: 4px;
 	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
@@ -34,10 +38,10 @@
 	font-size: 15px;
 	padding: 5px;
 	 
-	margin-left: -5px;
-	margin-top: -10px;
+	margin-left: -11px;
+	margin-top: -15px;
 	margin-bottom: 10px;
-	width: 190px;
+	width: 200px;
 }
 .xchat-content {
 

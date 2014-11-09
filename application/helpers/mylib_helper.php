@@ -1,5 +1,37 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+if(!function_exists("my_input")){
+	function my_input($caption,$field_name,$field_value){
+		echo "<div class='form-group'>
+		<label class='control-label col-sm-2' for='".$field_name."'>".$caption."</label>
+		<div class='col-sm-10'>".form_input($field_name,$field_value,"class='form-control'")."</div></div>";	
+	}
+}
+if(!function_exists("add_button_menu")){
+	function add_button_menu($caption,$modul,$ico,$description){
+	echo "<div class='info thumbnail info_link' href='".base_url()."index.php/$modul'>
+				<div class='photo'><img src='".base_url()."images/$ico'/></div>
+				<div class='detail'><h4>$caption</h4></br>$description</div>
+		</div>";
+	}
+}
+if(!function_exists("format_sql_date")){
+	function format_sql_date($value){
+		return  date('Y-m-d H:i:s', strtotime($value));		
+	}
+}
+if(!function_exists("dropdown_data")){
+	function dropdown_data($table,$field_key="",$field_value="",$where=""){
+		$ret['']='- Select -';
+		$sql="select $field_key,$field_value from $table";
+		if($where!="")$sql .= $where;
+		if($query=$this->db->query($sql)) {
+			foreach ($query->result_array_assoc() as $row){
+				$ret[]=$row;
+			}		 
+		}
+		return $ret;
+	}
+}
 if(!function_exists('add_date')){	
 	function add_date($givendate,$day=0,$mth=0,$yr=0) {
 		  $cd = strtotime($givendate);
@@ -39,10 +71,18 @@ if(!function_exists('account')){
 
 if(!function_exists('criteria')){	
 	function criteria($capt,$fld,$cls='easyui-input'){
+        $CI =& get_instance();
 		$fnc=new search_criteria();
+		if($CI->input->get($fld) or $CI->input->get($fld)==''){
+			$value=$CI->input->get($fld);
+			$CI->session->set_userdata($fld,$value);
+		} else {
+			$value=$CI->session->userdata($fld);		
+		}		
 		$fnc->caption=$capt;
 		$fnc->field_id=$fld;
 		$fnc->field_class=$cls;
+		$fnc->field_value=$value;
 		return $fnc;
 	}
 }
@@ -282,5 +322,79 @@ if (!function_exists("load_view")){
         return $content;
     }
 }
+
+if (!function_exists("criteria_text")){
+
+	function criteria_text($faa) {
+		$i=0;
+		$s='';
+		foreach($faa as $fa){
+			$type="text";
+			$val="";
+			if($fa->field_class=="easyui-datetimebox"){
+				$val=date("Y-m-d 00:00:00");
+				if(strpos($fa->field_id,"date_to"))$val=date("Y-m-d 23:59:59");
+				if($fa->field_value!="")$val=$fa->field_value;
+				$s .= " ".$fa->caption.'
+				<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
+				class="'.$fa->field_class.'" style="width:80px">';
+				$s .= " ";
+			} else if($fa->field_class=="checkbox"){
+				if($fa->field_value!="")$val=$fa->field_value;
+				$s .= " 
+				<input type='checkbox' value='$val' id='".$fa->field_id."'  name='".$fa->field_id."' 
+				> ".$fa->caption;
+				$s .= " ";
+
+			} else {
+				if($fa->field_value!="")$val=$fa->field_value;
+				$s .= " ".$fa->caption.'
+				<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
+				class="'.$fa->field_class.'" style="width:80px">';
+				$s .= " ";
+
+			}
+			 
+			$i++;
+		}		
+		return $s;
+	 }
+
+}
+if ( ! function_exists('allow_mod')) {
+	function allow_mod($mod_id){
+		$retval=false;
+        $CI =& get_instance();
+		$uid=$CI->access->user_id();
+        $sql="select distinct ugm.module_id from user_job uj 
+		join modules_groups mg on mg.user_group_id=uj.group_id
+		join user_group_modules ugm on ugm.group_id=uj.group_id
+		where uj.user_id='$uid' and ugm.module_id='$mod_id'";
+        $query=$CI->db->query($sql);
+		return $query->num_rows()>0;
+	}
+}
+if ( ! function_exists('allow_mod2')) {
+	function allow_mod2($mod_id){
+        $CI =& get_instance();
+		$uid=$CI->access->user_id();
+        $sql="select distinct ugm.module_id from user_job uj 
+		join modules_groups mg on mg.user_group_id=uj.group_id
+		join user_group_modules ugm on ugm.group_id=uj.group_id
+		where uj.user_id='$uid' and ugm.module_id='$mod_id'";
+        $query=$CI->db->query($sql);
+		if($query->num_rows()>0){
+			return true;
+		} else {
+			echo "<span class='not_access'>
+			Anda tidak diijinkan menjalankan proses module ini.
+			<br>Silahkan hubungi administrator.
+			<br>Module Id: [$mod_id]
+			</span>";			
+			return false;
+		}
+	}
+}
+
 }                    
 ?>

@@ -85,10 +85,12 @@ class Coa_group extends CI_Controller {
 		 $this->form_validation->set_rules('group_type','Group Type', 'required|trim');
 	}
     function delete($id){
+		$id=urldecode($id);
 	 	$this->gl_report_groups_model->delete($id);
 	 	$this->browse();
 	}
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $rst=$this->gl_report_groups_model->get_by_id($id)->row();
          if(count($rst)){
@@ -119,6 +121,7 @@ class Coa_group extends CI_Controller {
 		}	  	
 	}        
 	function select($group=''){
+		$group=urldecode($group);
 		$sql="select group_type,group_name from gl_report_groups where 1=1";
 		if($group!="")$sql.=" and group_type like '$group%'";
 		echo datasource($sql);	

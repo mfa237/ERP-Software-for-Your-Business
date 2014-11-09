@@ -22,7 +22,7 @@
 		}
 	</script>
 	
-</div></H1>
+</div> 
 
 
 <div class="thumbnail">	
@@ -43,13 +43,25 @@
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<table>
 		<tbody>
-			<tr><td>WO Number</td><td><?=form_input("work_order_no",$work_order_no,"id='work_order_no'")?></td></tr>
+			<tr><td>WO Number</td>
+				<td><?=form_input("work_order_no",$work_order_no,"id='work_order_no'")?></td>
+				<td colspan='6' rowspan='7'>
+					<div class='thumbnail'>
+						<p><strong>Customer Info</strong></p>
+						<p><?=form_input("company",$company,"id='company' style='width:500px'");?></p>
+						<p><?=$street?></p>
+					</div>
+				</td>
+				
+			</tr>
 			<tr><td>Start Date</td><td><?=form_input("start_date",$start_date,"id='start_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
 			<tr><td>Expect Date</td><td><?=form_input("expected_date",$expected_date,"id='expected_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
-			<tr><td>Customer</td><td><?=form_input("customer_number",$customer_number,"id='customer_number'")?>
+			<tr><td>Customer</td>
+				<td><?=form_input("customer_number",$customer_number,"id='customer_number'")?>
 				<?=link_button('','lookup_customer()','search');?>
-				<?=form_input("company",$company,"id='company'");?>
-			</td></tr>
+				
+			</td>
+			</tr>
 			<tr><td>SO Number</td><td><?=form_input("sales_order_number",$sales_order_number,"id='sales_order_number'")?>
 				<?=link_button('','lookup_sales_order()','search');?>
 			</td></tr>
@@ -192,11 +204,13 @@
 						$.messager.show({
 							title:'Success',msg:'Data sudah tersimpan. Silahkan pilih nama barang.'
 						});
+						log_msg("Data sudah tersimpan.");
 					} else {
 						$.messager.show({
 							title: 'Error',
 							msg: result.msg
 						});
+						log_err(result.msg);
 					}
 				}
 			});

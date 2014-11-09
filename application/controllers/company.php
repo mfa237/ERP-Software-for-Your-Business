@@ -67,12 +67,13 @@ class Company extends CI_Controller {
     }
 
     function view($id,$message=null)	{
-             $data['id']=$id;
-             $model=$this->company_model->get_by_id($id)->row();
-             $data=$this->set_defaults($model);
-             $data['mode']='view';
-             $data['message']=$message;
-            $this->template->display_form_input($this->file_view,$data,'company_menu');
+		$id=urldecode($id);
+		 $data['id']=$id;
+		 $model=$this->company_model->get_by_id($id)->row();
+		 $data=$this->set_defaults($model);
+		 $data['mode']='view';
+		 $data['message']=$message;
+		$this->template->display_form_input($this->file_view,$data,'company_menu');
     }
      // validation rules
     function _set_rules(){	
@@ -111,14 +112,17 @@ class Company extends CI_Controller {
         echo datasource($sql);
     }	   
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->company_model->delete($id);
 	 	$this->browse();
 	}
 	function find($nomor){
+		$nomor=urldecode($nomor);
 		$query=$this->db->query("select company_name from preferences where company_code='$nomor'");
 		echo json_encode($query->row_array());
  	}
 	function acc_id($account){
+		$account=urldecode($account);
 		$data=explode(" - ", $account);
 		$coa=$this->chart_of_accounts_model->get_by_id($data[0])->row();
 		if($coa){
@@ -247,7 +251,7 @@ class Company extends CI_Controller {
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
    function division_delete($kode){
-   		$kode=htmlspecialchars_decode($kode);
+		$kode=urldecode($kode);
 		$this->load->model('division_model');
 		$ok=$this->division_model->delete($kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	

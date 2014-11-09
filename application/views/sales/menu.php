@@ -5,16 +5,48 @@
 			<ul>
 				<li>
 					<span>Operation</span>
-					<ul>
- 			<li><?=anchor(base_url().'index.php/sales_order','Sales Order','class="info_link"  ');?></li>
-			<li><?=anchor(base_url().'index.php/delivery_order','Surat Jalan','class="info_link" ');?></li>
-			<li><?=anchor(base_url().'index.php/invoice','Faktur Penjualan','class="info_link"');?></li>
-			<li><?=anchor(base_url().'index.php/payment','Pembayaran Piutang','class="info_link"');?></li>
-			<li><?=anchor(base_url().'index.php/sales_retur','Retur Penjualan','class="info_link"');?></li>
-			<li><?=anchor(base_url().'index.php/sales_crmemo','Kredit Memo','class="info_link"');?></li>
-			<li><?=anchor(base_url().'index.php/sales_dbmemo','Debit Memo','class="info_link"');?></li>
+					<ul><li><span>Sales Order</span>
+						<ul>
+							<li><?=anchor(base_url().'index.php/sales_order/add#new_so','Buat Sales Order','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/sales_order','Daftar Sales Order','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/sales_order/print_more#print_more_so','Cetak Banyak SO','class="info_link"  ');?></li>
+						</ul>
+						</li>
+					</ul>
+					<ul><li><span>Delivery Order</span><ul>
+							<li><?=anchor(base_url().'index.php/delivery_order/add#new_do','Buat DO Baru','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/delivery_order','Daftar Delivery Order (DO)','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/delivery_order/add_from_so#add_from_so','Generate Dari SO','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/delivery_order/print_more#print_more_do','Cetak Banyak DO','class="info_link"  ');?></li>
+						</ul></li>
+					</ul>
+					<ul><li><span>Sales Invoice</span><ul>
+							<li><?=anchor(base_url().'index.php/invoice/add#new_invoice','Buat Sales Invoice Baru','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/invoice','Daftar Sales Invoice','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/invoice/add_from_so#add_invoice_from_so','Generate From Sales Order','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/invoice/add_from_do#add_invoice_from_do','Generate From Delivery Order','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/invoice/print_more#print_more_invoice','Cetak Banyak Sales Invoice','class="info_link"  ');?></li>
+						</ul></li>
+					</ul>
+					<ul><li><span>Payments</span><ul>
+							<li><?=anchor(base_url().'index.php/payment/add#new_invoice_payment','Buat Pembayaran Invoice Baru','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/payment','Daftar Pembayaran Invoice','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/payment/approval','Proses Approve Payment','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/payment/print_more#print_more_payment','Cetak Banyak Payment','class="info_link"  ');?></li>
+						</ul></li>
+					</ul>
+					<ul><li><span>Sales Return Invoice</span><ul>
+							<li><?=anchor(base_url().'index.php/sales_retur/add#new_invoice_retur','Buat Sales Retur Baru','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/sales_retur','Daftar Sales Return','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/sales_retur/approval','Proses Approve Retur','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/sales_retur/print_more#print_more_retur','Cetak Banyak Retur','class="info_link"  ');?></li>
+						</ul></li>
 					</ul>
 				</li>
+				<li><?=anchor(base_url().'index.php/sales_crmemo','Kredit Memo','class="info_link"');?></li>
+				<li><?=anchor(base_url().'index.php/sales_dbmemo','Debit Memo','class="info_link"');?></li>
+			</ul>
+			</li>
 				<li   data-options="state:'closed'">
 					<span>Report</span>
 					<ul>

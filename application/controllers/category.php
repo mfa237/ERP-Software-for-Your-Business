@@ -64,6 +64,7 @@ class Category extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->category_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -116,6 +117,7 @@ class Category extends CI_Controller {
 	 
         
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->category_model->delete($id);
 	 	$this->browse();
 	}

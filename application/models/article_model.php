@@ -27,7 +27,7 @@ function __construct(){
 	}
 	function get_by_id($id){
 		$this->db->where($this->primary_key,$id);
-		return $this->db->get($this->table_name);
+		return $this->db->get($this->table_name);		 
 	}
 	function save($data){
 		$data['date_post']= date( 'Y-m-d H:i:s', strtotime($data['date_post']));

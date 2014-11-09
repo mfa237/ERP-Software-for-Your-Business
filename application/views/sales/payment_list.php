@@ -1,6 +1,6 @@
 		 
 	<table id="dgPay" class="easyui-datagrid"  
-		style="width:800px;min-height:800px"
+		style="min-height:800px"
 		data-options="
 			iconCls: 'icon-edit',
 			singleSelect: true,

@@ -22,6 +22,9 @@ class Absensi extends CI_Controller {
 		echo datasource($sql);
 	}
 	function data_nip($nip,$periode){
+		 $nip=urldecode($nip);
+		 $periode=urldecode($periode);
+		
 		$this->load->model('periode_model');
 		$periode=$this->periode_model->get_by_id($periode)->row();
 		$sql="select a.tanggal,e.nip,e.nama,a.time_in,a.time_out,a.id,a.ot_in,a.ot_out 
@@ -50,6 +53,7 @@ class Absensi extends CI_Controller {
 		else {echo json_encode(array("msg"=>"Error ".mysql_error()));}
 	}
 	function detail($nip=''){
+		 $nip=urldecode($nip);
 		$data['nip']=$nip;
 		$this->load->model('periode_model');
 		$data['periode']=date("Y-m");	///$this->periode_model->current_periode();

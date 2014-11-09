@@ -36,7 +36,8 @@ class Shipping_locations extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_80030'))return false;   
+        $this->browse();
 	}
 	function get_posts(){
 		$data['location_number']=$this->input->post('location_number');
@@ -80,6 +81,7 @@ class Shipping_locations extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->shipping_locations_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -125,6 +127,7 @@ class Shipping_locations extends CI_Controller {
         echo datasource($sql);		
     }
 	function delete($id){
+		$id=urldecode($id);
 	 	$this->shipping_locations_model->delete($id);
 	 	$this->browse();
 	}

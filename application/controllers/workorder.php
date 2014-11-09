@@ -2,7 +2,7 @@
 
 class Workorder extends CI_Controller {
 
-private $limit=10;
+	private $limit=10;
     private $file_view='manuf/work_order';
     private $table_name='work_order';
     private $sql="select work_order_no,start_date,expected_date,customer_number,comments,wo_status,special_order
@@ -50,7 +50,8 @@ private $limit=10;
 		$data['company']='';
 		if($record==NULL)$data['work_order_no']=$this->nomor_bukti();
 		if($data['start_date']=='')$data['start_date']= date("Y-m-d H:i:s");
-		if($data['expected_date']=='')$data['expected_date']= date("Y-m-d H:i:s");						
+		if($data['expected_date']=='')$data['expected_date']= date("Y-m-d H:i:s");			
+		$data['street']='';
 		return $data;
 	}
 	function index()
@@ -145,6 +146,13 @@ private $limit=10;
 			 $data['mode']='view';
 			 $data['detail']=$this->load_detail($id);
 		 }	
+		 if($data['customer_number']!=''){
+			$this->load->model('customer_model');
+			if($q=$this->customer_model->get_by_id($data['customer_number'])){
+				$data['company']=$q->row()->company;
+				$data['street']=$q->row()->street.' Phone: '.$q->row()->phone;
+			}
+		 }
 		 $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
@@ -175,15 +183,25 @@ private $limit=10;
 
 		$this->load->library('search_criteria');
 		
-		$faa[]=criteria("Kode","sid_number");
-		$faa[]=criteria("Nama","sid_nama");
+		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
+		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
+		$faa[]=criteria("Pelanggan","sid_cust");
+		$faa[]=criteria("Nomor WO","sid_number");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
+		$no=$this->input->get('sid_number');
     	$sql=$this->sql." where 1=1";
-		if($this->input->get('sid_number')!='')$sql.=" and work_order_no='".$this->input->get('sid_number')."'";	
-		if($this->input->get('sid_nama')!='')$sql.=" customer_number like '".$this->input->get('sid_nama')."%'";
+		if($no!='') {
+			$sql.=" and work_order_no='".$no."'";
+		} else {
+			$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+			$sql.=" and start_date between '$d1' and '$d2'";
+			if($this->input->get('sid_number')!='')$sql.=" and customer_number='".$this->input->get('sid_number')."%'";
+		}
+		
         $sql.=" limit $offset,$limit";
 		
         echo datasource($sql);
@@ -235,7 +253,8 @@ private $limit=10;
 	}
 	function items($nomor)
 	{
-		$sql="select p.item_number,i.description,p.quantity,p.id as line_number,p.unit
+		$sql="select p.item_number,i.description,p.quantity,p.id as line_number,p.unit,
+		p.price,p.total
 		from work_order_detail p
 		left join inventory i on i.item_number=p.item_number
 		where work_order_no='$nomor'";

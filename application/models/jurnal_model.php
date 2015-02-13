@@ -33,10 +33,17 @@ function __construct(){
 		$this->db->where("gl_id",$id);
 		return $this->db->get($this->table_name);
 	}
+	function exist_gl_id($id){
+		return $this->get_by_gl_id($id)->num_rows();
+	}
 	
 	function save($data){
 		$data['date']= date('Y-m-d H:i:s', strtotime($data['date']));
-		return $this->db->insert($this->table_name,$data);
+		$ok=$this->db->insert($this->table_name,$data);
+		if(!$ok){
+			echo mysql_error();
+		}
+		return $ok;
 	}
 	function update($id,$data){
 	$data['date']= date('Y-m-d H:i:s', strtotime($data['date']));
@@ -71,16 +78,15 @@ function __construct(){
 			$data['debit']=abs($data['credit']);
 			$data['credit']=0;
 		}
-
-		//var_dump($data);
-
 		if($account_id=="" or $account_id=="0") {
-			echo "ERR_INVALID_COA";
+			echo "</br>ERR_INVALID_COA</br>AccountId [$account_id] not found !</br>".$operation;
 			return false;
 		}
-		
-		
-		return $this->save($data);
+		if($data['debit']-$data['credit']==0){
+			return false;
+		} else {
+			$ok=$this->save($data);
+		}
 	}
 	function del_jurnal($gl_id){
 		//return false;
@@ -88,7 +94,7 @@ function __construct(){
 			if($r=$q->row()){
 				$this->load->model("periode_model");
 				if($this->periode_model->closed($r->date)){
-					echo "ERR_PERIOD";
+					///echo "ERR_PERIOD";
 					return false;
 				}
 			}
@@ -98,20 +104,22 @@ function __construct(){
 	}
 	function balance($gl_id) {
 		if($this->db->query("select count(1) as cnt from gl_transactions where gl_id='$gl_id'")->row()->cnt==0) {
-			echo "ERR_GL_NOT_FOUND";
+			//echo "ERR_GL_NOT_FOUND";
 			return false;
 		} else {
 			return $this->db->query("select sum(debit)-sum(credit) as z_amt 
 			from gl_transactions where gl_id='$gl_id'")->row()->z_amt==0;
 		}
 	}
-	function validate($gl_id){
+	function validate($gl_id,$delete=true){
 		if(!$this->balance($gl_id)){
-			echo "ERR_NOT_BALANCE";
-			$this->del_jurnal($gl_id);
+			echo "</br>ERR_NOT_BALANCE";
+			if($delete) $this->del_jurnal($gl_id);
 			return false;
 		}
 		return true;
 	}
-
+	
 }
+
+?>

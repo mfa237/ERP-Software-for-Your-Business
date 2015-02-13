@@ -1,12 +1,12 @@
-<div><h4>FORMULIR PINJAMAN KARYAWAN</H4>
+<legend>FORMULIR PINJAMAN KARYAWAN</legend>
 <div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/pinjaman/add');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/pinjaman/view/'.$loan_number);		
-	echo link_button('Search','','search','true',base_url().'index.php/pinjaman');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Add','','add','true',base_url().'index.php/payroll/pinjaman/add');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/payroll/pinjaman/view/'.$loan_number);		
+	echo link_button('Search','','search','true',base_url().'index.php/payroll/pinjaman');		
+	echo link_button('Help', 'load_help(\'pinjaman\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -25,7 +25,7 @@
  
 	<form id="frmLoan"  method="post">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	   <table>
+	   <table class='table2' width='100%'>
 			<tr><td>Nomor Pinjaman</td>
 				<td>
 					<?php
@@ -98,7 +98,7 @@
     function save_this(){
         if($('#nip').val()===''){alert('Isi dulu NIP Karyawan !');return false;};
 
-		url='<?=base_url()?>index.php/pinjaman/save';
+		url='<?=base_url()?>index.php/payroll/pinjaman/save';
 			$('#frmLoan').form('submit',{
 				url: url,
 				onSubmit: function(){
@@ -117,7 +117,7 @@
 			});
     }
 	function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/pinjaman");
+			window.parent.$("#help").load("<?=base_url()?>index.php/payroll/help/load/pinjaman");
 	}
 		
 </script>  

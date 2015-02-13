@@ -1,5 +1,44 @@
 //new run module on tab
 var index = 0;
+$("<style type='text/css'>"+
+"#boxMX{display:none;background: #333;padding: 10px;border: 2px solid #ddd;"+
+"float: left;font-size: 1.2em;position: fixed;top: 50%; left: 50%;z-index: 99999;"+
+"box-shadow: 0px 0px 20px #999; -moz-box-shadow: 0px 0px 20px #999;"+
+"-webkit-box-shadow: 0px 0px 20px #999; border-radius:6px 6px 6px 6px; "+
+"-moz-border-radius: 6px; -webkit-border-radius: 6px; "+
+"font:13px Arial, Helvetica, sans-serif; padding:6px 6px 4px;width:300px; color: white;"+
+"}</style>").appendTo("head");
+function alertMX(t){
+	$( "body" ).append( $( "<div id='boxMX'><p class='msgMX'></p></div>" ) );
+	$('.msgMX').text(t); 
+	var popMargTop = ($('#boxMX').height() + 24) / 2, 
+	popMargLeft = ($('#boxMX').width() + 24) / 2; 
+	$('#boxMX').css({ 'margin-top' : -popMargTop,
+	'margin-left' : -popMargLeft}).fadeIn(600);
+	$("#boxMX").click(function() { $(this).remove(); });  
+};
+
+	function is_assoc($a){	
+	   $a = array_keys($a);
+	   return ($a != array_keys($a));
+	}
+
+	
+	function add_tab_parent(title,url){
+		if (window.parent.$('#tt').tabs('exists', title)){ 
+			window.parent.$('#tt').tabs('select', title); 
+		} else { 			
+			index++;
+			var content = '<iframe scrolling="auto" frameborder="0" src="'+url+'" style=";width:99%;height:900px;"></iframe>'; 
+			window.parent.$('#tt').tabs('add',{
+				title: title,
+				content: content,
+				closable: true
+			});
+		}	
+		 window.top.scrollTo(0,0);
+	}
+	
 	function add_tab(title,url){
 		if ($('#tt').tabs('exists', title)){ 
 			$('#tt').tabs('select', title); 
@@ -24,28 +63,29 @@ var index = 0;
 //logging on top section
 var t=0;
 	function hide_log(){
-		window.parent.$("#msg-box-wrap").slideUp( 300 ).delay( 800 ).fadeOut( 400 );
+		//window.parent.$("#msg-box-wrap").slideUp( 300 ).delay( 800 ).fadeOut( 400 );
+		$("#boxMX").slideUp(300).delay(800).fadeOut(400);
 	}
 	function show_log(){
 		window.parent.$("#msg-box-wrap").slideUp( 300 ).delay( 50 ).fadeIn( 100 );
-		t=setTimeout(function(){hide_log()}, 5000);
+		t=setTimeout(function(){hide_log()}, 3000);
 	}
 	function log_msg(msg) {
-		var s="<div id='msg-box' class='alert alert-success  thumbnail'>";
-		s=s+"<button type='button' class='close' data-dismiss='alert'>x</button>";
-		s=s+"<div id='msg-text' class=' glyphicon glyphicon-retweet'> "+msg+"</div></div>";			
+		var s="<div id='msg-box' class=''>";
+		s=s+"<div id='msg-text' class='log-msg-ok'> "+msg+"</div></div>";			
 		window.parent.$("#msg-box-wrap").html(s);
 		show_log();
+		alertMX(msg);	
 	}
 	function log_err(msg) {
-		var s="<div id='msg-box' class='alert alert-danger thumbnail'>";
-		s=s+"<button type='button' class='close' data-dismiss='alert'>x</button>";
-		s=s+"<div id='msg-text'  class='glyphicon glyphicon-retweet'> "+msg+"</div></div>";			
+		var s="<div id='msg-box' class=''>";
+		s=s+"<div id='msg-text'  class='log-msg-err'> "+msg+"</div></div>";			
 		window.parent.$("#msg-box-wrap").html(s);
 		show_log();
+		alertMX(msg);	
 	}
 
-var utils = {};
+	var utils = {};
 	utils.inArray = function(searchFor, property) {
 		var retVal = -1;
 		var self = this;
@@ -61,15 +101,14 @@ var utils = {};
 		return retVal;
 	};
 	Array.prototype.inArray = utils.inArray;
+	
 function formatNumber (num) {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
 
 function run_menu(path){
-     xurl=CI_ROOT+path;
-     
+     xurl=CI_ROOT+path;     
      window.open(xurl,'_self');
-    
  }
 function post_this(xurl,param,divout){
     console.log(xurl);
@@ -92,7 +131,7 @@ function get_this(xurl,param,divout){
 		console.log(xurl);        
         if(divout!=''){
 			$('#'+divout).html("<img src='"+CI_BASE+"images/loading.gif'>");
-        	event.preventDefault();
+//        	event.preventDefault();
             $.ajax({
                     type: "GET",
                     url: xurl,
@@ -116,32 +155,19 @@ function get_this(xurl,param,divout){
             return false;
         }
 }
-// this function create an Array that contains the JS code of every <script> tag in parameter
-// then apply the eval() to execute the code in every script collected
-function parseScript(strcode) {
-  var scripts = new Array();         // Array which will store the script's code
-  // Strip out tags
-  while(strcode.indexOf("<script") > -1 || strcode.indexOf("</script") > -1) {
-    var s = strcode.indexOf("<script");
-    var s_e = strcode.indexOf(">", s);
-    var e = strcode.indexOf("</script", s);
-    var e_e = strcode.indexOf(">", e);
-    // Add to scripts array
-    scripts.push(strcode.substring(s_e+1, e));
-    // Strip from strcode
-    strcode = strcode.substring(0, s) + strcode.substring(e_e+1);
-  }
-  
-  // Loop through every script collected and eval it
-  for(var i=0; i<scripts.length; i++) {
-    try {
-      eval(scripts[i]);
-    }
-    catch(ex) {
-      // do what you want here when a script fails
-    }
-  }
+function exist_key(table,field,value){
+	var exist=false;
+	$.ajax({type: "GET",url: CI_BASE+"index.php/table/exist_key",
+		data:{"table":table,"field":field,"value":value},
+		success: function(msg){
+			alert(msg);
+			var result = eval('('+msg+')');
+			exist=result.exist;
+		},error: function(msg){alert(msg);}
+	});
+	return exist;
 }
+ 
 function myformatter(date){
 
         var y = date.getFullYear();
@@ -177,8 +203,7 @@ function myparser(s){
         }
 
 }
-function next_number(kode,divOutput)
-{
+function next_number(kode,divOutput){
     $.ajax({
         type: "GET",
         url: CI_ROOT+'autonumber',
@@ -227,7 +252,9 @@ function number_format(num,dig,dec,sep) {
   return s+x.join("")+(num[1]?dec+num[1]:"");
 }		
 
-
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 // $(document).ready(function(){
 //	 $('.ajax').click(function(e){	  
 //                e.preventDefault();
@@ -262,3 +289,30 @@ function number_format(num,dig,dec,sep) {
 //        });
 //
 // })
+	function lookup(fields,form,xurl){
+		var dlg="dialog_"+form;
+		var table="table_"+form;
+		if(! $("#"+dlg).html() ){
+			var tbl="<div id='"+dlg+"'><table id='"+table+"' width='90%'></table></div>" +
+			"<div id='boxTool' class='box-gradient'> " +
+			" Enter Text: <input id='search_"+form+"' style='width:180' " +
+			" name='search_"+form+"'>&nbsp <a href='#' class='btn btn-sm btn-info' " +
+			" iconCls='icon-search' plain='false' " +
+			" onclick='on_search_"+form+"();return false;'>&nbsp Search &nbsp </a> " +
+			" <a href='#' class='btn btn-sm btn-info' iconCls='icon-ok' " +
+			" plain='false' onclick='on_select_"+form+"();return false;'> &nbsp  Select &nbsp </a> </div>" +
+			"  ";
+			$("body").append( $( tbl ) );
+			$('#'+table).datagrid({url:'',singleSelect:true, columns: fields});			
+		}
+		$('#'+table).datagrid({url:xurl});
+		$('#'+table).datagrid('reload');
+
+		$("#"+dlg).dialog({title: 'Pilih baris.', toolbar: '#boxTool',
+			width: 500, height: 400,   closed: false,   cache: false,
+			modal: true});		
+		$("#"+dlg).dialog("open").dialog("setTitle","Pilih baris.");
+	}
+	function load_help(id) {
+		window.parent.$("#help").load(CI_ROOT+"help/load/"+id);
+	}

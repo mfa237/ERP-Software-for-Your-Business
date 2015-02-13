@@ -1,143 +1,120 @@
-<h1>SUPPLIER ALTERNATIF</h1>
-<table class="table1x" style="width:500px">
-	<tr>
-		<td>Kode Barang</td><td><?=$item_number?></td>
-	</tr>
-	<tr>
-		<td>Nama Barang</td><td><?=$description?></td>		
-	</tr>
-	<tr><td colspan="4">
-		<div >
-			<table id="tbl_unit" class="table1" style="width:500px">
-				<thead>
-					<tr>
-						<td>Kode Supplier</td><td>Nama Supplier</td>
-						<td>Lead Time</td><td>Harga Beli</td>
-						<td>&nbsp;</td>
-					</tr>
-				</thead>
-				<tbody>
-					<?     			
-					$CI =& get_instance();
-					
-					$sql="select a.supplier_number,s.supplier_name,a.supplier_item_number,a.lead_time,a.cost
-					 from inventory_suppliers a 
-					 left join suppliers s on s.supplier_number=a.supplier_number
-					  where a.item_number='$item_number'";
-					$rst_item=$CI->db->query($sql);
-					foreach($rst_item->result() as $row_item){
-						echo "<tr><td>".$row_item->supplier_number."</td>
-						<td>".$row_item->supplier_name."</td>
-						<td>".$row_item->lead_time."</td>
-						<td>".$row_item->cost."</td>
-						<td>".link_button('',"del_item('".$row_item->supplier_number."')","remove")."
-												
-						";
-					}
-					?>
-					<tr></tr>
-				</tbody>
-			</table>
-		</div>
-		<div>
-			<form id="frmNew" method="POST" class="box6">
-				<h3>Silahkan input data supplier alternatif dibawah ini kemudian tekan tombol simpan</h3>
-				<table id="tbl">
-					<tr>	
-						<td>Kode Supplier</td><td><input type="text" name="supplier_number" id="supplier_number">
-							<?=link_button('','searchItem()','search');?>
-						</td>
-					</tr>
-					<tr>	
-						<td>Lead Time (Day)</td><td><input type="text" name="lead_time" id="lead_time"></td>
-					</tr>
-					<tr>	
-						<td>Harga Beli</td><td><input type="text" name="cost" id="cost"></td>
-					</tr>
-					<tr><td colspan="2"></td> </tr>
-					 
-				</table>
-				<?=link_button("Tambah","add_unit()","save")?>
-			</form>
-		</div>
-	</td></tr>
-</table>
-<?
-
-?>
-<div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#dlg-buttons">
-     <div id='divItemSearchResult'> 
-		<table id="dgItemSearch" class="easyui-datagrid"  
-			data-options="
-				toolbar: '#tb_search',
-				singleSelect: true,
-				url: '<?=base_url()?>index.php/supplier/select'
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'supplier_name',width:150">Nama Supplier</th>
-					<th data-options="field:'supplier_number',width:80">Kode Supplier</th>
-				</tr>
-			</thead>
-		</table>
-    </div>   
-</div>	   
-<div id="tb_search" style="height:auto">
-	Enter Text: <input  id="search_item" style='width:180' 
- 	name="search_item">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
+<div id="dlgSupp" class="easyui-dialog"  buttons="#tbSupp"
+	style="width:400px;height:300px;padding:5px 5px" closed="true" >
+	<form id="frmSupp" name="frmSupp" method="POST">
+	<table class="table2" width="100%">
+	<? 
+		$search=link_button('','select_supplier()','search');
+		my_input_tr("Kode Supplier","supplier_number","",$search);
+		my_input_tr("Nama Supplier","supplier_name");
+		my_input_tr("Lead Time (Day)","lead_time");
+		my_input_tr("Harga Beli","cost");
+		my_input_tr("Kode Barang Supplier","supplier_item_number");
+	?>
+	</table>
+	</form>
+</div>
+<div id='tbSupp'>
+	<? 
+	echo link_button("Save","dlgSupp_Save()","save");
+	echo link_button("Close","dlgSupp_Close()","cancel");
+	?>
 </div>
 
 <script language="JavaScript">
-	function add_unit(){
-		url='<?=base_url()?>index.php/inventory/supplier_add/<?=$item_number?>';
-			$('#frmNew').form('submit',{
-				url: url,
-				onSubmit: function(){
-					return $(this).form('validate');
-				},
+	function select_supplier(){
+		var fields=[[
+				{field:'supplier_number',title:'Supplier Number',width:100},
+				{field:'supplier_name',title:'Supplier Name',width:100},
+				{field:'city',title:'City',width:100,align:'left'}
+			]];
+		var url='<?=base_url()?>index.php/supplier/select/';
+		void lookup(fields,"supp",url);
+	}
+	function on_search_supp(){
+		var search=$("#search_item").val();
+		var url='<?=base_url()?>index.php/supplier/select/'+search;
+		$('#table_supp').datagrid({url:url});
+		$('#table_supp').datagrid('reload');
+	}
+	function on_select_supp(){
+		var row = $('#table_supp').datagrid('getSelected');
+		if (row){
+			$("#frmSupp input[name='supplier_number']").val(row.supplier_number);
+			$("#frmSupp input[name='supplier_name']").val(row.supplier_name);
+			$("#dialog_supp").dialog("close");
+		}
+	}
+	function dlgSupp_Clear(){
+		$("#frmSupp").trigger('reset'); 
+	}
+	function dlgSupp_Add(){
+		dlgSupp_Clear();
+		$('#dlgSupp').dialog('open').dialog('setTitle','Supplier Alternative');
+	}
+	function dlgSupp_Edit(){
+		var row = $('#dgSupp').datagrid('getSelected');
+		if (row){
+			var supplier_number=row.supplier_number;
+			if(supplier_number==""){alert("Kode tidak ada !");return false;}
+			xurl=CI_ROOT+'inventory/supplier_load/<?=$item_number?>/'+supplier_number;                             
+			$.ajax({
+				type: "GET", url: xurl,
 				success: function(result){
 					var result = eval('('+result+')');
 					if (result.success){
-			            window.open(CI_ROOT+'inventory/supplier/<?=$item_number?>','_self');
-					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
+						$("#frmSupp input[name=supplier_number]").val(result.supplier_number);
+						$("#frmSupp input[name=supplier_name]").val(result.supplier_name);
+						$("#lead_time").val(result.lead_time);
+						$("#cost").val(result.cost);
+						$("#supplier_item_number").val(result.supplier_item_number);
+						$('#dlgSupp').dialog('open').dialog('setTitle','Supplier Alternative');
 					}
+				},
+				error: function(msg){$.messager.alert('Info',msg);}
+			});       
+		}
+		
+	}
+	function dlgSupp_Close(){
+		$("#dlgSupp").dialog("close");
+	}
+	function dlgSupp_Save(){
+		url='<?=base_url()?>index.php/inventory/supplier_add/<?=$item_number?>';
+		$('#frmSupp').form('submit',{
+			url: url,
+			onSubmit: function(){
+				return $(this).form('validate');
+			},
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success){
+					dlgSupp_Close();
+					dgSupp_Refresh();
+				} else {
+					$.messager.show({
+						title: 'Error',
+						msg: result.msg
+					});
 				}
-			});
+			}
+		});
  	}
- 	function del_item(kode){
+ 	function dlgSupp_Delete(){
+		var item_number=$("#item_number").val();
+		var kode='';
+		if(item_number==""){alert("Kode belum diisi !");return false}
+		var row = $('#dgSupp').datagrid('getSelected');
+		if (row) kode=row.supplier_number;
         xurl=CI_ROOT+'inventory/supplier_delete/<?=$item_number?>/'+kode;                             
         $.ajax({
             type: "GET",
             url: xurl,
             success: function(msg){
-	            window.open(CI_ROOT+'inventory/supplier/<?=$item_number?>','_self');
+				dlgSupp_Close();
+				dgSupp_Refresh();
             },
             error: function(msg){$.messager.alert('Info',msg);}
         });         
  	}
-	function searchItem()	{
-			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data supplier');
-			nama=$('#search_item').val();
-			xurl='<?=base_url()?>index.php/supplier/select/'+nama;
-			$('#dgItemSearch').datagrid({url:xurl});
-			$('#dgItemSearch').datagrid('reload');
-	}
-	function selectSearchItem()
-		{
-			var row = $('#dgItemSearch').datagrid('getSelected');
-			if (row){
-				$('#supplier_number').val(row.supplier_number);
-				$('#dlgSearchItem').dialog('close');
-			}
-			
-		}
 	
 </script>

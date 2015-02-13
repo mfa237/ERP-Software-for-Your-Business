@@ -4,7 +4,7 @@
 <head><title>MaxOn ERP Online Demo</title>
 </head>
 
-<body> 
+<body style='background-image:url("<?=base_url()?>images/back2.jpg")'> 
 <div class="container " >
 	<div class="row ">		 
 			<div class="panel panel-primary"  style="margin:5px;border:0px solid white">
@@ -25,7 +25,7 @@
 								 
 							</div>
 							<div class="form-group">
-								<input class="btn btn-primary" type="button" value="Login" onclick="login()"   >
+								<input class="btn btn-primary" type="button" value="Login" onclick="login()"   style="height:30px">
 								<div id="lblMessage" class="alert alert-danger" style="display:none;margin-top:10px"></div>
 							</div>
 							<div>
@@ -38,10 +38,14 @@
 		 
     </div>
  
-	<div class="row">		
+	<div class="row">
+		<div class="panel panel-primary"  style="margin:5px;border:0px solid white">
+		<div class='panel-body'>
 		<img src="images/logo_maxon.png" style="float:left">
-		<div class="copyright">Copyright © 2000-2020 <br>MaxOn Enterprise Resource Application. 
+		<div class="copyright" style='font-size:12px'>Copyright © 2000-2020 <br>MaxOn Enterprise Resource Application. 
 		<br>All Rights Reserved.<br>http://www.talagasoft.com</div>                        
+		</div>
+		</div>
 	</div>	
 </div>   
    
@@ -83,23 +87,3 @@ echo $script_head;
 			});
     }
 </script>
- 
-       
-
-<?
-//echo $library_src;
-//echo $script_head;
-?>
-
-<script type="text/javascript">
-//<![CDATA[
-$(document).ready(function(){
-	  $('.flexslider').flexslider({
-	    animation: "slide"
-	  });
-});
-
-
-//]]>
-</script>
-

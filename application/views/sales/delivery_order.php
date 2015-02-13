@@ -1,5 +1,5 @@
-<div><h4>SURAT JALAN </H4>
-<div class="thumbnail">
+<h4>SURAT JALAN </H4>
+<div class="thumbnail box-gradient">
 	<? 
 		echo link_button('Save', 'save()','save');		
 		echo link_button('Print', 'print()','print');		
@@ -7,28 +7,22 @@
 		if($mode=="view") echo link_button('Delete','','cut','true',base_url().'index.php/delivery_order/delete/'.$invoice_number);		
 		echo link_button('Search','','search','true',base_url().'index.php/delivery_order');		
 		if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/delivery_order/view/'.$invoice_number);		
-		echo link_button('Help', 'load_help()','help');		
+		echo link_button('Help', 'load_help(\'delivery_order\')','help');		
 
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('delivery_order')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			event.preventDefault(); 
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/invoice");
-		}
-	</script>
 </div>
 
 <div class="thumbnail">	
 <form id="frmDo"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	<table>     
+	<table class='table2' width='100%'>     
 	<tr><td>Nomor</td>
         <td>  
             <?php
@@ -85,11 +79,10 @@
        </tr>
        
 		</table>
-		<h5>SELECT ITEMS</h5>
-		<div id='divItem'>
-				<table id="dgItem" class="easyui-datagrid"  
+		<div id='divItem' class='margin-top:10px'>
+				<table id="dgItem" class="easyui-datagrid"  width='100%'
 					data-options="
-						iconCls: 'icon-edit',
+						iconCls: 'icon-edit',fixColumns:true, 
 						singleSelect: true,
 						toolbar: '#tb',
 						url: '<?=base_url()?>index.php/delivery_order/items/<?=$invoice_number?>/json'
@@ -112,9 +105,9 @@
 <div id='dlgSelectSo'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
      closed="true" buttons="#button-select-so">
      <div id='divSelectSoResult'> 
-		<table id="dgSelectSo" class="easyui-datagrid"  
+		<table id="dgSelectSo" class="easyui-datagrid"  width='100%'
 			data-options="
-				toolbar: '',
+				toolbar: '',fixColumns: true,
 				singleSelect: true,
 				url: ''
 			">
@@ -129,10 +122,10 @@
 		</table>
     </div>   
 </div>
-<div id="button-select-so" style="height:auto">
+<div id="button-select-so" class='box-gradient'>
 	Enter Text: <input  id="search_so" style='width:180' name="search_so">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_so_open()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_so_number()">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_so_open();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_so_number();return false;">Select</a>
 </div>
 
 

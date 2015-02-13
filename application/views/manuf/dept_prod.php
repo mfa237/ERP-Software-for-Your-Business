@@ -1,13 +1,11 @@
-<div><div class="thumbnail">
 <legend>DEPARTEMENT PRODUKSI</legend>
-
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/dept_prod/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/dept_prod');		
-	echo link_button('Help', 'load_help()','help');		
-	
+	echo link_button('Add','','add','true',base_url().'index.php/manuf/dept_prod/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/manuf/dept_prod');		
+	echo link_button('Help', 'load_help(\'dept_prod\')','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
@@ -16,13 +14,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/dept_prod");
-		}
-	</script>
-	
-</div></H1>
+</div>
 <div class="thumbnail">	
 
 <?php if (validation_errors()) { ?>
@@ -37,7 +29,7 @@
 <? } ?>
 
 
-<form id="myform" role="form" method="post" action="<?=base_url()?>index.php/dept_prod/save"  class="form-horizontal" >
+<form id="myform" role="form" method="post" action="<?=base_url()?>index.php/manuf/dept_prod/save"  class="form-horizontal" >
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<div class="form-group">
 	<label for="dept_code" class="col-sm-3 control-label">Kode Department</label>

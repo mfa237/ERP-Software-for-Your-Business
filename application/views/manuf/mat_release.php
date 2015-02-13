@@ -1,12 +1,12 @@
-<div><div class="thumbnail">
 <legend>MATERIAL RELEASE</legend>
-
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/mat_release/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/mat_release');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Add','','add','true',base_url().'index.php/manuf/mat_release/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/manuf/mat_release');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/manuf/mat_release/view/'.$mat_rel_no);		
+	echo link_button('Help', 'load_help(\'mat_release\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -16,12 +16,6 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/mat_release");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">	
 
@@ -39,55 +33,35 @@
 
 <form id="frmExec" method='post'>
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	<table>
+	<table class='table2' width='100%'>
 		<tbody>
 			<tr><td>Release Number</td>
 				<td><?=form_input("mat_rel_no",$mat_rel_no,"id='mat_rel_no'")?></td>
-				<td rowspan='6'>
-					<strong>Barang yang diproduksi berdasarkan nomor exec [<?=$exec_number?>]</strong>
-					<p><?=link_button('Clear Item Release','clear_item_release()','remove');?></p>
-					<table id="dgExecItem" class="easyui-datagrid"  
-						style="width:500px;min-height:auto"
-						data-options="
-							iconCls: 'icon-edit',
-							singleSelect: true,
-							toolbar: '#tbExec',
-							url: '<?=base_url()?>index.php/work_exec/items/<?=$exec_number?>'
-						">
-						<thead>
-							<tr>
-								<th data-options="field:'item_number',width:80">Kode Barang</th>
-								<th data-options="field:'description',width:150">Nama Barang</th>
-								<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-								<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-								<th data-options="field:'price',width:50,align:'left',editor:'text'">Cost</th>
-								<th data-options="field:'total',width:50,align:'left',editor:'text'">Total</th>
-								<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-							</tr>
-						</thead>
-					</table>
-				</td>
+				<td>Warehouse</td><td><?=form_dropdown("warehouse",$warehouse_list,$warehouse,"id='warehouse'")?></td>
 			</tr>
-			<tr><td>Date</td><td><?=form_input("date_rel",$date_rel,"id='date_rel' class='easyui-datetimebox' style='width:150px'")?></td></tr>
+			<tr><td>Date</td>
+				<td><?=form_input("date_rel",$date_rel,"id='date_rel' 
+					class='easyui-datetimebox' style='width:150px'")?>
+				</td>
+				<td>Person</td><td><?=form_input("person",$person,"id='person'")?></td>
+			</tr>
 			<tr><td>Work Exec Number</td><td><?=form_input("exec_number",$exec_number,"id='exec_number'")?>
 				<?=link_button('','lookup_exec()','search');?>
+				<?=link_button('View','wo_exec_view()','tip');?>
+			</td>
+			<td>Work Order Number</td><td><?=form_input("wo_number",$wo_number,"id='wo_number'")?>
 			</td></tr>
-			<tr><td>Work Order Number</td><td><?=form_input("wo_number",$wo_number,"id='wo_number'")?>
-			</td></tr>
-			<tr><td>Warehouse</td><td><?=form_dropdown("warehouse",$warehouse_list,$warehouse,"id='warehouse'")?></td></tr>
-			<tr><td>Person</td><td><?=form_input("person",$person,"id='person'")?></td></tr>
 			<tr><td>Comments</td><td colspan='6'><?=form_input("comments",$comments,"id='comments' style='width:500px'")?></td></tr>
 			<tr><td colspan='7'><i>*** Item material release akan diload setelah anda tekan simpan</i></td></tr>
 		</tbody>
 	</table>
 	<div id="divWoItem"> 
-		<table id="dg" class="easyui-datagrid"  
-			style="width:auto;min-height:auto"
+		<table id="dg" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true,
 				singleSelect: true,
 				toolbar: '#tb',
-				url: '<?=base_url()?>index.php/mat_release/items/<?=$mat_rel_no?>'
+				url: '<?=base_url()?>index.php/manuf/mat_release/items/<?=$mat_rel_no?>'
 			">
 			<thead>
 				<tr>
@@ -97,6 +71,8 @@
 					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
 					<th data-options="field:'cost',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Cost</th>
 					<th data-options="field:'amount',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Total</th>
+					<th data-options="field:'warehouse',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Warehouse</th>
+					<th data-options="field:'line_exec_no',width:30,align:'right'">line_exec_no</th>
 					<th data-options="field:'id',width:30,align:'right'">Line</th>
 				</tr>
 			</thead>
@@ -120,11 +96,12 @@
 		</thead>
 	</table>
 </div>
+ 
 <script type="text/javascript">
     function save_this(){
   		if($('#mat_rel_no').val()==''){alert('Isi nomor bukti !');return false;}
   		if($('#exec_number').val()==''){alert('Pilih nomor work exec !');return false;}
-		url='<?=base_url()?>index.php/mat_release/save';
+		url='<?=base_url()?>index.php/manuf/mat_release/save';
 			$('#frmExec').form('submit',{
 				url: url,
 				onSubmit: function(){
@@ -135,7 +112,7 @@
 					if (result.success){
 						$('#mat_rel_no').val(result.mat_rel_no);
 						var no=$('#mat_rel_no').val();
-						window.open("<?=base_url()?>index.php/mat_release/view/"+no,"_self");
+						window.open("<?=base_url()?>index.php/manuf/mat_release/view/"+no,"_self");
 					} else {
 						$.messager.show({
 							title: 'Error',
@@ -152,7 +129,7 @@
 		if (row){
 			$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
 				if (r){
-					url='<?=base_url()?>index.php/mat_release/delete_item';
+					url='<?=base_url()?>index.php/manuf/mat_release/delete_item';
 					$.post(url,{work_exec_no:row.work_exec_no},function(result){
 						if (result.success){
 							$('#dgExec').datagrid('reload');	// reload the user data
@@ -170,7 +147,7 @@
 	function lookup_exec()
 	{
 		$('#dlgExec').dialog('open').dialog('setTitle','Cari nomor work execute');
-		$('#dgExec').datagrid({url:'<?=base_url()?>index.php/work_exec/select'});
+		$('#dgExec').datagrid({url:'<?=base_url()?>index.php/manuf/work_exec/select'});
 		$('#dgExec').datagrid('reload');
 	}
 	function select_exec()
@@ -180,9 +157,6 @@
 			$('#exec_number').val(row.work_exec_no);
 			$('#wo_number').val(row.wo_number);
 			$('#dlgExec').dialog('close');
-			$('#dgExecItem').datagrid({url:'<?=base_url()?>index.php/work_exec/items/'+row.work_exec_no});
-			$('#dgExecItem').datagrid('reload');
-			
 		}
 	}
 	function clear_item_release() {
@@ -190,7 +164,7 @@
   		if(no==''){alert('Pilih nomor release !');return false;}
 		$.messager.confirm('Confirm','Are you sure you want to remove this item material release ?',function(r){
 			if (r){
-				url='<?=base_url()?>index.php/mat_release/delete_material_release';
+				url='<?=base_url()?>index.php/manuf/mat_release/delete_material_release';
 				$.post(url,{mat_rel_no:no},function(result){
 					if (result.success){
 						save_this();
@@ -203,6 +177,12 @@
 				},'json');
 			}
 		});
+	}
+	function wo_exec_view(){
+		var exec_no=$("#exec_number").val();
+		var url="<?=base_url()?>index.php/manuf/work_exec/view/"+exec_no;
+		if(exec_no==""){alert("Kode WorkExec belum dipilih !");return false;}
+		add_tab_parent("view_exec",url);
 	}
 		
 </script>

@@ -1,5 +1,5 @@
-	<h3>MASTER SUPPLIER</H3>
-	<div class="thumbnail">
+	<legend>MASTER SUPPLIER</legend>
+	<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
@@ -7,23 +7,17 @@
 	echo link_button('Search','','search','true',base_url().'index.php/supplier');		
 	echo link_button('Refresh','','reload','true',base_url().'index.php/supplier/view/'.$supplier_number);		
 	echo link_button('Delete', 'delete_supplier()','cut');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'supplier\')','help');		
 	
 	?>
 
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('supplier')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/supplier");
-		}
-	</script>
-	
 </div>
  
 
@@ -32,7 +26,7 @@
 		<form id="myform"  method="post">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 		<?php echo validation_errors(); ?>
-		<table>
+		<table class='table2' width="100%">
 			<tr>
 				<td >Supplier Number</td><td >
 				<?php
@@ -98,9 +92,9 @@
 	</div>  
 
 	<div title="Cards" style="padding:10px">
-		<div class='thumbnail'>
+		<div class='thumbnail box-gradient'>
 			<form method="post">
-			<table>
+			<table width="100%">
 			<tr><td>Date From</td>
 			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" ');?></td>
 			<td>Date To</td>
@@ -110,8 +104,7 @@
 			</table>
 			</form>
 		</div>
-		<table id="dgCard" class="easyui-datagrid"  
-			style="min-height:700px"
+		<table id="dgCard" class="easyui-datagrid"  width="100%"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,  
@@ -137,7 +130,6 @@
    
 <script>
   	function save(){  		 
-		event.preventDefault(); 
   		if($('#supplier_number').val()==''){alert('Isi kode supplier !');return false;}
   		if($('#supplier_name').val()==''){alert('Isi nama supplier !');return false;}
 		url='<?=base_url()?>index.php/supplier/save';

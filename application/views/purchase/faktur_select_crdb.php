@@ -1,10 +1,10 @@
 <!-- PILIH FAKTUR --> 
 <div id='dlgSelectFaktur'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-faktur">
+     closed="true" buttons="#toolbar-search-faktur">
      <div id='divSelectFaktur'> 
-		<table id="dgSelectFaktur" class="easyui-datagrid"  
+		<table id="dgSelectFaktur" class="easyui-datagrid"  width="100%"
 			data-options="
-				toolbar: '#toolbar-search-faktur',
+				toolbar: '',fitColumns: true, 
 				singleSelect: true,
 				url: ''
 			">
@@ -18,13 +18,16 @@
 		</table>
     </div>   
 </div>
-<div id="toolbar-search-faktur" style="height:auto">
+<div id="toolbar-search-faktur" class="box-gradient">
 	Enter Text: <input  id="search_supp" style='width:180' name="search_supp">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_faktur();return false;"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_faktur();return false;">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search"  onclick="select_faktur();return false;">Filter</a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selected_faktur();return false;">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"  onclick="dlgSelectFaktur_Close();return false;">Close</a>
 </div>
 <SCRIPT language="javascript">
-
+	function dlgSelectFaktur_Close(){
+		$("#dlgSelectFaktur").dialog("close");
+	}
 	function select_faktur(){
 		var supp=$("#supplier_number").val();
 		if(supp==""){alert("Pilih supplier dulu.");return false;}

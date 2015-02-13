@@ -24,6 +24,10 @@ class Table_model extends CI_Model {
 		$this->AppObjectItems();
 		$this->AppSurvey();
 		$this->CustCard();
+		$this->LoanMaster();
+		$this->LoanObjItems();
+		$this->InvoiceHeader();
+		$this->ls_counter();
 	}
 	function count_all(){
 		return $this->db->count_all($this->table_name);
@@ -167,33 +171,23 @@ class Table_model extends CI_Model {
 	}
 	function AppMaster() {
 		$this->table_name="ls_app_master";
-		$this->primary_key="id";
+		$this->primary_key="app_id";
 		$fields[]=array('name'=>'app_id','type'=>'nvarchar','size'=>50,'caption'=>'app_id','control'=>'text');
 		$fields[]=array('name'=>'app_date','type'=>'nvarchar','size'=>50,'caption'=>'app_date','control'=>'text');
 		$fields[]=array('name'=>'cust_id','type'=>'nvarchar','size'=>50,'caption'=>'cust_id','control'=>'text');
+		$fields[]=array('name'=>'counter_id','type'=>'nvarchar','size'=>50,'caption'=>'dealer_id','control'=>'text');
 		$fields[]=array('name'=>'dealer_id','type'=>'nvarchar','size'=>50,'caption'=>'dealer_id','control'=>'text');
 		$fields[]=array('name'=>'terms_id','type'=>'nvarchar','size'=>50,'caption'=>'terms_id','control'=>'text');
-		$fields[]=array('name'=>'app_groupcust_id','type'=>'nvarchar','size'=>50,'caption'=>'app_groupcust_id','control'=>'text');
-		$fields[]=array('name'=>'csl_id','type'=>'nvarchar','size'=>50,'caption'=>'csl_id','control'=>'text');
-		$fields[]=array('name'=>'cmo_id','type'=>'nvarchar','size'=>50,'caption'=>'cmo_id','control'=>'text');
-		$fields[]=array('name'=>'mkpp_id','type'=>'nvarchar','size'=>50,'caption'=>'mkpp_id','control'=>'text');
 		$fields[]=array('name'=>'notes','type'=>'nvarchar','size'=>50,'caption'=>'notes','control'=>'text');
 		$fields[]=array('name'=>'status','type'=>'nvarchar','size'=>50,'caption'=>'status','control'=>'text');
 		$fields[]=array('name'=>'contract_id','type'=>'nvarchar','size'=>50,'caption'=>'contract_id','control'=>'text');
-		$fields[]=array('name'=>'pp_id','type'=>'nvarchar','size'=>50,'caption'=>'pp_id','control'=>'text');
-		$fields[]=array('name'=>'ppd_id','type'=>'nvarchar','size'=>50,'caption'=>'ppd_id','control'=>'text');
-		$fields[]=array('name'=>'ppd_date','type'=>'nvarchar','size'=>50,'caption'=>'ppd_date','control'=>'text');
-		$fields[]=array('name'=>'fpd_id','type'=>'nvarchar','size'=>50,'caption'=>'fpd_id','control'=>'text');
-		$fields[]=array('name'=>'fpd_date','type'=>'nvarchar','size'=>50,'caption'=>'fpd_date','control'=>'text');
 		$fields[]=array('name'=>'dp_amount','type'=>'nvarchar','size'=>50,'caption'=>'dp_amount','control'=>'text');
 		$fields[]=array('name'=>'insr_amount','type'=>'nvarchar','size'=>50,'caption'=>'insr_amount','control'=>'text');
 		$fields[]=array('name'=>'admin_amount','type'=>'nvarchar','size'=>50,'caption'=>'admin_amount','control'=>'text');
 		$fields[]=array('name'=>'inst_amount','type'=>'nvarchar','size'=>50,'caption'=>'inst_amount','control'=>'text');
 		$fields[]=array('name'=>'inst_month','type'=>'nvarchar','size'=>50,'caption'=>'inst_month','control'=>'text');
-		$fields[]=array('name'=>'obj_merk','type'=>'nvarchar','size'=>50,'caption'=>'obj_merk','control'=>'text');
-		$fields[]=array('name'=>'obj_amount','type'=>'nvarchar','size'=>50,'caption'=>'obj_amount','control'=>'text');
-		$fields[]=array('name'=>'id','type'=>'int','size'=>0,'caption'=>"Id",'control'=>'text');
-		
+		$fields[]=array('name'=>'loan_amount','type'=>'float','size'=>50,'caption'=>'loan_amount','control'=>'text');
+	
 		$this->create_table($this->table_name,$fields,$this->primary_key);
 		return $fields;
 	}
@@ -203,12 +197,13 @@ class Table_model extends CI_Model {
 		$fields[]=array('name'=>'app_id','type'=>'nvarchar','size'=>50,'caption'=>'app_id','control'=>'text');
 		$fields[]=array('name'=>'obj_id','type'=>'nvarchar','size'=>50,'caption'=>'obj_id','control'=>'text');
 		$fields[]=array('name'=>'description','type'=>'nvarchar','size'=>50,'caption'=>'description','control'=>'text');
-		$fields[]=array('name'=>'qty','type'=>'nvarchar','size'=>50,'caption'=>'qty','control'=>'text');
-		$fields[]=array('name'=>'price','type'=>'nvarchar','size'=>50,'caption'=>'price','control'=>'text');
-		$fields[]=array('name'=>'disc_prc','type'=>'nvarchar','size'=>50,'caption'=>'disc_prc','control'=>'text');
-		$fields[]=array('name'=>'disc_amount','type'=>'nvarchar','size'=>50,'caption'=>'disc_amount','control'=>'text');
-		$fields[]=array('name'=>'tax_prc','type'=>'nvarchar','size'=>50,'caption'=>'tax_prc','control'=>'text');
-		$fields[]=array('name'=>'tax_amount','type'=>'nvarchar','size'=>50,'caption'=>'tax_amount','control'=>'text');
+		$fields[]=array('name'=>'qty','type'=>'float','size'=>50,'caption'=>'qty','control'=>'text');
+		$fields[]=array('name'=>'price','type'=>'float','size'=>50,'caption'=>'price','control'=>'text');
+		$fields[]=array('name'=>'disc_prc','type'=>'float','size'=>50,'caption'=>'disc_prc','control'=>'text');
+		$fields[]=array('name'=>'disc_amount','type'=>'float','size'=>50,'caption'=>'disc_amount','control'=>'text');
+		$fields[]=array('name'=>'tax_prc','type'=>'float','size'=>50,'caption'=>'tax_prc','control'=>'text');
+		$fields[]=array('name'=>'tax_amount','type'=>'float','size'=>50,'caption'=>'tax_amount','control'=>'text');
+		$fields[]=array('name'=>'amount','type'=>'float','size'=>50,'caption'=>'amount','control'=>'text');
 		$fields[]=array('name'=>'comments','type'=>'nvarchar','size'=>50,'caption'=>'comments','control'=>'text');
 		$fields[]=array('name'=>'id','type'=>'int','size'=>0,'caption'=>"Id",'control'=>'text');
 		
@@ -775,12 +770,23 @@ class Table_model extends CI_Model {
 	function InvoiceHeader() {
 		$this->table_name="ls_invoice_header";
 		$this->primary_key="invoice_number";
+		$fields[]=array('name'=>'loan_id','type'=>'nvarchar','size'=>50,'caption'=>'loan_id','control'=>'text');
+		$fields[]=array('name'=>'idx_month','type'=>'int','size'=>5,'caption'=>'idx_month','control'=>'text');
 		$fields[]=array('name'=>'invoice_number','type'=>'nvarchar','size'=>50,'caption'=>'invoice_number','control'=>'text');
 		$fields[]=array('name'=>'invoice_date','type'=>'nvarchar','size'=>50,'caption'=>'invoice_date','control'=>'text');
 		$fields[]=array('name'=>'invoice_type','type'=>'nvarchar','size'=>50,'caption'=>'invoice_type','control'=>'text');
+		$fields[]=array('name'=>'amount','type'=>'float','size'=>50,'caption'=>'amount','control'=>'text');
+		$fields[]=array('name'=>'paid','type'=>'int','size'=>50,'caption'=>'paid','control'=>'text');
+		$fields[]=array('name'=>'date_paid','type'=>'datetime','size'=>50,'caption'=>'date_paid','control'=>'text');
+		$fields[]=array('name'=>'payment_method','type'=>'nvarchar','size'=>50,'caption'=>'payment_method','control'=>'text');
+		$fields[]=array('name'=>'amount_paid','type'=>'float','size'=>50,'caption'=>'amount_paid','control'=>'text');
+		$fields[]=array('name'=>'voucher','type'=>'nvarchar','size'=>50,'caption'=>'voucher','control'=>'text');
 		$fields[]=array('name'=>'cust_deal_id','type'=>'nvarchar','size'=>50,'caption'=>'cust_deal_id','control'=>'text');
 		$fields[]=array('name'=>'cust_deal_ship_id','type'=>'nvarchar','size'=>50,'caption'=>'cust_deal_ship_id','control'=>'text');
-		$fields[]=array('name'=>'gross_amount','type'=>'nvarchar','size'=>50,'caption'=>'gross_amount','control'=>'text');
+		$fields[]=array('name'=>'gross_amount','type'=>'float','size'=>50,'caption'=>'gross_amount','control'=>'text');
+		$fields[]=array('name'=>'disc_amount','type'=>'float','size'=>50,'caption'=>'disc_amount','control'=>'text');
+		$fields[]=array('name'=>'insr_amount','type'=>'float','size'=>50,'caption'=>'insr_amount','control'=>'text');
+		$fields[]=array('name'=>'admin_amount','type'=>'float','size'=>50,'caption'=>'admin_amount','control'=>'text');
 	
 		$this->create_table($this->table_name,$fields,$this->primary_key);
 		return $fields;
@@ -819,7 +825,102 @@ class Table_model extends CI_Model {
 	
 		$this->create_table($this->table_name,$fields,$this->primary_key);
 		return $fields;
-	}		
+	}
+	function LoanMaster() {
+		$this->table_name="ls_loan_master";
+		$this->primary_key="id";
+		$fields[]=array('name'=>'cust_id','type'=>'nvarchar','size'=>50,'caption'=>'cust_id','control'=>'text');
+		$fields[]=array('name'=>'loan_id','type'=>'nvarchar','size'=>50,'caption'=>'Loan Id','control'=>'text');
+		$fields[]=array('name'=>'app_id','type'=>'nvarchar','size'=>50,'caption'=>'App Id','control'=>'text');
+		$fields[]=array('name'=>'loan_date','type'=>'datetime','size'=>50,'caption'=>'loan_date','control'=>'date');
+		$fields[]=array('name'=>'loan_amount','type'=>'float','size'=>50,'caption'=>'loan_amount','control'=>'text');
+		$fields[]=array('name'=>'interest_amount','type'=>'float','size'=>50,'caption'=>'interest_amount','control'=>'text');
+		$fields[]=array('name'=>'dp_amount','type'=>'float','size'=>50,'caption'=>'dp_amount','control'=>'text');
+		$fields[]=array('name'=>'adm_amount','type'=>'float','size'=>50,'caption'=>'adm_amount','control'=>'text');
+		$fields[]=array('name'=>'insr_amount','type'=>'float','size'=>50,'caption'=>'insr_amount','control'=>'text');
+		$fields[]=array('name'=>'ar_amount','type'=>'float','size'=>50,'caption'=>'ar_amount','control'=>'text');
+		$fields[]=array('name'=>'ar_bal_amount','type'=>'float','size'=>50,'caption'=>'ar_bal_amount','control'=>'text');
+		$fields[]=array('name'=>'first_dp_amount','type'=>'float','size'=>50,'caption'=>'first_dp_amount','control'=>'text');
+		$fields[]=array('name'=>'inst_amount','type'=>'float','size'=>50,'caption'=>'Cicilan','control'=>'text');
+		$fields[]=array('name'=>'first_paid_amount','type'=>'float','size'=>50,'caption'=>'first_paid_amount','control'=>'text');
+		$fields[]=array('name'=>'first_paid_date','type'=>'datetime','size'=>50,'caption'=>'first_paid_date','control'=>'text');
+		$fields[]=array('name'=>'first_adm_amount','type'=>'float','size'=>50,'caption'=>'first_adm_amount','control'=>'text');
+		$fields[]=array('name'=>'first_adm_date','type'=>'datetime','size'=>50,'caption'=>'first_adm_date','control'=>'text');
+		$fields[]=array('name'=>'first_insr_amount','type'=>'float','size'=>50,'caption'=>'first_insr_amount','control'=>'text');
+		$fields[]=array('name'=>'first_insr_date','type'=>'datetime','size'=>50,'caption'=>'first_insr_date','control'=>'text');
+		$fields[]=array('name'=>'paid','type'=>'int','size'=>1,'caption'=>'paid','control'=>'text');
+		$fields[]=array('name'=>'status','type'=>'nvarchar','size'=>50,'caption'=>'status','control'=>'text');
+		$fields[]=array('name'=>'first_dealer_id','type'=>'nvarchar','size'=>50,'caption'=>'first_dealer_id','control'=>'text');
+		$fields[]=array('name'=>'max_month','type'=>'int','size'=>5,'caption'=>'max_month','control'=>'text');
+		$fields[]=array('name'=>'interest_percent','type'=>'float','size'=>50,'caption'=>'interest_percent','control'=>'text');
+		$fields[]=array('name'=>'insr_percent','type'=>'float','size'=>50,'caption'=>'insr_percent','control'=>'text');
+		$fields[]=array('name'=>'dp_percent','type'=>'float','size'=>50,'caption'=>'dp_percent','control'=>'text');
+		$fields[]=array('name'=>'dealer_id','type'=>'nvarchar','size'=>50,'caption'=>'dealer_id','control'=>'text');
+		$fields[]=array('name'=>'dealer_name','type'=>'nvarchar','size'=>50,'caption'=>'dealer_name','control'=>'text');
+
+		$fields[]=array('name'=>'id','type'=>'int','size'=>0,'caption'=>"Id",'control'=>'text');
+	
+		$this->create_table($this->table_name,$fields,$this->primary_key);
+		return $fields;
+	}	
+	function LoanObjItems() {
+		$this->table_name="ls_loan_obj_items";
+		$this->primary_key="id";
+		$fields[]=array('name'=>'obj_item_id','type'=>'nvarchar','size'=>50,'caption'=>'obj_item_id','control'=>'text');
+		$fields[]=array('name'=>'qty','type'=>'float','size'=>50,'caption'=>'qty','control'=>'text');
+		$fields[]=array('name'=>'unit','type'=>'nvarchar','size'=>50,'caption'=>'unit','control'=>'text');
+		$fields[]=array('name'=>'price','type'=>'float','size'=>50,'caption'=>'price','control'=>'text');
+		$fields[]=array('name'=>'discount','type'=>'float','size'=>50,'caption'=>'discount','control'=>'text');
+		$fields[]=array('name'=>'disc_amount','type'=>'float','size'=>50,'caption'=>'disc_amount','control'=>'text');
+		$fields[]=array('name'=>'amount','type'=>'float','size'=>50,'caption'=>'amount','control'=>'text');
+		$fields[]=array('name'=>'loan_id','type'=>'nvarchar','size'=>50,'caption'=>'Loan Id','control'=>'text');
+		$fields[]=array('name'=>'line_type','type'=>'nvarchar','size'=>50,'caption'=>'line_type','control'=>'text');
+		$fields[]=array('name'=>'price_list_id','type'=>'nvarchar','size'=>50,'caption'=>'price_list_id','control'=>'text');
+		$fields[]=array('name'=>'item_type','type'=>'nvarchar','size'=>50,'caption'=>'item_type','control'=>'text');
+		$fields[]=array('name'=>'item_brand','type'=>'nvarchar','size'=>50,'caption'=>'item_brand','control'=>'text');
+		$fields[]=array('name'=>'item_model','type'=>'nvarchar','size'=>50,'caption'=>'item_model','control'=>'text');
+		$fields[]=array('name'=>'dp_amount','type'=>'float','size'=>50,'caption'=>'dp_amount','control'=>'text');
+		$fields[]=array('name'=>'made_in','type'=>'nvarchar','size'=>50,'caption'=>'made_in','control'=>'text');
+		$fields[]=array('name'=>'mfg_year','type'=>'nvarchar','size'=>50,'caption'=>'mfg_year','control'=>'text');
+		$fields[]=array('name'=>'colour','type'=>'nvarchar','size'=>50,'caption'=>'colour','control'=>'text');
+		$fields[]=array('name'=>'name_on_bpkp','type'=>'nvarchar','size'=>50,'caption'=>'name_on_bpkp','control'=>'text');
+		$fields[]=array('name'=>'frame_no','type'=>'nvarchar','size'=>50,'caption'=>'frame_no','control'=>'text');
+		$fields[]=array('name'=>'engine_no','type'=>'nvarchar','size'=>50,'caption'=>'engine_no','control'=>'text');
+		$fields[]=array('name'=>'engine_capacity','type'=>'nvarchar','size'=>50,'caption'=>'engine_capacity','control'=>'text');
+		$fields[]=array('name'=>'police_no','type'=>'nvarchar','size'=>50,'caption'=>'police_no','control'=>'text');
+		$fields[]=array('name'=>'insr_company','type'=>'nvarchar','size'=>50,'caption'=>'insr_company','control'=>'text');
+		$fields[]=array('name'=>'insr_policy_no','type'=>'nvarchar','size'=>50,'caption'=>'insr_policy_no','control'=>'text');
+		$fields[]=array('name'=>'insr_name','type'=>'nvarchar','size'=>50,'caption'=>'insr_name','control'=>'text');
+		$fields[]=array('name'=>'insr_order_no','type'=>'nvarchar','size'=>50,'caption'=>'insr_order_no','control'=>'text');
+		$fields[]=array('name'=>'insr_date_from','type'=>'datetime','size'=>50,'caption'=>'insr_date_from','control'=>'text');
+		$fields[]=array('name'=>'insr_date_to','type'=>'datetime','size'=>50,'caption'=>'insr_date_to','control'=>'text');
+		$fields[]=array('name'=>'insr_amount','type'=>'float','size'=>50,'caption'=>'insr_amount','control'=>'text');
+		$fields[]=array('name'=>'flat_rate_prc','type'=>'float','size'=>50,'caption'=>'flat_rate_prc','control'=>'text');
+		$fields[]=array('name'=>'obj_desc','type'=>'nvarchar','size'=>50,'caption'=>'obj_desc','control'=>'text');
+		$fields[]=array('name'=>'comments','type'=>'nvarchar','size'=>150,'caption'=>'comments','control'=>'text');
+
+		$fields[]=array('name'=>'id','type'=>'int','size'=>0,'caption'=>"Id",'control'=>'text');
+	
+		$this->create_table($this->table_name,$fields,$this->primary_key);
+		return $fields;
+	}	
+	function ls_counter() {
+		$this->table_name="ls_counter";
+		$this->primary_key="counter_id";
+		$fields[]=array('name'=>'counter_id','type'=>'nvarchar','size'=>50,'caption'=>'Kode','control'=>'text');
+		$fields[]=array('name'=>'counter_name','type'=>'nvarchar','size'=>50,'caption'=>'Nama Counter','control'=>'text');
+		$fields[]=array('name'=>'area','type'=>'nvarchar','size'=>50,'caption'=>'Area','control'=>'text');
+		$fields[]=array('name'=>'sales_agent','type'=>'nvarchar','size'=>50,'caption'=>'Sales Agent','control'=>'text');
+		$fields[]=array('name'=>'address','type'=>'nvarchar','size'=>250,'caption'=>'Alamat','control'=>'text');
+		$fields[]=array('name'=>'phone','type'=>'nvarchar','size'=>50,'caption'=>'Phone','control'=>'text');
+		$fields[]=array('name'=>'join_date','type'=>'datetime','size'=>50,'caption'=>'Tgl Gabung','control'=>'text');
+		$fields[]=array('name'=>'target','type'=>'float','size'=>50,'caption'=>'Target','control'=>'text');
+		$fields[]=array('name'=>'active','type'=>'int','size'=>5,'caption'=>'Aktif','control'=>'text');
+
+		$this->create_table($this->table_name,$fields,$this->primary_key);
+		return $fields;
+	}	
+	
 }
 
 

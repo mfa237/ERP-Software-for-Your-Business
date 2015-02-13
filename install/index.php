@@ -120,7 +120,7 @@
 	}
 	function sql_exec(){
 		run_sql();
-		if(c>=41){
+		if(c>=43){
 			clearTimeout(t);
 			timer_is_on = 0;	
 			add_log("<h1>Finish.</h1> Silahkan kilik link berikut untuk masuk ke program, gunakan login: admin dan pass: admin <a href='../index.php'><h1>Login</h1></a>");

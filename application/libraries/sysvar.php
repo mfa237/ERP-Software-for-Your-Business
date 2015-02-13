@@ -21,7 +21,7 @@ function get_by_id($id){
 	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 } 
-function getvar($varname,$varvalue=null){
+function getvar($varname,$varvalue=""){
 	$var=$this->_var($varname);
 	if($var==null){
 		$this->insert($varname,$varvalue,'auto');
@@ -33,8 +33,7 @@ function save($varname,$varvalue){
 	$data['varname']=$varname;
 	$data['varvalue']=$varvalue;
 	$this->CI->db->where($this->primary_key,$varname);
-	$this->CI->db->update($this->table_name,$data);
-	return true;
+	return $this->CI->db->update($this->table_name,$data);
 }
 function insert($varname,$varvalue,$vardesc=''){
 	$data['varname']=$varname;
@@ -55,6 +54,7 @@ function _var($sKey) {
 	}
 }
 function autonumber($varname,$step=0,$default=''){
+
 	$varvalue=$this->getvar($varname);
        
 	if($varvalue=="") {

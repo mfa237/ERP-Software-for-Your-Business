@@ -18,9 +18,11 @@
 				<li   data-options="state:'closed'">
 					<span>Report</span>
 					<ul>
-						<li><?=anchor('manuf/rpt/wo','Daftar Work Order','class="info_link"')?></li>
-						<li><?=anchor('manuf/rpt/mr','Daftar Material Release','class="info_link"')?></li>
-						<li><?=anchor('manuf/rpt/woe','Daftar Work Execute','class="info_link"')?></li>
+						<li><?=anchor('manuf/reports/wo/001','Daftar Work Order','class="info_link"')?></li>
+						<li><?=anchor('manuf/reports/wo/002','Daftar Work Order Detail','class="info_link"')?></li>
+						<li><?=anchor('manuf/reports/mr/001','Daftar Material Release','class="info_link"')?></li>
+						<li><?=anchor('manuf/reports/woe/001','Daftar Work Execute','class="info_link"')?></li>
+						<li><?=anchor('manuf/reports/woe/002','Daftar Work Execute Detail','class="info_link"')?></li>
 					</ul>
 				</li>
 				<li  data-options="state:'closed'">

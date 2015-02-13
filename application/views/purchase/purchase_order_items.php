@@ -1,11 +1,12 @@
 <? 
 if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 
-<table>
-	<tr>
-		<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
-		<td>Harga</td><td>Disc%</td><td>Jumlah</td><td></td>
-	</tr>
+<table class='table2 box-gradient' width="100%">
+	<thead>
+		<th>Kode Barang</th><th>Nama Barang</th><th>Qty</th><th>Unit</th>
+		<th>Harga</th><th>Disc%</th><th>Jumlah</th><th></th>
+	</thead>
+	<tbody>
 	<tr>
 
 	    <form id="frmItem" method='post' >
@@ -33,6 +34,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 	    </form>
 		
 	</tr>
+	</tbody>
 </table>
 
 <? } ?>

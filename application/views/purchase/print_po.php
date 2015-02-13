@@ -2,85 +2,35 @@
          $CI =& get_instance();
          $CI->load->model('company_model');
          $model=$CI->company_model->get_by_id($CI->access->cid)->row();
-         $CI->load->model('supplier_model');
-         $sup=$CI->supplier_model->get_by_id($supplier)->row();
+		$alamat=$model->street.' '.$model->suite.' '
+			.$model->city_state_zip_code.' Phone: '.$model->phone_number; 	
 
+		 
+			tcpdf();
+			$obj_pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+			$obj_pdf->SetCreator(PDF_CREATOR);
+			 
+///			$obj_pdf->SetTitle("");
+			$obj_pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_STRING,$alamat);
+			$obj_pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+			$obj_pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+			$obj_pdf->SetDefaultMonospacedFont('helvetica');
+			$obj_pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+			$obj_pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+			$obj_pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT+10);
+			$obj_pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+			$obj_pdf->SetFont('helvetica', '', 9);
+			$obj_pdf->setFontSubsetting(false);
+			$obj_pdf->AddPage();
+			
+			ob_start();
+			
+			$CI->load->view('purchase/rpt/print_po_pdf.php');
+			
+			$content = ob_get_contents();
+			ob_end_clean();
+			//echo $content;
+			$obj_pdf->writeHTML($content);
+			$obj_pdf->Output('output.pdf', 'I');
+			
 ?>
-<link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
-<table cellspacing="0" cellpadding="1" border="0" width='800px'> 
-     <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>PURCHASE ORDER</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td>Nomor: <?=$po_number?></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td colspan=4 style='border-bottom: black solid 1px'><?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>     	
-     	
-     </tr>
-     <tr>
-     	<td>Tanggal</td><td><?=$tanggal?></td>
-     	<td colspan='2'><?=$sup->supplier_name.' ('.$sup->supplier_number.')'?></td>
-     </tr>
-     <tr>
-     	<td>Termin</td><td><?=$terms?></td>
-     	<td colspan='2'><?=$sup->street?></td>
-     </tr>
-     <tr>
-     	<td></td><td></td>
-     	<td colspan='2'><?=$sup->suite.' - '.$sup->city?></td>
-     </tr>
-     <tr>
-     	<td></td><td></td>
-     	<td colspan='2'><?='Phone: '.$sup->phone.' - Fax: '.$sup->fax?></td>
-     </tr>
-     <tr>
-     	<td></td><td></td>
-     	<td colspan='2'><?='Up: '.$sup->first_name?></td>
-     </tr>
-     <tr>
-     	<td colspan="8">
-     	<table class='titem'>
-     		<thead>
-     			<tr><td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td><td>Harga</td>
-     				<td>Disc%</td><td>Jumlah</td>
-     			</tr>
-     		</theadx>
-     		<tbody>
-     			<?
-		       $sql="select item_number,description,quantity,unit,discount,price,total_price 
-		                from purchase_order_lineitems i
-		                where purchase_order_number='".$po_number."'";
-		        $query=$CI->db->query($sql);
-
-     			$tbl="";
-                 foreach($query->result() as $row){
-                    $tbl.="<tr>";
-                    $tbl.="<td>".$row->item_number."</td>";
-                    $tbl.="<td>".$row->description."</td>";
-                    $tbl.="<td align='right'>".number_format($row->quantity)."</td>";
-                    $tbl.="<td>".$row->unit."</td>";
-                    $tbl.="<td align='right'>".number_format($row->price)."</td>";
-                    $tbl.="<td align='right'>".number_format($row->discount)."</td>";
-                    $tbl.="<td align='right'>".number_format($row->total_price)."</td>";
-                    $tbl.="</tr>";
-               };
-			   echo $tbl;
-    			?>
-     		</tbody>
-     	</table>
-     	
-     	
-     	</td>
-     </tr>
-     <tr><td>Catatan: <?=$comments?></td><td></td><td>Sub Total</td><td align='right'><?=number_format($sub_total)?></td></tr>
-     <tr><td></td><td></td><td>Discount <?=$discount?></td><td align='right'><?=number_format($disc_amount)?></td></tr>
-     <tr><td></td><td></td><td>Pajak <?=$tax?></td><td align='right'><?=number_format($tax_amount)?></td></tr>
-     <tr><td></td><td></td><td>Ongkos</td><td align='right'><?=number_format($freight)?></td></tr>
-     <tr><td></td><td></td><td>Lain-lain</td><td align='right'><?=number_format($others)?></td></tr>
-     <tr><td></td><td></td><td>Jumlah</td><td align='right'><?=number_format($amount)?></td></tr>
-</table>

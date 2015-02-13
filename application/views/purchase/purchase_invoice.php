@@ -1,5 +1,5 @@
-<div><h3>FAKTUR PEMBELIAN</H3>
-<div class="thumbnail">
+<h3>FAKTUR PEMBELIAN</H3>
+<div class="thumbnail box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;
@@ -17,7 +17,7 @@
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
 	}
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'purchase_invoice\')','help');		
 	
 	?>
 	
@@ -25,7 +25,7 @@
 <div class="thumbnail">	
 	<form id='frmPo' method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	<table>
+	<table class="table2" width="100%">
 	<tr>
 		<td>Nomor Faktur</td><td>
 		<?php echo form_input('purchase_order_number',
@@ -72,17 +72,16 @@
 
   </form>
 
-<div class="easyui-tabs" style="width:700px;height:550px">
-	<div title="Items" style="padding:10px">
+<div class="easyui-tabs" >
+	<div title="Items" style="padding:5px">
 		<!-- PURCASE_ORDER_LINEITEMS -->	
 		<div id='divItem'>
 		<div id='dgItem'>
 			<? include_once "purchase_order_items.php"; ?>
 		</div>
-		<table id="dg" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+		<table id="dg" class="easyui-datagrid"  width="100%"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns:true,
 				singleSelect: true,
 				toolbar: '#tb',
 				url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
@@ -105,7 +104,7 @@
 	<!-- END PURCHASE_ORDER_LINEITEMS -->
 		<h5>TOTAL</H5>
 		<div id='divTotal'> 
-			<table>
+			<table class="table2" width="100%">
 				<tr>
 					<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
 					<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
@@ -130,10 +129,9 @@
 	</div>
 	<DIV title="Payments" style="padding:10px">
 		
-		<table id="dgPay" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+		<table id="dgPay" class="easyui-datagrid"  width="100%"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns:true,
 				singleSelect: true, toolbar: '#tbPay',
 				url: '<?=base_url()?>index.php/purchase_invoice/list_payment/<?=$purchase_order_number?>'
 			">
@@ -180,9 +178,8 @@
 	<DIV title="Memo" style="padding:10px">
 	
 		<table id="dgCrdb" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns:true,
 				singleSelect: true,toolbar:'#tbCrdb',
 				url: '<?=base_url()?>index.php/purchase_invoice/list_crdb/<?=$purchase_order_number?>'
 			">

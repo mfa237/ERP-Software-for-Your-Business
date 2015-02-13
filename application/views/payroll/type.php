@@ -34,7 +34,7 @@
 </div>
 <script language="JavaScript">
 	function add_type(){
-		url='<?=base_url()?>index.php/employee/jenis_add';
+		url='<?=base_url()?>index.php/payroll/employee/jenis_add';
 			$('#frmNew').form('submit',{
 				url: url,
 				onSubmit: function(){

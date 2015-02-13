@@ -176,6 +176,7 @@ class Jurnal extends CI_Controller {
         ,'transaction_id');
 		$data['field_key']='gl_id';
 		$data['caption']='DAFTAR TRANSAKSI JURNAL';
+		$data['export_visible']=true;
 
 		$this->load->library('search_criteria');
 		
@@ -188,6 +189,10 @@ class Jurnal extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
+		$sql=$this->build_sql();
+        echo datasource($sql);
+    }	      
+	function build_sql(){
 		$no=$this->input->get('sid_number');
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
@@ -210,22 +215,28 @@ class Jurnal extends CI_Controller {
 		
         //$sql.=" limit $offset,$limit";
         //echo $sql;
-        echo datasource($sql);
-    }	      
+		return $sql;
+	}
 	function delete($id=''){
 		$id=urldecode($id);
 		$this->load->model("periode_model");
-		$q=$this->jurnal_model->get_by_gl_id($id);
-		if($this->periode_model->closed($q->row()->date)){
-			$message="Periode sudah ditutup tidak bisa dihapus !";
-			$this->view($id,$message);
-			return false;
-		}		
-	 	if($this->jurnal_model->del_jurnal($id)){
-			$this->browse();
-		} else {
-			$this->view($id,"Tidak bisa hapus jurnal ini");
+		
+		if($q=$this->jurnal_model->get_by_gl_id($id)) {
+			if($r=$q->row()){
+				$tgl=$r->date;	
+				if($this->periode_model->closed($tgl)){
+					$message="Periode sudah ditutup tidak bisa dihapus !";
+					$this->view($id,$message);
+					return false;
+				}
+				if($this->jurnal_model->del_jurnal($id)){
+					$this->browse();
+				} else {
+					$this->view($id,"Tidak bisa hapus jurnal ini");
+				}			
+			}
 		}
+		$this->browse();		
 	}
     function delete_item($id){
 		$id=urldecode($id);
@@ -276,7 +287,7 @@ class Jurnal extends CI_Controller {
 		g.source,g.operation,g.transaction_id,g.custsuppbank
 		from gl_transactions g left join chart_of_accounts c 
 		on c.id=g.account_id
-		 where gl_id='$kode'";
+		 where gl_id='$kode' order by transaction_id";
         $query=$this->db->query($sql);
 		 
         $i=0;
@@ -301,6 +312,12 @@ class Jurnal extends CI_Controller {
         $data['rows']=$rows;
                     
         echo json_encode($data);
-
+	}
+	function export_xls(){
+		$sql=$this->build_sql();
+		header("Content-type: application/vnd-ms-excel");
+		header("Content-Disposition: attachment; filename=hasil-export.xls");
+		echo html_table($sql,false);
 	}
 }
+?>

@@ -104,7 +104,7 @@ if(!function_exists('browse_simple')){
             $thead.='<th data-options="field:\''.$flds[$i].'\'">'.$fld.'</th>';
         }
         $thead.='</tr>';
-        $tbl='<table id="'.$id.'" class="easyui-datagrid", title="'.$caption.'"
+        $tbl='<table id="'.$id.'" class="table2", width="100%" title="'.$caption.'"
               data-options="rownumbers:true, 
               singleSelect:true,collapsible:true,';
         if($toolbar!='')$tbl.="toolbar:'#".$toolbar."',";

@@ -29,7 +29,9 @@ class Company extends CI_Controller {
              return $data;
     }
     function index()    {	
-            $this->browse();
+		if (!allow_mod2('_00000'))	exit;
+        $this->browse();
+		
     }
     function get_posts(){
             $data=data_table_post($this->table_name);
@@ -94,6 +96,7 @@ class Company extends CI_Controller {
      }
     }
    function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
+
 		$data['controller']='company';
 		$data['fields_caption']=array('Kode','Nama Perusahaan','Alamat','Kota','Telp','Fax','Email');
 		$data['fields']=array('company_code','company_name','street','city_state_zip_code','phone_number',

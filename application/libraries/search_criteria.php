@@ -6,10 +6,9 @@ class search_criteria{
 	public $field_id='';
 	public $field_class='';
 	public $field_value='';
+	public $field_style='';
 
 	 function __construct()
 	 {
 	 }
 }
-?>
-

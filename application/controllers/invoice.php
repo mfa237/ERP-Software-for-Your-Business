@@ -263,6 +263,8 @@ class Invoice extends CI_Controller {
 	}
 	
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
+
+	
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Posted','Kode Cust','Nama Customer',
 			'Salesman','Kota','Gudang');
@@ -562,7 +564,7 @@ class Invoice extends CI_Controller {
 		order by p.invoice_date asc
 		limit 0,10";
 		$query=$this->db->query($sql);
-//		$data[0]=0;
+		$data[0]=0;
 		foreach($query->result() as $row){
 			$prd=$row->prd;
 			if($prd=="")$prd="00-00";
@@ -694,5 +696,60 @@ class Invoice extends CI_Controller {
 			}
 		}
 		echo "<p>Finish.</p>";
+	}	
+	function save_pos()
+	{
+		$data=$this->input->get();
+        $id=$this->nomor_bukti();
+		$data_head['invoice_number']=$id;
+		$data_head['invoice_date']=date("Y-m-d H:i:s");
+		$data_head['sold_to_customer']="CASH";
+		$data_head['salesman']=user_id();
+		$data_head['payment_terms']="CASH";
+		$data_head['invoice_type']='I';
+		$data_head['type_of_invoice']='Simple';
+		$data_head['due_date']=$data_head['invoice_date'];
+		 
+		$ok=$this->invoice_model->save($data_head);
+		if($ok){
+			$this->nomor_bukti(true);
+			$arItems=$data['items'];
+			//arItem.push([td[0],td[1],td[2],q,p,t]);
+			$total=0;
+			for($i=0;$i<count($arItems);$i++){
+				$detail=$arItems[$i];
+				$data_detail['invoice_number']=$id;
+				$data_detail['item_number']=$detail[0];
+				$data_detail['description']=$detail[1];
+				$data_detail['unit']=$detail[2];
+				$data_detail['quantity']=$detail[3];
+				$data_detail['price']=$detail[4];
+				$data_detail['amount']=$detail[5];
+				$this->db->insert("invoice_lineitems",$data_detail);
+				$total=$total+$detail[5];
+			}
+			$this->db->update("invoice",array("paid"=>1,"amount"=>$total));
+			$payment=$data['payment'];
+			$cash=$payment['cash'];
+			$card=$payment['card'];
+			$kembali=$cash-$total;
+			if($kembali>0){	
+				$cash=$cash-$kembali;
+			}
+			if($cash>0){
+				$this->db->insert("payments",array("invoice_number"=>$id,
+					"date_paid"=>date("Y-m-d H:i:s"),"how_paid"=>"CASH",
+					"amount_paid"=>$cash,"amount_alloc"=>$kembali));
+			}
+			if($payment['card']>0){
+				$this->db->insert("payments",array("invoice_number"=>$id,
+					"date_paid"=>date("Y-m-d H:i:s"),"how_paid"=>"CARD",
+					"amount_paid"=>$card,"amount_alloc"=>$kembali));
+			
+			}
+			echo json_encode(array('success'=>true,'invoice_number'=>$id));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));
+		}
 	}	
 }

@@ -1,18 +1,19 @@
-<div id="tb_search" style="height:auto">
+<div id="tb_search" style="height:auto" class="box-gradient">
 	<div style="float:left">
 	Enter Text: <input  id="search_item" style='width:180' name="search_item">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 	onclick="searchItem();return false;">Search</a>        
 	</div>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="false" onclick="selectSearchItem();return false;">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItem();return false;">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"   onclick="dlgSearchItem_Close();return false;">Close</a>
 </div>
 
-<div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;"
+<div id='dlgSearchItem' class="easyui-dialog" style="width:500px;height:380px;"
         closed="true" buttons="#tb_search">
      <div id='divItemSearchResult'> 
-		<table id="dgItemSearch" class="easyui-datagrid"  
+		<table id="dgItemSearch" class="easyui-datagrid"  width="100%"
 			data-options="
-				toolbar: '',
+				toolbar: '',fitColumns:true,
 				singleSelect: true,
 				url: ''
 			">
@@ -68,6 +69,9 @@
 			$('#dgItemSearch').datagrid({url:'<?=base_url()?>index.php/inventory/filter/'+nama});
 			$('#dgItemSearch').datagrid('reload');
 
+		}
+		function dlgSearchItem_Close(){
+			$("#dlgSearchItem").dialog("close");
 		}
 
 		

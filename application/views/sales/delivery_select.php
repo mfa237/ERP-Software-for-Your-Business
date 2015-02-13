@@ -1,8 +1,8 @@
 <div id='dlgSelectDo'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
      closed="true" buttons="#toolbar-search-do">
-	<table id="dgSelectDo" class="easyui-datagrid"  
+	<table id="dgSelectDo" class="easyui-datagrid"  width='100%'
 		data-options="
-			toolbar: '',
+			toolbar: '', fitColumns: true,
 			singleSelect: true,
 			url: ''
 		">
@@ -18,7 +18,7 @@
 		</thead>
 	</table>
 </div>
-<div id="toolbar-search-do" style="height:auto">
+<div id="toolbar-search-do" class='box-gradient'>
 	Enter Text: <input  id="search_do" style='width:180' name="search_do">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_do_open()"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_do_number()">Select</a>

@@ -29,14 +29,14 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
-        function info($id){
-            $data=$this->get_by_id($id)->row();
-            if(count($data)){    
-                $ret='<br/><strong>'.$id.' - '.$data->username.'</strong><br/>'
-                        .$data->cid.'<br/>';
-            } else $ret='';
-            return $ret;
-        }
+	function info($id){
+		$data=$this->get_by_id($id)->row();
+		if(count($data)){    
+			$ret='<br/><strong>'.$id.' - '.$data->username.'</strong><br/>'
+					.$data->cid.'<br/>';
+		} else $ret='';
+		return $ret;
+	}
 	function save($data){
 		return $this->db->insert($this->table_name,$data);
 	}
@@ -60,11 +60,17 @@ function __construct(){
 		$this->db->delete($this->table_name);
 		$this->user_jobs_model->delete_by_user($id);
 	}
- function get_login_info($user_id)
- {
-	 $this->db->where('$user_id', $user_id);
-	 $this->db->limit(1);
-	 $query = $this->db->get($this->table);
-	 return ($query->num_rows() > 0) ? $query->row() : FALSE;
- }
+	 function get_login_info($user_id)
+	 {
+		 $this->db->where('$user_id', $user_id);
+		 $this->db->limit(1);
+		 $query = $this->db->get($this->table);
+		 return ($query->num_rows() > 0) ? $query->row() : FALSE;
+	 }
+	 function list_user_by_group($group_id){
+		$sql="select u.user_id,u.username,u.path_image from user u
+			left join user_job uj on uj.user_id=u.user_id 
+			where uj.group_id='".$group_id."'";
+		return $this->db->query($sql);
+	 }
 }

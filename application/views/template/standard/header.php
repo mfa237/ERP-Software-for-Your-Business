@@ -1,21 +1,23 @@
-<nav class="navbar navbar-default " role="navigation">
+<nav class="navbar-maxon navbar box-gradient" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
+      <button type="button" class="navbar-toggle  glyphicon glyphicon-align-justify" 
+	  data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle </span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand glyphicon glyphicon-home border-hover" href="<?=base_url()?>index.php"> MaxOn</a>
+      <a class="navbar-brand glyphicon glyphicon-home border-hover" 
+	  href="<?=base_url()?>index.php/eshop/home"> MaxOn</a>
     </div>
 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav border-hover" >
         <li class="dropdown">
           <a href="#" class="dropdown-toggle glyphicon glyphicon-calendar" data-toggle="dropdown"> Transaksi <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-		        <li><a onclick="load_menu('sales')" href="#" >Penjualan</a></li>
+			  <ul class="dropdown-menu">
+					<li><a onclick="load_menu('sales')" href="#" >Penjualan</a></li>
 		        <li><a onclick="load_menu('purchase')"  href="#" >Pembelian</a></li>
 		        <li><a onclick="load_menu('inventory')"  href="#">Inventory</a></li>
 	            <li class="divider"></li>
@@ -33,11 +35,11 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown"> Master <b class="caret"></b></a>
           <ul class="dropdown-menu">
-				<li><a href="<?=base_url()?>index.php/customer" class="info_link" >Pelanggan</a></li>
-				<li><a href="<?=base_url()?>index.php/supplier"  class="info_link" >Supplier</a></li>
-				<li><a href="<?=base_url()?>index.php/inventory"  class="info_link" >Barang/Jasa</a></li>
-				<li><a href="<?=base_url()?>index.php/banks" class="info_link" >Rekening</a></li>
-				<li><a href="<?=base_url()?>index.php/coa" class="info_link" >Perkiraan</a></li>
+				<li><a href="<?=base_url()?>index.php/customer" class="info_link glyphicon glyphicon-user" > Pelanggan</a></li>
+				<li><a href="<?=base_url()?>index.php/supplier"  class="info_link glyphicon glyphicon-heart" > Supplier</a></li>
+				<li><a href="<?=base_url()?>index.php/inventory"  class="info_link glyphicon glyphicon-qrcode" > Barang/Jasa</a></li>
+				<li><a href="<?=base_url()?>index.php/banks" class="info_link glyphicon glyphicon-book" > Rekening</a></li>
+				<li><a href="<?=base_url()?>index.php/coa" class="info_link glyphicon glyphicon-tasks" > Perkiraan</a></li>
           </ul>
         </li>
       </ul>
@@ -47,14 +49,14 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle glyphicon glyphicon-folder-open" data-toggle="dropdown"> Laporan  <b class="caret"></b></a>
           <ul class="dropdown-menu">
-				<li><a href="<?=base_url()?>index.php/sales/reports"  class="info_link">Penjualan</a></li>
-				<li><a href="<?=base_url()?>index.php/purchase/reports" class="info_link">Pembelian</a></li>
-				<li><a href="<?=base_url()?>index.php/inventory/reports" class="info_link">Inventory</a></li>
-				<li><a href="<?=base_url()?>index.php/banks/reports" class="info_link">Kas-Bank</a></li>
-				<li><a href="<?=base_url()?>index.php/aktiva/reports" class="info_link">Aktiva Tetap</a></li>
-				<li><a href="<?=base_url()?>index.php/manuf/reports" class="info_link">Manufacture</a></li>
-				<li><a href="<?=base_url()?>index.php/gl/reports" class="info_link">Akuntansi</a></li>
-				<li><a href="<?=base_url()?>index.php/payroll/reports" class="info_link">Payroll</a></li>
+				<li><a href="<?=base_url()?>index.php/sales/reports"  class="info_link glyphicon glyphicon-shopping-cart"> Penjualan</a></li>
+				<li><a href="<?=base_url()?>index.php/purchase/reports" class="info_link glyphicon glyphicon-gift"> Pembelian</a></li>
+				<li><a href="<?=base_url()?>index.php/inventory/reports" class="info_link glyphicon glyphicon-leaf"> Inventory</a></li>
+				<li><a href="<?=base_url()?>index.php/banks/reports" class="info_link glyphicon glyphicon-book"> Kas-Bank</a></li>
+				<li><a href="<?=base_url()?>index.php/aktiva/reports" class="info_link glyphicon glyphicon-qrcode"> Aktiva Tetap</a></li>
+				<li><a href="<?=base_url()?>index.php/manuf/reports" class="info_link glyphicon glyphicon-home"> Manufacture</a></li>
+				<li><a href="<?=base_url()?>index.php/gl/reports" class="info_link glyphicon glyphicon-th-list"> Akuntansi</a></li>
+				<li><a href="<?=base_url()?>index.php/payroll/reports" class="info_link glyphicon glyphicon-user"> Payroll</a></li>
 
           </ul>
         </li>
@@ -68,14 +70,23 @@
       </form>
       
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="<?=base_url()?>index.php/login/logout" class="glyphicon glyphicon-log-in"> Logout</a></li>
         <li class="dropdown  border-hover">
-          <a href="#" class="dropdown-toggle glyphicon glyphicon-wrench" data-toggle="dropdown"> Setting <b class="caret"></b></a>
+          <a href="#" class="dropdown-toggle glyphicon glyphicon-user" data-toggle="dropdown">
+		   <?=$this->access->username?> <b class="caret"></b></a>
           <ul class="dropdown-menu">
-			<li><a href="<?=base_url()?>index.php/company"  class="info_link" >Perusahaan</a></li>
-			<li><a href="<?=base_url()?>index.php/user"  class="info_link" >User Login</a></li>
-			<li><a href="<?=base_url()?>index.php/jobs"  class="info_link"  >User Jobs</a></li>
-			<li><a  onclick="load_menu('admin')" href="#"  class="info_link" >Administration</a></li>
+			<li><a href="<?=base_url()?>index.php/maxon_inbox/list_msg" class="info_link glyphicon glyphicon-list-alt"> Message Inbox</a></li>
+			<li><a href="<?=base_url()?>index.php/user/log_activity" class="info_link glyphicon glyphicon-list-alt"> Log Aktifitas</a></li>
+			<li><a href="<?=base_url()?>index.php/user/preference" class="info_link glyphicon glyphicon-wrench"> Pengaturan</a></li>
+            <li class="divider"></li>
+			<li><a href="<?=base_url()?>index.php/login/logout" class="glyphicon glyphicon-log-in"> Logout</a></li>
+            <li class="divider"></li>
+			<li><a href="<?=base_url()?>index.php/help/doc_help" class="info_link glyphicon glyphicon-question-sign"> Bantuan</a></li>
+			<li><a href="<?=base_url()?>index.php/help/error" class="info_link glyphicon glyphicon-random"> Laporkan Masalah</a></li>
+            <li class="divider"></li>
+			<li><a href="<?=base_url()?>index.php/company"  class="info_link  glyphicon glyphicon-home" > Perusahaan</a></li>
+			<li><a href="<?=base_url()?>index.php/user"  class="info_link  glyphicon glyphicon-user" > User Login</a></li>
+			<li><a href="<?=base_url()?>index.php/jobs"  class="info_link  glyphicon glyphicon-headphones"> User Jobs</a></li>
+			<li><a  onclick="load_menu('admin')" href="#"  class="info_link  glyphicon glyphicon-certificate"> Administration</a></li>
           </ul>
         </li>
       </ul>

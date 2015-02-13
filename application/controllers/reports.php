@@ -21,6 +21,7 @@ class Reports extends CI_Controller {
         function index()
 	{	
 	}
+	
         function ar($id){
              $this->load->helper('mylib');
              $data['message']='';

@@ -1,29 +1,23 @@
-<div><h4>PEMBAYARAN PIUTANG</H4><div class="thumbnail">
+<h4>PEMBAYARAN PIUTANG</H4><div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'process()','save');		
 	echo link_button('Print', 'print()','print');
 	echo link_button('Add','','add','true',base_url().'index.php/payment/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/payment');
 		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'payment\')','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('payment')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/delivery_order");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">	
 	<form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
-	<table style="width:600px">
+	<table class='table2' width='100%'>
 		<tr>
 			<td>Rekening: </td><td><?=form_dropdown('how_paid_acct_id',$account_list,$how_paid_acct_id,"id=how_paid_acct_id");?></td>
 		</tr>
@@ -45,9 +39,9 @@
 		</tr>
 	</table>
 	<div id="divItem" >
-		<table id="dgInvoice" class="easyui-datagrid"  
+		<table id="dgInvoice" class="easyui-datagrid"  width='100%'
 			data-options="
-				toolbar: '',
+				toolbar: '', fitColumns: true, 
 				singleSelect: true,
 				url: ''
 			">

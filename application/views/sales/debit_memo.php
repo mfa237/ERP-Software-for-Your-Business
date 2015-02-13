@@ -1,5 +1,5 @@
 <div >
-	<h1>DEBIT MEMO<div class="thumbnail">
+	<h1>DEBIT MEMOx<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		

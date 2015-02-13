@@ -14,6 +14,7 @@ if ( ! function_exists('browse_select'))
         $action_button='<input type="button" value="Del" 
                  onclick="del_row(\'#'.$field_key.'\');return false;"/>';
         $hidden=''; 
+		$fields_sum='';
         if(is_array($sql_array)){
            $sql=$sql_array['sql'];
            if(isset($sql_array['caption']))$caption=$sql_array['caption'];
@@ -27,6 +28,9 @@ if ( ! function_exists('browse_select'))
            if(isset($sql_array['action_button']))$action_button=$sql_array['action_button'];
            if(isset($sql_array['fields_input']))$fields_input=$sql_array['fields_input'];
            if(isset($sql_array['hidden']))$hidden=$sql_array['hidden']; 
+           if(isset($sql_array['fields_sum']))$fields_sum=$sql_array['fields_sum']; 
+           if(isset($sql_array['group_by']))$group_by=$sql_array['group_by']; 
+		   
         };
         
         //echo '<script src="'.base_url().'public/js/browse.js"></script>';
@@ -50,21 +54,19 @@ if ( ! function_exists('browse_select'))
         $where='';
         for($i=0;$i<$count;$i++){
             $fld=$flds[$i];
-                $lhide=false;
-                if(is_array($hidden)){
-                    for($j=0;$j<count($hidden);$j++){
-                        if(strcasecmp($hidden[$j], $fld)==0 ){
-                            $lhide=true;
-                        }
-                    }
-                }
-
+			$lhide=false;
+			if(is_array($hidden)){
+				for($j=0;$j<count($hidden);$j++){
+					if(strcasecmp($hidden[$j], $fld)==0 ){
+						$lhide=true;
+					}
+				}
+			}
             
-            $fld=str_replace('_',' ',$fld);
+            $fld=ucfirst(str_replace('_',' ',$fld));
             
             if(!$lhide)  $flds2[$i]=$fld;
-            
-            
+
             if(isset($_GET[$flds[$i]])){
                 $val=$_GET[$flds[$i]];
             } else {
@@ -101,56 +103,134 @@ if ( ! function_exists('browse_select'))
         }
         $CI->table->set_heading($flds2);
         $j=0;
-      
-        foreach($query->result_array() as $row){
-             
-            for($i=0;$i<$count;$i++){
-                $fld=$flds[$i];
-                $lhide=false;
-                if(is_array($hidden)){
-                    for($j=0;$j<count($hidden);$j++){
-                        if(strcasecmp($hidden[$j], $fld)==0 ){
-                            $lhide=true;
-                            break;
-                        }
-                    }
-                }
-                if(!$lhide){
-                    if($type[$i]=='real'){
-                        $newrow[$i]= '<div align="right">'.number_format($row[$fld]).'</div>';
-                    } else {
-                        $newrow[$i]=$row[$fld];
-                    }
-                    if(is_array($fields_input)){
-                       for($j=0;$j<count($fields_input);$j++){                            
-                           if($fld==$fields_input[$j]){
-                              $newrow[$i]='<input id="'.$fld.$i.'" value="'.$row[$fld].'" style="width:50px"/>';
-                           }
-                       }
-                    }
-                }
-            }
-            if($field_key=='') $key=$row[$flds[0]];else $key=$row[$field_key];
+		if(is_array($fields_sum)){
+			for($j=0;$j<count($fields_sum);$j++){
+				$fields_sum_value[$fields_sum[$j]]=0;
+			}
+		}
+		$eof=false;
+		$rows=$query->result_array();
+		$k=0;
+		$old_val="";$new_val="";
+		if(count($rows)){
+		$row=$rows[$k];
+        while( ! $eof and $k<count($rows) ){
+			if( $row ){
+				$newrow=null; 
+				$group_by1=null;
+				if(isset($group_by))$group_by1=$group_by[0];
+				for($ik=0;$ik<$count;$ik++){
+					$fld=$flds[$ik];
+					if(isset($fields_sum_value[$fld])){
+						$sub_ttl[$fld]=0;
+					} 
+				}
+				
+				$new_val="";
+				$old_val="";
+				if($group_by1){
+					$new_val=$row[$group_by1];
+					$old_val=$new_val;
+					$CI->table->add_row("<tr><td colspan=$count><h2>$new_val </h2></td></tr>");
+				}
+				while ( ! $eof and $k<count($rows) and $new_val==$old_val ) {
+					$newrow=null; 
+					for($i=0;$i<$count;$i++){
+						$fld=$flds[$i];
+						$lhide=false;
+						if(is_array($hidden)){
+							for($j=0;$j<count($hidden);$j++){
+								if(strcasecmp($hidden[$j], $fld)==0 ){
+									$lhide=true;
+									break;
+								}
+							}
+						}
+						if(!$lhide){
+							if($type[$i]=='real'){
+								$newrow[$i]= '<div align="right">'.number_format($row[$fld]).'</div>';
+							} else {
+								$newrow[$i]=$row[$fld];
+							}
+							if(is_array($fields_input)){
+							   for($j=0;$j<count($fields_input);$j++){                            
+								   if($fld==$fields_input[$j]){
+									  $newrow[$i]='<input id="'.$fld.$i.'" value="'.$row[$fld].'" style="width:50px"/>';
+								   }
+							   }
+							}
+						}
+						if(is_array($fields_sum)){
+							for($j=0;$j<count($fields_sum);$j++){
+								if(strcasecmp($fields_sum[$j],$fld)==0){
+									$fields_sum_value[$fld]=$fields_sum_value[$fld]+$row[$fld];
+									if(isset($sub_ttl[$fld])){
+										$sub_ttl[$fld]=$sub_ttl[$fld]+$row[$fld];
+									}
+									break;
+								}
+							}
+						}
+					}
+					if($field_key=='') $key=$row[$flds[0]];else $key=$row[$field_key];
 
-           if($caption!=''){
-                $newrow[$i++]='
-                <input id="txtQty'.$j.'" style="width:30px" value="1"/>    
-                <input type="button" value="Add" 
-                onclick="add_row(\''.$j.'\',\''.$key.'\');return false;"/>';
-           } else {
-               if($show_action){
-                    $button=str_replace('#'.$field_key,$key, $action_button);
-                    $button=str_replace('#',$key, $action_button);
-                   
-                    $newrow[$i++]=$button;
-               }
-           }
-            
-            $CI->table->add_row($newrow);
-            $j++;    
-            $i++;
+					if($caption!=''){
+						$newrow[$i++]='
+						<input id="txtQty'.$j.'" style="width:30px" value="1"/>    
+						<input type="button" value="Add" 
+						onclick="add_row(\''.$j.'\',\''.$key.'\');return false;"/>';
+				   } else {
+					   if($show_action){
+							$button=str_replace('#'.$field_key,$key, $action_button);
+							$button=str_replace('#',$key, $action_button);
+						   
+							$newrow[$i++]=$button;
+					   }
+				   }
+					
+					$CI->table->add_row($newrow);
+					$j++;    
+					$i++;
+					$k++;
+					if($k<count($rows)){
+						$row=$rows[$k];
+						$eof = ! $row;
+						if($group_by1){
+							$new_val=$row[$group_by1];
+						}
+					}
+				}
+				if($group_by1){
+					if(isset($fields_sum[0])){
+//						$CI->table->add_row("<strong>Sub total  $group_by1 : $old_val Rp. ".$sub_ttl[$fields_sum[0]]."</strong>");
+						$s2="";
+						for($ik=0;$ik<$count;$ik++){
+							$fld=$flds[$ik];
+							if(isset($fields_sum_value[$fld])){
+								$s2[$ik]='<div align="right"><strong>'.number_format($sub_ttl[$fld]).'</strong></div>';
+							} else {
+								$s2[$ik]="";
+							}
+						}
+						$CI->table->add_row($s2);						
+					}
+				}
+			}
         };
-        $tmpl=$CI->template->template_table('table1');
+		}
+		$s="";
+		for($i=0;$i<$count;$i++){
+			$fld=$flds[$i];
+			if(isset($fields_sum_value[$fld])){
+				$s[$i]='<div align="right"><strong>'.number_format($fields_sum_value[$fld]).'</strong></div>';
+			} else {
+				$s[$i]="";
+			}
+		}
+        $CI->table->add_row($s);
+		
+		
+        $tmpl=$CI->template->template_table('titem');
         $CI->table->set_template($tmpl);
         $retval=$CI->table->generate();
         

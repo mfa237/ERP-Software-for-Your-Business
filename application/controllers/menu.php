@@ -23,7 +23,7 @@ class Menu extends CI_Controller {
             $this->session->set_userdata('_left_menu', $url);
             $this->session->set_userdata('_right_menu','');
             if(is_ajax()){
-                echo $this->load->view($url,$data);
+                echo $this->load->view($url);
             } else {
                 $data['_content']=$url;
 				$data['ajaxed']=false;

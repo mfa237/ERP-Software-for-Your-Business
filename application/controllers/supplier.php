@@ -55,7 +55,7 @@ class Supplier extends CI_Controller {
 	function add()
 	{
 		if(!allow_mod('_40011')){
-			echo "<span class='not_access'>Anda tidak diijinkan menjalankan proses module ini.</span>";
+			echo "<span class='not_access'>Anda tidak diijinkan menjalankan proses module ini. _40011</span>";
 			return false;
 		};			
 		 $data=$this->set_defaults();

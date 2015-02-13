@@ -6,8 +6,23 @@ private $table_name='financial_periods';
 
 function __construct(){
 	parent::__construct();
+	$this->check_this_year();
 }
- 
+function check_this_year(){
+	$year=date("Y");
+	for($bln=1;$bln<=12;$bln++){
+		$period=$year."-".strzero($bln,2);
+		if(!$this->exist($period)){
+			$last_date=date("Y-m-t", strtotime($year."-".strzero($bln,2)."-01"));	//lastday
+			$this->save(array(
+				"period"=>$period,"year_id"=>$year,"sequence"=>$bln,
+				"startdate"=>$year."-".strzero($bln,2)."-01 00:00:00",
+				"enddate"=>$last_date." 23:59:59",
+				"closed"=>0,"month_name"=>date("M",strtotime($last_date))			
+			));
+		}
+	}
+} 
 function count_all(){
 	return $this->db->count_all($this->table_name);
 }

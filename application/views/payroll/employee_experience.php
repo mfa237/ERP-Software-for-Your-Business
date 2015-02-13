@@ -1,5 +1,7 @@
-<table id="dgExp" class="easyui-datagrid" style="width:auto;"
-	data-options="iconCls: 'icon-edit',singleSelect: true,toolbar: '#tbExp',url: ''">
+<table id="dgExp" class="easyui-datagrid" width='100%'
+	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, 
+	toolbar: '#tbExp',
+	url: '<?=base_url()?>index.php/payroll/employee/experience/load/<?=$nip?>'">
 	<thead>
 		<tr>
 			<th data-options="field:'company', width:'80'">Perusahaan</th>
@@ -27,9 +29,11 @@
 </div>	
 
 
-<div id='dlgExp'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  closed="true" buttons="#tbDlgExp">
+<div id='dlgExp'class="easyui-dialog" icon='icon-edit' 
+	style="width:500px;height:380px;padding:10px 20px"  
+	closed="true" buttons="#tbDlgExp">
 	<form method="post" id="frmExp">
-		<table style='width:100%'>
+		<table class='table2' style='width:100%'>
 			<tr>
 				<td>Perusahaan</td><td><?=form_input("company")?></td>
 			</tr>
@@ -74,12 +78,13 @@
 
 <script language="JavaScript">
 	function add_exp() {
+		if($("#mode").val()=="add"){alert("Simpan dulu record ini !");return false}
 		$('#dlgExp').dialog('open').dialog('setTitle','Pengalaman Kerja');
 	}
 	function save_exp() {
         if($('#company').val()===''){alert('Isi dulu nama perusahaan !');return false;};
 
-		url='<?=base_url()?>index.php/employee/experience/save';
+		url='<?=base_url()?>index.php/payroll/employee/experience/save';
 		$('#frmExp').form('submit',{
 			url: url,
 			onSubmit: function(){
@@ -101,33 +106,34 @@
 	function edit_exp()	{
 		var row = $('#dgExp').datagrid('getSelected');
 		if (row){
+			console.log(row);
 			$('#id_exp').val(row.id);
-			$('[name=company]').val(row.company);
-			$('[name=startdate]').val(row.startdate);
-			$('[name=finishdate]').val(row.finishdate);
-			$('[name=firstposition]').val(row.firstposition);
-			$('[name=endposition]').val(row.endposition);
-			$('[name=place]').val(row.place);
-			$('[name=lastsalary]').val(row.lastsalary);
-			$('[name=supervisor]').val(row.supervisor);
-			$('[name=referencename]').val(row.referencename);
-			$('[name=referencephone]').val(row.referencephone);
-			$('[name=reasontoleave]').val(row.reasontoleave);
-			$('[name=employeeid]').val(row.employeeid);
+			$('#frmExp input[name=company]').val(row.company);
+			$('#frmExp input[name=startdate]').val(row.startdate);
+			$('#frmExp input[name=finishdate]').val(row.finishdate);
+			$('#frmExp input[name=firstposition]').val(row.firstposition);
+			$('#frmExp input[name=endposition]').val(row.endposition);
+			$('#frmExp input[name=place]').val(row.place);
+			$('#frmExp input[name=lastsalary]').val(row.lastsalary);
+			$('#frmExp input[name=supervisor]').val(row.supervisor);
+			$('#frmExp input[name=referencename]').val(row.referencename);
+			$('#frmExp input[name=referencephone]').val(row.referencephone);
+			$('#frmExp input[name=reasontoleave]').val(row.reasontoleave);
+			$('#frmExp input[name=employeeid]').val(row.employeeid);
 			
 			$('#dlgExp').dialog('open').dialog('setTitle','Pengalaman Kerja');
 		}
 	}
 	function load_exp()	{
 		nip=$('#nip').val();
-		xurl='<?=base_url()?>index.php/employee/experience/load/'+nip;
+		xurl='<?=base_url()?>index.php/payroll/employee/experience/load/'+nip;
 		$('#dgExp').datagrid({url:xurl});
 	}
 	function del_exp()	{
 		var row = $('#dgExp').datagrid('getSelected');
 	 
 		if (row){
-			url='<?=base_url()?>index.php/employee/experience/delete/'+row.id;
+			url='<?=base_url()?>index.php/payroll/employee/experience/delete/'+row.id;
 			$.ajax({
 				type: "GET", url: url,
 				success: function(msg){

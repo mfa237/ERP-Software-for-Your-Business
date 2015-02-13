@@ -1,12 +1,11 @@
-
-<table>
+<table class='table2' width='100%'>
 	<tr>
 		<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
 		<td>Harga</td><td>Disc%</td><td>Jumlah</td><td></td>
 	</tr>
 	<tr>
 	    <form id="frmItem" method='post' >
-	         <td><input onblur='find()' id="item_number" style='width:50px' 
+	         <td><input onblur='find();return false;' id="item_number" style='width:50px' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 				onclick="searchItem()"></a>
@@ -25,25 +24,25 @@
 	    </form>
 	</tr>
 </table>
-<div id="tb" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
+<div id="tb" class='box-gradient'>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem();return false;">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem(); return false;">Delete</a>	
 </div>
 
-<div id="tb_search" style="height:auto">
+<div id="tb_search" class='box-gradient'>
 	Enter Text: <input  id="search_item" style='width:180' 
  	name="search_item">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search"  
+	onclick="searchItem();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItem();return false;">Select</a>
 </div>
 
 <div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
         closed="true" buttons="#tb_search">
      <div id='divItemSearchResult'> 
-		<table id="dgItemSearch" class="easyui-datagrid"  
+		<table id="dgItemSearch" class="easyui-datagrid"  width='100%'
 			data-options="
-				toolbar: '',
+				toolbar: '',fitColumns: true, 
 				singleSelect: true,
 				url: ''
 			">

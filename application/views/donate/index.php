@@ -26,7 +26,7 @@
 					<input type="hidden" name="hosted_button_id" value="3B2BALTFG7KWQ">
 					<input type="image" src="<?=base_url()?>images/paypal.jpg" style="width:165px!important;"  
 					 width="130px" height="100px"  border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" align="left">
-					<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="10" height="10">
+					<img alt="Paypal" border="0" src="" width="10" height="10">
 					<strong>PAYPAL</strong> 
 					<br>
 					
@@ -35,11 +35,9 @@
 			</p>
 			<div class="clearfix"></div>
 			<p>
-				<img src="<?=base_url()?>images/donate/paud1.jpg" width="200px" height="200px">
-				<img src="<?=base_url()?>images/donate/paud2.jpg"  width="200px" height="200px">
-				<img src="<?=base_url()?>images/donate/paud3.jpg" width="200px" height="200px">
-				<img src="<?=base_url()?>images/donate/paud4.jpg" width="200px" height="200px">
-				<img src="<?=base_url()?>images/donate/paud6.jpg" width="200px" height="200px">
+				<img src="<?=base_url()?>images/donate/paud1.jpg"  class="col-md-3 img-responsive" style="margin:10px">
+				<img src="<?=base_url()?>images/donate/paud2.jpg"  class="col-md-3 img-responsive" style="margin:10px">
+				<img src="<?=base_url()?>images/donate/paud4.jpg"  class="col-md-3 img-responsive" style="margin:10px">
 			</p>	
 		
        </div>

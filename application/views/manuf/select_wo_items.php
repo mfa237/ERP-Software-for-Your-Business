@@ -1,12 +1,13 @@
-<table>
+<table class='table2' width='100%'>
 	<tr>
 		<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
+		<td>Line</td><td>Action</td>
 	</tr>
 	<tr>
 	         <td><input onblur='find()' id="item_number" style='width:80px' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-				onclick="searchItem()"></a>
+				onclick="searchItem();return false;"></a>
 	         </td>
 	         <td><input id="description" name="description" style='width:280px'></td>
 	         <td><input id="quantity"  style='width:30px'  name="quantity"  ></td>
@@ -15,7 +16,7 @@
 	         <td><input id="wo_line"  style='width:30px'  name="wo_line"  ></td>
 
 	        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-     		   plain='true'	onclick='save_item()'>Add Item</a>
+     		   plain='true'	onclick='save_item();return false;'>Add Item</a>
 			</td>
 	        <input type='hidden' id='ref_number' name='ref_number'>
 	        <input type='hidden' id='line_number' name='line_number'>
@@ -30,16 +31,17 @@
 	Enter Text: <input  id="search_item" style='width:180px' 
  	name="search_item">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
+	onclick="searchItem();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" 
+	onclick="selectSearchItem();return false;">Select</a>
 </div>
 
 <div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#dlg-buttons">
+        closed="true" buttons="#tb_search">
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  
 			data-options="
-				toolbar: '#tb_search',
+				toolbar: '',
 				singleSelect: true,
 				url: ''
 			">
@@ -87,6 +89,9 @@
 		}
 	}
 		function save_item(){
+			var id=$("#shipment_id").val();
+			if(id==""){alert("Nomor bukti belum diisi !");return false}
+			
 			$('#frmItem').form('submit',{
 				url: url_save_item,
 				onSubmit: function(){
@@ -136,7 +141,7 @@
 			}
 			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang');
 			nama=$('#search_item').val();
-			xurl='<?=base_url()?>index.php/workorder/items/'+wo;
+			xurl='<?=base_url()?>index.php/manuf/workorder/items/'+wo;
 			$('#dgItemSearch').datagrid({url:xurl});
 			$('#dgItemSearch').datagrid('reload');
 		}

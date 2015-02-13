@@ -1,29 +1,23 @@
-<div><h3>JURNAL UMUM</H3>
-<div class="thumbnail">
+<legend>JURNAL UMUM</legend>
+<div class="thumbnail box-gradient">
 	<?
 	if(!isset($closed))$closed=false;
 	if($closed=="")$closed=false;
 	
-	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/jurnal/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/jurnal');		
 	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/jurnal/view/'.$gl_id);		
 	if($mode=="view") echo link_button('Delete','','cut','true',base_url().'index.php/jurnal/delete/'.$gl_id);		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Print', 'print()','print');		
+	echo link_button('Help', 'load_help(\'jurnal\')','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('jurnal')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/jurnal");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">
 
@@ -40,7 +34,7 @@
 
 
 <form id="frmItem" method='post' >
-   <table>
+   <table class="table2" width="100%">
 	<tr>
 		<td>Kode Jurnal</td><td>
 		<?php echo form_input('gl_id',$gl_id,"id=gl_id"); ?>
@@ -66,7 +60,7 @@
 	 </td><td>&nbsp;</td></tr>
    </table>
    <div id='divItem' >
-		<table>
+		<table class="table2" width="100%">
 			<tr>
 				<td>Kode Akun</td><td>Nama Akun</td><td>Debit</td><td>Credit</td><td>
 			</tr>
@@ -74,7 +68,7 @@
 			         <td><input id="account" style='width:80' 
 			         	name="account"   class="easyui-validatebox" required="true">
 						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-						onclick="lookup_coa()"></a>
+						onclick="lookup_coa();return false"></a>
 			         </td>
 			         <td><input id="description" name="description" style='width:280'></td>
 			        <td><input id="debit" name="debit"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
@@ -88,10 +82,9 @@
    </div>
 </form>				
    	
-	<table id="dgItemJurnal" class="easyui-datagrid"  		
-		style="width:auto;height:500px"
+	<table id="dgItemJurnal" class="easyui-datagrid" width="100%"  		
 		data-options="
-			iconCls: 'icon-edit',
+			iconCls: 'icon-edit',fitColumns:true,
 			singleSelect: true,
 			toolbar: '#tb',
 			url: '<?=base_url()?>index.php/jurnal/items/<?=$gl_id?>'
@@ -184,4 +177,3 @@
 		}
     
 </script>
-    

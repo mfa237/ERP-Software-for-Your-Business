@@ -1,9 +1,11 @@
- 
-	<div class="thumbnail">
-		<h3>Kriteria pencetakan</h3>
-		<i>Silahkan isi kriteria pencetakan untuk laporan [<?=$rpt_controller?>] di halaman ini dengan benar,
+<legend>Kriteria pencetakan</legend>
+<div class="thumbnail box-gradient">
+	<p><strong><?if(isset($caption))echo $caption?></strong></p>
+	<p><i>Silahkan isi kriteria pencetakan untuk laporan [<?=$rpt_controller?>] di halaman ini dengan benar,
 		kemudian tekan tombol print.</i>
-	</div>
+	</p>
+</div>
+
 <div class=" ">		
 	<?
 if(!isset($target_window)){
@@ -23,29 +25,29 @@ if(!isset($target_window)){
 			if(!isset($criteria3))$criteria3=false;
 			if(!isset($module))$module="";
 			if($select_date){
-				echo "<h5>Dari Tanggal :</h5>
+				echo "<strong>Dari Tanggal :</strong>
 				  <p>".form_input('txtDateFrom',$date_from,'id=date 
 						 class="easyui-datetimebox" required style="width:150px"')."</p>
-				  <h5>Sampai Tanggal :</h5>
+				  <strong>Sampai Tanggal :</strong>
 				  <p>".form_input('txtDateTo',$date_to,'id=date 
 						 class="easyui-datetimebox" required style="width:150px"')."</p>
 				";
 			}
 			if($criteria1){
-				echo "<h5>".$label1."</h5>";
+				echo "<strong>".$label1."</strong>";
 				echo "<p>".form_input('text1',$text1,"id='text1'");
 				if(isset($ctr1))echo link_button("","lov1()","search"); 
 				echo "</p>";
 			}
 			if($criteria2){
-				echo "<h5>".$label2."</h5>";
+				echo "<strong>".$label2."</strong>";
 				echo "<p>".form_input('text2',$text2,"id='text2'");
 				if(isset($ctr2))echo link_button("","lov2()","search"); 
 				echo "</p>";
 				
 			}
 			if($criteria3){
-				echo "<h5>".$label3."</h5>";
+				echo "<strong>".$label3."</strong>";
 				echo "<p>".form_input('text3',$text3,"id='text3'");
 				if(isset($ctr3))echo link_button("","lov3()","search"); 
 				echo "</p>";

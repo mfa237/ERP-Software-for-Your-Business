@@ -5,8 +5,6 @@
  ?>
 <div class="easyui-tabs" id="tt">	 
 	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
-	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
-
 	<div title="DASHBOARD" style="padding:10px">
 	
 		<div class="thumbnail">
@@ -17,17 +15,17 @@
 		<div class="thumbnail">
 			<img src="<?=base_url()?>images/manuf.png" usemap="#sales" class="map">
 			<map id="sales" name="sales">
-			<area shape="circle" alt="" coords="70,56,31" href="<?=base_url()?>index.php/workorder" class="info_link" title="Workorder" />
-			<area shape="circle" alt="" coords="172,55,29" href="<?=base_url()?>index.php/work_exec" class="info_link" title="Workorder Execution"  />
-			<area shape="circle" alt="" coords="275,55,30" href="<?=base_url()?>index.php/mat_release" class="info_link"  title="Material Release" />
+			<area shape="circle" alt="" coords="70,56,31" href="<?=base_url()?>index.php/manuf/workorder" class="info_link" title="Workorder" />
+			<area shape="circle" alt="" coords="172,55,29" href="<?=base_url()?>index.php/manuf/work_exec" class="info_link" title="Workorder Execution"  />
+			<area shape="circle" alt="" coords="275,55,30" href="<?=base_url()?>index.php/manuf/mat_release" class="info_link"  title="Material Release" />
 			<area shape="circle" alt="" coords="368,55,29"href="<?=base_url()?>index.php/manuf/reports" class="info_link"  title="Reports" />
-			<area shape="circle" alt="" coords="471,53,30" href="<?=base_url()?>index.php/dept_prod" class="info_link"  title="Department Produksi" />
-			<area shape="circle" alt="" coords="163,212,31"href="<?=base_url()?>index.php/receive_prod" class="info_link"  title="Penerimaan Hasil Produksi" />
-			<area shape="circle" alt="" coords="271,212,31" href="<?=base_url()?>index.php/cancel_prod" class="info_link"  title="Pembatalan produksi" />
-			<area shape="circle" alt="" coords="92,323,30" href="<?=base_url()?>index.php/product" class="info_link"  title="Data Barang Jadi / Produksi" />
+			<area shape="circle" alt="" coords="471,53,30" href="<?=base_url()?>index.php/manuf/dept_prod" class="info_link"  title="Department Produksi" />
+			<area shape="circle" alt="" coords="163,212,31"href="<?=base_url()?>index.php/manuf/receive_prod" class="info_link"  title="Penerimaan Hasil Produksi" />
+			<area shape="circle" alt="" coords="271,212,31" href="<?=base_url()?>index.php/manuf/cancel_prod" class="info_link"  title="Pembatalan produksi" />
+			<area shape="circle" alt="" coords="92,323,30" href="<?=base_url()?>index.php/manuf/product" class="info_link"  title="Data Barang Jadi / Produksi" />
 			<area shape="circle" alt="" coords="221,322,29" href="<?=base_url()?>index.php/shipping_locations" class="info_link"  title="Gudang" />
-			<area shape="circle" alt="" coords="354,321,28" href="<?=base_url()?>index.php/product_person" class="info_link"  title="Personal dan tenaga kerja"/>
-			<area shape="circle" alt="" coords="470,317,29" href="<?=base_url()?>index.php/material" class="info_link" title="Material dan bahan baku" />
+			<area shape="circle" alt="" coords="354,321,28" href="<?=base_url()?>index.php/manuf/product_person" class="info_link"  title="Personal dan tenaga kerja"/>
+			<area shape="circle" alt="" coords="470,317,29" href="<?=base_url()?>index.php/manuf/material" class="info_link" title="Material dan bahan baku" />
 			<area shape="default" nohref="nohref" alt="" />
 			</map>
 			 
@@ -68,6 +66,9 @@ $().ready(function(){
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.pie.js"></script>
+
+
+<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
 
 <script type="text/javascript">

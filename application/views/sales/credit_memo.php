@@ -1,5 +1,4 @@
-<div>
-	<h4>CREDIT MEMO </h4><div class="thumbnail">
+	<h4>CREDIT MEMO </h4><div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		
@@ -12,29 +11,21 @@
 		echo link_button('Posting','','ok','true',base_url().'index.php/sales_crmemo/posting/'.$kodecrdb);		
 	}
 	echo link_button('Refresh','','reload','true',base_url().'index.php/sales_crmemo/view/'.$kodecrdb);		
-	echo link_button('Help', 'load_help()','help');		
-	
-	
+	echo link_button('Help', 'load_help(\'sales_crmemo\')','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('sales_crmemo')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/sales_crmemo");
-		}
-	</script>
-	
 </div> 
 <div class="thumbnail">		
 <form id="frmCrDb"  method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>	
 <input type='hidden' name='trans_type' id='trans_type'	value='Sales'>	
-   <table>
+   <table class='table2' width='100%'>
 		<tr>
 		<td>Nomor Bukti</td>
 			<td>
@@ -81,14 +72,14 @@
             </td>
        </tr>
        <tr><td colspan="4">
-			        <input type='hidden' id='transtype' name='transtype' value='SO-CREDIT MEMO'>
+       <input type='hidden' id='transtype' name='transtype' value='SO-CREDIT MEMO'>
        </td></tr>
    </table>
 </form>
-<div class="easyui-tabs" style="height:550px">
+<div class="easyui-tabs"  >
 	<div id="divItem" title="Kode Perkiraan" style="padding:10px">
 		<div id='dgItem'>
-			<table>
+			<table class='table2' width='100%'>
 				<tr>
 					<td>Kode Akun</td><td>Nama Akun</td><td>Jumlah</td><td>
 				</tr>
@@ -97,7 +88,7 @@
 						 <td><input id="account" style='width:80px' 
 							name="account"   class="easyui-validatebox" required="true">
 							<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-							onclick="lookup_coa()"></a>
+							onclick="lookup_coa();return false;	"></a>
 						 </td>
 						 <td><input id="description" name="description" style='width:280px'></td>
 						<td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
@@ -110,10 +101,9 @@
 				</tr>
 			</table>		
 		</div>
-		<table id="dgItemMemo" class="easyui-datagrid"  		
-			style="height:400"
+		<table id="dgItemMemo" class="easyui-datagrid"  	width='100%'	
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,
 				toolbar: '#tb',
 				url: '<?=base_url()?>index.php/crdb/items/<?=$kodecrdb?>/json'
@@ -133,11 +123,10 @@
 <!-- JURNAL -->
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
-		<table id="dgCrdb" class="easyui-datagrid"  
-			style="min-height:700px"
+		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
-				singleSelect: true,toolbar:'#tbCrdb',
+				iconCls: 'icon-edit', fitColumns: true , 
+				singleSelect: true, toolbar:'#tbCrdb',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$kodecrdb?>'
 			">
 			<thead>
@@ -159,7 +148,7 @@
 	
 	
 </DIV>
-<div id="tb" style="height:auto">
+<div id="tb" class='box-gradient'>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 </div>

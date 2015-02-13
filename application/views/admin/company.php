@@ -1,6 +1,5 @@
-<div >
-	<div class="thumbnail"><h1>PERUSAHAAN</H1></div>
-<div class="thumbnail">	
+<legend>PERUSAHAAN</legend> 
+<div class="thumbnail box-gradient">	
    <?php echo validation_errors(); ?>
    <?php 
    		if($mode=='view'){
@@ -13,7 +12,7 @@
 		
    ?> 
    
-   <table>
+   <table class='table2' width="100%">
 	<tr>
 		<td>Kode</td><td>
 		<?php
@@ -24,8 +23,6 @@
 			echo form_input('company_code',$company_code);
 		}		
 		?></td>
-		
-		<td><input type="submit" value="Save"/></td>
 		
 	</tr>	 
        <tr>
@@ -46,8 +43,9 @@
 	<tr><td>Email</td><td><?php echo form_input('email',
                         $email);?></td></tr>
       	
-	 <tr><td>&nbsp;</td></tr>
+	 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+	<tr><td>&nbsp;</td><td><input type="submit" value="Save" class='btn btn-info'/></td></tr>
+		
    </table>
    </form>
  </div>
- </div>  

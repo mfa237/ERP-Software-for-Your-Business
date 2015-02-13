@@ -1,11 +1,11 @@
-<div><h4>PEGAWAI</H4><div class="thumbnail">
+<legend>DATA MASTER PEGAWAI</legend><div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/employee/add');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/employee/view/'.$nip);		
-	echo link_button('Search','','search','true',base_url().'index.php/employee');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Add','','add','true',base_url().'index.php/payroll/employee/add');		
+	echo link_button('Refresh','frmEmployeeReload()','reload','true');		
+	echo link_button('Search','','search','true',base_url().'index.php/payroll/employee');		
+	echo link_button('Help', 'load_help(\'employee\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -17,24 +17,19 @@
 	</div>
 </div>
 
-<?php echo validation_errors(); ?>
+<?php 
+$readonly=$mode=="view"?"readonly":"";
+echo validation_errors(); ?>
 
 <div class="easyui-tabs" style="width:auto;height:auto;min-height:300px">
 	<div title="General" style="padding:10px">
  
 	<form id="frmEmployee"  method="post">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	   <table>
+	   <table class='table2' width='100%'>
 		<tr>
 			<td>Kode Pegawai - NIP  </td>
-			<td><?php
-			if($mode=='view'){
-				echo "<span class='thumbnail'><strong>$nip</strong></span>";
-				echo "<input type='hidden' id='nip' value='$nip'>";
-			} else { 
-				echo form_input('nip',$nip,"id=nip");
-			}		
-			?></td>
+			<td><?=form_input('nip',$nip,"id=nip $readonly");?></td>
 			<td>Group</td><td><?=form_dropdown('emptype',$group_list,$emptype,"id=emptype");?>
 			</td>
 		</tr>	 
@@ -127,7 +122,7 @@
         if($('#nip').val()===''){alert('Isi dulu NIP Karyawan !');return false;};
         if($('#nama').val()===''){alert('Isi dulu nama karyawan !');return false;};
 
-		url='<?=base_url()?>index.php/employee/save';
+		url='<?=base_url()?>index.php/payroll/employee/save';
 			$('#frmEmployee').form('submit',{
 				url: url,
 				onSubmit: function(){
@@ -145,8 +140,11 @@
 				}
 			});
     }
-	function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/employee");
+	function frmEmployeeReload(){
+		var nip=$("#nip").val();
+		if(nip==""){alert("Isi NIP dulu !");return false}
+		var url='<?=base_url()?>index.php/payroll/employee/view/'+nip;
+		window.open(url,"_self");
 	}
 		
 </script>  

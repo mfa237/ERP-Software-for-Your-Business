@@ -1,31 +1,25 @@
-<div><h1>SALESMAN<div class="thumbnail">
+<h1>SALESMAN</h1><div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/coa/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/coa');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'salesman\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('salesman')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/salesman");
-		}
-	</script>
-	
-</div></H1>
+</div>
 <div class="thumbnail">	
 <form id="myform"  method="post" action="<?=base_url()?>index.php/salesman/save">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-   <table>
+   <table class='table2' width='100%'>
 	<tr>
 		<td>Salesman</td><td>
 		<?php
@@ -47,7 +41,7 @@
             <td>Commision Rate 2</td><td><?php echo form_input('commission_rate_2',$commission_rate_2);?></td>
        </tr>
    </table>
-   </form>
+</form>
     
   
 </div>   

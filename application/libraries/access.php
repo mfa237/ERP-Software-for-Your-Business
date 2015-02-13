@@ -63,6 +63,7 @@ class Access
     function logout ()
    {
            $this->CI->session->unset_userdata('logged_in');
+		   $this->log_text("LOGOUT","");
    }
     function print_info(){
     	echo "<img src='".base_url()."images/administrator.png'
@@ -77,4 +78,5 @@ class Access
 	function user_id(){
 		return $this->user_id;		
 	}
+	function user_name(){ return $this->username; }
 }

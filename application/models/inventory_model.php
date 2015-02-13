@@ -81,7 +81,13 @@ function save($data){
 	if(isset($data['style']))$data['style']=='1'?$data['style']=true:$data['style']=false;
     if(isset($data['last_order_date']))if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
     if(isset($data['expected_delivery']))if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
-	return $this->db->insert($this->table_name,$data);
+
+	$ok=$this->db->insert($this->table_name,$data);
+	$id=$data['item_number'];
+	$this->load->model("inventory_assembly_model");
+	$this->inventory_assembly_model->recalc_cost($id);
+
+	return $ok;
 }
 function update($id,$data){
 	if(isset($data['active']))$data['active']=='1'?$data['active']=true:$data['active']=false;
@@ -92,7 +98,12 @@ function update($id,$data){
     if(isset($data['last_order_date']))if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
     if(isset($data['expected_delivery']))if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
 	$this->db->where($this->primary_key,$id);
-	return $this->db->update($this->table_name,$data);
+	$ok=$this->db->update($this->table_name,$data);
+
+	$this->load->model("inventory_assembly_model");
+	$this->inventory_assembly_model->recalc_cost($id);
+
+	return $ok;
 }
 function delete($id){
 	$this->db->where($this->primary_key,$id);

@@ -30,7 +30,34 @@ echo validation_errors();
 		var url="<?=base_url()?>index.php/<?=$form_controller?>/add";	
 		window.open(url,"_self");
 	}
+	function edit_aed() {
+		var url="<?=base_url()?>index.php/<?=$form_controller?>/edit/<?=$item_number?>";	
+		window.open(url,"_self");
+	
+	}
+	function validnum(){
+		var fld=['retail','cost_from_mfg'];
+		var n=0;
+		for(i=0;i<fld.length;i++){
+			n=$("#frmMain input[name="+fld[i]+"]").val();
+			if(!isNumber(n)){
+			alert("Isi field "+fld[i]+" dengan angka !!"); 
+			return false;}
+		}
+		return true;
+	}
+	function valid(){
+		var fld=["item_number","description","unit_of_measure","category"];
+		for(i=0;i<fld.length;i++){
+			if($("#frmMain input[name="+fld[i]+"]").val()==""){
+			alert('Isi field '+fld[i]+' !!'); return false;}
+		}
+		return true;		
+	}
+	
   	function save_aed(){
+		if(!valid())return false;
+		if(!validnum())return false;
 		url='<?=base_url()?>index.php/<?=$form_controller?>/save';
 		$('#frmMain').form('submit',{
 			url: url, onSubmit: function(){	return $(this).form('validate'); },

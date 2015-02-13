@@ -1,3 +1,5 @@
+<script src="<?=base_url()?>assets/ckeditor/ckeditor.js"></script>
+
 <div><div class="thumbnail">
 <legend>EDIT ARTICLE</legend>
 
@@ -60,9 +62,8 @@
 	</div>
 
 	<div class="form-group">
-	<label for="content" class="col-sm-3 control-label">Isi Article</label>
-		<div class="col-sm-8">
-			<textarea id='content' name='content' class="form-control" style="height:300px"><?=$content?></textarea>
+		<div class="col-md-5">
+			<textarea id='content' name='content' class="ckeditor" ><?=$content?></textarea>
 		</div>
 	</div>
 

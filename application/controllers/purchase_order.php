@@ -272,7 +272,8 @@ class Purchase_order extends CI_Controller {
         function print_po($nomor){
 			$nomor=urldecode($nomor);
 		    $this->load->helper('mylib');
-			$this->load->helper('pdf_helper');			
+			$this->load->helper('pdf_helper');		
+			
             $invoice=$this->purchase_order_model->get_by_id($nomor)->row();
 			$saldo=$this->purchase_order_model->recalc($nomor);
 			$data['po_number']=$invoice->purchase_order_number;
@@ -289,6 +290,7 @@ class Purchase_order extends CI_Controller {
 			$data['tax_amount']=$invoice->tax*($data['sub_total']-$data['disc_amount']);
 			$data['comments']=$invoice->comments;
 			$this->load->view('purchase/print_po',$data);
+
 		}
         function sum_info(){
 			$nomor=urldecode($nomor);

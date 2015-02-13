@@ -2,9 +2,9 @@
 <div id='dlgSelectSupp'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
      closed="true" buttons="#button-select-supp">
      <div id='divSelectSupp'> 
-		<table id="dgSelectSupp" class="easyui-datagrid"  
+		<table id="dgSelectSupp" class="easyui-datagrid"  width="100%"
 			data-options="
-				toolbar: '',
+				toolbar: '',fitColumns: true, 
 				singleSelect: true,
 				url: ''
 			">
@@ -19,10 +19,11 @@
 		</table>
     </div>   
 </div>
-<div id="button-select-supp" class="thumbnail" style="height:auto">
+<div id="button-select-supp" class="thumbnail box-gradient" style="height:auto">
 	Enter Text: <input id="search_supp_lov" style='width:180' name="search_supp_lov">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_supplier();return false;"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_supplier();return false;">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search"  onclick="select_supplier();return false;">Filter</a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selected_supplier();return false;">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"   onclick="dlgSelectSupp_Close();return false;">Close</a>
 </div>
 
 
@@ -46,6 +47,9 @@
 			alert("Pilih salah satu nomor supplier !");
 		}
 	}	
+	function dlgSelectSupp_Close(){
+		$("#dlgSelectSupp").dialog("close");
+	}
 </SCRIPT>
 <!-- END PILIH PELANGGAN -->
 

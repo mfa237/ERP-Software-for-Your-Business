@@ -6,7 +6,7 @@
 					iconCls: 'icon-edit',
 					singleSelect: true,
 					toolbar: '#tb',
-					url: '<?=base_url()?>index.php/payroll/slip_komponen/<?=$kode_group?>'
+					url: '<?=base_url()?>index.php/payroll/payroll/slip_komponen/<?=$kode_group?>'
 				">
 				<thead>
 					<tr>
@@ -46,7 +46,7 @@
 </div>
 <script language="JavaScript">
 	function add_item(){
-		url='<?=base_url()?>index.php/payroll/slip_komponen/<?=$kode_group?>/save';
+		url='<?=base_url()?>index.php/payroll/payroll/slip_komponen/<?=$kode_group?>/save';
 	 
 			$('#frmItem').form('submit',{
 				url: url,
@@ -56,7 +56,7 @@
 				success: function(result){
 					var result = eval('('+result+')');
 					if (result.success){
-						$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/slip_komponen/<?=$kode_group?>'});
+						$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/payroll/slip_komponen/<?=$kode_group?>'});
 						$('#dg').datagrid('reload');
 					} else {
 						$.messager.show({
@@ -72,7 +72,7 @@
 		if (row){
 			$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
 				if (r){
-					url='<?=base_url()?>index.php/payroll/slip_komponen/<?=$kode_group?>/delete';
+					url='<?=base_url()?>index.php/payroll/payroll/slip_komponen/<?=$kode_group?>/delete';
 					$.post(url,{line_number:row.id},function(result){
 						if (result.success){
 							$('#dg').datagrid('reload');	// reload the user data

@@ -245,7 +245,6 @@ class CI_Zip  {
 		{
 			return FALSE;
 		}
-
 		if (FALSE !== ($data = file_get_contents($path)))
 		{
 			$name = str_replace("\\", "/", $path);

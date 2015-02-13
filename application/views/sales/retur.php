@@ -1,4 +1,4 @@
-<div><h4>RETUR PENJUALAN </H4><div class="thumbnail">
+<h4>RETUR PENJUALAN </H4><div class="thumbnail box-gradient">
 	<?
 	
 	
@@ -13,23 +13,17 @@
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/sales_retur/posting/'.$invoice_number);		
 	}
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'sales_retur\')','help');		
 	
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('sales_retur')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/sales_retur");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">	
 
@@ -48,7 +42,7 @@
 <form id="myform"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 
-<table>
+<table class='table2' width='100%'>
     <tr>
 		<td>Nomor</td>
         <td>  			
@@ -99,16 +93,14 @@
 
    </form>
     </div>
-<div class="easyui-tabs" style="height:450px">
+<div class="easyui-tabs"  >
 	<div id='divItem' title='Items'>
 		<div id='dgItem'><? include_once "invoice_add_item_simple.php"; ?></div>
 		
-		<table id="dg" class="easyui-datagrid"  
-			style="min-height:800px"
+		<table id="dg" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,
-				width: '100%',
 				toolbar: '#tb',
 				url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
 			">
@@ -133,10 +125,9 @@
 <!-- JURNAL -->
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
-		<table id="dgCrdb" class="easyui-datagrid"  
-			style="min-height:700px"
+		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',width: '100%',
+				iconCls: 'icon-edit',width: '100%',fitColumns: true, 
 				singleSelect: true,toolbar:'',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
 			">

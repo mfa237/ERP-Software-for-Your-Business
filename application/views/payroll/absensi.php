@@ -10,11 +10,11 @@
 			<canvas class="CoolClock:chunkySwiss"></canvas>
 		</div>	
 		<div class="thumbnail">
-		<h5>INPUT ABSEN </h5>
+		<strong>INPUT ABSEN </strong>
 		</div>
 		<div class="thumbnail">
 			<form id="frmAbsen" method="POST">
-		   <table>
+		   <table class='table2' width='100%'>
 		      <tr><td>NIP</td><td><input id="nip" onblur="cari_nip()" name="nip"></td></tr>
 			  <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" style="width:140px"></td></tr>
 			  <tr><td>Jam Masuk</td><td><input id="time_in" name="time_in"></td></tr>
@@ -25,7 +25,7 @@
 		</div>
 		<div class="thumbnail">
 			<h5>Data Pegawai</h5>
-		   <table>
+		   <table class='table2' width='100%'>
 		      <tr><td>Nama</td><td><input id="nama" name="nama" disabled></td></tr>
 			  <tr><td>Dept</td><td><input id="dept" name="dept" disabled></td></tr>
 			  <tr><td>Divisi</td><td><input id="divisi" name="divisi" disabled></td></tr>
@@ -40,13 +40,13 @@
 	</div>	
 	<div class="col-sm-1 col-md-5">
 		<div id="divAbsen" class="">	
-			<table id="dg" class="easyui-datagrid"  
+			<table id="dg" class="easyui-datagrid"  width='100%'
 				style="width:400px;min-height:800px"
 				data-options="
-					iconCls: 'icon-edit',
+					iconCls: 'icon-edit',fitColumns: true,
 					singleSelect: true,
 					toolbar: '#tb',
-					url: '<?=base_url()?>index.php/absensi/data'
+					url: '<?=base_url()?>index.php/payroll/absensi/data'
 					
 					">
 				<thead>
@@ -68,14 +68,14 @@
 	function load_absensi(){
 		var row = $('#dg').datagrid('getSelected');
 		if(row){
-			window.open('<?=base_url()?>index.php/absensi/detail/'+row.nip,'_self');
+			window.open('<?=base_url()?>index.php/payroll/absensi/detail/'+row.nip,'_self');
 		} else {
 			alert("Pilih satu baris untuk melihat data absensi.");
 		}
 	}
 	function cari_nip(){
 		var nip=$("#nip").val();
-		var url="<?=base_url()?>index.php/employee/find/"+nip;
+		var url="<?=base_url()?>index.php/payroll/employee/find/"+nip;
 	    $.ajax({
 	                type: "GET", url: url,
 	                success: function(msg){
@@ -92,7 +92,7 @@
 	}
     function add_absen(){
         if($('#nip').val()===''){alert('Isi NIP !');return false;};
-		url='<?=base_url()?>index.php/absensi/save';
+		url='<?=base_url()?>index.php/payroll/absensi/save';
 		$('#frmAbsen').form('submit',{
 			url: url,
 			onSubmit: function(){
@@ -102,7 +102,7 @@
 				var result = eval('('+result+')');
 				if (result.success){
 					$("#nip").val('');
-					$('#dg').datagrid({url:'<?=base_url()?>index.php/absensi/data'});
+					$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/absensi/data'});
 					$('#dg').datagrid('reload');
 					$.messager.show({
 						title:'Success',msg:'Data sudah tersimpan.'

@@ -2,8 +2,8 @@
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print_item()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/product_cost/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/product_cost');		
+	echo link_button('Add','','add','true',base_url().'index.php/manuf/product_cost/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/manuf/product_cost');		
 	echo link_button('Help', 'load_help()','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -79,7 +79,7 @@
   		if($('#item_number').val()==''){alert('Isi kode barang !');return false;}
   		if($('#description').val()==''){alert('Isi nama barang !');return false;}
   		if($('#unit_of_measure').val()==''){alert('Isi satuan !');return false;}
-		url='<?=base_url()?>index.php/product_cost/save';
+		url='<?=base_url()?>index.php/manuf/product_cost/save';
 			$('#frmBarang').form('submit',{
 				url: url,
 				onSubmit: function(){

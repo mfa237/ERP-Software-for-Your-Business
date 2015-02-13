@@ -139,7 +139,7 @@ $().ready(function(){
 	function onDataReceived(series) {
 		if (!alreadyFetched[series.label]) {
 			alreadyFetched[series.label] = true;
-			for(j=0;j<5;j++){
+			for(j=0;j<series.length;j++){
 				data[i]={label:series[j][0], data:series[j][1]};
 				i++;
 			}
@@ -148,9 +148,7 @@ $().ready(function(){
 
 		$.plot('#divCustomer', data, {
 				series: {
-					pie: { 
-						show: true			
-				}
+					pie: { show: true}
 				},
 				legend: {
 					show: false

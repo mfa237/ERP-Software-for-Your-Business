@@ -33,7 +33,8 @@ class Customer extends CI_Controller {
 	}
 	function index()
 	{	
-             $this->browse();
+		if (!allow_mod2('_00010'))  exit;
+        $this->browse();
 	}
 	function get_posts(){
         $data=data_table_post($this->table_name);

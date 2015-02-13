@@ -17932,6 +17932,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							// user specified width
 							$cellw = $this->getHTMLUnitToUnits($dom[$parentid]['width'], $table_columns_width, 'px');
 							$tmpcw = ($cellw / $colspan);
+							 
 							for ($i = 0; $i < $colspan; ++$i) {
 								$table_colwidths[($colid + $i)] = $tmpcw;
 							}
@@ -17939,7 +17940,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							// inherit column width
 							$cellw = 0;
 							for ($i = 0; $i < $colspan; ++$i) {
-								$cellw += $table_colwidths[($colid + $i)];
+								 
+									$cellw += $table_colwidths[($colid + $i)];
+								 
 							}
 						}
 						$cellw += (($colspan - 1) * $cellspacing['H']);

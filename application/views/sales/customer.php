@@ -1,32 +1,27 @@
-<div class=""><h4>MASTER PELANGGAN</H4><div class="thumbnail">
+<legend>MASTER PELANGGAN</legend>
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/customer/add');		
 	echo link_button('Refresh','','reload','true',base_url().'index.php/customer/view/'.$customer_number);		
 	echo link_button('Search','','search','true',base_url().'index.php/customer');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'customer\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('customer')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/customer");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">	
 <form id="myform"  method="post" role="form">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-<table >
+<table class="table2" width="100%">
 	<tr>
 		<td style="width:50px">Kode</td> 
 		<td  style="width:100px"><?php
@@ -44,9 +39,9 @@
          </td>
   </tr>
 </table>
-<div class="easyui-tabs" style="height:350px">
+<div class="easyui-tabs">
 	<div title="General" style="padding:10px">
-		<table>
+		<table class="table2" width="100%">
        <tr>
          <td>Alamat</td>
          <td colspan="6"><?php echo form_input('street',
@@ -84,7 +79,7 @@
       </table>
       </div>
 	<div title="Sales" style="padding:10px">
-		<table>
+		<table class="table2" width="100%">
 			<tr><td>Kelompok </td>
 			 <td><?php echo form_input('customer_record_type',$customer_record_type);?></td>
 			 <td>Sales Type/Price List</td><td><?=form_input('pricing_type',$pricing_type);?></td>
@@ -123,8 +118,8 @@
 
 <!-- SHIPTO -->
 	<div title="Ship To" style="padding:10px">
-		<table id="dgShipTo" class="easyui-datagrid" 
-			data-options="iconCls: 'icon-edit',singleSelect: true,width: '100%',toolbar: '#tbShipTo',
+		<table id="dgShipTo" class="easyui-datagrid" width="100%"
+			data-options="iconCls: 'icon-edit',singleSelect: true,fitColumns: true, width: '100%',toolbar: '#tbShipTo',
 				url: '<?=base_url()?>index.php/customer/list_shipto/<?=$customer_number?>'">
 			<thead>
 				<tr>
@@ -144,7 +139,7 @@
 	<div title="Cards" style="padding:10px">
 		<div class='thumbnail'>
 			<form method="post">
-			<table>
+			<table class='table2' width='100%'>
 			<tr><td>Date From</td>
 			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" ');?></td>
 			<td>Date To</td>
@@ -154,10 +149,9 @@
 			</table>
 			</form>
 		</div>
-		<table id="dgCard" class="easyui-datagrid"  
-			style="min-height:700px"
+		<table id="dgCard" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns: true, 
 				singleSelect: true,  width: '100%',
 				url: '',toolbar:'',
 			">
@@ -178,18 +172,18 @@
 </div>   
 
  
-<div id="tbShipTo">
-	<?=link_button('','add_shipto()','add')?>
-	<?=link_button('','edit_shipto()','edit')?>
-	<?=link_button('','del_shipto()','remove')?>
+<div id="tbShipTo" class='box-gradient'>
+	<?=link_button('Add','add_shipto()','add')?>
+	<?=link_button('Edit','edit_shipto()','edit')?>
+	<?=link_button('Delete','del_shipto()','remove')?>
 </div>
 
 <?=load_view('gl/select_coa_link')?> 
  
   	
-<div id='divShipTo'class="easyui-dialog" style="width:400px;padding: 10px" 
+<div id='divShipTo'class="easyui-dialog"   
 	closed="true" buttons="#divShipToButtons">
-	<form id='frmShipTo' method='post'><table>
+	<form id='frmShipTo' method='post'><table class='table2' width='100%'>
 		<tr><td>Location Code</td><td><input type='text' name='location_code' id='location_code'></td></tr>
 		<tr><td>Alamat</td><td><input type='text' name='alamat' style="width:300px"></td></tr>
 		<tr><td>Kota</td><td><input type='text' name='kota'></td></tr>
@@ -199,7 +193,7 @@
 		<tr><td>Kontak</td><td><input type='text' name='contact'></td></tr>
 	</form></table>
 </div>
-<div id="divShipToButtons">
+<div id="divShipToButtons" class='box-gradientx'>
 	<?=link_button('Save','add_shipto_save()','save')?>
 	<?=link_button('Close','add_shipto_close()','back')?>
 </div>   

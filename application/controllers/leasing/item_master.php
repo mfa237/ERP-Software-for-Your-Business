@@ -72,21 +72,25 @@ class item_master extends CI_Controller {
 			echo json_encode(array("msg"=>"Error ".mysql_error()));
 		}
 	}	
-    function view($id,$message=null)	{
+	function edit($id){
+		$this->view($id,"edit");
+	}
+	
+    function view($id,$mode="view",$show_tool=true)	{
 		$id=urldecode($id);
-		$message=urldecode($message);
 		$data[$this->primary_key]=$id;
 		$model=$this->inventory_model->get_by_id($id)->row();
 		$data=$this->set_defaults($model);
 		$data['data']=$data;
 		
 		$data['mode']='view';
-		$data['message']=$message;
 		$data['title']=$this->title;
 		$data['help']=$this->help;
 		$data['form_controller']=$this->controller;
 		$data['field_key']=$this->primary_key;
-		 
+		$data['mode']=$mode;
+		$data['show_tool']=$show_tool;
+		$data['message']='';
 		$this->template->display_form_input($this->file_view,$data);
     }
      // validation rules
@@ -107,8 +111,10 @@ class item_master extends CI_Controller {
 		$data['caption']=$this->title;
 
 		$this->load->library('search_criteria');
-		$faa[]=criteria("Nama Barang","sid_nama");
+		$faa[]=criteria("Nama Barang","sid_nama","","style='width:400px'");
 		$data['criteria']=$faa;
+		$data['list_info_visible']=true;
+		$data['import_visible']=true;
 		$data['fields_caption']=array('Kode','Nama Barang','Kelompok','Harga Jual','Satuan');
 		$data['fields']=array('item_number','description','category','retail','unit_of_measure');
         $this->template->display_browse2($data);            
@@ -128,5 +134,70 @@ class item_master extends CI_Controller {
 		$query=$this->db->query("select * from $table_name where item_number='$nomor'");
 		echo json_encode($query->row_array());
  	}	
+	function list_info($offset=0){
+		if(isset($_GET['offset'])){
+			$offset=$_GET['offset'];
+		}
+		$data['offset']=$offset;
+		$this->load->library('search_criteria');
+
+		$faa[]=criteria("Kode","sid_kode");
+		$faa[]=criteria("Nama","sid_nama");
+		$faa[]=criteria("Supplier","sid_supp");
+		$faa[]=criteria("Kelompok","sid_cat");
+	
+		$data['criteria']=$faa;
+		$data['criteria_text']=criteria_text($faa);
+		$data['sid_kode']=$this->session->userdata('sid_kode');
+		$data['sid_nama']=$this->session->userdata('sid_nama');
+		$data['sid_supp']=$this->session->userdata('sid_supp');
+		$data['sid_cat']=$this->session->userdata('sid_cat');
+		
+		$this->template->display_form_input('inventory/info_list',$data);	
+	}
+	function import_excel(){
+		$filename=$_FILES["file_excel"]["tmp_name"];
+		if($_FILES["file_excel"]["size"] > 0)
+		{
+			$file = fopen($filename, "r");
+			$i=0;
+			$ok=false;
+			$this->db->trans_begin();
+			while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE)
+			{
+				//print_r($emapData);
+				//exit();
+				$item_no=$emapData[0];
+				if(! ($item_no == null or $item_no == "" or $item_no == "kode" ) ) {
+					$item_no=$emapData[0];
+					$i=1;
+					$data=array("item_number"=>$item_no,"description"=>$emapData[1],
+						"unit_of_measure"=>$emapData[2],"retail"=>$emapData[3],
+						"cost"=>$emapData[4],"cost_from_mfg"=>$emapData[4],"class"=>"Stock Item",
+						"create_by"=>"import");
+					if($this->inventory_model->exist($item_no)){
+						unset($data['item_number']);
+						$ok=$this->inventory_model->update($item_no,$data)==1;
+					} else {
+						$ok=$this->inventory_model->save($data)==1;
+					}
+				}
+			}
+			if ($this->db->trans_status() === FALSE)
+			{
+				$this->db->trans_rollback();
+			}
+			else
+			{
+				$this->db->trans_commit();
+			}			
+			fclose($file);
+			if ($ok){echo json_encode(array("success"=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}
+	function import_leasing_item_master(){
+		$data['caption']="IMPORT DATA MASTER";
+		$this->template->display("leasing/import_master",$data);
+	}	
 }
 ?>

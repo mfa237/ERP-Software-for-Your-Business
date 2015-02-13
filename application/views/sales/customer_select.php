@@ -2,9 +2,9 @@
 <div id='dlgSelectCust'class="easyui-dialog" style="width:600px;height:380px;padding:5px 5px"
      closed="true" buttons="#btn1">
      <div id='divSelectCust'> 
-		<table id="dgSelectCust" class="easyui-datagrid"  
+		<table id="dgSelectCust" class="easyui-datagrid"  width='100%'
 			data-options="
-				toolbar: '',
+				toolbar: '',fitColumns: true, 
 				singleSelect: true,
 				url: ''
 			">
@@ -20,10 +20,10 @@
 		</table>
     </div>   
 </div>
-<div id="btn1" name="btn1" style="height:auto">
-		<input  id="search_cust" style='width:100' name="search_cust" placeholder='Search'>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" onclick="select_customer();return false;">Cari</a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="false" onclick="selected_customer();return false;">Pilih</a>
+<div id="btn1" name="btn1" class='box-gradient'>
+	<input  id="search_cust" style='width:100' name="search_cust" placeholder='Search'>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" onclick="select_customer();return false;">Cari</a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="selected_customer();return false;">Pilih</a>
 </div>
 <SCRIPT language="javascript">
 	function select_customer(){

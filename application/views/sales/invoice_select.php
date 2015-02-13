@@ -2,9 +2,9 @@
 <div id='dlgFaktur'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
      closed="true" buttons="#tbFaktur">
      <div id='divFaktur'> 
-		<table id="dgFaktur" class="easyui-datagrid"  
+		<table id="dgFaktur" class="easyui-datagrid"  width='100%'
 			data-options="
-				toolbar: '',
+				toolbar: '', fitColumns: true,
 				singleSelect: true
 			">
 			<thead>
@@ -20,7 +20,7 @@
 		</table>
     </div>   
 </div>
-<div id="tbFaktur" style="height:auto">
+<div id="tbFaktur" class='box-gradient'>
 	Enter Text: <input  id="search_faktur" style='width:180' name="search_faktur">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="select_faktur()"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_faktur()">Select</a>

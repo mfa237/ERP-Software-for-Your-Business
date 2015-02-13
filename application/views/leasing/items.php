@@ -3,7 +3,7 @@
 	data-options="
 		iconCls: 'icon-edit',
 		singleSelect: true,
-		toolbar: '#tb',
+		toolbar: '#tbItems',
 		url: '<?=base_url()?>index.php/leasing/app_master/items/<?=$app_id?>'
 	">
 	<thead>
@@ -24,3 +24,65 @@
 		</tr>
 	</thead>
 </table>
+
+<div id='tbItems'>
+<?
+if($show) {
+	echo link_button('Add', 'dgItem_Add()','add');
+	echo link_button('Edit', 'dgItem_Edit()','edit');
+	echo link_button('Delete', 'dgItem_Delete()','remove');
+	echo link_button('Refresh', 'dgItem_Refresh()','reload');
+}
+?>
+</div>
+<script language="JavaScript">
+	function dgItem_Add(){
+		$("#frmAddItem_Id").val('');
+		$('#dlgAddItem').dialog('open').dialog('setTitle','Tambah Barang');
+	}
+	function dgItem_Edit(){
+		row = $('#dgItems').datagrid('getSelected');
+		if (row){
+			$("#frmAddItem_Id").val(row.id);		
+			url=CI_ROOT+'leasing/app_master/items/view/'+row.id;
+			$.ajax({type: "GET",url: url,
+				success: function(result){		
+					var result = eval('('+result+')');
+					if (result.success){
+						$("#item_no").val(result.obj_id);
+						$("#desc").val(result.description);
+						$("#qty").val(result.qty);
+						$("#price").val(result.price);
+						$("#frmAddItem_Id").val(result.id);
+						$("#frmAddItem_AppId").val(result.app_id);
+						$('#dlgAddItem').dialog('open').dialog('setTitle','Edit Items');					
+					}
+				},
+				error: function(result){$.messager.alert('Info',result);}
+			});         
+			
+		}
+	}
+	function dgItem_Delete(){
+		row = $('#dgItems').datagrid('getSelected');
+		if (row){
+			xurl=CI_ROOT+'leasing/app_master/items/delete/'+row.id;                             
+			console.log(xurl);
+			xparam='';
+			$.ajax({
+				type: "GET",
+				url: xurl,
+				param: xparam,
+				success: function(msg){
+					$('#dgItems').datagrid('reload');
+				},
+				error: function(msg){$.messager.alert('Info',msg);}
+			});         
+		}
+	}
+	function dgItem_Refresh(){
+		xurl='<?=base_url()?>index.php/leasing/app_master/items/<?=$app_id?>';
+		$('#dgItems').datagrid({url:xurl});
+		$('#dgItems').datagrid('reload');
+	}
+</script>

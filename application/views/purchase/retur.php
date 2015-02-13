@@ -1,4 +1,5 @@
-<div class="max-toolx"><h3>RETUR PEMBELIAN</H3>  <div class="thumbnail tool">
+<div class="max-tool"><h3>RETUR PEMBELIAN</H3>  
+<div class="thumbnail tool box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	echo link_button('Save', 'save_retur()','save');		
@@ -13,24 +14,17 @@
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_retur/posting/'.$purchase_order_number);		
 	}
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'purchase_retur\')','help');		
 	
 	?>
 
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('purchase_retur')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/purchase_retur");
-		}
-	</script>
-	
-
 </div>
 <div class="thumbnail">
 
@@ -48,7 +42,7 @@
 	
 <form id='frmRetur' method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<table>
+<table class="table2" width="100%">
 	<tr>
 		<td>Nomor Retur</td><td class='field'>
 			<?="<input type='text' id='purchase_order_number' name='purchase_order_number' value='$purchase_order_number'>"?>
@@ -97,15 +91,14 @@
   
 
 <!-- PURCASE_ORDER_LINEITEMS -->	
-<div class="easyui-tabs" style="width:700px;height:550px">
+<div class="easyui-tabs">
 	<div title="Items" style="padding:5px">
 			<div id='dgItem'>
 				<? include_once "purchase_order_items.php"; ?>
 			</div>
-			<table id="dg" class="easyui-datagrid"  
-				style="width:auto;height:auto"
+			<table id="dg" class="easyui-datagrid"  width="100%"
 				data-options="
-					iconCls: 'icon-edit',
+					iconCls: 'icon-edit', fitColumns: true, 
 					singleSelect: true,
 					toolbar: '#tb',
 					url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
@@ -126,7 +119,7 @@
 		<!-- END PURCHASE_ORDER_LINEITEMS -->
 			<h5>TOTAL</H5>
 			<div id='divTotal'> 
-				<table>
+				<table class="table2" width="100%">
 					<tr>
 						<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
 						<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
@@ -149,10 +142,9 @@
 	<!-- JURNAL -->
 	<div title="Jurnal" style="padding:5px">
 		<DIV title="Jurnal" style="padding:10px">
-			<table id="dgCrdb" class="easyui-datagrid"  
-				style="width:auto;height:auto;"
+			<table id="dgCrdb" class="easyui-datagrid" width="100%" 
 				data-options="
-					iconCls: 'icon-edit',
+					iconCls: 'icon-edit', fitColumns: true, 
 					singleSelect: true,toolbar:'#tbCrdb',
 					url: '<?=base_url()?>index.php/jurnal/items/<?=$purchase_order_number?>'
 				">

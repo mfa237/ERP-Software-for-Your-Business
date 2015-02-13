@@ -1,4 +1,5 @@
-<div><h4>FAKTUR PENJUALAN  </H4><div class="thumbnail">
+<legend>FAKTUR PENJUALAN  </legend>
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
@@ -12,23 +13,16 @@
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/invoice/posting/'.$invoice_number);		
 	}
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'invoice\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('invoice')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-		  	event.preventDefault(); 
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/invoice");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">	
 
@@ -45,7 +39,7 @@
 
 <form id="frmInvoice"  method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<table>
+<table class='table2' width='100%'>
     <tr>
      	<td>Pelanggan</td><td><?
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
@@ -116,10 +110,9 @@
 			<? include_once "invoice_add_item_simple.php"; ?>
 		</div>
 		
-		<table id="dg" class="easyui-datagrid"  
-			style="width:auto;min-height:200px"
+		<table id="dg" class="easyui-datagrid"  width='100%'			 
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,
 				toolbar: '#tb',
 				url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
@@ -159,10 +152,9 @@
 	?>
 	</div>
 	<div id='divRetur' title='Retur'>
-		<table id="dgRetur" class="easyui-datagrid"  
-			style="min-height:600px"
+		<table id="dgRetur" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,
 				toolbar: '',
 				url: '<?=base_url()?>index.php/invoice/retur/<?=$invoice_number?>'
@@ -185,12 +177,10 @@
 	<div id='tbCrdb'>
 		<?=link_button('Delete','delete_crdb()','remove');?>
 	</div>
-	<DIV title="Memo" style="padding:10px">
-	
-		<table id="dgCrdb" class="easyui-datagrid"  
-			style="min-height:700px"
+	<DIV title="Memo" style="padding:10px">	
+		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,toolbar:'#tbCrdb',
 				url: '<?=base_url()?>index.php/invoice/list_crdb/<?=$invoice_number?>'
 			">
@@ -208,10 +198,9 @@
 <!-- JURNAL -->
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
-		<table id="dgCrdb" class="easyui-datagrid"  
-			style="min-height:700px"
+		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true,
 				singleSelect: true,toolbar:'#tbCrdb',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
 			">
@@ -233,10 +222,8 @@
 	</DIV>	
 <!-- SUMMARY -->
 	<DIV title="Summary" style="padding:10px">
-		<div id='divSum' class='thumbnail'>
-		
-			<?=$summary_info?>
-		
+		<div id='divSum' class='thumbnail'>		
+			<?=$summary_info?>		
 		</div>
 			
 	</DIV>
@@ -244,7 +231,7 @@
 	
 </div>
 <div id='divTotal' class='thumbnail'> 
-	<table>
+	<table class='table2' width='100%'>
 		<tr>
 			<td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
 			<td>Discount %: </td><td><input id='disc_total_percent' 
@@ -581,7 +568,3 @@
 		}
         
  </script>
-     
- </body>
-</html>
-

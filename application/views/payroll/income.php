@@ -44,7 +44,7 @@
 </div>
 <script language="JavaScript">
 	function add_income(){
-		url='<?=base_url()?>index.php/payroll/income_add';
+		url='<?=base_url()?>index.php/payroll/payroll/income_add';
 			$('#frmNew').form('submit',{
 				url: url,
 				onSubmit: function(){

@@ -1,6 +1,6 @@
 <table id="dgCicil" class="easyui-datagrid" style="width:auto;"
 	data-options="iconCls: 'icon-edit',singleSelect: true,toolbar: '#tbCicil',
-	url: '<?=base_url()?>index.php/pinjaman/cicilan/list/<?=$loan_number?>'">
+	url: '<?=base_url()?>index.php/payroll/pinjaman/cicilan/list/<?=$loan_number?>'">
 	<thead>
 		<tr>
 			<th data-options="field:'tanggal_jth_tempo', width:'80'">Tanggal</th>
@@ -72,7 +72,7 @@
 	function save_cicil() {
         if($('#loan_number').val()===''){alert('Isi dulu nomor pinjaman !');return false;};
 
-		url='<?=base_url()?>index.php/pinjaman/save';
+		url='<?=base_url()?>index.php/payroll/pinjaman/save';
 		$('#frmCicil').form('submit',{
 			url: url,
 			onSubmit: function(){
@@ -113,14 +113,14 @@
 	}
 	function load_cicil()	{
 		loan_number='<?=$loan_number?>';
-		xurl='<?=base_url()?>index.php/pinjaman/cicilan/list/'+loan_number;
+		xurl='<?=base_url()?>index.php/payroll/pinjaman/cicilan/list/'+loan_number;
 		$('#dgCicil').datagrid({url:xurl});
 	}
 	function del_cicil()	{
 		var row = $('#dgCicil').datagrid('getSelected');
 	 
 		if (row){
-			url='<?=base_url()?>index.php/pinjaman/delete/'+row.id;
+			url='<?=base_url()?>index.php/payroll/pinjaman/delete/'+row.id;
 			$.ajax({
 				type: "GET", url: url,
 				success: function(msg){

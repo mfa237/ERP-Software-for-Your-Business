@@ -1,31 +1,26 @@
-<div><h4>KODE PERKIRAAN AKUNTANSI</H4><div class="thumbnail">
+<legend>KODE PERKIRAAN AKUNTANSI</legend>
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/coa/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/coa');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'coa\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('coa')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/coa");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">	
-<form id="myform"  method="post" action="<?=base_url()?>index.php/coa/save">
-<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-   <table>
+<form id="myform"  method="post" action="<?=base_url()?>index.php/coa/save">
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+	<table class='table2' width='100%'>
 	<tr>
 		<td>Kode Perkiraan</td><td>
 		<?php
@@ -41,8 +36,8 @@
             <td>Nama Perkiraan</td><td><?php echo form_input('account_description',$account_description,"style='width:400px'");?></td>
        </tr>
        <tr>
-            <td>Posisi</td><td><?php echo form_radio('db_or_cr','D',$db_or_cr=='0'||$db_or_cr=='');?>Debet
-                <?php echo form_radio('db_or_cr','C',!($db_or_cr=='0'||$db_or_cr==''));?>Kredit
+            <td>Posisi</td><td><?php echo form_radio('db_or_cr','D',$db_or_cr=='0'||$db_or_cr=='');?>&nbsp Debet &nbsp 
+                <?php echo form_radio('db_or_cr','C',!($db_or_cr=='0'||$db_or_cr==''));?>&nbsp Kredit &nbsp 
             </td>
        </tr>
        <tr>
@@ -61,9 +56,9 @@
    </form>
 </div>   
 <div class='thumbnail'>
-	<div class='thumbnail'><h4>Transaksi</h4></div>
+	<div class='thumbnail box-gradient'><h4>Transaksi</h4></div>
 			<form method="post">
-			<table>
+			<table class='table2' width='100%'>
 			<tr><td>Date From</td>
 			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" ');?></td>
 			<td>Date To</td>
@@ -74,9 +69,8 @@
 			</form>
 		</div>
 		<table id="dgCard" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,  
 				url: '',toolbar:'',
 			">

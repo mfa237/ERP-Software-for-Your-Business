@@ -1,10 +1,8 @@
-<div class="thumbnail">
-	<h5><strong>INPUT DATA OVERTIME</strong></h5>
-</div>
+<legend>INPUT DATA OVERTIME</legend>
 <div class='row'>
 <div class="col-sm-5 ">
 	<form id="frmOvertime" method="POST">
-	<table>
+	<table class='table2' width='100%'>
 	  <tr><td>NIP</td><td><input id="nip" onblur="cari_nip();return false;" name="nip">
 	  <?=link_button('','lookup_employee()','search')?>
 	  </td></tr>
@@ -20,7 +18,7 @@
 	</form>
 </div>
 <div class="col-sm-6 thumbnail">
-   <table style='width:100%'>
+   <table width='100%' class='table2'>
 	  <tr><td>Nama</td><td><input id="nama" name="nama" disabled></td></tr>
 	  <tr><td>Dept</td><td><input id="dept" name="dept" disabled></td></tr>
 	  <tr><td>Divisi</td><td><input id="divisi" name="divisi" disabled></td></tr>
@@ -35,8 +33,8 @@
 <div class='thumbnail'>
 <table id="dg" class="easyui-datagrid"  
 				style="width:auto;height:400px"
-				data-options="iconCls: 'icon-edit',singleSelect: true,toolbar: '#tb',
-					url: '<?=base_url()?>index.php/overtime/data'">
+				data-options="iconCls: 'icon-edit',singleSelect: true,toolbar: '#tb', fitColumns: true,
+					url: '<?=base_url()?>index.php/payroll/overtime/data'">
 				<thead>
 					<tr>
 						<th data-options="field:'nip',width:100">NIP</th>
@@ -61,14 +59,14 @@
 	function load_overtime(){
 		var row = $('#dg').datagrid('getSelected');
 		if(row){
-			window.open('<?=base_url()?>index.php/overtime/detail/'+row.nip,'_self');
+			window.open('<?=base_url()?>index.php/payroll/overtime/detail/'+row.nip,'_self');
 		} else {
 			alert("Pilih satu baris untuk melihat data overtime.");
 		}
 	}
 	function cari_nip(){
 		var nip=$("#nip").val();
-		var url="<?=base_url()?>index.php/employee/find/"+nip;
+		var url="<?=base_url()?>index.php/payroll/employee/find/"+nip;
 	    $.ajax({
 	                type: "GET", url: url,
 	                success: function(msg){
@@ -85,7 +83,7 @@
 	}
     function add_ot(){
         if($('#nip').val()===''){alert('Isi NIP !');return false;};
-		url='<?=base_url()?>index.php/overtime/save';
+		url='<?=base_url()?>index.php/payroll/overtime/save';
 		$('#frmOvertime').form('submit',{
 			url: url,
 			onSubmit: function(){
@@ -102,7 +100,7 @@
 					$("#hari_libur").val('');
 					$("#id").val(0);
 					
-					$('#dg').datagrid({url:'<?=base_url()?>index.php/overtime/data'});
+					$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/overtime/data'});
 					$('#dg').datagrid('reload');
 					log_msg("Data sudah tersimpan.");
 				} else {
@@ -115,11 +113,11 @@
 			var row = $('#dg').datagrid('getSelected');
 			if (row){
 				$('#id').val(row.id);
-				var url="<?=base_url()?>index.php/overtime/delete/"+row.id;
+				var url="<?=base_url()?>index.php/payroll/overtime/delete/"+row.id;
 				$.ajax({
 							type: "GET", url: url,
 							success: function(msg){
-								$('#dg').datagrid({url:'<?=base_url()?>index.php/overtime/data'});
+								$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/overtime/data'});
 								$('#dg').datagrid('reload');
 							},
 							error: function(msg){alert(msg);}
@@ -132,7 +130,7 @@
 			var row = $('#dg').datagrid('getSelected');
 			if (row){
 				$('#id').val(row.id);
-				var url="<?=base_url()?>index.php/overtime/get_id/"+row.id;
+				var url="<?=base_url()?>index.php/payroll/overtime/get_id/"+row.id;
 				$.ajax({
 							type: "GET", url: url,
 							success: function(msg){

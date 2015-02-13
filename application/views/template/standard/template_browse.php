@@ -1,20 +1,21 @@
 <script type="text/javascript">
-   		CI_ROOT = "<?=base_url()?>index.php/";
-		CI_BASE = "<?=base_url()?>"; 		
+	CI_ROOT = "<?=base_url()?>index.php/";
+	CI_BASE = "<?=base_url()?>"; 		
 </script>
+
 <div id='__section_left_content' class="col-md-9">
 <?
+date_default_timezone_set("Asia/Jakarta");
+
 echo $library_src;
 echo $script_head;
-function is_assoc($a){	
-   $a = array_keys($a);
-   return ($a != array_keys($a));
-}
+
 $width=isset($width)?$width." px":"auto";
 $height=isset($height)?$height." px":"auto";
 $caption=isset($caption)?$caption:$controller;
 $offset=0;
 $limit=100;
+$def_col_width=80; 
 $table_head="<thead><tr>";
 for($i=0;$i<count($fields);$i++){
 	$aFld=$fields[$i];
@@ -25,7 +26,29 @@ for($i=0;$i<count($fields);$i++){
 		$fld_name=$fields[$i]['name'];
 		$fld_caption=$fields[$i]['caption'];
 	}
-    $table_head.='<th data-options="field:\''.$fld_name.'\'">'.$fld_caption.'</th>';
+    $table_head.="<th data-options='field:\"$fld_name\" ";
+	if(isset($col_width[$fld_name])){
+		$width=$col_width[$fld_name];
+	} else {
+		$width=$def_col_width;
+	}
+	$table_head.=", width:\"$width\" ";
+	
+	if(isset($fields_format_numeric)){
+		if(is_num_format($fld_name,$fields_format_numeric)){
+			$table_head.=",align:\"right\",editor:\"numberbox\", 
+			formatter: function(value,row,index){
+				if(isNumber(value)){
+					return number_format(value,2,\".\",\",\");
+					return value;
+				} else {
+					return value;
+				}
+			}";
+		}
+	} 
+	$table_head.="'";
+	$table_head.=">".$fld_caption."</th>";
 }
 $table_head.="</tr></thead>";
 
@@ -42,11 +65,12 @@ $controller_name=str_replace("/","_",$controller);
     CI_CAPTION='<?=$caption?>';
     CI_WIDTH='<?=$width?>';
     CI_HEIGHT='<?=$height?>';
+	
 </script>
-
+<div class='thumbnail box-gradient' style='min-height:600px'>
 <table id="dg_<?=$controller_name?>" class="easyui-datagrid", title="<?=$caption?>"
       style="height:'<?=$height?>';width:'<?=$width?>'", 
-      data-options="rownumbers:true,pagination:true,pageSize:100,
+      data-options="rownumbers:true,pagination:true,pageSize:100,fitColumns:true,
       loadFilter:pagerFilter_<?=$controller_name?>,
       singleSelect:true,collapsible:true,
       url:'<?=base_url()?>index.php/<?=$controller?>/browse_data',
@@ -55,13 +79,13 @@ $controller_name=str_replace("/","_",$controller);
       <?=$table_head?>
       
 </table>
-       
- <div id="tb_<?=$controller_name?>" style="padding:5px;height:auto" class='thumbnail'>
-		<div class='thumbnail'>
+</div>       
+ <div id="tb_<?=$controller_name?>" style="padding:5px;height:auto" class='thumbnail box-gradient'>
+		<div class='thumbnail box-gradient' style='font-weight:900'>
 			<?=link_button("Add", "addnew_$controller_name();return false;","add","true");?>
 			<?=link_button("Edit", "edit_$controller_name();return false;","edit","true");?>
 			<?=link_button("Del", "del_row_$controller_name();return false;","remove","true");?>
-			<?=link_button('Cari','cari_'.$controller_name."();return false;",'search');?>
+			
 			<? 
 			if(isset($posting_visible)){
 				echo link_button('Posting','posting_'.$controller_name."();return false;",'save');
@@ -69,52 +93,79 @@ $controller_name=str_replace("/","_",$controller);
 			if(isset($list_info_visible)){
 				echo link_button('Info','cari_info_'.$controller_name."();return false;",'form');
 			};
+			if(isset($import_visible)){
+				echo link_button('Import','import_'.$controller_name."();return false;",'csv');			
+			}
+			?>
+			<?
+			if(isset($export_visible)){
+				echo link_button('Export','export_'.$controller_name."();return false;",'xls');
+			}	
+			echo "<td>".link_button('Cari','cari_'.$controller_name."();return false;",'search')."</td>";
 			?>
 			
 		</div>
-		<div>
-			<form id='frmSearch_<?=$controller_name?>'>
+		<div class='col-md-10'>
+		 
+		<form id='frmSearch_<?=$controller_name?>' class='form-inline'>
 			<?
-//			var_dump($faa);
 			$i=0;
-			 
+			$s="";
 			foreach($criteria as $fa){
 				$type="text";
 				$val="";
 				if($fa->field_class=="easyui-datetimebox"){
 					$val=date("Y-m-d 00:00:00");
 					if(strpos($fa->field_id,"date_to"))$val=date("Y-m-d 23:59:59");
-					echo " ".$fa->caption.'
-					<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
-					class="'.$fa->field_class.'" style="width:110px">';
-					echo " ";
+					$s.="<div class='form-group'>";
+					$s.="&nbsp<label for='$fa->field_id'>$fa->caption</label>&nbsp";
+					$s.="<input type='$type' value='$val' id='$fa->field_id'  
+					name='$fa->field_id' 
+					class='$fa->field_class form-control' style='width:150px'>";
+					$s.= "</div>";
 				} else if($fa->field_class=="checkbox"){
-					echo " 
-					<input type='checkbox' value='$val' id='".$fa->field_id."'  name='".$fa->field_id."' 
-					> ".$fa->caption;
-					echo " ";
-
+					$s.="<div class='form-group'>";
+					$s.="&nbsp<label for='$fa->field_id'>$fa->caption</label>&nbsp";
+					$s .=  "<input type='checkbox' value=$val id='$fa->field_id'  
+					name='$fa->field_id'>";
+					$s.= "</div>";
 				} else {
-					echo " ".$fa->caption.'
-					<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
-					class="'.$fa->field_class.'" style="width:80px">';
-					echo " ";
-
+					$style=" ";
+					$class="form-control";
+					$fa->field_class=$class;
+					if($fa->field_style!="")$style=$fa->field_style;
+					$s.="<div class='form-group'>";
+					$s.="&nbsp<label for='$fa->field_id'>$fa->caption</label>&nbsp";
+					$s .=  "<input type='$type' value='$val' id='$fa->field_id'
+					name='$fa->field_id'  placeholder='$fa->caption' >";
+					$s.= "</div>";
 				}
-				 
-				$i++;
 			}
+			echo $s;
 			?>
-			 
-			</form>
+		</form>
 		</div>
-		<div>
+		<div style="font-size:9px">
 			<i>***Apabila data tidak tampil ditabel ini, silahkan persempit pencarian (isi kriteria) dan tekan tombol search.</i>
 		</div>
+		
+</div>
+	<?
+		if(isset($other_menu)){
+			$this->load->view($other_menu);
+		}
+	?>
 </div>
 
-</div>
-
+<?
+function is_num_format($fld_name,$fld_fmt){
+	for($i=0;$i<count($fld_fmt);$i++){
+		if($fld_name==$fld_fmt[$i]){
+			return true;
+		}
+	}
+}
+?>
 	
 <script type="text/javascript">
     function pagerFilter_<?=$controller_name?>(data){
@@ -164,6 +215,7 @@ $controller_name=str_replace("/","_",$controller);
 			var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+					if(!r)return false;
 	                xurl=CI_ROOT+CI_CONTROL+'/delete/'+row[FIELD_KEY];                             
 	                xparam='';
 	                $.ajax({
@@ -185,11 +237,12 @@ $controller_name=str_replace("/","_",$controller);
 										log_err(result.msg);
 									};
 								} catch (exception) {		
+									 
 									// reload kalau output bukan json
 									$('#dg_<?=$controller_name?>').datagrid('reload');	 
 								}
 	                        },
-	                        error: function(msg){$.messager.alert('Info',msg);}
+	                        error: function(msg){$.messager.alert('Info',"Tidak bisa dihapus baris ini !");}
 	                });         
 				});
 		}
@@ -212,4 +265,14 @@ $controller_name=str_replace("/","_",$controller);
 	    xurl=CI_ROOT+CI_CONTROL+'/list_info?'+xsearch;
 		window.open(xurl,"_self");
 	}
+	function export_<?=$controller_name?>(){
+    	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
+	    xurl=CI_ROOT+CI_CONTROL+'/export_xls?'+xsearch;
+        window.open(xurl,"_self");		
+	}
+	function import_<?=$controller_name?>(){
+	    xurl=CI_ROOT+CI_CONTROL+'/import_<?=$controller_name?>';
+        window.open(xurl,"_self");		
+	}
+	
 </script>

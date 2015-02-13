@@ -3,7 +3,7 @@
 class Periode extends CI_Controller {
     private $limit=10;
     private $table_name='financial_periods';
-    private $sql="select year_id,sequence,period,startdate,enddate,closed
+    private $sql="select year_id,sequence,period,startdate,enddate,closed,month_name 
         from financial_periods";
     private $file_view='gl/periode';
 
@@ -72,8 +72,6 @@ class Periode extends CI_Controller {
 		 $data['mode']='view';
          $data['message']=$message;
          $this->template->display_form_input($this->file_view,$data,'');
-
-	
 	}
 	 // validation rules
 	function _set_rules(){	
@@ -95,8 +93,8 @@ class Periode extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']='periode';
-		$data['fields_caption']=array('Tahun','Urut','Periode','Start','End','Closed');
-		$data['fields']=array('year_id','sequence','period','startdate','enddate','closed');
+		$data['fields_caption']=array('Tahun','Urut','Periode','Month','Start','End','Closed');
+		$data['fields']=array('year_id','sequence','period','month_name','startdate','enddate','closed');
 		$data['field_key']='period';
 		$data['caption']='DAFTAR PERIODE AKUNTANSI';
 		$data['criteria']=array();

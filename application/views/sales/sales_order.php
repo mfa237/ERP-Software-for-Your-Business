@@ -1,5 +1,5 @@
-<div><h4>SALES ORDER </h4>
-	<div class="thumbnail">
+<h4>SALES ORDER </h4>
+	<div class="thumbnail box-gradient">
 		<?
 			echo link_button("Save","save_so()","save");
 			echo link_button('Print', 'print_so()','print');
@@ -7,29 +7,24 @@
 			echo link_button('Delete','delete()','cut');		
 			echo link_button('Search','','search','true',base_url().'index.php/sales_order');		
 			echo link_button('Refresh','','reload','true',base_url().'index.php/sales_order/view/'.$sales_order_number);		
-			echo link_button('Help', 'load_help()','help');		
+			echo link_button('Help', 'load_help(\'sales_order\')','help');		
 					
 		?>	
 		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 		<div id="mmOptions" style="width:200px;">
-			<div onclick="load_help()">Help</div>
+			<div onclick="load_help('sales_order')">Help</div>
 			<div>Update</div>
 			<div>MaxOn Forum</div>
 			<div>About</div>
 		</div>
-		<script type="text/javascript">
-			function load_help() {
-				window.parent.$("#help").load("<?=base_url()?>index.php/help/load/sales_order");
-			}
-		</script>
 	</div>
-</div>	
+	
 
 <div class="thumbnail">
 
 <form id="frmSo"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-   <table>
+   <table class='table2' width="100%">
 	<tr>
 		<td>Nomor Bukti SO</td>
 			<td>
@@ -80,10 +75,10 @@
 
 
 <!-- SALES_ORDER_LINEITEMS -->	
-<div class="easyui-tabs" style="height:450px">
+<div class="easyui-tabs" >
 	<div id='divItem' title="Items" style="padding:10px">
 		<div id='dgItem'>
-			<table>
+			<table class='table2' width='100%'>
 				<tr>
 					<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
 					<td>Harga</td><td>Disc%</td><td>Jumlah</td><td></td>
@@ -111,10 +106,9 @@
 			</table>
 			
 		</div>
-		<table id="dg" class="easyui-datagrid"  
-			style="width:auto;height:200px"
+		<table id="dg" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns: true, 
 				singleSelect: true,
 				toolbar: '#tb',
 				url: '<?=base_url()?>index.php/sales_order/items/<?=$sales_order_number?>/json'
@@ -140,7 +134,7 @@
 		</table>
 	<!-- END SALES_ORDER_LINEITEMS -->
 		<div id='divTotal'> 
-					<table>
+					<table class='table2' width='100%'>
 						<tr>
 							<td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
 							<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
@@ -166,7 +160,7 @@
 		</div>
 	</div>
 	<div title="Delivery" style="padding:10px">
-		<table>
+		<table class='table2' width='100%'>
 		   <tr>
 				<td>        
 					Barang Terkirim : 
@@ -178,10 +172,9 @@
 				<td><?=$ship_date?></td>
 			</tr>
 		</table>
-		<table id="dgDo" class="easyui-datagrid"  
-			style="width:auto;height:300px"
+		<table id="dgDo" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns: true, 
 				singleSelect: true,  
 				url: '<?=base_url();?>index.php/sales_order/delivery/<?=$sales_order_number;?>',toolbar:'',
 			">
@@ -204,9 +197,9 @@
 
 </DIV>
 </div>
-<div id="tb" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
+<div id="tb" class='box-gradient'>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="editItem()">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteItem()">Delete</a>	
 </div>
 
 <?

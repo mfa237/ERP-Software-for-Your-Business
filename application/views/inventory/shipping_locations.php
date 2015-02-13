@@ -1,22 +1,19 @@
-<div><h1>MASTER GUDANG<div class="thumbnail">
+<div><legend>MASTER GUDANG</legend>
+<div class="thumbnail box-gradient">
 	<?
+	echo link_button('Add','','add','true',base_url().'index.php/shipping_locations/add');		
 	echo link_button('Save', 'simpan()','save');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Search','','search','true',base_url().'index.php/shipping_locations');		
+	echo link_button('Help', 'load_help(\'shipping_locations\')','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('shipping_locations')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/shipping_locations");
-		}
-	</script>
-	
-</div></H1>
+</div>
 <div class="thumbnail">	
    <?php echo validation_errors(); ?>
    <?php 
@@ -30,7 +27,7 @@
 		
    ?>
  
-   <table>
+   <table class="table2" width="100%">
 	<tr>
 		<td>Gudang</td><td>
 		<?php

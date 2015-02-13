@@ -1,8 +1,8 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowd');
 
 class Coa extends CI_Controller {
-    private $sql="select account_type,group_type,account,account_description,db_or_cr,
-    beginning_balance,id 
+    private $sql="select account,account_description,db_or_cr,
+    beginning_balance,account_type,group_type,id 
     from chart_of_accounts
     ";
     private $file_view='gl/coa';
@@ -21,10 +21,10 @@ class Coa extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='account',$order_type='asc'){
 		$data['controller']='coa';
-		$data['fields_caption']=array('Type Akun','Kelompok','Kode Akun','Nama Akun Perkiraan',
-			'Db/Cr','Saldo Awal');
-		$data['fields']=array('account_type','group_type','account','account_description','db_or_cr'
-			,'beginning_balance');
+		$data['fields_caption']=array('Kode Akun','Nama Akun Perkiraan',
+			'Db/Cr','Saldo Awal','Type Akun','Kelompok');
+		$data['fields']=array('account','account_description','db_or_cr'
+			,'beginning_balance','account_type','group_type');
 		$data['field_key']='account';
 		$data['caption']='DAFTAR KODE AKUN / COA / PERKIRAAN';
 		$data['list_info_visible']=true;
@@ -168,6 +168,7 @@ class Coa extends CI_Controller {
 		$account=urldecode($account);
 		$sql="select account,account_description,id from chart_of_accounts where 1=1";
 		if($account!="")$sql.=" and (account like '$account%' or account_description like '%$account%')";
+		$sql.=" order by account";
 		echo datasource($sql);	
 	}
 	function card($account_id) {

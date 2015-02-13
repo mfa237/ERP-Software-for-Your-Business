@@ -1,27 +1,21 @@
-<div><h4>RECEIVE P.O. ITEMS</H4><div class="thumbnail">
+<legend>RECEIVE P.O. ITEMS</legend>
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'simpan()','save');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', "load_help('receive_po')",'help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('receive_po')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/receive_po");
-		}
-	</script>
-	
 </div>
-
 
 <div class="thumbnail">	
 <form id='myform' method='post' action='<?=base_url()?>index.php/receive_po/proses'>
-   <table>
+   <table class='table2' width="100%">
        <tr>
             <td>Supplier:</td><td><?            
             echo form_input('supplier_number',$supplier_number,'id=supplier_number');
@@ -56,55 +50,42 @@
        </tr>
        <tr>
             <td>Keterangan</td>
-            <td colspan="4"><?=form_input('comments',$comments,
+            <td colspan="3"><?=form_input('comments',$comments,
                     'id=comments style="width:300px"');?>
             </td>
        </tr>
        <tr>
            <td>Receipt By:</td>
            <td><?=form_input('receipt_by',$receipt_by,'id=receipt_by');?></td>
-           <td>
-                
-           </td> 
+            
        </tr>
        <tr>
             <td>Nomor Bukti:</td><td><?            
             echo form_input('shipment_id',$shipment_id,'id=shipment_id');
             ?></td>
        </tr>
-       <tr>
-           <td colspan="6">
-				<div title='Items' style="padding:10px">
-					<table id="dgRcv" class="easyui-datagrid"  
-						style="width:700px;min-height:700px"
-						data-options="
-							iconCls: 'icon-edit',
-							singleSelect: true, toolbar: '#tbRcv',
-							url: ''
-						">
-						<thead>
-							<tr>
-								<th data-options="field:'item_number',width:100">Item</th>
-								<th data-options="field:'description',width:200">Description</th>
-								<th data-options="field:'quantity',width:80">Qty Order</th>
-								<th data-options="field:'unit',width:50">Unit</th>
-								<th data-options="field:'qty_recvd',width:50">Recvd</th>
-								<th data-options="field:'qty',width:80">Qty Recv</th>
-								<th data-options="field:'line',width:50">Line</th>
-							</tr>
-						</thead>
-					</table>
-					
-				</div>
-
-           </td>
-       </tr>
-       <tr>
-           <td colspan="6" align="right">
-           </td>
-       </tr>
    </table>
-</form>
+
+	<table id="dgRcv" class="easyui-datagrid"  data-options="
+			iconCls: 'icon-edit',
+			singleSelect: true, toolbar: '#tbRcv',
+			url: ''
+		">
+		<thead>
+			<tr>
+				<th data-options="field:'item_number',width:100">Item</th>
+				<th data-options="field:'description',width:200">Description</th>
+				<th data-options="field:'quantity',width:80">Qty Order</th>
+				<th data-options="field:'unit',width:50">Unit</th>
+				<th data-options="field:'qty_recvd',width:50">Recvd</th>
+				<th data-options="field:'qty',width:80">Qty Recv</th>
+				<th data-options="field:'line',width:50">Line</th>
+			</tr>
+		</thead>
+	</table>
+   
+ </form>
+
 </div>
 <?
 echo load_view('purchase/supplier_select');

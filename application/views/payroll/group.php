@@ -1,7 +1,7 @@
-<div><h1>EMPLOYEE GROUP</h1>
-	<div class="thumbnail">
+<legend>EMPLOYEE GROUP</legend>
+	<div class="thumbnail box-gradient">
 		<form id="frmNew" method="POST">
-			<table width="400px">
+			<table width="100%" class='table2'>
 				<tr>	
 					<td>Kode</td><td><?=form_input('kode')?></td>
 					<td>Keterangan</td><td><?=form_input('keterangan')?></td>
@@ -11,7 +11,7 @@
 		</form>
 	</div>
 	<div class="thumbnail" >
-			<table class="table1" width="400px">
+			<table class="table1" width="100%">
 				<thead><tr><td>Kode</td><td>Keterangan</td><td>&nbsp;</td></tr></thead>
 				<tbody>
 					<?     			
@@ -35,7 +35,7 @@
 </div>
 <script language="JavaScript">
 	function add_group(){
-		url='<?=base_url()?>index.php/employee/group_add';
+		url='<?=base_url()?>index.php/payroll/employee/group_add';
 			$('#frmNew').form('submit',{
 				url: url,
 				onSubmit: function(){

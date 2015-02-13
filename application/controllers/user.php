@@ -24,10 +24,16 @@ class User extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
+			$data['id']="";
             return $data;
 	}
 	function index()
 	{	
+			
+		if (!allow_mod2('_00020')){
+			if($this->access->user_id!="admin") exit;
+		}
+
 		$this->list_info();
 	}
 	function get_posts(){
@@ -76,9 +82,9 @@ class User extends CI_Controller {
 	}
  	function view($id,$message=null){
 		 $id=urldecode($id);
-		 $data['id']=$id;
 		 $model=$this->user_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
+		 $data['id']=$id;
 		 $data['mode']='view';
          $data['message']=$message;
 		 $data['joblist']=$this->modules_groups_model->get_all();
@@ -155,6 +161,7 @@ class User extends CI_Controller {
  		 $id=$this->input->post('user_id');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
+			//if($id=="admin")$data["password"]="admin";
 			$mode=$this->input->post("mode");
 			unset($data["mode"]);
 			unset($data['path_image']);
@@ -219,5 +226,74 @@ class User extends CI_Controller {
 			echo json_encode($data);
 		}
 	}
+	function preference(){
+		if(!isset($_POST["submit"])){
+			$data['last_running_visible']=$this->session->userdata('last_running_visible');
+			$data['sidebar_position_left']=$this->session->userdata('sidebar_position')=="left"?1:0;
+			$data['sidebar_position_right']=$this->session->userdata('sidebar_position')=="right"?1:0;
+			$data['donate_visible']=$this->session->userdata('donate_visible');
+			$data['google_ads_visible']=$this->sysvar->getvar('google_ads_visible','true');
+			
+			$this->template->display_form_input("preference",$data);
+		} else {
+			if($this->input->post("last_running_visible")){
+				$this->session->set_userdata('last_running_visible',TRUE);
+			} else {
+				$this->session->set_userdata('last_running_visible',FALSE);			
+			}
+			$this->session->set_userdata('sidebar_position',$this->input->post("sidebar_position"));
+			if($this->input->post("donate_visible")){
+				$this->session->set_userdata('donate_visible',TRUE);
+			} else {
+				$this->session->set_userdata('donate_visible',FALSE);
+			}
+			$this->sysvar->save('google_ads_visible',$this->input->post("google_ads_visible"));
+			echo "Pengaturan sudah disimpan. Tekan refersh atau F5.";		
+		}
+	}
+	function statistic(){
+		header('Content-type: application/json');
+		$data['label']="USER STATISTIC FOR PERIOD ".date("Y-M");
+		$sql="select DATE_FORMAT(tgljam,'%d') as hari, count(1) as nval 
+		from syslog
+		where year(tgljam)=".date("Y")." and month(tgljam)=".date("m")."
+		group by DATE_FORMAT(tgljam,'%d')
+		order by tgljam asc
+		limit 0,50";
+		$query=$this->db->query($sql);
+		$dt[]='';
+		foreach($query->result() as $row){
+			$prd=$row->hari;
+			if($prd=="")$prd="00-00";
+			$nval=$row->nval;
+			if($nval==null)$nval=0;
+			$dt[]=array($prd,$nval);
+		}
+		$data['data']=$dt;
+		echo json_encode($data);
+	}
+	function stat_log(){
+		header('Content-type: application/json');
+		$sql="select userid,count(1) as nval 
+		from syslog
+		where year(tgljam)=".date("Y")." and month(tgljam)=".date("m")."
+		group by userid
+		limit 0,50";
+		$query=$this->db->query($sql);
+		foreach($query->result() as $row){
+			$nval=$row->nval;
+			if($nval==null)$nval=0;
+			$dt[]=array($row->userid,$nval);
+		}
+		$data['label']="USER LOG FOR PERIOD ".date("Y-M");
+		$data['data']=$dt;
+		echo json_encode($data);
+	}
+	function log_activity(){
+		$sql="select * from sys_log_run order by id desc limit 100";
+		$data['syslog']=$this->db->query($sql);
+		$this->template->display("log_list",$data);
+	}
 	
 }
+?>

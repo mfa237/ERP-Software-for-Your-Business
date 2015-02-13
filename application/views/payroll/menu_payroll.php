@@ -4,21 +4,21 @@
  
     <h3>Operation</h3>
  		<div class="thumbnail"> 
-			<li><?=anchor('salary','Slip Gaji');?></li>
-			<li><?=anchor('absensi','Absensi');?></li>
-			<li><?=anchor('absensi/detail','Absensi Data');?></li>
-			<li><?=anchor('overtime','Overtime');?></li>
-			<li><?=anchor('cuti','Cuti');?></li>
-			<li><?=anchor('pinjaman','Pinjaman');?></li>
-			<li><?=anchor('pengobatan','Pengobatan');?></li>
+			<li><?=anchor('payroll/salary','Slip Gaji');?></li>
+			<li><?=anchor('payroll/absensi','Absensi');?></li>
+			<li><?=anchor('payroll/absensi/detail','Absensi Data');?></li>
+			<li><?=anchor('payroll/overtime','Overtime');?></li>
+			<li><?=anchor('payroll/cuti','Cuti');?></li>
+			<li><?=anchor('payroll/pinjaman','Pinjaman');?></li>
+			<li><?=anchor('payroll/pengobatan','Pengobatan');?></li>
  		</div>
  		<div class="thumbnail"> <h3>Master</h3>
-			<li><?=anchor('employee','Pegawai')?></li>
-			<li><?=anchor('employee_level','Level Group')?></li>
-			<li><?=anchor('ptkp','Status Kawin (PTKP)')?></li>
-			<li><?=anchor('employee_jenis','Jenis')?></li>
-			<li><?=anchor('jenis_income','Jenis Pendapatan')?></li>
-			<li><?=anchor('jenis_deduct','Jenis Potongan')?></li>
-			<li><?=anchor('posisi_jabatan','Jabatan (Posisi)')?></li>
-			<li><?=anchor('holiday','Hari Libur')?></li>
+			<li><?=anchor('payroll/employee','Pegawai')?></li>
+			<li><?=anchor('payroll/employee_level','Level Group')?></li>
+			<li><?=anchor('payroll/ptkp','Status Kawin (PTKP)')?></li>
+			<li><?=anchor('payroll/employee_jenis','Jenis')?></li>
+			<li><?=anchor('payroll/jenis_income','Jenis Pendapatan')?></li>
+			<li><?=anchor('payroll/jenis_deduct','Jenis Potongan')?></li>
+			<li><?=anchor('payroll/posisi_jabatan','Jabatan (Posisi)')?></li>
+			<li><?=anchor('payroll/holiday','Hari Libur')?></li>
  		</div>

@@ -1,3 +1,4 @@
+   <legend>KELOMPOK BARANG</legend>
    <?php 
    if(!isset($kode))$kode="";
    if(!isset($category))$category="";
@@ -15,8 +16,7 @@
    		}
 		
    ?>
-   <h3>KELOMPOK BARANG</h3>
-   <div class='thumbnail'><table>
+   <div class='thumbnail box-gradient'><table width='100%' class='table2'>
 		<tr>
 			<td>Kode</td><td>
 			<?php

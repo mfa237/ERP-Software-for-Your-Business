@@ -358,7 +358,7 @@ class Sales_order extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$this->load->model('sales_order_lineitems_model');
 		$query=$this->db->query("select * from sales_order_lineitems where sales_order_number='$nomor'");
-		$table="<table class='table' style='width:500px'>
+		$table="<table class='table2' width='100%'>
 		<thead><tr><th>Item Number</th>
 			<th>Description</th>
 			<th>Qty Order</th>

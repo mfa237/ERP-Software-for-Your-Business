@@ -1,5 +1,5 @@
-<div><h4>MUTASI ANTAR REKENING</h4>
-	<div class="thumbnail">
+<h4>MUTASI ANTAR REKENING</h4>
+	<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print_voucher()','print');		
@@ -13,21 +13,15 @@
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/cash_mutasi/posting/'.$voucher);		
 	}
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'cash_mutasi\')','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('cash_mutasi')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/cash_mutasi");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">
 
@@ -54,14 +48,12 @@
 
    
 <input type='hidden' id='posted' name='posted' value='<?=$posted?>'>    
-   <table>
+   <table class='table2' width='100%'>
        <tr>
             <td>Jenis</td><td>
-				<div class='thumbnail'>
                 <?php echo form_radio('trans_type','cash trx',$trans_type=='cash trx');?>Cash  &nbsp; &nbsp;
                 <?php echo form_radio('trans_type','cheque trx',$trans_type=='cheque trx');?>Giro/Cek  &nbsp; &nbsp;
                 <?php echo form_radio('trans_type','trans trx',$trans_type=='trans trx');?>Transfer  &nbsp; &nbsp;
-				</div>
             </td>
        </tr>
        <tr>

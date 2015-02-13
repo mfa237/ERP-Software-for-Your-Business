@@ -1,12 +1,12 @@
-<div><div class="thumbnail">
 <legend>WORK ORDER</legend>
-
+<div class='thumbnail box-gradient'>
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/workorder/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/workorder');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Add','','add','true',base_url().'index.php/manuf/workorder/add');		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/manuf/workorder/view/'.$work_order_no);		
+	echo link_button('Search','','search','true',base_url().'index.php/manuf/workorder');		
+	echo link_button('Help', 'load_help(\'work_order\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -16,12 +16,6 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/employee");
-		}
-	</script>
-	
 </div> 
 
 
@@ -41,14 +35,14 @@
 
 <form id="frmWo" method='post'>
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	<table>
+	<table class='table2' width='100%'>
 		<tbody>
 			<tr><td>WO Number</td>
 				<td><?=form_input("work_order_no",$work_order_no,"id='work_order_no'")?></td>
-				<td colspan='6' rowspan='7'>
+				<td colspan='2' rowspan='7'>
 					<div class='thumbnail'>
 						<p><strong>Customer Info</strong></p>
-						<p><?=form_input("company",$company,"id='company' style='width:500px'");?></p>
+						<p><?=form_input("company",$company,"id='company' ");?></p>
 						<p><?=$street?></p>
 					</div>
 				</td>
@@ -58,7 +52,7 @@
 			<tr><td>Expect Date</td><td><?=form_input("expected_date",$expected_date,"id='expected_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
 			<tr><td>Customer</td>
 				<td><?=form_input("customer_number",$customer_number,"id='customer_number'")?>
-				<?=link_button('','lookup_customer()','search');?>
+				<?=link_button('','select_customer()','search');?>
 				
 			</td>
 			</tr>
@@ -72,12 +66,11 @@
 </form> 
 
 <!-- ITEM TO PROCESS -->
-<h5>ITEMS</H5>
 <div id='divItem'>
 	<div id='dgItem'>
-		<table>
+		<table class='table2' width='100%'>
 			<thead>
-				<tr><td>Item Number</td><td>Description</td><td>Qty</td><td>Unit</td></tr>
+				<tr><td>Item Number</td><td>Description</td><td>Qty</td><td>Unit</td><td>Action</td></tr>
 			</thead>
 			<tbody>
 				<tr>
@@ -100,13 +93,12 @@
 		</table>
 	</div>	
 </div>
-<table id="dg" class="easyui-datagrid"  
-	style="width:auto;min-height:auto"
+<table id="dg" class="easyui-datagrid"  width='100%'
 	data-options="
-		iconCls: 'icon-edit',
+		iconCls: 'icon-edit', fitColumns: true,
 		singleSelect: true,
 		toolbar: '#tb',
-		url: '<?=base_url()?>index.php/workorder/items/<?=$work_order_no?>'
+		url: '<?=base_url()?>index.php/manuf/workorder/items/<?=$work_order_no?>'
 	">
 	<thead>
 		<tr>
@@ -114,6 +106,10 @@
 			<th data-options="field:'description',width:150">Nama Barang</th>
 			<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
 			<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+			<th data-options="field:'price',width:30,align:'right'">Cost</th>
+			<th data-options="field:'total',width:30,align:'right'">Total</th>
+			<th data-options="field:'qty_exec',width:30,align:'right'">Qty Exec</th>
+			<th data-options="field:'qty_bal',width:30,align:'right'">Qty Bal</th>
 			<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 		</tr>
 	</thead>
@@ -123,70 +119,42 @@
 
 </div>
 <div id="tb" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem();return false;">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem();return false;">Delete</a>	
 </div>
-
-<div id="tb_search" style="height:auto">
-	Enter Text: <input  id="search_item" style='width:180' 
- 	name="search_item">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
-</div>
-
-<div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#dlg-buttons">
-     <div id='divItemSearchResult'> 
-		<table id="dgItemSearch" class="easyui-datagrid"  
-			data-options="
-				toolbar: '#tb_search',
-				singleSelect: true,
-				url: ''
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'description',width:150">Nama Barang</th>
-					<th data-options="field:'item_number',width:80">Kode Barang</th>
-				</tr>
-			</thead>
-		</table>
-    </div>   
-</div>
-
-<div id='dlgCustomer'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-		closed="true" buttons="#btnCustomer">
-		<table id="dgCustomer" class="easyui-datagrid" data-options="singleSelect: true">
-			<thead>
-				<tr>
-					<th data-options="field:'company',width:150">Nama Customer</th>
-					<th data-options="field:'customer_number',width:80">Kode Customer</th>
-				</tr>
-			</thead>
-		</table>
-</div>
-<div id="btnCustomer"><?=link_button("Select","select_customer();return false;","ok")?></div>	   
-
+ 
 <div id='dlgSo'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
 		closed="true" buttons="#btnSo">
-		<table id="dgSo" class="easyui-datagrid" data-options="singleSelect: true">
+		<table width='100%' id="dgSo" class="easyui-datagrid" data-options="singleSelect: true,fitColumns:true">
 			<thead>
 				<tr>
 					<th data-options="field:'sales_order_number',width:150">Nomor SO</th>
 					<th data-options="field:'sales_date',width:80">Tanggal</th>
+					<th data-options="field:'sold_to_customer',width:80">Customer</th>
+					<th data-options="field:'due_date',width:80">Due Date</th>
+					<th data-options="field:'payment_terms',width:80">Termin</th>
 				</tr>
 			</thead>
 		</table>
 </div>
-<div id="btnSo"><?=link_button("Select","select_sales_order();return false;","ok")?></div>	   
+<div id="btnSo">
+	<? echo link_button("Select","select_sales_order();return false;","ok","false");
+	echo link_button("Close","dlgSo_Close();return false;","cancel","false");
+	?>
+	
+</div>	   
 
+<?
+	echo load_view('sales/customer_select');
+	echo load_view('inventory/inventory_select');
+?>
 
 <script type="text/javascript">
     function save_this(){
   		if($('#work_order_no').val()==''){alert('Isi nomor bukti !');return false;}
   		if($('#customer_number').val()==''){alert('Isi pelanggan !');return false;}
   		if($('#sales_order_number').val()==''){alert('Isi nomor sales order !');return false;}
-		url='<?=base_url()?>index.php/workorder/save';
+		url='<?=base_url()?>index.php/manuf/workorder/save';
 			$('#frmWo').form('submit',{
 				url: url,
 				onSubmit: function(){
@@ -199,7 +167,7 @@
 						var no=$('#work_order_no').val();
 						$('#mode').val('view');
 						$('#divItem').show('slow');
-						$('#dg').datagrid({url:'<?=base_url()?>index.php/workorder/items/'+no});
+						$('#dg').datagrid({url:'<?=base_url()?>index.php/manuf/workorder/items/'+no});
 						$('#dg').datagrid('reload');
 						$.messager.show({
 							title:'Success',msg:'Data sudah tersimpan. Silahkan pilih nama barang.'
@@ -218,9 +186,10 @@
 </script>  
 <script language="JavaScript">
 		function save_item(){
+			var no=$("#work_order_no").val();
 			if($('#item_number').val()==''){alert('Pilih kode barang !');return false;}
 			if($('#quantity').val()==''){alert('Isi Quantity !');return false;}
-			url = '<?=base_url()?>index.php/workorder/save_item';
+			url = '<?=base_url()?>index.php/manuf/workorder/save_item';
 			$('#work_order_no_item').val($('#work_order_no').val());
 						 
 			$('#frmItem').form('submit',{
@@ -231,6 +200,7 @@
 				success: function(result){
 					var result = eval('('+result+')');
 					if (result.success){
+						$('#dg').datagrid({url:'<?=base_url()?>index.php/manuf/workorder/items/'+no});
 						$('#dg').datagrid('reload');
 						$('#frmItem').form('clear');
 						$('#item_number').val('');
@@ -253,31 +223,13 @@
 				}
 			});
 		}
-		function selectSearchItem()
-		{
-			var row = $('#dgItemSearch').datagrid('getSelected');
-			if (row){
-				$('#item_number').val(row.item_number);
-				$('#description').val(row.description);
-				find();
-				$('#dlgSearchItem').dialog('close');
-			}
-			
-		}
-		function searchItem()
-		{
-			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang');
-			nama=$('#search_item').val();
-			xurl='<?=base_url()?>index.php/inventory/filter/'+nama;
-			$('#dgItemSearch').datagrid({url:xurl});
-			$('#dgItemSearch').datagrid('reload');
-		}
+
 		function deleteItem(){
 			var row = $('#dg').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
 					if (r){
-						url='<?=base_url()?>index.php/workorder/delete_item';
+						url='<?=base_url()?>index.php/manuf/workorder/delete_item';
 						$.post(url,{line_number:row.line_number},function(result){
 							if (result.success){
 								$('#dg').datagrid('reload');	// reload the user data
@@ -321,22 +273,7 @@
 		                error: function(msg){alert(msg);}
 		    });
 		};
-		function lookup_customer()
-		{
-			$('#dlgCustomer').dialog('open').dialog('setTitle','Cari data pelanggan');
-			$('#dgCustomer').datagrid({url:'<?=base_url()?>index.php/customer/select'});
-			$('#dgCustomer').datagrid('reload');
-		}
-		function select_customer()
-		{
-			var row = $('#dgCustomer').datagrid('getSelected');
-			if (row){
-				$('#customer_number').val(row.customer_number);
-				$('#company').val(row.company);
-				$('#dlgCustomer').dialog('close');
-			}
-			
-		}
+	 
 		function lookup_sales_order()
 		{
 			var customer=$("#customer_number").val();
@@ -353,6 +290,9 @@
 				$('#dlgSo').dialog('close');
 			}
 			
+		}
+		function dlgSo_Close() {
+			$("#dlgSo").dialog("close");		
 		}
 		
 </script>

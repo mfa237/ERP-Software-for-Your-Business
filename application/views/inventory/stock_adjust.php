@@ -1,13 +1,15 @@
-<div><h4>ADJUSTMENT STOCK</H4>
-<div class="thumbnail">  
+<legend>ADJUSTMENT STOCK</legend>
+<div class="thumbnail box-gradient" >  
 	<? 
+	echo link_button('Add','','add','true',base_url().'index.php/stock_adjust/add');		
 	echo link_button("Print","print_adjust()","print");
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Search','','search','true',base_url().'index.php/stock_adjust');		
+	echo link_button('Help', 'load_help(\'stock_adjust\')','help');		
 	
 	?>	
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('stock_adjust')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -16,7 +18,7 @@
 </div>
 <div class="thumbnail">	
 <form id="frmItem" method='post' >
-   <table>
+   <table width="100%" class="table2">
 	<tr>
 		<td>Nomor</td><td><?php 
                 echo form_input('shipment_id',$shipment_id,'id=shipment_id');
@@ -47,14 +49,10 @@
 <!-- LINEITEMS -->	
 <h4>ITEMS DETAIL</H4>
 <div id='dgItem'><?=load_view('inventory/select_item_no_price.php')?></div>
-</form>
-
-
 <div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
-	<table id="dg" class="easyui-datagrid"  
-		style="width:500px;min-height:800px"
+	<table id="dg" class="easyui-datagrid"  width="100%"
 		data-options="
-			iconCls: 'icon-edit',
+			iconCls: 'icon-edit',fitColumns:true,
 			singleSelect: true,
 			toolbar: '#tb',
 			url: url_load_item
@@ -71,6 +69,10 @@
 	</table>
 </div>	
 <!-- LINEITEMS -->
+
+</form>
+
+
 </div>
 
  <script language='javascript'>

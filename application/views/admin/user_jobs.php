@@ -3,22 +3,24 @@
 <div class="thumbnail">
 	<?=link_button('Save', 'simpan()','save');?>
 	<?=link_button("Find Module","find_module()","search");?>
-	<?=link_button("Add Module","add_module()","add");?>
+	<?=link_button("Daftar Job","daftar_job()","reload");?>
 </div>
 <div class="thumbnail">
 	<?php	
 		echo form_open('',"id='myform'");
+		echo my_input('Group ID','user_group_id',$user_group_id);
+		echo my_input('Group Name','user_group_name',$user_group_name);
+		echo my_input('Description','description',$description);
 	?>
-	<table class='thumbnail'>	
-	<tr>
-	<td>Group Id</td><td><?=form_input('user_group_id',$user_group_id,"id='user_group_id'")?></td>
-	<td>Group Name</td><td><?=form_input('user_group_name',$user_group_name,"id='user_group_name'")?></td></tr>
-	<tr>
-	<td>Description</td><td colspan='6'	><?=form_input('description',$description,"id='description' style='width:400px'")?></td></tr>
-	</table>
 	<p></p><i><p>Silahkan contreng modul-modul yang diijinkan untuk diakses oleh kelompok dibawah ini</p></i>
 	<div id='divDetail' class='thumbnail' style='font-size:small'>
-		<? echo $modules?>
+		<? echo $modules ?>
+		<!--
+		<ul id="tt" class="easyui-tree"
+			url="<?=base_url()?>index.php/jobs/list_modules">
+		</ul>
+		-->
+
 	</div>
 	<?=form_close();?>
 </div>	
@@ -30,7 +32,7 @@
 		data module dalam table module job dibawah ini</i></p>
 		<p></p>
 		<p>Enter Text Search:
-			<input type='text' id='txtSerachInputBox'  name='txtSerachInputBox'>
+			<input type='text' id='txtSearchInputBox'  name='txtSearchInputBox'>
 			<?=link_button('Filter','on_find_module()','search')?>
 		</p>
 	</div>
@@ -104,12 +106,21 @@
 		$('#dlgInputBox').dialog('open').dialog('setTitle','Enter text');
 	}
 	function on_find_module() {
-		var search=$('#txtSerachInputBox').val();
-		var url='<?=base_url()?>index.php/jobs/list_modules_html/<?=$user_group_id?>/'+search;
+		var ugi=$("#user_group_id").val();
+		if(ugi==""){alert("Group ID belum diisi !");return false};
+		var search=$('#txtSearchInputBox').val();
+		var url='<?=base_url()?>index.php/jobs/list_modules_html/'+ugi+'/'+search;
 		get_this(url,'','divDetail');	
 	}
 	function edit_module(mod_id) {
 		$("#mod_id").val(mod_id);
-		$('#dlgEditModule').dialog('open').dialog('setTitle','Edit nama module');		
+		$('#udlgEditModule').dialog('open').dialog('setTitle','Edit nama module');		
 	}
+	function mod_expand(module_id){
+		alert(module_id);
+	}
+	function daftar_job(){
+		window.open("<?=base_url()?>index.php/jobs","_self");
+	}
+
 </script>

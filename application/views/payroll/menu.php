@@ -6,15 +6,15 @@
 				<li>
 					<span>Operation</span>
 					<ul>
-			<li><?=anchor('salary','Slip Gaji','class="info_link"');?></li>
-			<li><?=anchor('salary/generate','Generate Slip Gaji','class="info_link"');?></li>
-			<li><?=anchor('pph21','Proses PPH 21','class="info_link"');?></li>
-			<li><?=anchor('absensi','Absensi','class="info_link"');?></li>
-			<li><?=anchor('absensi/detail','Absensi Data','class="info_link"');?></li>
-			<li><?=anchor('overtime','Overtime','class="info_link"');?></li>
-			<li><?=anchor('cuti','Cuti','class="info_link"');?></li>
-			<li><?=anchor('pinjaman','Pinjaman','class="info_link"');?></li>
-			<li><?=anchor('pengobatan','Pengobatan','class="info_link"');?></li>
+			<li><?=anchor('payroll/salary','Slip Gaji','class="info_link"');?></li>
+			<li><?=anchor('payroll/salary/generate','Generate Slip Gaji','class="info_link"');?></li>
+			<li><?=anchor('payroll/pph21','Proses PPH 21','class="info_link"');?></li>
+			<li><?=anchor('payroll/absensi','Absensi','class="info_link"');?></li>
+			<li><?=anchor('payroll/absensi/detail','Absensi Data','class="info_link"');?></li>
+			<li><?=anchor('payroll/overtime','Overtime','class="info_link"');?></li>
+			<li><?=anchor('payroll/cuti','Cuti','class="info_link"');?></li>
+			<li><?=anchor('payroll/pinjaman','Pinjaman','class="info_link"');?></li>
+			<li><?=anchor('payroll/pengobatan','Pengobatan','class="info_link"');?></li>
 					</ul>
 				</li>
 				<li   data-options="state:'closed'">
@@ -31,11 +31,11 @@
 				<li  data-options="state:'closed'">
 					<span>Master</span>
 					<ul>
-			<li><?=anchor('employee','Pegawai','class="info_link"')?></li>
-			<li><?=anchor('employee/group','Level Group','class="info_link"')?></li>
-			<li><?=anchor('ptkp','Status Kawin (PTKP)','class="info_link"')?></li>
-			<li><?=anchor('employee/jenis','Jenis','class="info_link"')?></li>
-			<li><?=anchor('pelamar','Calon Pegawai','class="info_link"')?></li>
+			<li><?=anchor('payroll/employee','Pegawai','class="info_link"')?></li>
+			<li><?=anchor('payroll/employee/group','Level Group','class="info_link"')?></li>
+			<li><?=anchor('payroll/ptkp','Status Kawin (PTKP)','class="info_link"')?></li>
+			<li><?=anchor('payroll/employee/jenis','Jenis','class="info_link"')?></li>
+			<li><?=anchor('payroll/pelamar','Calon Pegawai','class="info_link"')?></li>
 			<li><?=anchor('payroll/income','Jenis Pendapatan','class="info_link"')?></li>
 			<li><?=anchor('payroll/deduct','Jenis Potongan','class="info_link"')?></li>
 			<li><?=anchor('payroll/level','Level Jabatan (Posisi)','class="info_link"')?></li>

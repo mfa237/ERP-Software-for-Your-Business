@@ -42,7 +42,7 @@
 	function lookup_employee()	{
 		$('#dlg_employee').dialog('open').dialog('setTitle','Cari nama pegawai');
 		nama=$('#search_emp').val();
-		xurl='<?=base_url()?>index.php/employee/find2/'+nama;
+		xurl='<?=base_url()?>index.php/payroll/employee/find2/'+nama;
 		$('#dg_employee').datagrid({url:xurl});
 		$('#dg_employee').datagrid('reload');
 	}

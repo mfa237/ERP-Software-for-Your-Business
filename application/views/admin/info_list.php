@@ -26,15 +26,24 @@
 	}
 	
 	$s=$s." order by username";
-	$s=$s." limit ".$offset.",9";		
+	$s=$s." limit ".$offset.",20";		
 	if($q=$this->db->query($s)){
 		$i=0;
 		foreach($q->result() as $row){
 			$i++;
 			echo "<div class='info thumbnail' onclick=on_view('$row->user_id');>";
-			echo "<div class='photo'>
-					   <img src='".base_url()."tmp/".$row->path_image."' />
-				  </div>";
+			echo "<div class='photo'>";
+				$file=base_url()."tmp/".$row->path_image;
+				if($row->path_image==""){
+						echo "<img src='".base_url()."tmp/no_img.png'/>";
+				} else {
+					if(file_exists("tmp/".$row->path_image) ){
+						echo "   <img src='".$file."' />";
+					} else {
+						echo "<img src='".base_url()."tmp/no_img.png'/>";
+					}
+				}
+			echo "	  </div>";
 			echo "<div class='detail'>";
 			echo "User ID: <strong>".$row->user_id."</strong>";
 			echo "</br>Nama : ".$row->username;
@@ -43,7 +52,7 @@
 			echo "</div>";
 			echo "</div>";
 		}
-		$offset=$offset+9;
+		$offset=$offset+20;
 		echo "<div class='clear'></div>";
 		if($i<3){
 			echo "Finish";

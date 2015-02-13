@@ -44,5 +44,19 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
+	function categories(){
+		$cats=null;
+		$i=0;
+		if($q=$this->db->query("select distinct category 
+			from articles a group by category")){
+			foreach($q->result() as $row){
+				$cnt=$this->db->query("select count(1) as cnt 
+				from articles where category='".$row->category."'")->row()->cnt;
+				$cats[$i]=array($row->category,$cnt);
+				$i++;
+			}
+		}
+		return $cats;
+	}
 
 }

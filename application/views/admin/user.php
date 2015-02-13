@@ -5,7 +5,7 @@
 	echo link_button('Print', 'print_item()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/user/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/user');		
-	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/user/view/'.$user_id);		
+	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/user/view/'.$id);		
 	echo link_button('Delete', 'delete_user()','remove');		
 	echo link_button('Help', 'load_help()','help');		
 	
@@ -42,9 +42,9 @@
 		<td>
 			<?php
 			if($mode=='view'){
-				echo form_input('user_id',$user_id,"id='user_id' readonly");
+				echo form_input('user_id',$id,"id='user_id' readonly");
 			} else { 
-				echo form_input('user_id',$user_id,"id='user_id'");
+				echo form_input('user_id',$id,"id='user_id'");
 			}		
 		?></td>
 	</tr>	 
@@ -60,13 +60,13 @@
 	<div class='thumbnail' style='min-height:100px;min-width:200px'>
 		<h5>User Icon</h5>
 		<?=form_open_multipart(base_url()."index.php/user/do_upload_picture","id='frmUpload'");?>
-		<input type='hidden' id='user_id_image'  name='user_id_image'  value='<?=$user_id?>'>
+		<input type='hidden' id='user_id_image'  name='user_id_image'  value='<?=$id?>'>
 		<input type="file" name="userfile" id="userfile" size="20" title="Pilih Gambar" stye="float:left" />
 		<input type="button" value="Submit" onclick="do_upload()">  
 		<?="</form>"?>
 		<div id='error_upload'></div>
 		<div id='divGambar'>
-			<img src='<?=base_url()?>tmp/<?=$path_image?>'/>
+			<img width=200 height=200 src='<?=base_url()?>tmp/<?=$path_image?>'/>
 			<? echo $path_image ?>
 		</div>
 	</div>
@@ -82,7 +82,7 @@
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,  
-				url: '<?=base_url()?>index.php/user/list_job/<?=$user_id?>',toolbar:'#cmdJobUser',
+				url: '<?=base_url()?>index.php/user/list_job/<?=$id?>',toolbar:'#cmdJobUser',
 			">
 			<thead>
 				<tr>
@@ -101,9 +101,10 @@
 	var url;	
  
   	function save(){
-  		if($('#user_id').val()==''){alert('Isi user id !');return false;}
-  		if($('#username').val()==''){alert('Isi user name !');return false;}
-  		if($('#password').val()==''){alert('Isi password !');return false;}
+  		if($('#user_id').val()==''){alertMX('Isi user id !');return false;}
+  		if($('#username').val()==''){alertMX('Isi user name !');return false;}
+  		if($('#password').val()==''){alertMX('Isi password !');return false;}
+		if($('#cid').val()==""){alertMX("Isi kode CID !");return false;}
 		url='<?=base_url()?>index.php/user/save';
 			$('#frmUser').form('submit',{
 				url: url,
@@ -183,8 +184,14 @@
 			});         
 		}
 	}
-	function delete_user(){
-		
+	function delete_user() {
+		$.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
+			if (r){
+				var user_id=$("#user_id").val();
+				var url=CI_ROOT+"user/delete/"+user_id;	
+				window.open(url,"_self");
+			}
+		})
 	}
 
 </script>

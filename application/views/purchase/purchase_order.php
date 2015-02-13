@@ -1,5 +1,4 @@
- 
-<div class="max-tool"><h4>PURCHASE ORDER</h4><div class="thumbnail tool">
+ <div class="max-tool "><h4>PURCHASE ORDER</h4><div class="thumbnail tool box-gradient">
 	<?
 	$disabled="";$disabled_edit="";
 	if(!($mode=="add" or $mode=="edit"))$disabled=" disabled";
@@ -13,28 +12,22 @@
 	}
 	echo link_button('Print', 'print_po()','print');		
 	echo link_button('Search','','search','true',base_url().'index.php/purchase_order');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'purchase_order\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('purchase_order')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/purchase_order");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">	
 <form id='frmPo' method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-   <table>
+   <table class='table2' width="100%">
 		<tr>
 			<td>Nomor PO</td>
 			<td><?php
@@ -42,7 +35,7 @@
 				$purchase_order_number,"id='purchase_order_number' 
 				class='easyui-validatebox' data-options='required:true,	validType:length[3,30]' ".$disabled.$disabled_edit); 
 			?></td>
-			<td rowspan='4'>
+			<td rowspan='5'>
 				<span id='supplier_name' name='supplier_name' class='thumbnail' style='height:100px;width:300px'><?=$supplier_info?></span>
 			</td>
        </tr>	 
@@ -51,7 +44,7 @@
         	class="easyui-datetimebox" required:true '.$disabled);?></td>
        </tr>	 
        <tr>
-            <td>Supplier</td><td colspan=4><?php 
+            <td>Supplier</td><td><?php 
             echo form_input('supplier_number',$supplier_number,
             "id=supplier_number class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]'".$disabled.$disabled_edit);
@@ -72,20 +65,13 @@
             <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" required'.$disabled);?></td>
        </tr>
        <tr>
-            <td>Keterangan</td><td colspan="3"><?php echo form_input('comments',$comments,'id=comments style="width:300px"'.$disabled);?></td>
+            <td>Keterangan</td><td colspan="3"><?php echo form_input('comments',$comments,'id=comments style="width:80%"'.$disabled);?></td>
        </tr>
-       <tr><td></td><td></td></tr>
-       <tr>
-           <td colspan="4">
-           </td>
-       </tr>
-	 <tr><td> 
-	 </td><td>&nbsp;</td></tr>
    </table>
 </form>
 </div> 
  
-<div class="easyui-tabs" style="height:550px">
+<div class="easyui-tabs" >
 	<div title="Items" style="padding:10px">
 	<!-- PURCASE_ORDER_LINEITEMS -->	
 	<div id='divItem'>
@@ -93,8 +79,8 @@
 		<div id='dgItem'>
 			<? include_once "purchase_order_items.php"; ?>
 		</div>
-		<table id="dg" class="easyui-datagrid"  
-			style="min-height:800px"
+		<table id="dg" class="easyui-datagrid"  width="100%"
+			 
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
@@ -116,9 +102,8 @@
 			</thead>
 		</table>
 	<!-- END PURCHASE_ORDER_LINEITEMS -->
-		<h5>TOTAL</H5>
 		<div id='divTotal'> 
-			<table>
+			<table class="table2" width="100%">
 				<tr>
 					<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
 					<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
@@ -185,7 +170,7 @@
 
 
 <? include_once 'supplier_select.php' ?>
-<div id="tbRcv">
+<div id="tbRcv" class="box-gradient	">
 	<?=link_button('Add','','add','true',base_url().'index.php/receive_po/add/'.$purchase_order_number);	?>	
 	<?=link_button('Refresh','load_receive()','reload');	?>	
 	<?=link_button('View','view_receive()','edit');	?>	

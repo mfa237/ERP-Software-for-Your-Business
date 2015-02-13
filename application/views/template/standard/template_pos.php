@@ -33,7 +33,7 @@ $sidebar_show=$visible_right;
 </script>
 </head>
 <body>
-	<div class='container'>
+	<div class='container-fluid'>
 	<? if(!$ajaxed) { ?> 
 		 
 		<div class="row" >

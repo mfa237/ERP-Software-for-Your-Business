@@ -1,5 +1,5 @@
- 
-	<h1>DEBIT MEMO<div class="thumbnail">
+ <legend>DEBIT MEMO</legend>
+ <div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		
@@ -12,28 +12,23 @@
 		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_dbmemo/posting/'.$kodecrdb);		
 	}
 	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_dbmemo/view/'.$kodecrdb);		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'purchase_dbmemo\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('purchase_dbmemo')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/purchase_dbmemo");
-		}
-	</script>
-	
-</div></H1>
+</div>
 <div class="thumbnail">		
 <form id="frmCrDb"  method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>	
 <input type='hidden' name='trans_type' id='trans_type'	value='Purchase'>	
-   <table>
+<input type='hidden' id='transtype' name='transtype' value='PO-DEBIT MEMO'>
+   <table class="table2" width="100%">
 		<tr>
 			<td>Nomor Bukti</td>
 			<td>
@@ -49,8 +44,7 @@
             <td>Tanggal</td><td><?php echo form_input('tanggal',$tanggal,'id=tanggal 
              class="easyui-datetimebox" required style="width:150px"');?>
             </td>
-			<td></td>
-			<td></td>
+			 
         </tr>
        <tr>
             <td>Supplier</td>
@@ -69,33 +63,26 @@
             <td><?=form_input('docnumber',$docnumber,'id="docnumber"');?>
             	<?=link_button("",'select_faktur()','search','true')?>
             </td>
-			<td></td>
+			 
        </tr>
        <tr>
        		<td>Jumlah: </td>
        		<td><?php echo form_input('amount',$amount,'id=amount');?></td>
-			<td></td>
+			 
       </tr>
        <tr>
             <td>Keterangan</td>
-            <td colspan="6">
+            <td colspan="2">
             	<?php echo form_input('keterangan',$keterangan,'id=keterangan style="width:300px"');?>
             </td>
-			<td></td>
+			 
        </tr>
-       <tr>
-			<td colspan="4">
-			        <input type='hidden' id='transtype' name='transtype' value='PO-DEBIT MEMO'>
-			</td>
-			<td></td>
-	   </tr>
    </table>
 </form>
-<div class="easyui-tabs" style="width:700px;height:550px">
-	<div id="divItem" title="Kode Perkiraan" style="padding:10px">
-	
+<div class="easyui-tabs">
+	<div id="divItem" title="Kode Perkiraan" style="padding:10px">	
 	<div id='dgItem'>
-		<table>
+		<table width="100%" class="table2">
 			<tr>
 				<td>Kode Akun</td><td>Nama Akun</td><td>Jumlah</td><td>
 			</tr>
@@ -117,10 +104,9 @@
 			</tr>
 		</table>		
 	</div>
-	<table id="dgItemMemo" class="easyui-datagrid"  		
-		style="width:600px;min-height:800px"
+	<table id="dgItemMemo" class="easyui-datagrid"  width="100%"		
 		data-options="
-			iconCls: 'icon-edit',
+			iconCls: 'icon-edit',fitColumns: true, 
 			singleSelect: true,
 			toolbar: '#tb',
 			url: '<?=base_url()?>index.php/crdb/items/<?=$kodecrdb?>/json'
@@ -140,10 +126,9 @@
 <!-- JURNAL -->
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
-		<table id="dgCrdb" class="easyui-datagrid"  
-			style="width:700px;min-height:700px"
+		<table id="dgCrdb" class="easyui-datagrid"  width="100%"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,toolbar:'#tbCrdb',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$kodecrdb?>'
 			">
@@ -166,7 +151,7 @@
 	
 </div>
  
-<div id="tb" style="height:auto">
+<div id="tb" style="height:auto" class="table2">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 </div>

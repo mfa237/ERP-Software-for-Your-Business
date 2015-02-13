@@ -1,22 +1,23 @@
-<div><h4>MUTASI STOCK ANTAR LOKASI</h4><div class="thumbnail"> 
+<legend>MUTASI STOCK ANTAR LOKASI</legend>
+<div class="thumbnail box-gradient"> 
 	<?
+	echo link_button('Add','','add','true',base_url().'index.php/stock_mutasi/add');		
 	echo link_button("Print","print_mutasi()","print");
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Search','','search','true',base_url().'index.php/stock_mutasi');		
+	echo link_button('Help', 'load_help(\'stock_mutasi\')','help');		
 		
 	?>	
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('stock_mutasi')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
-	</div>
-	
-	
+	</div>	
 </div> 
 <div class="thumbnail">	
 <form id="frmItem" method='post' >
-   <table>
+   <table class="table2" width="100%">
 	<tr>
 		<td>Nomor</td><td><?php 
                 echo form_input('transfer_id',$transfer_id,'id=transfer_id');
@@ -49,31 +50,31 @@
    </table>
  
 <!-- LINEITEMS -->	
-<h5>ITEMS DETAIL</H5>
-<div id='dgItem'><?=load_view('inventory/select_item_no_price.php')?></div>
+	<div id='dgItem'><?=load_view('inventory/select_item_no_price.php')?></div>
+	
+	<div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
+		<table id="dg" class="easyui-datagrid"  
+			data-options="
+				iconCls: 'icon-edit',fitColumns:true,
+				singleSelect: true,
+				toolbar: '#tb',
+				url: url_load_item
+			">
+			<thead>
+				<tr>
+					<th data-options="field:'item_number',width:80">Kode Barang</th>
+					<th data-options="field:'description',width:150">Nama Barang</th>
+					<th data-options="field:'from_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+				</tr>
+			</thead>
+		</table>
+	</div>	
+	
 </form>
 
 
-<div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
-	<table id="dg" class="easyui-datagrid"  
-		style="width:500px;min-height:800px"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',
-			url: url_load_item
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'from_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
-</div>	
 
 </div>
 <!-- LINEITEMS -->
@@ -94,11 +95,6 @@
 		url="<?=base_url()?>index.php/stock_mutasi/print_bukti/"+nomor;
 		window.open(url,'_blank');
 	}
+
     
  </script>
- <script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_mutasi");
-		}
-	</script>
-	

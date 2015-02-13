@@ -1,10 +1,11 @@
-<div><h1>STATUS PERKAWINAN<div class="thumbnail">
+<legend>STATUS PERKAWINAN</legend>
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/ptkp/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/ptkp');		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Add','','add','true',base_url().'index.php/payroll/ptkp/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/payroll/ptkp');		
+	echo link_button('Help', 'load_help(\'ptkp\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -14,18 +15,13 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/ptkp");
-		}
-	</script>
 	
-</div></H1>
+</div>
 <div class="thumbnail">	
 <form id="frmEmployee"  method="post">
-<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<?php echo validation_errors(); ?>
-   <table>
+	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+	<?php echo validation_errors(); ?>
+   <table class='table2' width='100%'>
 	<tr>
 		<td>Kode</td>
 		<td><?php
@@ -48,7 +44,7 @@
     function save_this(){
         if($('#kode').val()===''){alert('Isi kode !');return false;};
 
-		url='<?=base_url()?>index.php/ptkp/save';
+		url='<?=base_url()?>index.php/payroll/ptkp/save';
 			$('#frmEmployee').form('submit',{
 				url: url,
 				onSubmit: function(){

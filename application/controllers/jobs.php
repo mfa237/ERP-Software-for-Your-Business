@@ -26,7 +26,10 @@ class Jobs extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if (!allow_mod2('_00010')){
+			if($this->access->user_id!="admin") exit;
+		}
+        $this->browse();
 	}
 	function get_posts(){
         $data=  data_table_post($this->table_name);
@@ -112,9 +115,10 @@ class Jobs extends CI_Controller {
     }	      
     
 	function delete($id){
+		$this->load->model("modules_groups_model");
 		$id=urldecode($id);
-	 	$this->user_model->delete($id);
-	 	$this->browse();
+	 	$this->modules_groups_model->delete($id);
+//	 	$this->browse();
 	}
 	
 	function list_modules_html($group_id,$filter=''){
@@ -123,82 +127,53 @@ class Jobs extends CI_Controller {
 		$html=$this->list_modules($group_id,$filter);
 		echo $html;
 	}
+	function list_modules_json(){
+		$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$result = array();
+		$rs = mysql_query("select * from modules where parentid='$id'");
+		while($row = mysql_fetch_array($rs)){
+			$node = array();
+			$node['id'] = $row['module_id'];
+			$node['module_name'] = $row['module_name'];
+			$node['state'] = $this->has_child($row['module_id']) ? 'closed' : 'open';
+			array_push($result,$node);
+		}
+		echo json_encode($result);
+	}
+	function has_child($id){
+		$rs = mysql_query("select count(*) from modules where parentid='$id'");
+		$row = mysql_fetch_array($rs);
+		return $row[0] > 0 ? true : false;		
+	}
 	function list_modules($group_id,$filter=''){
 		$group_id=urldecode($group_id);
 		$filter=urldecode($filter);
-		$sql="select * from modules 
-			where (parentid='0' or parentid is null)";
+		$sql="select * from modules where (parentid='0' or parentid is null)";
 		$sql.=" order by module_id";
 		$modules=$this->db->query($sql);
-		$tbl="<table class='table11', data-options='singleSelect:true'>
-			<thead><th>Cek</th><th data-options=\"field:'0'\">Module Name</th>
-			<th data-options=\"field:'1'\">Module Description</th>
-			</thead>
-			<tbody>";
-			 
-			foreach($modules->result() as $row){
-				if($this->modules_groups_model->exist($group_id,$row->module_id)){
-					$checked='checked';
-				} else {
-					$checked="";
-				}
-				$tbl.="
-				<tr>
-				<td>
-					<input type='checkbox' name='modules[]' value='".$row->module_id."' $checked>
-				</td>
-				<td><strong>".$row->module_name."</strong></td>
-				<td><strong>".$row->description."(".$row->module_id.")</strong></td>
-				</tr>
-				";				
-				$sql = "select * from modules 
-				where parentid='".$row->module_id."'";
-				if($filter!='') {
-					$sql.=" and (module_id like '%$filter%' or module_name like '%$filter%')";	
-				}
-				$sql .= " order by module_id";
-
-				if($mod_lvl_1=$this->db->query($sql)){
-					foreach($mod_lvl_1->result() as $lvl1){
-						if($this->modules_groups_model->exist($group_id,$lvl1->module_id)){
-							$checked='checked';
-						} else {
-							$checked="";
-						}
-						$tbl.="<tr>
-						<td><input type='checkbox' name='modules[]' value='".$lvl1->module_id."' $checked></td>
-						<td>&nbsp&nbsp&nbsp".$lvl1->module_name."</td>	
-						<td>&nbsp&nbsp&nbsp".$lvl1->description."(".$lvl1->module_id.")</td>	
-						</tr>";
-//						<td>".link_button("Edit","edit_module('".$lvl1->module_id."')","edit")."</td>
-						
-						$sql = "select * from modules 
-						where parentid='".$lvl1->module_id."'"; 
-						if($filter!='') {
-							$sql.=" and (module_id like '%$filter%' or module_name like '%$filter%')";	
-						}
-						$sql .= " order by module_id";
-						
-						if($mod_lvl_2=$this->db->query($sql)) {
-							foreach($mod_lvl_2->result() as $lvl2) {
-								if($this->modules_groups_model->exist($group_id,$lvl2->module_id)){
-									$checked='checked';
-								} else {
-									$checked="";
-								}
-								$tbl.="<tr>
-								<td><input type='checkbox' name='modules[]' value='".$lvl2->module_id."' $checked></td>
-								<td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp".$lvl2->module_name."</td>	
-								<td>".$lvl2->description."(".$lvl2->module_id.")</td>
-								</tr>";
-//								<td>".link_button("Edit","edit_module('".$lvl2->module_id."')","edit")."</td>
-								
-							}
-						}
-						
-					}
-				}
+		$tbl="<table class='table2', style='width:100%' data-options='singleSelect:true'>
+		<thead><th>Cek</th><th data-options=\"field:'0'\">Module Name</th>
+		<th data-options=\"field:'1'\">Module Description</th>
+		</thead>
+		<tbody>";
+		 
+		foreach($modules->result() as $row){
+			if($this->modules_groups_model->exist($group_id,$row->module_id)){
+				$checked='checked';
+			} else {
+				$checked="";
 			}
+			$tbl.="
+			<tr>
+			<td>
+				<input type='checkbox' name='modules[]' value='".$row->module_id."' $checked>
+			</td>
+			<td><strong>".anchor("#",$row->module_name,"onclick=\"mod_expand('".$row->module_id."');return false;\"")."</strong></td>
+			<td><strong>".$row->description." - (".$row->module_id.")</strong></td>
+			</tr>
+			";	
+			$tbl .= $this->level2($row,$filter,$group_id);
+		}
 		$tbl.="
 				<tr>
 			</tbody>		
@@ -210,6 +185,60 @@ class Jobs extends CI_Controller {
                 <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
             ";
 		return $tbl;	
+	}
+	function level2($row,$filter,$group_id){
+		$tbl="";
+		$sql = "select * from modules 
+		where parentid='".$row->module_id."'";
+		if($filter!='') {
+			$sql.=" and (module_id like '%$filter%' or module_name like '%$filter%')";	
+		}
+		$sql .= " order by module_id";
+
+		if($mod_lvl_1=$this->db->query($sql)){
+			foreach($mod_lvl_1->result() as $lvl1){
+				if($this->modules_groups_model->exist($group_id,$lvl1->module_id)){
+					$checked='checked';
+				} else {
+					$checked="";
+				}
+				$tbl.="<tr>
+				<td><input type='checkbox' name='modules[]' value='".$lvl1->module_id."' $checked></td>
+				<td>&nbsp&nbsp&nbsp".$lvl1->module_name."</td>	
+				<td>&nbsp&nbsp&nbsp".$lvl1->description." (".$lvl1->module_id.")</td>	
+				</tr>";
+//						<td>".link_button("Edit","edit_module('".$lvl1->module_id."')","edit")."</td>
+				$tbl.=$this->level3($lvl1,$filter,$group_id);
+			}
+		}
+		return $tbl;
+	}
+	function level3($lvl1,$filter,$group_id){	
+		$tbl="";
+		$sql = "select * from modules 
+		where parentid='".$lvl1->module_id."'"; 
+		if($filter!='') {
+			$sql.=" and (module_id like '%$filter%' or module_name like '%$filter%')";	
+		}
+		$sql .= " order by module_id";
+		
+		if($mod_lvl_2=$this->db->query($sql)) {
+			foreach($mod_lvl_2->result() as $lvl2) {
+				if($this->modules_groups_model->exist($group_id,$lvl2->module_id)){
+					$checked='checked';
+				} else {
+					$checked="";
+				}
+				$tbl.="<tr>
+				<td><input type='checkbox' name='modules[]' value='".$lvl2->module_id."' $checked></td>
+				<td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp".$lvl2->module_name."</td>	
+				<td>".$lvl2->description." (".$lvl2->module_id.")</td>
+				</tr>";
+//								<td>".link_button("Edit","edit_module('".$lvl2->module_id."')","edit")."</td>
+				
+			}
+		}						
+		return $tbl;
 	}
 	function select($job=''){
 		$job=urldecode($job);

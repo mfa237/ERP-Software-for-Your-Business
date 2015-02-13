@@ -20,6 +20,7 @@ class Pos extends CI_Controller {
 	}
     function index(){
 		$data['visible_right']=false;
+		
 		$this->template->display_form_input('pos/main',$data);			
 	}
 	function main() {

@@ -21,12 +21,11 @@ class Help extends CI_Controller {
             $data['mode']='';
             $data['message']='';
 			$data['date_post']=date('Y-m-d 00:00:00');
-			$data['category_list']=array("Purchasing","Sales","Inventory","Accounting","Fixed Asset","Payroll","Manufacure");
+			$data['category_list']=array("Purchasing","Sales","Inventory","Accounting","Fixed Asset","Payroll","Manufacure","Leasing","Hotel","Koperasi");
             return $data;
 	}
 	function index()
 	{	
-            //$this->browse();
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -36,7 +35,7 @@ class Help extends CI_Controller {
 	function load($modul) {
 		$modul=urldecode($modul);
 		echo "<div class='widget-help'><div class=' glyphicon glyphicon-info-sign thumbnail'> 
-			HELP_MOD : ".$modul." - [".link_button("EDIT","add('help/edit/$modul','"
+			HELP_MOD : ".$modul." - [".link_button("EDIT","add_tab_parent('help/edit/$modul','"
 			.base_url()."index.php/help/edit/".$modul."');","save","false")."]</div>";
 		$this->load->model('article_model');
 		$article=$this->article_model->get_by_id($modul);
@@ -60,7 +59,15 @@ class Help extends CI_Controller {
  		 $data['doc_name']=$modul;
 		 $data['mode']='add';
          $data['message']="";
-         $this->template->display_form_input($this->file_view,$data,'');
+		$this->load->library('ckeditor'); 
+		$this->ckeditor->basePath = base_url().'assets/ckeditor/';
+		$this->ckeditor->config['toolbar'] = array(
+                array( 'Source', '-', 'Bold', 'Italic', 'Underline', '-','Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo','-','NumberedList','BulletedList' )
+                );
+		$this->ckeditor->config['language'] = 'it';
+		$this->ckeditor->config['width'] = '730px';
+		$this->ckeditor->config['height'] = '300px';          
+		$this->template->display_form_input($this->file_view,$data,'');
 	}
 	function _set_rules(){	
 		 $this->form_validation->set_rules($this->primary_key,'Kode', 'required|trim');
@@ -80,6 +87,7 @@ class Help extends CI_Controller {
 			unset($data['mode']);
 			if($mode=="add"){
 				if($this->article_model->get_by_id($id)->row()){
+					unset($data['doc_name']);
 					$this->article_model->update($id,$data);
 				} else {
 					$this->article_model->save($data);
@@ -92,6 +100,7 @@ class Help extends CI_Controller {
 					$data['mode']='add';
 				}
 			} else {
+				unset($data['doc_name']);
 				$this->article_model->update($id,$data);
 				$data['message']=mysql_error();
 				if($data['message']==''){
@@ -103,10 +112,20 @@ class Help extends CI_Controller {
 		} else {
 			$data['message']='Error Validation.';
 		}
-
+		$data['doc_name']=$id;
 		$data['category_list']=array("Purchasing","Sales","Inventory","Accounting","Fixed Asset","Payroll","Manufacure");
 		$this->template->display_form_input($this->file_view,$data,'');
-
-
 	} 
+	function doc_help(){
+		echo "<p>Following this community you can interact with other user.</p>
+		<li><a href='http://forum.maxonerp.com'>Maxon ERP Forum</li>
+		<li><a href='http://www.facebook.com/maxon51' target='new'>Maxon ERP Facebook</li>
+		<li><a href='http://www.twitter.com/talagasoft' target='new'>Maxon ERP Twitter</li>";
+	}
+	function error(){
+		echo "<p>Following this community you can submit error and interact with other user.</p>
+		<li><a href='http://forum.maxonerp.com'>Maxon ERP Forum</li>
+		<li><a href='http://www.facebook.com/maxon51' target='new'>Maxon ERP Facebook</li>
+		<li><a href='http://www.twitter.com/talagasoft' target='new'>Maxon ERP Twitter</li>";
+	}
  }

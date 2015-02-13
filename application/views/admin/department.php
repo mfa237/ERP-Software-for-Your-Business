@@ -1,7 +1,7 @@
-<div ><h1>DEPARTMENTS</h1>
-	<div class="thumbnail">
+<legend>DEPARTMENTS</legend>
+	<div class="thumbnail box-gradient">
 		<form id="frmNew" method="POST">
-			<table width="400px">
+			<table width="100%" class='table2'>
 				<tr>	
 					<td>Kode</td><td><?=form_input('dept_code')?></td>
 					<td>Department</td><td colspan='4'><?=form_input('dept_name')?></td>
@@ -10,9 +10,9 @@
 		</form>
 	</div>
 	<div class="thumbnail" >
-			<table class="table1" width="400px">
-				<thead><tr><td>Kode</td><td>Keterangan</td>
-					<td>&nbsp;</td></tr></thead>
+			<table class="table2" width="100%">
+				<thead><tr><th>Kode</th><th>Keterangan</th>
+					<th>Action</th></tr></thead>
 				<tbody>
 					<?     			
 					$CI =& get_instance();
@@ -23,7 +23,7 @@
 						echo "
 						<tr><td>".$row_item->dept_code."</td>
 						<td>".$row_item->dept_name."</td>
-						<td>".link_button('',"del_dept('".$row_item->dept_code."')","remove")."
+						<td>".link_button('Hapus',"del_dept('".$row_item->dept_code."')","remove")." </td></tr>
 						";
 					}
 					?>
@@ -31,7 +31,6 @@
 				</tbody>
 			</table>
 	</div>
-</div>
 <script language="JavaScript">
 	function add_dept(){
 		url='<?=base_url()?>index.php/company/department_add';
@@ -59,7 +58,7 @@
             type: "GET",
             url: xurl,
             success: function(msg){
-	            window.open(CI_ROOT+'admin/deptartment','_self');
+	            window.open(CI_ROOT+'company/department','_self');
             },
             error: function(msg){$.messager.alert('Info',msg);}
         });         

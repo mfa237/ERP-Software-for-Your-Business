@@ -1,10 +1,9 @@
 <!-- JURNAL -->
 	<DIV title="Jurnal" style="padding:10px">
 		<div id='divJurnal' class='thumbnail'>
-		<table id="dgCrdb" class="easyui-datagrid"  
-			style="width:auto;min-height:500px"
+		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,toolbar:'#tbCrdb',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$gl_id?>'
 			">

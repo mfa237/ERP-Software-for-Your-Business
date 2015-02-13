@@ -1,25 +1,25 @@
-<table>
-	<tr>
-		<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
-	</tr>
-	<tr>
-	         <td><input onblur='find()' id="item_number" style='width:80px' 
-	         	name="item_number"   class="easyui-validatebox" required="true">
-				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-				onclick="searchItem()"></a>
-	         </td>
-	         <td><input id="description" name="description" style='width:280px'></td>
-	         <td><input id="quantity"  style='width:30px'  name="quantity"  ></td>
-	         <td><input id="unit" name="unit"  style='width:30px' ></td>
+<div id="tb" style="height:auto" class="box-gradient">
+	<table width="100%" class="table2">
+		<tr>
+			<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td><td>Button</td>
+		</tr>
+		<tr>
+				 <td><input onblur='find()' id="item_number" style='width:80px' 
+					name="item_number"   class="easyui-validatebox" required="true">
+					<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
+					onclick="searchItem();return false;"></a>
+				 </td>
+				 <td><input id="description" name="description" style='width:280px'></td>
+				 <td><input id="quantity"  style='width:30px'  name="quantity"  ></td>
+				 <td><input id="unit" name="unit"  style='width:30px' ></td>
 
-	        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-     		   plain='true'	onclick='save_item()'>Add Item</a>
-			</td>
-	        <input type='hidden' id='ref_number' name='ref_number'>
-	        <input type='hidden' id='line_number' name='line_number'>
-	</tr>
-</table>
-<div id="tb" style="height:auto">
+				<td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
+				   plain='true'	onclick='save_item();return false;'>Add Item</a>
+				</td>
+				<input type='hidden' id='ref_number' name='ref_number'>
+				<input type='hidden' id='line_number' name='line_number'>
+		</tr>
+	</table>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 </div>
@@ -28,8 +28,8 @@
 	Enter Text: <input  id="search_item" style='width:180px' 
  	name="search_item">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
+	onclick="searchItem();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem();return false;">Select</a>
 </div>
 
 <div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
@@ -37,7 +37,7 @@
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  
 			data-options="
-				toolbar: '',
+				toolbar: '',fitColumns:true,
 				singleSelect: true,
 				url: '<?=base_url()?>index.php/inventory/filter'
 			">
@@ -61,10 +61,7 @@
 						if (result.success){
 							$('#'+grid_output).datagrid('reload');	// reload the user data
 						} else {
-							$.messager.show({	// show error message
-								title: 'Error',
-								msg: result.msg
-							});
+							log_err(result.msg);
 						}
 					},'json');
 				}
@@ -91,6 +88,7 @@
 				success: function(result){
 					var result = eval('('+result+')');
 					if (result.success){
+						log_msg("Data sudah tersimpan.");
 						$('#'+grid_output).datagrid({url:url_load_item});
 						$('#'+grid_output).datagrid('reload');
 						$('#item_number').val('');
@@ -98,15 +96,8 @@
 						$('#description').val('');
 						$('#line_number').val('');
 						$('#quantity').val('1');
-						$.messager.show({
-							title: 'Success',
-							msg: 'Success'
-						});
 					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
+						log_err(result.msg);
 					}
 				}
 			});
@@ -146,6 +137,5 @@
 		                error: function(msg){alert(msg);}
 		    });
 		};
-
 
 </script>

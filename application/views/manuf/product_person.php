@@ -4,8 +4,8 @@
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/product_person/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/product_person');		
+	echo link_button('Add','','add','true',base_url().'index.php/manuf/product_person/add');		
+	echo link_button('Search','','search','true',base_url().'index.php/manuf/product_person');		
 	echo link_button('Help', 'load_help()','help');		
 	
 	?>
@@ -37,7 +37,7 @@
 <? } ?>
 
 
-<form id="myform" role="form" method="post" action="<?=base_url()?>index.php/product_person/save"  class="form-horizontal" >
+<form id="myform" role="form" method="post" action="<?=base_url()?>index.php/manuf/product_person/save"  class="form-horizontal" >
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<div class="form-group">
 	<label for="id" class="col-sm-3 control-label">NIP Kode Karyawan</label>

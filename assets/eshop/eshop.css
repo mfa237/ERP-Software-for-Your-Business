@@ -1,0 +1,123 @@
+.box-cat li {
+	height:30px;
+}
+.box_item:hover{
+	background-color:  rgb(224, 223, 223);
+	cursor:pointer;
+}	 
+
+.box_item {
+	margin:10px;
+	padding:10px;
+	border: solid 1px lightgray;	
+}
+.box_item .foto {
+	width:120px;
+	height:120px;
+	padding:5px;
+}
+.box_item .foto img {
+	width:90px;
+	height:90px;
+}
+.box_item .content {
+	font-family: sans-serif;	
+}
+.top-nav {
+	background-color:  rgb(153, 107, 179);
+}
+.navbar-maxon {
+	color:black;
+	background-color:  rgb(99, 65, 118);
+	border:0px;
+}
+
+.container {
+	background-color: whitesmoke;
+	-webkit-box-shadow: 0 4px 26px 6px #222;
+    -moz-box-shadow: 0 4px 26px 6px #222;
+    box-shadow: 0 4px 26px 6px #222;	
+}
+ 
+.navbar {
+	border-radius: 1px; 
+	padding:5px;
+}
+.box-cat h4 {
+	background-color: rgb(99, 65, 118);
+	color: whitesmoke;
+	font-weight: 700;
+	height: 50px;
+	padding: 5px;
+	padding-top:20px;
+	padding-left:20px;
+}
+.nav-tabs {
+	--background-color: #634176;
+	--font-weight: 800;
+}
+.item-detail {
+	padding: 10px;
+	margin-bottom: 20px;
+}
+.item-detail .foto {
+	height: 300px;
+	-border: 1px solid;
+	align-content: center;
+	padding: 10px;
+}
+.item-detail .foto-thumb {
+	--border: 1px solid;
+	margin-top: 10px;
+	margin-bottom: 10px;	
+	padding:5px;
+}
+.item-detail .foto-thumb img {
+	width:100px;
+	height:100px;
+	padding:5px;
+	--border:1px solid black;
+}
+.item-detail .foto-wrap {
+	float:left;
+	margin:10px;
+}
+.item-detail .content-wrap{
+	margin:10px;
+	padding:10px;
+	border:1px;
+}
+.caption {
+	font-weight:700;
+	width:150px;
+	height:20px;
+	float: left;
+}
+.box-left {
+	background-color:rgb(153, 107, 179);
+	color:white;
+	padding-bottom:20px;
+	padding-top:20px;
+}
+ 
+ol.breadcrumb  a:visited {
+	color: black;
+}
+.box-footer {
+	padding:10px;
+	padding-top:20px;
+	padding-bottom:50px;
+}
+.item-footer {
+	background-color: rgb(233, 214, 236);
+	padding: 5px;
+}
+.item-footer .item_no {
+	font-family: monospace;
+	font-weight: 800;	
+}
+.item-footer .price {
+	font-size: 17px;
+	font-weight: 700;
+	color: brown;
+}

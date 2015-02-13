@@ -1,35 +1,30 @@
-<div><h5>MASTER REKENING</H5><div class="thumbnail">
+<legend>MASTER REKENING</legend>
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/banks/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/banks');		
 	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/banks/view/'.$bank_account_number);		
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'banks\')','help');		
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('banks')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/banks");
-		}
-	</script>
-	
 </div>
-<div class="easyui-tabs" style="width:700px;height:auto">
+<div class="easyui-tabs" >
 	<div title="General" style="padding:10px">
 	
 		<div class="thumbnail">	
 		<form id="myform"  method="post" action="<?=base_url()?>index.php/banks/save">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 		<?php echo validation_errors(); ?>
-		<table>
+		<table class="table2" width="100%">
 			<tr>
 				<td>Nomor Rekening</td><td>
 				<?php
@@ -71,7 +66,7 @@
 	<DIV title="Cards" style="padding:10px">
 		<div class='thumbnail'>
 			<form method="post">
-			<table>
+			<table width="100%" class="table2">
 			<tr><td>Date From</td>
 			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" ');?></td>
 			<td>Date To</td>
@@ -85,7 +80,7 @@
 		<table id="dgCard" class="easyui-datagrid"  
 			style="width:auto;height:auto"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns: true,
 				singleSelect: true,toolbar: '#tbRetur',
 				url: ''
 			">

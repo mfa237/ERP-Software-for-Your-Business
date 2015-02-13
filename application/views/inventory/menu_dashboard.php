@@ -87,6 +87,15 @@ $().ready(function(){
 		}
 		$.plot("#divSales", data, options);
 	}
+	var $element=$(window),lastWidth=$element.width(),lastHeight=$element.height();	
+	function checkForChanges(){			
+	   if ($element.width()!=lastWidth||$element.height()!=lastHeight){	
+		$('#tt').tabs('resize');
+		lastWidth = $element.width();lastHeight=$element.height();	 
+	   }
+	   setTimeout(checkForChanges, 500);
+	}
+	checkForChanges();
 	
 			
 </script>

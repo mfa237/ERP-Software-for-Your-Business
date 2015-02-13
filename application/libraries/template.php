@@ -9,7 +9,7 @@ class Template {
  {
     $this->_ci =&get_instance();
 
-    $this->_ci->load->library('javascript');
+    $this->_ci->load->library(array('javascript',"sysvar"));
 	
 	$this->bootstrap='
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap/css/bootstrap.css">
@@ -23,23 +23,26 @@ class Template {
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/autocomplete/jquery.autocomplete.min.js',true);
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/lib.js',true);
     $this->library_src.=$this->_ci->jquery->script(base_url().'js/jquery.formatNumber.js',true);
+    $this->library_src.=$this->_ci->jquery->script(base_url().'assets/flexslider/jquery.flexslider.js',true);
 	
 	
   /// $this->script_head=$this->_ci->jquery->_compile();
+	$themes=$this->_ci->sysvar->getvar('themes','standard');
 	$this->script_head='
 	
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/autocomplete/jquery.autocomplete.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/'.$themes.'/easyui.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/icon.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/standard/style.css">
+	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/datepicker/datepicker.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap/css/bootstrap.css">
 
 	
 	';
+//	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/flexslider/flexslider.css">
 	
 	$this->jquery_easyui='
- 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/default/easyui.css">
+ 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/'.$themes.'/easyui.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/jquery-ui/themes/icon.css">
 	<script type="text/javascript" charset="utf-8" src="'.base_url().'js/jquery/jquery-1.8.0.min.js"></script>
 	<script type="text/javascript" charset="utf-8" src="'.base_url().'js/jquery-ui/jquery.easyui.min.js"></script>
@@ -48,8 +51,6 @@ class Template {
 	
 	
 	';
-
-
 }
 
  function display($template,$data=null)
@@ -61,26 +62,15 @@ class Template {
 		$data['user_id']=$this->_ci->access->user_id();
 	  	$data['library_src']=$this->library_src;
 	  	$data['script_head']=$this->script_head;
-
 		if(!isset($data['ajaxed']))$data['ajaxed']=true;
 		$data['_header']=$this->_ci->load->view('template/standard/header',$data, true);
 		$data['_footer']=$this->_ci->load->view('template/standard/footer',$data, true);
 
 		$sql="select distinct controller,method,param1 from sys_log_run where user_id='".$this->_ci->access->user_id()."' order by id desc limit 10 ";
 		$url=base_url()."/index.php/".$template;
+
 		add_log_run($url);
-		 
-		$q=$this->_ci->db->query($sql);		
-		$sys_log_run="";
-		if($q){
-			foreach ($q->result() as $row) {
-				$url=$row->controller;
-				if(!$row->method=='0')$url.="/".$row->method;
-				if(!$row->param1=='0')$url.="/".$row->param1;
-				$sys_log_run.="<li><a  class='info_link'  href='".base_url()."index.php/".$url."'>".$url."</a></li>";
-			}
-		}
-		$data['sys_log_run']=$sys_log_run;
+		$data['sys_log_run']=view_syslog();
 
 		if($template=="pos/menu")$data['sidebar_show']=false;
 
@@ -88,13 +78,17 @@ class Template {
 			$fm=$data['_right_menu'];
 			$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
 		} else {
-		   $data['_right_menu']='';
+			$data['_right_menu']='';
 		}				
 		$fm=$this->_ci->session->userdata('_right_menu');
-		if($fm!='')$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+		if($fm!=''){	
+			$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+		}
 		$fm=$this->_ci->session->userdata('_left_menu');
-
-		if($fm!='')$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+		if($fm!='') {
+			//echo $fm;
+			$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+		}
 		$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
 
 		if($template==$fm){
@@ -113,9 +107,11 @@ class Template {
 				$data['body_class']='';
 			}
 			$data['_content']=$this->_ci->load->view($template,$data, true);
-		} 						
+		} 			
+		$data['google_ads_visible']=$this->_ci->sysvar->getvar('google_ads_visible','true');
 		$this->_ci->load->view('template/standard/template',$data);              
 	 } else  {
+		$data['google_ads_visible']=$this->_ci->sysvar->getvar('google_ads_visible','true');
 		$this->_ci->load->view($template,$data);
 	 }
  }
@@ -124,6 +120,38 @@ class Template {
   	$data['script_head']=$this->script_head;
 	$this->_ci->load->view($template,$data);
  }
+ function display_website($template,$data=null){
+  	$data['library_src']=$this->library_src;
+  	$data['script_head']=$this->script_head;
+	$data['file_content']=$template;	
+	$this->_ci->load->view("template/standard/template_articles",$data);	
+ }
+ function display_eshop($template,$data=null){
+  	$data['library_src']=$this->library_src;
+  	$data['script_head']=$this->script_head;
+	$data['file_content']=$template;
+	$data['categories']=$this->_ci->db->get('inventory_categories');
+	$this->_ci->load->view("template/eshop/page",$data);		 
+ }
+  function display_login($template,$data=null) {
+	$library_src='
+		<script type="text/javascript" charset="utf-8" 
+		src="'.base_url().'js/jquery/jquery-1.9.min.js"></script>
+		<script type="text/javascript" charset="utf-8" 
+		src="'.base_url().'js/jquery-ui/jquery.easyui.min.js"></script>
+	';
+	
+	$script_head='
+	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/standard/style.css">
+	';
+
+		
+  	$data['library_src']=$library_src;
+  	$data['script_head']=$script_head;
+	$this->_ci->load->view($template,$data);
+ }
+
  function display_form_input($template,$data=null,$template_right=null)
  {
     //$data['message']='Ready';
@@ -140,7 +168,16 @@ class Template {
  function display_browse2($data=null){
         $data['library_src']=$this->library_src;
         $data['script_head']=$this->script_head;
-	    $this->_ci->load->view('template/standard/template_browse',$data);	
+		if(isset($data['view_mode'])){
+			$view_mode=$data['view_mode'];
+		} else {
+			$view_mode="";
+		}
+		if($view_mode<>""){
+			$this->_ci->load->view('/'.$view_mode,$data);	
+		} else {
+			$this->_ci->load->view('template/standard/template_browse',$data);				
+		}
  }
  function display_browse($data=null)
  {
@@ -161,19 +198,7 @@ class Template {
 		$data['_header']=$this->_ci->load->view('template/standard/header',$data, true);
 		$data['_content']=$this->_ci->load->view('template/standard/template_browse',$data, true);
 		$data['_footer']=$this->_ci->load->view('template/standard/footer',$data, true);
-		$sql="select distinct url,controller,method,param1 from sys_log_run where user_id='".$this->_ci->access->user_id()."' order by id desc limit 20 ";
-		 
-		$q=$this->_ci->db->query($sql);		
-		$sys_log_run="<h4>Recent Runing</h4>";
-		if($q){
-			foreach ($q->result() as $row) {
-				$url=$row->controller;
-				if(!$row->method=='0')$url.="/".$row->method;
-				if(!$row->param1=='0')$url.="/".$row->param1;
-				$sys_log_run.="<li><a href='".base_url()."index.php/".$url."'>".$url."</a></li>";
-			}
-		}
-		$data['sys_log_run']=$sys_log_run;		
+		$data['sys_log_run']=syslog();		
 		$this->_ci->load->view('template/standard/template',$data);
 	 } 	 else 	 {
         $data['library_src']=$this->library_src;

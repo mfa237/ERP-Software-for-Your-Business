@@ -15,22 +15,31 @@ Class Inventory extends CI_Controller {
 		parent::__construct();
 		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
+		
+		$this->load->helper(array('language'));
+		$this->lang->load('common');
+
 		$this->load->library('template');
 		$this->load->library('form_validation');
+		
 		$this->load->model('inventory_model');
         $this->load->model('chart_of_accounts_model');
         $this->load->model('supplier_model');
+		
+		$this->load->helper(array('language'));
+		$this->lang->load('common');
+		
 	}
 	function set_defaults($record=NULL){          
         $data=data_table('inventory',$record); 
 		$data['mode']='';
 		$data['message']='';
         $data['akun_list']=$this->chart_of_accounts_model->select_list();
-		$data['supplier_list']=$this->supplier_model->select_list();
+//		$data['supplier_list']=$this->supplier_model->select_list();
 		$data['category_list']=$this->inventory_model->category_list();
 		$data['class_list']=$this->inventory_model->class_list();
 		$data['sub_category_list']=$this->inventory_model->category_list();               
-	 
+		$data['supplier_name']='';
 		return $data;
 	}
 	function index()
@@ -111,8 +120,16 @@ Class Inventory extends CI_Controller {
 		 $data['sales_account']=account($data['sales_account']);
 		 $data['cogs_account']=account($data['cogs_account']);
 		 $data['tax_account']=account($data['tax_account']);
-
+		
 		 $data['quantity_in_stock']=$this->inventory_model->quantity_in_stock($id);
+		 $supp_name="";
+		 if($query=$this->db->query("select supplier_name 
+		 from suppliers where supplier_number='".$inventory->supplier_number."'")){
+			if($row=$query->row()){
+				$supp_name=$row->supplier_name;
+			}
+		}
+		$data['supplier_name']=$supp_name;
 		 
          $this->session->set_userdata('_right_menu', 'inventory/inventory_menu');
          $this->template->display_form_input($this->file_view,$data,'');
@@ -155,6 +172,7 @@ Class Inventory extends CI_Controller {
 		$faa[]=criteria("Supplier","sid_supp");
 		$faa[]=criteria("Kelompok","sid_cat");
 		$data['list_info_visible']=true;
+		$data['import_visible']=true;
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -183,8 +201,8 @@ Class Inventory extends CI_Controller {
  	}
 	function filter($nama='',$type='json'){
 		$nama=urldecode($nama);
-		$sql="select item_number,description,category
-		 from inventory  where 1=1 and description like '".$nama."%' limit 100";
+		$sql="select item_number,description,category,retail,cost,cost_from_mfg,supplier_number,unit_of_measure
+		 from inventory  where 1=1 and description like '".$nama."%' limit 1000";
 		$rs = mysql_query($sql);
 		$result = array();
 		while($row = mysql_fetch_object($rs)){
@@ -300,7 +318,31 @@ Class Inventory extends CI_Controller {
 		 $data['item_number']=$inventory->item_number;
 		 $data['description']=$inventory->description;
          $this->template->display_form_input("inventory/unit_price",$data);
-   }   
+   }
+   
+   function unit_price_list($id){
+		$sql="select customer_pricing_code,retail,quantity_low,
+			quantity_high,retail,date_from,date_to 
+			from inventory_prices where item_number='$id'";
+		echo datasource($sql);
+   }
+	function unit_price_load($item_number,$customer_pricing_code){
+   		$id=urldecode($item_number);
+   		$customer_pricing_code=urldecode($customer_pricing_code);
+		$this->load->model('inventory_prices_model');
+		$ok=false;
+		if($query=$this->inventory_prices_model->get_by_id($item_number,$customer_pricing_code)){
+			if($row=$query->row()){
+				$data=array('success'=>true,
+					"customer_pricing_code"=>$row->customer_pricing_code,
+					"retail"=>$row->retail,"quantity_high"=>$row->quantity_high,
+					"quantity_low"=>$row->quantity_low,"date_from"=>$row->date_from,
+					"date_to"=>$row->date_to);
+				$ok=true;
+			}
+		}
+		if ($ok){echo json_encode($data);} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+	}
    function unit_price_add($id){
    		$id=urldecode($id);
 		$this->load->model('inventory_prices_model');
@@ -308,7 +350,11 @@ Class Inventory extends CI_Controller {
 		if($data['date_from']==""){unset($data['date_from']);} else {$data['date_from']=date('Y-m-d H:i:s', strtotime($data['date_from']));}
 		if($data['date_to']==""){unset($data['date_to']);} else {$data['date_to']=date('Y-m-d H:i:s', strtotime($data['date_to']));}
 		$data['item_number']=$id;
-		$ok=$this->inventory_prices_model->save($data);
+		if($this->inventory_prices_model->get_by_id($id,$data['customer_pricing_code'])->row()){
+			$ok=$this->inventory_prices_model->update($id,$data);
+		} else {	
+			$ok=$this->inventory_prices_model->save($data);
+		}
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
    function delete_price($item_number,$unit_price){
@@ -325,17 +371,35 @@ Class Inventory extends CI_Controller {
 		 $data['description']=$barang->description;
          $this->template->display_form_input("inventory/assembly",$data);
    }   
+   function assembly_list($id){
+		$sql="select a.assembly_item_number,i.description,a.default_cost, 
+			a.comment,a.quantity 
+			from inventory_assembly  a 
+			left join inventory i on i.item_number=a.assembly_item_number 
+			where a.item_number='$id'";
+		echo datasource($sql);
+   }
    function assembly_add($id){
    		$id=htmlspecialchars_decode($id);
 		$this->load->model('inventory_assembly_model');
 		$data = $this->input->post(NULL, TRUE); //getallpost			
 		$data['item_number']=$id;
-		$ok=$this->inventory_assembly_model->save($data);
+		$item_asm=$data['assembly_item_number'];
+		$query=$this->inventory_assembly_model->get_by_id($id,$item_asm);
+		unset($data['description']);
+		if($query->num_rows()){
+			unset($data['item_number']);
+			$ok=$this->inventory_assembly_model->update($id,$data);
+		} else {
+			$ok=$this->inventory_assembly_model->save($data);
+		}
+		
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
    function assembly_delete($item_number,$kode){
    		$item_number=htmlspecialchars_decode($item_number);
    		$kode=htmlspecialchars_decode($kode);
+		if($kode=="null")$kode='';
 		$this->load->model('inventory_assembly_model');
 		$ok=$this->inventory_assembly_model->delete($item_number,$kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
@@ -352,7 +416,14 @@ Class Inventory extends CI_Controller {
 		$this->load->model('inventory_suppliers_model');
 		$data = $this->input->post(NULL, TRUE); //getallpost			
 		$data['item_number']=$id;
-		$ok=$this->inventory_suppliers_model->save($data);
+		if(isset($data['supplier_name']))unset($data['supplier_name']);
+		$query=$this->inventory_suppliers_model->get_by_id($id,$data['supplier_number']);
+		if($query->num_rows()){
+			$ok=$this->inventory_suppliers_model->update($id,$data);
+		} else {	
+			$ok=$this->inventory_suppliers_model->save($data);
+		}
+		
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
    function supplier_delete($item_number,$kode){
@@ -471,7 +542,7 @@ Class Inventory extends CI_Controller {
 		$ar=null;
 		if($q=$this->db->query($s)){
 		   foreach($q->result() as $r) {
-			   $ss .= "<div class='item-cell' id='".$r->item_number."'>";
+			   $ss .= "<div class='item-cell box-gradient' id='".$r->item_number."' align='center'>";
 				$ss .= "<span class='badge' style='float:left'>Rp. ".number_format($r->retail)."</span>";
 				$ss .= "<img src='".base_url()."/tmp/".$r->item_picture."'>
 						<p>".$r->description."</p>";
@@ -487,14 +558,105 @@ Class Inventory extends CI_Controller {
 	function pos_category($page=0){
 		$s="";
 		$page=$page*5;
-		if($q=$this->db->query("select kode,category from inventory_categories  limit $page,5")){
+		if($q=$this->db->query("select kode,category from inventory_categories")){
 		   foreach($q->result() as $r) {
-				$s .="<div class='cat-cell' id='$r->kode' title='Product by this category'>";
+				$s .="<div class='cat-cell' id='$r->kode' align='center' title='Product by this category'>";
 				$s .="<img src=''><p>".$r->category."</p>";
 				$s .= "</div>";
 			}
 		}
 		echo $s;
+	}
+	function supplier_list($item_number){
+		$sql="select a.supplier_number,s.supplier_name,a.supplier_item_number,a.lead_time,a.cost
+		 from inventory_suppliers a 
+		 left join suppliers s on s.supplier_number=a.supplier_number
+		  where a.item_number='$item_number'";
+		echo datasource($sql);
+	}
+	function supplier_load($item_number,$supplier_number){
+   		$id=urldecode($item_number);
+   		$supplier_number=urldecode($supplier_number);
+		$this->load->model('inventory_suppliers_model');
+		$ok=false;
+		if($query=$this->inventory_suppliers_model->get_by_id($item_number,$supplier_number)){
+			if($row=$query->result()){
+				//var_dump($row[0]);
+				$data=array('success'=>true,
+					"supplier_number"=>$row[0]->supplier_number,
+					"supplier_name"=>$row[0]->supplier_name,"cost"=>$row[0]->cost,
+					"lead_time"=>$row[0]->lead_time,"supplier_item_number"=>$row[0]->supplier_item_number);
+				$ok=true;
+			}
+		}
+		if ($ok){echo json_encode($data);} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+	}
+	function fields(){
+		$flds[]=array("field"=>"item_number","title"=>"Kode Barang","width"=>"80");
+		$flds[]=array("field"=>"description","title"=>"Nama Barang","width"=>"80");
+		$flds[]=array("field"=>"retail","title"=>"Harga","width"=>"80");
+		echo json_encode($flds);
+	}
+	function assembly_load($item_number,$assembly_item_number){
+   		$id=urldecode($item_number);
+   		$assembly_item_number=urldecode($assembly_item_number);
+		$this->load->model('inventory_assembly_model');
+		$ok=false;
+		if($query=$this->inventory_assembly_model->get_by_id($item_number,$assembly_item_number)){
+			if($row=$query->result()){
+				//var_dump($row[0]);
+				$data=array('success'=>true,
+					"assembly_item_number"=>$row[0]->assembly_item_number,
+					"description"=>$row[0]->description,"default_cost"=>$row[0]->default_cost,
+					"quantity"=>$row[0]->quantity,"comment"=>$row[0]->comment);
+				$ok=true;
+			}
+		}
+		if ($ok){echo json_encode($data);} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+	}
+	function import_excel(){
+		$filename=$_FILES["file_excel"]["tmp_name"];
+		if($_FILES["file_excel"]["size"] > 0)
+		{
+			$file = fopen($filename, "r");
+			$i=0;
+			$ok=false;
+			$this->db->trans_begin();
+			while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE)
+			{
+				//print_r($emapData);
+				//exit();
+				$item_no=$emapData[0];
+				if(! ($item_no == null or $item_no == "" or $item_no == "kode" ) ) {
+					$item_no=$emapData[0];
+					$i=1;
+					$data=array("item_number"=>$item_no,"description"=>$emapData[1],
+						"unit_of_measure"=>$emapData[2],"retail"=>$emapData[3],
+						"cost"=>$emapData[4],"cost_from_mfg"=>$emapData[4],"class"=>"Stock Item",
+						"create_by"=>"import");
+					if($this->inventory_model->exist($item_no)){
+						unset($data['item_number']);
+						$ok=$this->inventory_model->update($item_no,$data)==1;
+					} else {
+						$ok=$this->inventory_model->save($data)==1;
+					}
+				}
+			}
+			if ($this->db->trans_status() === FALSE)
+			{
+				$this->db->trans_rollback();
+			}
+			else
+			{
+				$this->db->trans_commit();
+			}			
+			fclose($file);
+			if ($ok){echo json_encode(array("success"=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}
+	function import_inventory(){
+		$data['caption']="IMPORT DATA MASTER";
+		$this->template->display("inventory/import_master",$data);
 	}
 }
 ?>

@@ -1,4 +1,4 @@
-<div><h4>PEMBAYARAN PIUTANG</H4><div class="thumbnail">
+<h4>PEMBAYARAN PIUTANG</H4><div class="thumbnail box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;	
@@ -14,24 +14,17 @@
 	} else {
 		echo link_button('Posting','','ok','true',base_url().'index.php/payment/posting/'.$voucher);		
 	}
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'payment\')','help');		
 	
 	?>
 	
 		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('payment')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/payment");
-		}
-	</script>
-
-
 </div>
 
 <?php if (validation_errors()) { ?>
@@ -48,7 +41,7 @@
 <div class="thumbnail">	
 
 <form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
-	<table style="width:600px">
+	<table class='table2' width='100%'>
 		<tr>
 			<td>Nomor Bukti: </td><td><h4><?=$voucher?></h4></td>
 		</tr>
@@ -69,11 +62,11 @@
 		</tr>
 	</table>
 	
-	<div class="easyui-tabs" style="height:550px">
+	<div class="easyui-tabs">
 		<div title="Nomor Faktur" style="padding:10px">
-		<table id="dgItems" class="easyui-datagrid" 
+		<table id="dgItems" class="easyui-datagrid" width='100%'
 			data-options="
-				toolbar: '#tbItems',singleSelect: true,
+				toolbar: '#tbItems',singleSelect: true, fitColumns: true,
 				url: '<?=base_url()?>index.php/payment/load_nomor/<?=$voucher?>'
 			"  >
 			<thead>
@@ -97,10 +90,9 @@
 	<!-- JURNAL -->
 		<DIV title="Jurnal" style="padding:10px">
 			<div id='divJurnal' class='thumbnail'>
-			<table id="dgCrdb" class="easyui-datagrid"  
-				style="min-height:700px"
+			<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 				data-options="
-					iconCls: 'icon-edit',
+					iconCls: 'icon-edit', fitColumns: true,
 					singleSelect: true,toolbar:'#tbCrdb',
 					url: '<?=base_url()?>index.php/jurnal/items/<?=$voucher?>'
 				">
@@ -122,7 +114,3 @@
 		</DIV>
 	</div>
 </form>
-
-
-<script language='javascript'></script>
- 	

@@ -1,5 +1,5 @@
-<div><h4>KAS KELUAR</H4>
-<div class="thumbnail">
+<legend>KAS KELUAR</legend>
+<div class="thumbnail box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;
@@ -17,25 +17,17 @@
 		echo link_button('Posting','','ok','true',base_url().'index.php/cash_out/posting/'.$voucher);		
 	}
 	
-	echo link_button('Help', 'load_help()','help');		
+	echo link_button('Help', 'load_help(\'cash_out\')','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('cash_out')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/cash_out");
-		}
-	</script>
-	
 </div>
 <div class="thumbnail">
-
-
 <?php if (validation_errors()) { ?>
 	<div class="alert alert-error">
 	<button type="button" class="close" data-dismiss="alert">x</button>
@@ -58,50 +50,13 @@
 ?>
 
 <input type='hidden' id='posted' name='posted' value='<?=$posted?>'>    
-   <table>
-       <tr>
-            <td>Rekening Keluar</td><td><?php echo form_dropdown( 'account_number',$account_number_list,$account_number);?></td>
-            <td>Tanggal</td><td><?php echo form_input('check_date',$check_date,'id=check_date 
-             class="easyui-datetimebox"  style="width:150px;height:30px"');?></td>
-			 
-       </tr>
-       <tr>
-            <td>Jenis</td>
-			<td>
-                <?php echo form_radio('trans_type','cash out',$trans_type=='cash out'," checked ");?>Cash
-            </td>
-            <td>Nomor Giro</td><td><?php echo form_input('check_number',$check_number);?></td>
-       <tr>
-       <tr>
-            <td></td>
-			<td>
-                <?php echo form_radio('trans_type','cheque out',$trans_type=='cheque out');?>Giro atau Cek
-            </td>
-            <td>Cleared</td><td><?php echo form_checkbox('cleared',$cleared);?></td>
-       <tr>
-       <tr>
-            <td></td>
-			<td>
-                <?php echo form_radio('trans_type','trans out',$trans_type=='trans out');?>Transfer
-            </td>
-           
-            <td>Cleared Date</td><td><?php echo form_input('cleared_date',$cleared_date,'id=cleared_date 
-             class="easyui-datetimebox"   style="width:150px;height:30px"');?></td>
-       <tr>
-		<tr>
-            <td>Jumlah</td><td><?php echo form_input('payment_amount',$payment_amount);?></td>
-            <td>Giro Batal</td><td><?php echo form_checkbox('void',$void);?></td>
-       </tr>
-       <tr>
-            <td>Kode Supplier </td><td><?php echo form_input('supplier_number',$supplier_number,"id='supplier_number'");?>
-			<?=link_button("","select_supplier();return false","search");?>
-			</td>
-            <td>Dikeluarkan Untuk </td><td><?php echo form_input('payee',$payee,"id='supplier_name'");?></td>
-       </tr>
-       <tr>
-       </tr>
-		<tr>
-			<td>Voucher</td><td>
+   <table class='table2' width='100%'>
+		<tr><td>Jenis Transaksi </td><td	>
+			<?php echo form_radio('trans_type','cash out',$trans_type=='cash out'," checked ");?> Cash
+			<?php echo form_radio('trans_type','cheque out',$trans_type=='cheque out');?> Giro atau Cek
+            <?php echo form_radio('trans_type','trans out',$trans_type=='trans out');?> Transfer
+		</td>
+		<td>Voucher </td><td>
 			<?php
 				echo "<input type='hidden' name='mode' id='mode' value='$mode'>";
 			if($mode=='view'){
@@ -110,9 +65,51 @@
 			} else { 
 				echo form_input('voucher',$voucher);
 			}		
-			?></td>
-            <td>Pembayaran Hutang</td><td><?php echo form_checkbox('bill_payment',$bill_payment);?></td>
-			
+			?>
+		</td>
+       <tr>
+            <td>Rekening Keluar</td><td><?php echo form_dropdown( 'account_number',$account_number_list,$account_number);?></td>
+            <td>Tanggal</td><td><?php echo form_input('check_date',$check_date,'id=check_date 
+             class="easyui-datetimebox"  style="width:150px;height:30px"');?></td>
+			 
+       </tr>
+       <tr>
+            <td>Jumlah</td>
+			<td>
+                <?php echo form_input('payment_amount',$payment_amount);?>
+            </td>
+            <td>Nomor Giro</td><td><?php echo form_input('check_number',$check_number);?></td>
+       <tr>
+       <tr>
+            <td>Pembayaran Hutang</td>
+			<td>
+				<?php echo form_checkbox('bill_payment',$bill_payment);?>                
+            </td>
+            <td>Cleared</td><td><?php echo form_checkbox('cleared',$cleared);?></td>
+       <tr>
+       <tr>
+            <td>Kode Supplier </td>
+			<td><?php echo form_input('supplier_number',$supplier_number,"id='supplier_number'");?>
+			<?=link_button("","select_supplier();return false","search");?>
+            </td>
+           
+            <td>Cleared Date</td><td><?php echo form_input('cleared_date',$cleared_date,'id=cleared_date 
+             class="easyui-datetimebox"   style="width:150px;height:30px"');?></td>
+       <tr>
+		<tr>
+            <td>Dikeluarkan Untuk </td><td><?php echo form_input('payee',$payee,"id='supplier_name'");?></td>
+            <td>Giro Batal</td><td><?php echo form_checkbox('void',$void);?></td>
+       </tr>
+       <tr>
+            <td></td><td>
+			</td>
+            <td></td><td></td>
+       </tr>
+       <tr>
+       </tr>
+		<tr>
+			<td></td><td></td>
+            <td></td><td></td>
 		</tr>	 
 		<tr>
             <td>Nomor Transfer </td><td><?php echo form_input('bank_tran_id',$bank_tran_id);?></td>
@@ -124,12 +121,11 @@
    </table>
  </form>
 
-	<div class="easyui-tabs" style="width:700px;height:450px">
+	<div class="easyui-tabs">
 		<div title="Perkiraan" style="padding:10px">
-			<table id="dgItemCoa" class="easyui-datagrid"  		
-				style="width:auto;height:300px"
+			<table id="dgItemCoa" class="easyui-datagrid"  	width='100%'	
 				data-options="
-					iconCls: 'icon-edit',
+					iconCls: 'icon-edit', fitColumns: true, 
 					singleSelect: true,
 					toolbar: '#tb',  
 					url: '<?=base_url()?>index.php/cash_out/items/<?=$voucher?>'
@@ -157,10 +153,12 @@
 </div>
 <div id="tb" style="height:auto">
 	<form method='post' id='frmItem'>
-	<table >
+	<input type='hidden' id='line_number' name='line_number'>
+	<input type='hidden' id='voucher_item' name='voucher_item'>
+	<table class='table2' width='100%'>
 		<thead>
 		<tr>
-			<td>Kode</td><td>Nama Perkiraan</td><td>Jumlah</td><td>Catatan</td>
+			<td>Kode</td><td>Nama Perkiraan</td><td>Jumlah</td><td>Catatan</td><td>Action</td>
 		</tr>
 		</thead>
 		<tbody><tr>
@@ -170,8 +168,6 @@
 			<td><input type='text' id='amount' name='amount' style='width:80px'></td>
 			<td><input type='text' id='comments' name='comments'></td>
 			<td><?=link_button('Add Item','save_item()','save')?></td>
-			<td><input type='hidden' id='line_number' name='line_number'></td>
-			<td><input type='hidden' id='voucher_item' name='voucher_item'></td>
 			</tr>
 		</tbody>
 	</table>

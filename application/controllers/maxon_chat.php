@@ -1,12 +1,10 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowd');
 
 class Maxon_Chat extends CI_Controller {
-	function __construct()
-	{
+	function __construct() {
 		parent::__construct();
 	}
-	function index()
-	{	
+	function index() {
 		
 	}
 	function load() {

@@ -47,8 +47,8 @@ class Browse
 	    <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
 	    <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
 		
-		<table class=\"easyui-datagrid\" style=\"width:auto;height:auto\"
-		 data-options=\"rownumbers:true,pagination:true,pageSize:10,
+		<table class=\"easyui-datagrid\" width='100%'
+		 data-options=\"rownumbers:true,pagination:true,pageSize:10,fitColumns:true,
               singleSelect:true,collapsible:true\">
 				<thead>
 					<tr>";

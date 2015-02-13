@@ -17,22 +17,7 @@
 	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 	-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
-.xchat-min {
-	position: fixed;
-	right: 10px;
-	bottom: -1px;
-	height: 35px;
-	width: 200px;
-	padding: 10px;
-	background: #EFF5F7;
-	border: 1px solid rgb(143, 143, 235);
-	font-size: 10px;
-	-border-radius: 4px;
-	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-}
-
-.xchat-title {
+.xchat .xchat-title {
 	background: #46b8da;
 	color: white;
 	font-size: 15px;
@@ -43,20 +28,26 @@
 	margin-bottom: 10px;
 	width: 200px;
 }
-.xchat-content {
 
+.xchat .xchat-content {
+	color: black;
 }
 .xchat-button {
 	float:right;
 	cursor:pointer;
 }
-.xchat-button:hover {
+.xchat .xchat-button:hover {
 	color: black;
+	display:both;
 }
-.xchat-content-user {
+.xchat .xchat-content-user {
 	margin-top:5px;
 	border-top:1px solid rgb(143,143,235);
 	padding:3px;
+	display:both;
+}
+.xchat .xchat-icon {
+	display: none;
 }
 .xchat-content-chat {
 	height:220px;
@@ -68,11 +59,29 @@
 	background-repeat: no-repeat;
 }
 
+.xchat-min {
+	position: fixed;
+	right: 10px;
+	bottom: -1px;
+	height: 70px;
+	width: 70px;
+	--background-image: url("<?=base_url()?>images/chatbox.png");
+	--background-repeat: no-repeat;
+}
+.xchat-min .xchat-content-chat {
+	display: none;
+}	
+.xchat-min .xchat-content-user {
+	display: none;
+}	
+.xchat-min .xchat-title {
+	display: none;
+}	
+
 </style>
-<div class="xchat-min" id="xchat">
-	<div class="xchat-title glyphicon glyphicon-user"> NGOBROL
-		<span class="xchat-button">+</span>
-	</div>
+<div class="xchat-min xchat-button" id="xchat" title='Ngobrol antar pengguna'>
+	<div class='xchat-icon'><img src='<?=base_url()?>images/chatbox.png'></div>
+	<div class="xchat-title glyphicon glyphicon-user"> Ngobrol</div>
 	<div class="xchat-content">
 		<div class="xchat-content-chat" id="xchat-content-chat">
 			<p>
@@ -91,8 +100,7 @@
 	var t=0;
 	
 	function load_chat_msg() {
-		$('#xchat-content-chat').addClass("xchat-loading");
-		 
+		$('#xchat-content-chat').addClass("xchat-loading");		 
 		if(xchat_state==1){
 			 clearTimeout(t);
 			 return false;
@@ -116,20 +124,17 @@
 		return str.replace(new RegExp(find, 'g'), replace);
 	}
 	$().ready(function(){
-
-
-		$('.xchat-button').click(function(e){
+		$('.xchat-icon').click(function(e){
 			e.preventDefault();
-			if(xchat_state==0) {
-				xchat_state=1;
-				$('#xchat').removeClass("xchat").addClass("xchat-min");
-				clearTimeout(t);
-				
-			} else {
-				xchat_state=0;
-				$('#xchat').removeClass("xchat-min").addClass("xchat");
-				load_chat_msg();
-			};
+			xchat_state=0;
+			$('#xchat').removeClass("xchat-min").addClass("xchat");
+			load_chat_msg();
+		});
+		$('.xchat-title').click(function(e){
+			e.preventDefault();
+			xchat_state=1;
+			$('#xchat').removeClass("xchat").addClass("xchat-min");
+			clearTimeout(t);
 		});
 		$('#xchat-message').bind('keypress', function(e) {
 			var code = e.keyCode || e.which;

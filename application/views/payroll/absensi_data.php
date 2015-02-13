@@ -22,7 +22,7 @@
 					iconCls: 'icon-edit',
 					singleSelect: true,
 					toolbar: '#tb',
-					url: '<?=base_url()?>index.php/absensi/data_nip/<?=$nip?>/<?=$periode?>'
+					url: '<?=base_url()?>index.php/payroll/absensi/data_nip/<?=$nip?>/<?=$periode?>'
 				">
 				<thead>
 					<tr>
@@ -55,7 +55,7 @@
  	function load_absen(){
  		var nip=$("#nip").val();
  		var periode=$("#periode").val();
-		$('#dg').datagrid({url:'<?=base_url()?>index.php/absensi/data_nip/'+nip+'/'+periode});
+		$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/absensi/data_nip/'+nip+'/'+periode});
 		$('#dg').datagrid('reload');
  	}
 	

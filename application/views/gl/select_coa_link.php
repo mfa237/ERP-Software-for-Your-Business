@@ -4,7 +4,7 @@
 closed="true"  toolbar="#tbCoa"
 >
 		<table id="dgCoa" class="easyui-datagrid"  
-		data-options="toolbar: '', singleSelect: true,
+		data-options="toolbar: '', singleSelect: true, fitColumns: true,
 			url: '<?=base_url()?>index.php/coa/select'">
 			<thead>
 				<tr>
@@ -15,11 +15,11 @@ closed="true"  toolbar="#tbCoa"
 			</thead>
 		</table>
 </div>
-<div id="tbCoa" style="height:auto">
+<div id="tbCoa" class='box-gradient'>
 	Enter Text: <input  id="search_coa" style='width:180' name="search_coa">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="search_coa()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="select_coa()">Select</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search"  
+	onclick="search_coa();return false;">Filter</a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"   onclick="select_coa();return false;">Select</a>
 </div>
 
 <script type="text/javascript">

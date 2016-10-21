@@ -15,9 +15,11 @@ class Coa_group extends CI_Controller {
 		$this->load->library('form_validation');
         $this->load->model('gl_report_groups_model');
         $this->load->model('chart_of_accounts_model');
+		$this->load->model('syslog_model');
 	} 
 	function index()
 	{	
+		if(!allow_mod2('_10060'))return false;   
         $this->browse();
 	}
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
@@ -41,6 +43,7 @@ class Coa_group extends CI_Controller {
     
 	function add()
 	{
+		if(!allow_mod2('_10061'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -49,6 +52,8 @@ class Coa_group extends CI_Controller {
 			$id=$this->gl_report_groups_model->save($data);
             $data['message']='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"coa_group","add");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -85,11 +90,15 @@ class Coa_group extends CI_Controller {
 		 $this->form_validation->set_rules('group_type','Group Type', 'required|trim');
 	}
     function delete($id){
+		if(!allow_mod2('_10065'))return false;   
 		$id=urldecode($id);
 	 	$this->gl_report_groups_model->delete($id);
+		$this->syslog_model->add($id,"coa_group","delete");
+
 	 	$this->browse();
 	}
 	function view($id,$message=null){
+		if(!allow_mod2('_10060'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $rst=$this->gl_report_groups_model->get_by_id($id)->row();
@@ -114,6 +123,8 @@ class Coa_group extends CI_Controller {
 			unset($data['mode']);           
 			$this->gl_report_groups_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"coa_group","edit");
+
             $this->browse();
 		} else {
 			$message='Error Update';

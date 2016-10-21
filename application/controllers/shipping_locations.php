@@ -3,8 +3,9 @@
 class Shipping_locations extends CI_Controller {
     private $limit=10;
     private $table_name='shipping_locations';
-    private $sql="select location_number,address_type,street,city,attention_name
-                from shipping_locations";
+    private $sql="select location_number,address_type,street,city,
+		attention_name, no_urut
+        from shipping_locations";
     private $file_view='inventory/shipping_locations';
 
 	function __construct()
@@ -15,6 +16,7 @@ class Shipping_locations extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('shipping_locations_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
 		$data['mode']='';
@@ -25,12 +27,14 @@ class Shipping_locations extends CI_Controller {
 			$data['street']='';
 			$data['city']='';
 			$data['attention_name']='';
+			$data['no_urut']='';
 		} else {
 			$data['location_number']=$record->location_number;
 			$data['address_type']=$record->address_type;
 			$data['street']=$record->street;
 			$data['city']=$record->city;
 			$data['attention_name']=$record->attention_name;
+			$data['no_urut']=$record->no_urut;
 		}
 		return $data;
 	}
@@ -45,21 +49,25 @@ class Shipping_locations extends CI_Controller {
 		$data['street']=$this->input->post('street');
 		$data['city']=$this->input->post('city');
 		$data['attention_name']=$this->input->post('attention_name');
+		$data['no_urut']=$this->input->post('no_urut');
 		return $data;
 	}
 	function add()
 	{
+		if(!allow_mod2('_80031'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$id=$this->shipping_locations_model->save($data);
-                        $data['message']='update success';
-                        $data['mode']='view';
-                        $this->browse();
+			$data['message']='update success';
+			$data['mode']='view';
+			$this->syslog_model->add($id,"shipping_locations","add");
+
+			$this->browse();
 		} else {
 			$data['mode']='add';
-                        $this->template->display_form_input($this->file_view,$data,'');
+			$this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
 	function update()
@@ -72,24 +80,25 @@ class Shipping_locations extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
 			$this->shipping_locations_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+			$message='Update Success';
+			$this->syslog_model->add($id,"shipping_locations","edit");
+
+			$this->browse();
 		} else {
 			$message='Error Update';
-         		$this->view($id,$message);		
+         	$this->view($id,$message);		
 		}	  		
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80030'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->shipping_locations_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
-                 $data['message']=$message;
-                 $this->template->display_form_input($this->file_view,$data,'');
-
-	
+		 $data['message']=$message;
+		 $this->template->display_form_input($this->file_view,$data,'');	
 	}
 	 // validation rules
 	function _set_rules(){	
@@ -112,8 +121,8 @@ class Shipping_locations extends CI_Controller {
 	{
         $data['caption']='DAFTAR GUDANG';
 		$data['controller']='shipping_locations';		
-		$data['fields_caption']=array('Kode Gudang','Jenis Gudang','Alamat','Kota','Kontak Person');
-		$data['fields']=array('location_number','address_type','street','city','attention_name');
+		$data['fields_caption']=array('Kode Gudang','Jenis Gudang','Alamat','Kota','Kontak Person','No Urut');
+		$data['fields']=array('location_number','address_type','street','city','attention_name','no_urut');
 		$data['field_key']='location_number';
 		$this->load->library('search_criteria');
 		
@@ -127,8 +136,12 @@ class Shipping_locations extends CI_Controller {
         echo datasource($sql);		
     }
 	function delete($id){
+		if(!allow_mod2('_80033'))return false;   
 		$id=urldecode($id);
 	 	$this->shipping_locations_model->delete($id);
+		$this->syslog_model->add($id,"shipping_locations","delete");
+
+		
 	 	$this->browse();
 	}
 	

@@ -15,6 +15,7 @@ class Category extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('category_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
@@ -24,7 +25,8 @@ class Category extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_80020'))return false;   
+        $this->browse();
 	}
 	function get_posts(){
             $data=  data_table_post($this->table_name);
@@ -32,19 +34,28 @@ class Category extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_80021'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$id=$this->category_model->save($data);
-            $message='update success';
+            $message='Data sudah disimpan.';
             $data['mode']='view';
-            $this->browse();
+            echo $message;
+
+			$this->syslog_model->add($id,"category","add");			
+
 		} else {
 			$data['mode']='add';
 	         $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
+	function select($search=""){
+		$search=urldecode($search);
+		echo datasource("select kode,category from inventory_categories");
+	}
+	
 	function update()
 	{
 	 
@@ -55,15 +66,18 @@ class Category extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
 			$this->category_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+            $message='Data sudah disimpan.';
+            echo $message;
+			$this->syslog_model->add($id,"category","edit");			
+
 		} else {
 			$message='Error Update';
-         		$this->view($id,$message);		
+      		$this->view($id,$message);		
 		}	  
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80020'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->category_model->get_by_id($id)->row();
@@ -105,7 +119,7 @@ class Category extends CI_Controller {
 		$faa[]=criteria("Nama","sid_nama");
 		$data['criteria']=$faa;
 		
-		$data['_form']=$this->file_view;
+		//$data['_form']=$this->file_view;
 		
         $this->template->display_browse2($data);            
     }
@@ -117,9 +131,48 @@ class Category extends CI_Controller {
 	 
         
 	function delete($id){
+		if(!allow_mod2('_80023'))return false;   
 		$id=urldecode($id);
 	 	$this->category_model->delete($id);
+		$this->syslog_model->add($id,"category","delete");
 	 	$this->browse();
 	}
-	
+	function discount($cmd,$cust_no="")
+	{
+		$success=false;
+		if ($cmd=="add") {
+			if($data=$this->input->get()){
+				if($this->category_model->discount_save($data)){
+					$success=true;
+				}
+			}
+			echo json_encode(array("success"=>$success,"message"=>"Unable save !"));
+		}
+		if ($cmd=="list") {
+			if($cust_no!="")
+			{
+				$rows=$this->category_model->discount_list($cust_no);
+				$success=true;
+				//var_dump($rows);
+				echo json_encode(array("success"=>$success,
+				"rows"=>$rows));
+			}
+		} 
+		if ($cmd=="delete") {
+			if($row_id=$this->input->get("id"))
+			{
+				echo json_encode(array("success"=>$this->category_model->discount_delete($row_id)));				
+			}
+		}
+		if ($cmd=="show"){
+			if($cust_no!=""){
+				$data['cust_no']=$cust_no;
+				$data['cust_name']=$this->db->select("company")
+					->where("customer_number",$cust_no)
+					->get("customers")->row()->company;
+				$data['cat_list']=$this->category_model->datalist();
+				$this->template->display("sales/cust_disc_category",$data);
+			}
+		}
+	}
 }

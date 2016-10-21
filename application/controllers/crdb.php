@@ -17,6 +17,8 @@ class CrDb extends CI_Controller {
         $this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('crdb_model');
+		$this->load->model('syslog_model');		
+
 	}
 	function nomor_bukti($add=false,$type="")
 	{
@@ -79,8 +81,12 @@ class CrDb extends CI_Controller {
 			$data['transtype']=$this->input->post('transtype');
 			if($mode=="add"){
 				$ok=$this->crdb_model->save($data);
+				$this->syslog_model->add($id,"crdb","add");
+				
 			} else {
 				$ok=$this->crdb_model->update($id,$data);
+				$this->syslog_model->add($id,"crdb","edit");
+				
 			}
 			if ($ok){
 				if($mode=="add")$this->nomor_bukti(true,$type);
@@ -123,6 +129,16 @@ class CrDb extends CI_Controller {
     function delete_item(){
     	$id=$this->input->post('line_number');
         $this->load->model('crdb_model');
+		$this->syslog_model->add($id,"crdb","delete");
         return $this->crdb_model->delete_item($id);
-    }        
+    }   
+	function print_bukti($nomor){
+		$nomor=urldecode($nomor);
+        $crdb=$this->crdb_model->get_by_id($nomor)->row_array();
+		$data=$crdb; 		 
+        $data['content']=load_view('sales/rpt/print_crdb',$data);    	
+        $this->load->view('pdf_print',$data);    	
+    }	
 }
+
+?>

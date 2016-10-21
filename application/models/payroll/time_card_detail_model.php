@@ -12,6 +12,8 @@ function __construct(){
 		return $this->db->insert($this->table_name,$data);
 	}
 	function update($id,$data){
+		//var_dump($data);
+		//echo "</br>";
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);
 	}

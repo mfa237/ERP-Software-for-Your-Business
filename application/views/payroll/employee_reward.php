@@ -1,15 +1,12 @@
-<table id="dgEdu" class="easyui-datagrid" width='100%'
-	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbRwd',url: ''">
+<table id="dgRwd" class="easyui-datagrid" width='100%'
+	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbRwd',
+	url: '<?=base_url()?>index.php/payroll/employee/reward/load/<?=$nip?>'">
 	<thead>
 		<tr>
-			<th data-options="field:'educationlevel', width:'80'">Level</th>
-			<th data-options="field:'school', width:'80'">Sekolah</th>
-			<th data-options="field:'place', width:'80'">Kota</th>
-			<th data-options="field:'major', width:'80'">Tingkat</th>
-			<th data-options="field:'enteryear', width:'80'">Tahun Masuk</th>
-			<th data-options="field:'graduationyear', width:'80'">Tahun Lulus</th>
-			<th data-options="field:'yearofattend', width:'80'">Lamanya</th>
-			<th data-options="field:'graduate', width:'80'">Lulus</th>
+			<th data-options="field:'daterp', width:'80'">Tanggal</th>
+			<th data-options="field:'description', width:'80'">Keterangan</th>
+			<th data-options="field:'rankinglevel', width:'80'">Level</th>
+			<th data-options="field:'typerp', width:'80'">Jenis</th>
 			<th data-options="field:'employeeid', width:'80'">NIP</th>
 			<th data-options="field:'id', width:'80'">Id</th>
 		</tr>
@@ -24,52 +21,40 @@
 </div>	
 
 
-<div id='dlgEdu'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
-	closed="true" buttons="#tbDlgEdu">
-	<form method="post" id="frmEdu">
+<div id='dlgRwd'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
+	closed="true" buttons="#tbDlgRwd">
+	<form method="post" id="frmRwd">
 		<table style='width:100%'>
 			<tr>
-				<td>Level</td><td><?=form_input("educationlevel")?></td>
+				<td>Tanggal</td><td><?=form_input("daterp")?></td>
 			</tr>
 			<tr>
-				<td>Sekolah</td><td><?=form_input("school")?></td>
+				<td>Keterangan</td><td><?=form_input("description")?></td>
 			</tr>
 			<tr>
-				<td>Kota</td><td><?=form_input("place")?></td>
+				<td>Ranking</td><td><?=form_input("rankinglevel")?></td>
 			</tr>
 			<tr>
-				<td>Tingkat</td><td><?=form_input("place")?></td>
-			</tr>
-			<tr>
-				<td>Tahun Masuk</td><td><?=form_input("enteryear")?></td>
-			</tr>
-			<tr>
-				<td>Tahun Lulus</td><td><?=form_input("graduationyear")?></td>
-			</tr>
-			<tr>
-				<td>Lamanya</td><td><?=form_input("yearofattend")?></td>
-			</tr>
-			<tr>
-				<td>Lulus</td><td><?=form_input("graduate")?></td>
+				<td>Jenis (Reward/Punish)</td><td><?=form_input("typerp")?></td>
 			</tr>
 		</table>		
-		<input type='hidden' id='id_edu' name='id'>
-		<input type='hidden' id='nip_edu' name='employeeid' value='<?=$nip?>'>
+		<input type='hidden' id='id_rwd' name='id'>
+		<input type='hidden' id='nip_rwd' name='employeeid' value='<?=$nip?>'>
 	</form>
 </div>
-<div id="tbDlgEdu">
-	<?=link_button("Save","save_edu()","save")?>
+<div id="tbDlgRwd">
+	<?=link_button("Save","save_rwd()","save")?>
 </div>	
 
 <script language="JavaScript">
 	function add_rwd() {
-		$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+		$('#dlgRwd').dialog('open').dialog('setTitle','Reward/Punish');
 	}
 	function save_rwd() {
-        if($('#company').val()===''){alert('Isi dulu nama perusahaan !');return false;};
+        if($('#description').val()===''){alert('Isi dulu nama keterangan !');return false;};
 
-		url='<?=base_url()?>index.php/payroll/employee/education/save';
-		$('#frmEdu').form('submit',{
+		url='<?=base_url()?>index.php/payroll/employee/reward/save';
+		$('#frmRwd').form('submit',{
 			url: url,
 			onSubmit: function(){
 				return $(this).form('validate');
@@ -77,9 +62,9 @@
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
-					load_exp();
-					$('#dlgEdu').dialog('close');				
-					$('#frmEdu').each(function(){ this.reset(); });
+					load_rwd();
+					$('#dlgRwd').dialog('close');				
+					$('#frmRwd').each(function(){ this.reset(); });
 					log_msg('Data sudah tersimpan.');
 				} else {
 					log_err(result.msg);
@@ -88,35 +73,29 @@
 		});	
 	}
 	function edit_rwd()	{
-		var row = $('#dgEdu').datagrid('getSelected');
+		var row = $('#dgRwd').datagrid('getSelected');
 		if (row){
-			$('#id_edu').val(row.id);
-			$('[name=company]').val(row.company);
-			$('[name=startdate]').val(row.startdate);
-			$('[name=finishdate]').val(row.finishdate);
-			$('[name=firstposition]').val(row.firstposition);
+			$('#id_rwd').val(row.id);
+			$('#frmRwd input[name=daterp]').val(row.daterp);
+			$('#frmRwd input[name=description]').val(row.description);
+			$('#frmRwd input[name=rankinglevel]').val(row.rankinglevel);
+			$('#frmRwd input[name=typerp]').val(row.typerp);
 			$('[name=endposition]').val(row.endposition);
-			$('[name=place]').val(row.place);
-			$('[name=lastsalary]').val(row.lastsalary);
-			$('[name=supervisor]').val(row.supervisor);
-			$('[name=referencename]').val(row.referencename);
-			$('[name=referencephone]').val(row.referencephone);
-			$('[name=reasontoleave]').val(row.reasontoleave);
 			$('[name=employeeid]').val(row.employeeid);
 			
-			$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+			$('#dlgRwd').dialog('open').dialog('setTitle','Reward/Punish');
 		}
 	}
-	function load_edu()	{
+	function load_rwd()	{
 		nip=$('#nip').val();
-		xurl='<?=base_url()?>index.php/payroll/employee/education/load/'+nip;
-		$('#dgEdu').datagrid({url:xurl});
+		xurl='<?=base_url()?>index.php/payroll/employee/reward/load/'+nip;
+		$('#dgRwd').datagrid({url:xurl});
 	}
-	function del_edu()	{
-		var row = $('#dgEdu').datagrid('getSelected');
+	function del_rwd()	{
+		var row = $('#dgRwd').datagrid('getSelected');
 	 
 		if (row){
-			url='<?=base_url()?>index.php/payroll/employee/education/delete/'+row.id;
+			url='<?=base_url()?>index.php/payroll/employee/reward/delete/'+row.id;
 			$.ajax({
 				type: "GET", url: url,
 				success: function(msg){

@@ -23,8 +23,10 @@ if($q=$this->db->select("sales_order_number,sales_date,status,
 }
 
 ?>
-<p>Status 0 - anda belum konfirmasi pembayaran, 1 - sudah dikonfirmasi</p>
-<p>Lunas 0 - pembayaran belum diperiksa admin, 1 - sudah diperiksa</p>
+<p>*Keterangan</p>
+<p><strong>Status</strong> 	0 - anda belum konfirmasi pembayaran, 1 - sudah dikonfirmasi, 2 - barang sudah dikirim, 
+			3 - barang sudah diterima anda, 4 - order complete</p>
+<p><strong>Lunas</strong> 0 - pembayaran belum diperiksa admin, 1 - sudah diperiksa admin</p>
 
 </div>
 <script language='javascript'>

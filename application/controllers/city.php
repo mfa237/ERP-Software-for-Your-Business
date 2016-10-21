@@ -18,6 +18,8 @@ class City extends CI_Controller {
 		if($this->sql=="")$this->sql="select * from ".$this->table_name;
 		$this->load->model('city_model');
 		$this->fields=$this->city_model->fields;
+		$this->load->model('syslog_model');
+
     }
     function set_defaults($record=NULL){
 		$data['mode']='';
@@ -36,17 +38,17 @@ class City extends CI_Controller {
 		$data=$this->set_defaults();
 		$this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
-				$data=$this->get_posts();
-				$this->city_model->save($data);
-				$data['message']='update success';
-				$data['mode']='view';
-				$this->browse();
+			$data=$this->get_posts();
+			$this->city_model->save($data);
+			$data['message']='update success';
+			$data['mode']='view';
+			$this->browse();
 		} else {
-				$data['mode']='add';
-				$data['message']='';
-				$data['fields']=$this->fields;
-				$data['data']=$data;
-				$this->template->display_form_input($this->file_view,$data);			
+			$data['mode']='add';
+			$data['message']='';
+			$data['fields']=$this->fields;
+			$data['data']=$data;
+			$this->template->display_form_input($this->file_view,$data);			
 		}
     }
 	function save(){
@@ -55,8 +57,12 @@ class City extends CI_Controller {
 		$mode=$data["mode"];	unset($data['mode']);
 		if($mode=="add"){ 
 			$ok=$this->city_model->save($data);
+			$this->syslog_model->add($id,"city","add");
+
 		} else {
 			$ok=$this->city_model->update($id,$data);				
+			$this->syslog_model->add($id,"city","edit");
+
 		}
 		if($ok){
 			echo json_encode(array("success"=>true));
@@ -107,6 +113,8 @@ class City extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->city_model->delete($id);
+		$this->syslog_model->add($id,"city","delete");
+
 		$this->browse();
 	}
 	function find($nomor){

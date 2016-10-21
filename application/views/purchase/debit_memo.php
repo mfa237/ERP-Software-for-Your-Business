@@ -1,26 +1,28 @@
- <legend>DEBIT MEMO</legend>
  <div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/purchase_dbmemo/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/purchase_dbmemo');		
+	echo link_button('Add','','add','false',base_url().'index.php/purchase_dbmemo/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/purchase_dbmemo');		
 	echo link_button('Delete','delete_memo()','cut');		
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/purchase_dbmemo/unposting/'.$kodecrdb);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/purchase_dbmemo/unposting/'.$kodecrdb);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_dbmemo/posting/'.$kodecrdb);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/purchase_dbmemo/posting/'.$kodecrdb);		
 	}
-	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_dbmemo/view/'.$kodecrdb);		
+	echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_dbmemo/view/'.$kodecrdb);		
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'purchase_dbmemo\')','help');		
 	
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('purchase_dbmemo')">Help</div>
+		<div onclick="show_syslog('crdb','<?=$kodecrdb?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 <div class="thumbnail">		
@@ -28,7 +30,7 @@
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>	
 <input type='hidden' name='trans_type' id='trans_type'	value='Purchase'>	
 <input type='hidden' id='transtype' name='transtype' value='PO-DEBIT MEMO'>
-   <table class="table2" width="100%">
+   <table class="table" width="100%">
 		<tr>
 			<td>Nomor Bukti</td>
 			<td>
@@ -42,7 +44,9 @@
         </tr>	 
         <tr>
             <td>Tanggal</td><td><?php echo form_input('tanggal',$tanggal,'id=tanggal 
-             class="easyui-datetimebox" required style="width:150px"');?>
+             class="easyui-datetimebox" required 
+			data-options="formatter:format_date,parser:parse_date"
+			style="width:150px"');?>
             </td>
 			 
         </tr>
@@ -151,7 +155,7 @@
 	
 </div>
  
-<div id="tb" style="height:auto" class="table2">
+<div id="tb" style="height:auto" class="table">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 </div>

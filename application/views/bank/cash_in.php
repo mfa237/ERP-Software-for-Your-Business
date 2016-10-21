@@ -1,4 +1,3 @@
-<legend>KAS MASUK</legend>
 <div class="thumbnail box-gradient">
 	<?
 	if($posted=="")$posted=0;
@@ -6,25 +5,28 @@
 	
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print_voucher()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/cash_in/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/cash_in');		
-	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/cash_in/view/'.$voucher);		
-	if($mode=="view") echo link_button('Delete','','remove','true',base_url().'index.php/cash_in/delete/'.$voucher);		
+	echo link_button('Add','','add','false',base_url().'index.php/cash_in/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/cash_in');		
+	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/cash_in/view/'.$voucher);		
+	if($mode=="view") echo link_button('Delete','','remove','false',base_url().'index.php/cash_in/delete/'.$voucher);		
 	
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/cash_in/unposting/'.$voucher);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/cash_in/unposting/'.$voucher);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/cash_in/posting/'.$voucher);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/cash_in/posting/'.$voucher);		
 	}
-
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'cash_in\')','help');		
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('cash_in')">Help</div>
+		<div onclick="show_syslog('cash_in','<?=$voucher?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 
@@ -54,9 +56,9 @@
 
  <input type='hidden' id='posted' name='posted' value='<?=$posted?>'>    
 
-   <table class='table2' width='100%'>
+   <table class='table' width='100%'>
        <tr>
-            <td>Jenis</td>
+            <td>Jenis Pembayaran</td>
 			<td colspan='3'>
                 <?php echo form_radio('trans_type','cash in',$trans_type=='cash in'," checked ");?> &nbsp Cash
                 &nbsp <?php echo form_radio('trans_type','cheque in',$trans_type=='cheque in');?> &nbsp Giro/Cek
@@ -65,11 +67,11 @@
        <tr>
        <tr>
             <td>Rekening Penerima </td><td><?php echo form_dropdown( 'account_number',$account_number_list,$account_number,"style='height:30px'");?></td>
-            <td>Voucher</td><td>
+            <td>Voucher Kas Masuk</td><td>
 			<?php
 				echo "<input type='hidden' name='mode' id='mode' value='$mode'>";
 			if($mode=='view'){
-				echo "<h3>".$voucher."</h3>";
+				echo "<strong>".$voucher."</strong>";
 				echo "<input type='hidden' name='voucher' id='voucher' value='$voucher'>";
 			} else { 
 				echo form_input('voucher',$voucher);
@@ -77,26 +79,28 @@
 			?></td>
        </tr>
        <tr>
-            <td>Jumlah</td><td><?php echo form_input('deposit_amount',$deposit_amount);?></td>
+            <td>Jumlah Terima</td><td><?php echo form_input('deposit_amount',$deposit_amount);?></td>
             <td>Nomor Giro</td><td><?php echo form_input('check_number',$check_number);?></td>
        <tr>
        <tr>
-            <td>Tanggal</td>
+            <td>Tanggal Kas</td>
 			<td><?php echo form_input('check_date',$check_date,'id=check_date 
-             class="easyui-datetimebox"  style="width:150px;height:30px"');?></td>
+             class="easyui-datetimebox"  style="width:150px;height:30px" 
+			 data-options="formatter:format_date,parser:parse_date"');?></td>
             <td colspan='2'>			 
-			 &nbsp <?php echo form_checkbox('cleared',$cleared);?> &nbsp Cleared
-			 &nbsp <?php echo form_checkbox('void',$void);?> Void
+			 &nbsp <?php echo form_checkbox('cleared',$cleared);?> &nbsp Giro Cair
+			 &nbsp <?php echo form_checkbox('void',$void);?> Giro Batal
 			 </td>
        <tr>
 		<tr>
             <td>Penerimaan Piutang</td>
 			<td><?php echo form_checkbox('bill_payment',$bill_payment);?></td>
-			<td>Cleared Date</td><td><?php echo form_input('cleared_date',$cleared_date,'id=cleared_date 
-             class="easyui-datetimebox"   style="width:150px;height:30px"');?></td>
+			<td>Tanggal Jth Tempo</td><td><?php echo form_input('cleared_date',$cleared_date,'id=cleared_date 
+             class="easyui-datetimebox"   style="width:150px;height:30px" 
+			 data-options="formatter:format_date,parser:parse_date"');?></td>
        </tr>
        <tr>
-            <td>Kode Pelanggan </td><td><?php echo form_input('supplier_number',$supplier_number,"id='sold_to_customer'");?>
+            <td>Penerima/Pelanggan </td><td><?php echo form_input('supplier_number',$supplier_number,"id='sold_to_customer'");?>
 			<?=link_button("","select_customer();return false","search");?>
 			</td>
             <td>Nomor Transfer </td><td><?php echo form_input('bank_tran_id',$bank_tran_id);?></td>
@@ -106,7 +110,7 @@
             <td>Bank Pengirim</td><td><?php echo form_input('from_bank',$from_bank);?></td>
 		</tr>
        <tr>
-            <td>Keterangan</td><td colspan='6'><?php echo form_input('memo',$memo,"style='width:500px'");?></td>
+            <td>Keterangan</td><td colspan='6'><?php echo form_input('memo',$memo,"style='width:100%'");?></td>
        </tr>
    </table>
  </form>
@@ -145,7 +149,7 @@
 	<form method='post' id='frmItem'>
 	<input type='hidden' id='line_number' name='line_number'>
 	<input type='hidden' id='voucher_item' name='voucher_item'>
-	<table class='table2' width='100%'>
+	<table class='table' width='100%'>
 		<thead>
 		<tr>
 			<td>Kode</td><td>Nama Perkiraan</td><td>Jumlah</td><td>Catatan</td><td>Action</td>
@@ -162,6 +166,11 @@
 		</tbody>
 	</table>
 	</form>
+	<div id="tbItem" class='box-gradient'>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem();return false;">Edit</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem(); return false;">Delete</a>	
+	</div>
+	
 </div>
 
 <?=load_view('gl/select_coa')?>
@@ -208,4 +217,36 @@
 			}
 		});
 	}
+	
+		function deleteItem(){
+			var row = $('#dgItemCoa').datagrid('getSelected');
+			if (row){
+				$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+					if (r){
+						url='<?=base_url()?>index.php/cash_in/delete_item';
+						$.post(url,{line_number:row.line_number},function(result){
+							if (result.success){
+								$('#dgItemCoa').datagrid('reload');	// reload the user data
+							} else {
+								$.messager.show({	// show error message
+									title: 'Error',
+									msg: result.msg
+								});
+							}
+						},'json');
+					}
+				});
+			}
+		}
+		function editItem(){
+			var row = $('#dgItemCoa').datagrid('getSelected');
+			if (row){
+				$('#frmItem').form('load',row);
+				$('#account').val(row.account);
+				$('#description').val(row.description);
+				$('#line_number').val(row.line_number);
+				$('#amount').val(row.amount);
+			}
+		}
+	
 </script>  

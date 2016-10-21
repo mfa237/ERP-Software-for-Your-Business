@@ -32,7 +32,7 @@ $sidebar_show=$visible_right;
 		CI_BASE = "<?=base_url()?>"; 		
 </script>
 </head>
-<body>
+<BODY>
 	<div class='container-fluid'>
 	<? if(!$ajaxed) { ?> 
 		 
@@ -129,7 +129,7 @@ $sidebar_show=$visible_right;
 	<? } ?>
 
 	</div>
-</body>
+</BODY>
 
 <script type="text/javascript">
 		var index = 0;

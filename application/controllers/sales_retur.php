@@ -26,12 +26,14 @@ class Sales_retur extends CI_Controller {
         $this->load->model('inventory_model');
         $this->load->model('type_of_payment_model');
 		$this->load->model('salesman_model');
+		$this->load->model('syslog_model');
 	}
 
 
 	function index()
 	{          
-            $this->browse();
+		if (!allow_mod2('_30090'))  exit;
+        $this->browse();
 	}
 	
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
@@ -76,12 +78,14 @@ class Sales_retur extends CI_Controller {
 				}
 			}
 		}
+		if(lock_report_salesman())$sql.=" and i.salesman='".current_salesman()."'";
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 		
 	function add()
 	{
+		if (!allow_mod2('_30091'))  exit;
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -118,8 +122,8 @@ class Sales_retur extends CI_Controller {
 		 }
 	}
 	function set_defaults($record=NULL){
-        $data['library_src'] = $this->jquery->script();
-        $data['script_head'] = $this->jquery->_compile();
+        //$data['library_src'] = $this->jquery->script();
+        //$data['script_head'] = $this->jquery->_compile();
 		$data['mode']='';
 		$data['message']='';
         $data['warehouse_code']=$this->access->cid;
@@ -171,8 +175,12 @@ class Sales_retur extends CI_Controller {
 		$data['warehouse_code']="";
 		if($mode=="add"){
 			$ok=$this->invoice_model->save($data);
+			$this->syslog_model->add($id,"sales_retur","add");
+
 		} else {
 			$ok=$this->invoice_model->update($id,$data);			
+			$this->syslog_model->add($id,"sales_retur","edit");
+
 		}
 		if ($ok){
 			if($mode=="add")$this->nomor_bukti(true);
@@ -182,13 +190,16 @@ class Sales_retur extends CI_Controller {
 		}
 	}
 	function delete($id){
+		if (!allow_mod2('_30093',true))  exit;
 		$id=urldecode($id);
 		$this->load->model("periode_model");
 		$q=$this->invoice_model->get_by_id($id);
 		if($this->periode_model->closed($q->row()->invoice_date)){
-				$message="Periode sudah ditutup tidak bisa dihapus !";
-				$this->view($id,$message);
-				return false;
+			$message="Periode sudah ditutup tidak bisa dihapus !";
+			$this->syslog_model->add($id,"sales_retur","delete");
+
+			$this->view($id,$message);
+			return false;
 		}
 		$this->load->model('jurnal_model');
 		 
@@ -202,6 +213,7 @@ class Sales_retur extends CI_Controller {
 	 	$this->invoice_model->delete($id);
 	}
 	function view($id,$message=null){
+		if (!allow_mod2('_30090'))  exit;
 		$id=urldecode($id);
 		 $model=$this->invoice_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -218,12 +230,14 @@ class Sales_retur extends CI_Controller {
          $this->template->display('sales/retur',$data);                 
 	}
 	function unposting($nomor) {
+		if (!allow_mod2('_30095'))  exit;
 		$nomor=urldecode($nomor);
 		$message=$this->invoice_model->unposting($nomor);		
 		$this->view($nomor);
 	}
 	function posting($nomor)
 	{
+		if (!allow_mod2('_30095'))  exit;
 		$nomor=urldecode($nomor);
 		$message=$this->invoice_model->posting_retur($nomor);
 		$this->view($nomor);
@@ -248,4 +262,30 @@ class Sales_retur extends CI_Controller {
 		}
 		echo "<p>Finish.</p>";
 	}			
+    function print_bukti($nomor){
+		if (!allow_mod2('_30094'))  exit;
+		$nomor=urldecode($nomor);
+        $invoice=$this->invoice_model->get_by_id($nomor)->row();
+		 
+		$saldo=$this->invoice_model->recalc($nomor);
+		$data['invoice_number']=$invoice->invoice_number;
+		$data['invoice_date']=$invoice->invoice_date;
+		$data['sold_to_customer']=$invoice->sold_to_customer;
+		$data['comments']=$invoice->comments;
+		$data['sales_order_number']=$invoice->sales_order_number;
+		$data['due_date']=$invoice->due_date;
+		$data['amount']=$invoice->amount;
+		$data['sub_total']=$invoice->subtotal;
+		$data['discount']=$invoice->discount;
+		$data['disc_amount']=$invoice->subtotal*$invoice->discount;
+		$data['freight']=$invoice->freight;
+		$data['others']=$invoice->other;
+		$data['tax']=$invoice->sales_tax_percent;
+		$data['tax_amount']=$invoice->sales_tax_percent*($data['sub_total']-$data['disc_amount']);
+        $data['content']=load_view('sales/rpt/print_retur',$data);    	
+        $this->load->view('pdf_print',$data);    	
+    }
+	
 }
+
+?>

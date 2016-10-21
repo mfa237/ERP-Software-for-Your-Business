@@ -18,6 +18,28 @@ function alertMX(t){
 	$("#boxMX").click(function() { $(this).remove(); });  
 };
 
+$("<style type='text/css'>"+
+"#boxLoading{opacity: 0.8;display:none;background: gray;padding: 10px;border: 2px solid black;"+
+"float: left;font-size: 1.2em;position: fixed;top: 50%; left: 50%;z-index: 99999;"+
+"-moz-box-shadow: 0px 0px 20px #999;-moz-border-radius: 6px; -webkit-border-radius: 6px; "+
+"background: url('"+CI_BASE+"images/loading.gif') norepeat;"+
+"font:13px Arial, Helvetica, sans-serif; padding:6px 6px 4px;height:100px;width:200px; color: white;"+
+"}</style>").appendTo("head");
+
+function loading()
+{	
+	var img=CI_BASE+"images/loading.gif";
+	$( "body" ).append( $( "<div id='boxLoading' style='text-align:center'><img src='"+img+"'><p class='msgLoading'></p></div>" ) );
+	$('.msgLoading').text('Please Wait...'); 
+	var popMargTop = ($('#boxLoading').height() + 24) / 2, 
+	popMargLeft = ($('#boxLoading').width() + 24) / 2; 
+	$('#boxLoading').css({ 'margin-top' : -popMargTop-70,
+	'margin-left' : -popMargLeft}).fadeIn(100);
+}
+function loading_close()
+{
+	$("#boxLoading").fadeOut(800).remove();   	
+}
 	function is_assoc($a){	
 	   $a = array_keys($a);
 	   return ($a != array_keys($a));
@@ -60,6 +82,14 @@ function alertMX(t){
 			$('#tt').tabs('close', index);
 		}
 	}
+	function remove_tab_parent(){
+		var tab = window.parent.$('#tt').tabs('getSelected');
+		if (tab){
+			var index = window.parent.$('#tt').tabs('getTabIndex', tab);
+			window.parent.$('#tt').tabs('close', index);
+		}
+	}
+	
 //logging on top section
 var t=0;
 	function hide_log(){
@@ -103,7 +133,11 @@ var t=0;
 	Array.prototype.inArray = utils.inArray;
 	
 function formatNumber (num) {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+	if(num!="undefined"){
+		return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+	} else {
+		return num;
+	}
 }
 
 function run_menu(path){
@@ -111,8 +145,6 @@ function run_menu(path){
      window.open(xurl,'_self');
  }
 function post_this(xurl,param,divout){
-    console.log(xurl);
-    console.log(param);
 	$.ajax({
 		type: "POST",
 		url: xurl,
@@ -128,32 +160,29 @@ function post_this(xurl,param,divout){
         return false;
 }
 function get_this(xurl,param,divout){
-		console.log(xurl);        
-        if(divout!=''){
-			$('#'+divout).html("<img src='"+CI_BASE+"images/loading.gif'>");
-//        	event.preventDefault();
-            $.ajax({
-                    type: "GET",
-                    url: xurl,
-                    data: param,
-                    success: function(msg){
-                            if(divout!="") {
-                        // ajax strip out <script>???    	
-						//		$("#"+divout).get(0).innerHTML = msg;
-								parseScript(msg);
-                                $('#'+divout).html(msg);
-                                
-                            };
-                            //errmsg("Ready.");
-                    },
-                    error: function(msg){alert(msg);}
-            }); 
-            return false;
-        } else {
-           
-            window.open(xurl,'_self');
-            return false;
-        }
+    if(divout!=''){
+        $('#'+divout).html("<img src='"+CI_BASE+"images/loading.gif'>");
+       	event.preventDefault();
+        $.ajax({ type: "GET", url: xurl, data: param,
+            success: function(msg){
+                if(divout!="") {
+                    // ajax strip out <script>???    	
+                    // $("#"+divout).get(0).innerHTML = msg;
+                    //parseScript(msg);
+                    $('#'+divout).html(msg);
+                };
+                //errmsg("Ready.");
+                return true;
+            },
+            error: function(msg){
+                console.log(msg);
+            }
+        }); 
+        return false;
+    } else {
+        window.open(xurl,'_self');
+        return false;
+    }
 }
 function exist_key(table,field,value){
 	var exist=false;
@@ -167,41 +196,45 @@ function exist_key(table,field,value){
 	});
 	return exist;
 }
- 
+function format_date(date) { return myformatter(date) }
 function myformatter(date){
-
         var y = date.getFullYear();
-
         var m = date.getMonth()+1;
-
         var d = date.getDate();
-
-        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
-
+		var h=date.getHours();
+		var i=date.getMinutes();
+		var s=date.getMilliseconds();
+		return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d)+' '+(h<10?('0'+h):h)+':'+(i<10?('0'+i):i)+':'+(s<10?('0'+s):s);
 }
 
+function parse_date(date) { return myparser(date) }
 function myparser(s){
-
         if (!s) return new Date();
-
-        var ss = s.split('-');
-
+		var sign=s.indexOf("/")>0?'/':'-';
+		var sa = s.split(' ');
+		var ss = sa[0].split(sign);
         var y = parseInt(ss[0],10);
-
         var m = parseInt(ss[1],10);
-
         var d = parseInt(ss[2],10);
-
+		if(sign=="/"){
+			m = parseInt(ss[0],10);
+			d = parseInt(ss[1],10);
+			y = parseInt(ss[2],10);
+		}
+		var h=0;
+		var i=0;
+		var s=0;
+		if (sa.length>1) {
+			st = sa[1].split(':')
+			h = parseInt(st[0],10);
+			i = parseInt(st[1],10);
+			s = parseInt(st[2],10);
+		} 
         if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
-
-                return new Date(y,m-1,d);
-
+                return new Date(y,m-1,d,h,i,s);
         } else {
-
                 return new Date();
-
         }
-
 }
 function next_number(kode,divOutput){
     $.ajax({
@@ -217,8 +250,8 @@ function next_number(kode,divOutput){
 // this function create an Array that contains the JS code of every <script> tag in parameter
 // then apply the eval() to execute the code in every script collected
 function parseScript(strcode) {
-  var scripts = new Array();         // Array which will store the script's code
-  
+    console.log(strcode);
+  var scripts = new Array();         // Array which will store the script's code  
   // Strip out tags
   while(strcode.indexOf("<script") > -1 || strcode.indexOf("</script") > -1) {
     var s = strcode.indexOf("<script");
@@ -316,3 +349,201 @@ function isNumber(n) {
 	function load_help(id) {
 		window.parent.$("#help").load(CI_ROOT+"help/load/"+id);
 	}
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+$.fn.ajax_post = function(url,divModal,next_url) {
+	loading();
+	//console.log(this[0]);
+	var data=new FormData(this[0]);
+	$.ajax({
+		url: url, 
+		type: "POST",             
+		data: data,
+		contentType: false,       
+		cache: false,             
+		processData:false,
+		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr.responseText);
+			log_err("Unknown Error");
+			loading_close();
+		},
+		success: function(result)
+		{
+			if(IsJsonString(result))
+			{
+				var result = eval('('+result+')');
+				if (result.success)
+				{
+					if(divModal!="undefined"){
+						$('#'+divModal).modal('hide');
+					}
+					log_msg('Data sudah tersimpan.');
+					if(next_url!='undefined'){
+						loading_close();
+						var t=setTimeout(function(){
+								window.open(next_url,"_self");
+						},2000);
+					}
+				} else {
+					loading_close();
+					alert(result.message);
+				}
+			} else { 
+				console.log(result);
+				loading_close();
+				alert("Unknown Error"); 
+			}
+		}
+	});
+};
+
+function ajax_get(url,param,next_url)
+{
+	loading();
+	$.ajax({
+		url: url, 
+		type: "GET",             
+		data: param,
+		contentType: false,       
+		cache: false,             
+		processData:false,
+		error: function (xhr, ajaxOptions, thrownError) {
+			console.log(xhr.responseText);
+			log_err(xhr.responseText);
+			loading_close();
+		},
+		success: function(result)
+		{
+			console.log(result);
+			if(IsJsonString(result))
+			{
+				var result = eval('('+result+')');
+				if (result.success)
+				{
+					loading_close();
+					log_msg(result.message);
+					if(next_url!='') {
+						var t=setTimeout(function(){
+							window.open(next_url,"_self");
+						},3000);
+					}
+				} else {
+					loading_close();
+					log_err(result.message);
+				}
+			} else { 
+				loading_close();
+				log_err(result);
+			}
+		}
+	});		
+}
+ 
+$(document).ready(function(){
+	$(".info_link").click(function(event){
+		event.preventDefault(); 
+		var url = $(this).attr('href');
+		console.log(url);
+		var n = url.lastIndexOf("/");
+		var j=url.lastIndexOf("#");
+		if(j>0){
+			var title=url.substr(j+1);
+		} else {
+			var title=url.substr(n+1);
+		}
+		if(title=='reports'){
+			title=url.substr(n-10);
+			title=title.substr(title.indexOf("/"));
+		}
+		if(url.indexOf("/menu")>5){
+			window.open(url,"_self");
+		} else {
+			add_tab_parent(title,url);
+		}
+	});
+});
+
+
+function DataGrid(){
+	this.table_id="tt";
+	this.title="";
+	this.columns=null;
+	this.url='';
+	this.buttons="";
+	this.render=function() {
+	$('#'+this.table_id).datagrid({
+		toolbar:'#'+this.buttons,
+		title:this.title,
+		iconCls:'icon-edit',
+		width:660,	height:250,
+		singleSelect:true,
+		idField:'item_number',
+		url:this.url,
+		columns:[this.columns],
+		onEndEdit:function(index,row){
+		},
+		onBeforeEdit:function(index,row){
+			row.editing = true;
+			$(this).datagrid('refreshRow', index);
+		},
+		onAfterEdit:function(index,row){
+			row.editing = false;
+			$(this).datagrid('refreshRow', index);
+		},
+		onCancelEdit:function(index,row){
+			row.editing = false;
+			$(this).datagrid('refreshRow', index);
+		}
+	});
+	};
+	this.getRowIndex=function(target){
+		var tr = $(target).closest('tr.datagrid-row');
+		return parseInt(tr.attr('datagrid-row-index'));
+	}
+	
+	this.editrow=function(target){
+		$('#'+this.table_id).datagrid('beginEdit', this.getRowIndex(target));
+	}
+	this.deleterow=function(target){
+		$.messager.confirm('Confirm','Are you sure?',function(r){
+			if (r){
+				$('#'+this.table_id).datagrid('deleteRow', this.getRowIndex(target));
+			}
+		});
+	}
+	this.saverow=function(target){
+		$('#'+this.table_id).datagrid('endEdit', this.getRowIndex(target));
+	}
+	this.cancelrow=function(target){
+		$('#'+this.table_id).datagrid('cancelEdit', this.getRowIndex(target));
+	}
+	this.insert=function(){
+		var row = $('#'+this.table_id).datagrid('getSelected');
+		if (row){
+			var index = $('#'+this.table_id).datagrid('getRowIndex', row);
+			index++;
+		} else {
+			index = 0;
+		}
+		$('#'+this.table_id).datagrid('insertRow', {
+			index: index,
+			row:{
+				status:'P'
+			}
+		});
+		$('#'+this.table_id).datagrid('selectRow',index);
+		$('#'+this.table_id).datagrid('beginEdit',index);
+	}
+} 
+function show_syslog(module,nomor){
+	$('#dlgSysLog').dialog('open').dialog('setTitle','Log System');
+	get_this(CI_BASE+"index.php/syslog/view/"+module+"/"+nomor,"","divSysLog");
+	
+}
+	

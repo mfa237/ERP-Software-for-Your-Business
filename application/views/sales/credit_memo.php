@@ -16,6 +16,7 @@
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('sales_crmemo')">Help</div>
+		<div onclick="show_syslog('crdb','<?=$kodecrdb?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -40,7 +41,9 @@
         </tr>	 
         <tr>
             <td>Tanggal</td><td><?php echo form_input('tanggal',$tanggal,'id=tanggal 
-             class="easyui-datetimebox" required style="width:150px"');?>
+             class="easyui-datetimebox" required style="width:150px"
+			data-options="formatter:format_date,parser:parse_date"
+			');?>
             </td>
         </tr>
        <tr>
@@ -268,5 +271,9 @@
 			});
 			
 		}
+  	function print(){
+            txtNo='<?=$kodecrdb?>'; 
+            window.open("<?=base_url().'index.php/crdb/print_bukti/'?>"+txtNo,"new");  		
+  	}
     
 </script>

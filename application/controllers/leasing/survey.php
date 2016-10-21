@@ -162,6 +162,7 @@ class Survey extends CI_Controller {
 			if($ok){
 				echo json_encode(array("success"=>true));
 				$dt['surveyed']=1;
+				$dt['status']='Need Review Risk';
 				$this->db->where('app_id',$app_id)->update('ls_app_master',$dt);
 			} else {
 				echo json_encode(array("msg"=>"Error ".mysql_error()));

@@ -23,6 +23,14 @@ class Themes extends CI_Controller {
 			"description"=>"Green template themes");
 		$data['themes_list'][]=array("name"=>"metro","version"=>"1.1","create_by"=>"Andri",
 			"description"=>"Metro template themes");
+		$data['themes_list'][]=array("name"=>"black","version"=>"1.1","create_by"=>"Andri",
+			"description"=>"Black template themes");
+		$data['themes_list'][]=array("name"=>"bootstrap","version"=>"1.1","create_by"=>"Andri",
+			"description"=>"Bootstrap template themes");
+		$data['themes_list'][]=array("name"=>"gray","version"=>"1.1","create_by"=>"Andri",
+			"description"=>"Gray template themes");
+		$data['themes_list'][]=array("name"=>"admin","version"=>"1.1","create_by"=>"Andri",
+			"description"=>"Admin template themes");
 		$this->template->display_form_input($this->file_view,$data);			
     }
 	function save($themes){

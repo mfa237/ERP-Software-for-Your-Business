@@ -41,25 +41,54 @@ function select_list(){return $this->customer_list();}
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
-        function info($id){
-            $data=$this->get_by_id($id)->row();
-            if(count($data)){    
-                $ret='<strong>'.$id.' - '.$data->company.'</strong><br/>'
-                        .$data->street.' - '.$data->city;
-            } else $ret='';
-            return $ret;
-        }
+	function info($id){
+		$data=$this->get_by_id($id)->row();
+		if(count($data)){    
+			$ret='<strong>'.$id.' - '.$data->company.'</strong><br/>'
+					.$data->street.' - '.$data->city;
+		} else $ret='';
+		return $ret;
+	}
+	function customer_type($id){
+		return $this->db->select("customer_record_type")
+			->where("customer_number",$id)->get("customers")
+			->row()->customer_record_type;
+	}
 	function save($data){           
+		$type=explode(" - ",$data['customer_record_type']);
+		if(count($type)>1)$data['customer_record_type']=$type[0];
+
 		return $this->db->insert($this->table_name,$data);            
 		//return $this->db->insert_id();
 	}
 	function update($id,$data){
+		$type=explode(" - ",$data['customer_record_type']);
+		if(count($type)>1)$data['customer_record_type']=$type[0];
 		$this->db->where($this->primary_key,$id);
 		return  $this->db->update($this->table_name,$data);
 	}
+	function exist_customer_transaction($id){
+		$ret="";
+		if($cnt=$this->db->select("count(1) as cnt")->where("sold_to_customer",$id)
+			->get("sales_order")->row()->cnt){
+			$ret="Masih ada transaksi sales order !";
+			return $ret;
+		}
+		
+		if($cnt=$this->db->select("count(1) as cnt")->where("sold_to_customer",$id)
+			->get("invoice")->row()->cnt){
+			$ret="Masih ada transaksi faktur atau surat jalan !";
+			return $ret;
+		}
+	}
 	function delete($id){
-		$this->db->where($this->primary_key,$id);
-		$this->db->delete($this->table_name);
+		$id=urldecode($id);
+		$ret=$this->exist_customer_transaction($id);
+		if($ret==""){
+			$this->db->where($this->primary_key,$id);
+			$this->db->delete($this->table_name);
+		} 
+		return $ret;
 	}
 	function saldo_piutang_summary()
 	{
@@ -99,6 +128,9 @@ function select_list(){return $this->customer_list();}
 			}		 
 		}
 		return $ret;
+	}
+	function exist($id){
+	   return $this->db->count_all($this->table_name." where customer_number='".$id."'")>0;
 	}
 		
 }

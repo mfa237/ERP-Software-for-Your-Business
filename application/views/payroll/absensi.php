@@ -16,7 +16,9 @@
 			<form id="frmAbsen" method="POST">
 		   <table class='table2' width='100%'>
 		      <tr><td>NIP</td><td><input id="nip" onblur="cari_nip()" name="nip"></td></tr>
-			  <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" style="width:140px"></td></tr>
+			  <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" style="width:140px
+				data-options='formatter:format_date,parser:parse_date'
+				"></td></tr>
 			  <tr><td>Jam Masuk</td><td><input id="time_in" name="time_in"></td></tr>
 		      <tr><td>Jam Keluar</td><td><input id="time_out" name="time_out"></td></tr>
 		      <tr><td> <?=link_button('Tambah','add_absen()','save','false')?></td></tr>

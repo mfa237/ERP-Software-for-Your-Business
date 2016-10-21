@@ -1,77 +1,77 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<head><title>MaxOn ERP Online Demo</title>
-<?
-echo $library_src;
-echo $script_head;
-?>
-</head>
-
-<body>
+<head><title>MaxOn ERP Online Demo</title></head>
 <script type="text/javascript">
-   		CI_ROOT = "<?=base_url()?>index.php/";
-		CI_BASE = "<?=base_url()?>"; 		
+    CI_ROOT = "<?=base_url()?>index.php/";
+    CI_BASE = "<?=base_url()?>"; 		
 </script>
-<?php
+<BODY class='<?=$body_class?>' >	 
 
-date_default_timezone_set("Asia/Jakarta");
+<?php 
+	echo $library_src;
+	echo $script_head;
 
+	date_default_timezone_set("Asia/Jakarta");
+	//include_once __DIR__."/../../analyticstracking.php";
 
-if(!isset($visible_right))$visible_right="True";
-if(!isset($_left_menu))$_left_menu="";
-if(!isset($_right_menu))$_right_menu="";
+	if(!isset($visible_right))$visible_right="True";
+	if(!isset($_left_menu))$_left_menu="";
+	if(!isset($_right_menu))$_right_menu="";
 
-if(!isset($visible_right))$visible_right=TRUE;
-if(isset($sidebar_show))$visible_right=$sidebar_show;
-if(!isset($_left_menu))$_left_menu="";
-if(!isset($_right_menu))$_right_menu="";
+	if(!isset($visible_right))$visible_right=TRUE;
+	if(!isset($sidebar_show))$sidebar_show=true;
+	$visible_right=$sidebar_show;
+	if(!isset($_left_menu))$_left_menu="";
+	if(!isset($_right_menu))$_right_menu="";
 
-$sidebar_pos=$this->session->userdata('sidebar_position');
-$sidebar_show=true;
+	$sidebar_pos=$this->session->userdata('sidebar_position');
 
-if(!isset($header_show))$header_show=true;
-if(!isset($footer_show))$footer_show=true;
+	if(!isset($header_show))$header_show=true;
+	if(!isset($footer_show))$footer_show=true;
 
-if(!isset($_left_menu_caption))$_left_menu_caption='Left Menu';
-if(!isset($message))$message="";
-$tiki_show=false;
-if(!isset($tiki_show))$tiki_show=false;
-if(!isset($body_class))$body_class="";
-
-echo "<div class='container-fluid'>";
-if(!$ajaxed){
-	if($header_show){
-		echo $_header;
-	}
+	if(!isset($_left_menu_caption))$_left_menu_caption='Left Menu';
+	if(!isset($message))$message="";
+	$tiki_show=false;
+	if(!isset($tiki_show))$tiki_show=false;
+	if(!isset($body_class))$body_class="";
 	
-}	
-
+	echo "<div class='container-min'>";
+	if(!$ajaxed){
+		if($header_show){
+			echo $_header;
+		}
+		
+	}	
 	if(!$ajaxed) {
-		echo "<div class='row'>";
+		echo "<div class='row' style='margin-top:60px;margin-left:0px'>";
 			if($sidebar_pos=="left"){
 				if($sidebar_show) { 
-				    echo "<div class='col-md-3'>";
+				    echo "<div class='col-md-3  sidebar' >";
 					include_once "sidebar.php";
 					if($tiki_show) {
 						include_once __DIR__."/../../tiki.php";
 					}
 					echo "</div>";
-					echo "<div class='col-md-9'> $_content </div>";
+					echo "<div class='col-md-9'> $_content ";
+					if($this->config->item('google_ads_visible')) $this->load->view('google_ads');
+					echo "</div>";
 				} else { 
-					echo "<div class='col-md-12'> $_content </div>";			
-				    echo "<div class='col-md-3'>";
+					echo "<div class='col-md-12'> $_content ";
+					if($this->config->item('google_ads_visible')) $this->load->view('google_ads');					
+					echo "</div>";			
+				    echo "<div class='col-md-3  sidebar'>";
 					include_once "sidebar.php";
 					echo "</div>";
 				}
 			} else {	//sidebar=right
 				if($sidebar_show) { 
-					echo "<div class='col-md-9'> $_content </div>";
-				    echo "<div class='col-md-3'>";
-					include_once "sidebar.php";
+					echo "<div class='col-md-9 panel-body-min'> $_content </div>";
+				    echo "<div class='col-md-3 sidebar' style='min-height:1000px;'>";
+						include_once "sidebar.php";
 					echo "</div>";
 				} else { 
-					echo "<div class='col-md-12'> $_content </div>";			
+					echo "<div class='col-md-12 '> $_content </div>";			
 				}
 			}
 			
@@ -80,15 +80,21 @@ if(!$ajaxed){
 			echo "<div class='row-fluid footer'>$_footer</div>";
 		}
 	} else { 		 
-		echo $_content;  
+		echo "<div class='col-md-12 '> $_content </div>";			
+		if($this->config->item('google_ads_visible')) $this->load->view('google_ads');					
 	}
 echo "</div>";
 echo "</div>";
+
 ?>
+<div id='dlgSysLog'class="easyui-dialog" closed="true" style="width:600px;height:380px;padding:10px 20px">
+	<div id='divSysLog'></div>
+</div>
+</BODY>
 
 <script type="text/javascript">
 $(document).ready(function(){
-
+	var chatbox_visible='<?=$this->session->userdata('chatbox_visible')?>';
 	$('.datepicker').datepicker();
 	
 	$(".info_link").click(function(event){
@@ -124,14 +130,16 @@ $(document).ready(function(){
 		$("#panel4").html(tgl);
 		$("#panel5").html(currentdate.getHours() + ":" 
 		+ currentdate.getMinutes());
-		
-		$.ajax({
-			type: "GET",url: "<?=base_url()?>index.php/maxon_inbox/notify",
-			data: {'user_id':'<?=user_id()?>'},
-			success: function(msg){$('#panel2-msg').html(msg);}
-			,error: function(msg){}
-		});			
-		_timer1=setTimeout(function(){timer1()}, 60000);	
+		if ( chatbox_visible !="" ) {
+			$.ajax({
+				type: "GET",url: "<?=base_url()?>index.php/maxon_inbox/notify",
+				data: {'user_id':'<?=user_id()?>'},
+				success: function(msg){$('#panel2-msg').html(msg);}
+				,error: function(msg){}
+			});			
+		}
+		_timer1=setTimeout(function(){timer1()}, 260000);	
 	}
 });
 </script>
+

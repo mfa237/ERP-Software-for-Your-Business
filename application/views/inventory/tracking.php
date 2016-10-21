@@ -13,7 +13,7 @@
    echo $message;
    echo form_open('tracking/browse');
    ?>
-   <form action="<?=base_url();?>index.php/tracking/browse" method="POST">
+   <form action="<?=base_url();?>index.php/tracking/browse" >
    	<table>
    		<tr>
    			<td>Location Number</td><td><input name='location'/></td>

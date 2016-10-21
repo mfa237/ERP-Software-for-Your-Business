@@ -1,28 +1,31 @@
-<h4>RETUR PENJUALAN </H4><div class="thumbnail box-gradient">
+<div class="thumbnail box-gradient">
 	<?
 	
 	
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/sales_retur/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/sales_retur');		
-	if($mode=="view")echo link_button('Refresh','','reload','true',base_url().'index.php/sales_retur/view/'.$invoice_number);		
-	if($mode=="view")echo link_button('Delete','','cut','true',base_url().'index.php/sales_retur/delete/'.$invoice_number);		
+	echo link_button('Add','','add','false',base_url().'index.php/sales_retur/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/sales_retur');		
+	if($mode=="view")echo link_button('Refresh','','reload','false',base_url().'index.php/sales_retur/view/'.$invoice_number);		
+	if($mode=="view")echo link_button('Delete','','cut','false',base_url().'index.php/sales_retur/delete/'.$invoice_number);		
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/sales_retur/unposting/'.$invoice_number);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/sales_retur/unposting/'.$invoice_number);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/sales_retur/posting/'.$invoice_number);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/sales_retur/posting/'.$invoice_number);		
 	}
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'sales_retur\')','help');		
 	
 	
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('sales_retur')">Help</div>
+		<div onclick="show_syslog('sales_retur','<?=$invoice_number?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 <div class="thumbnail">	
@@ -42,7 +45,7 @@
 <form id="myform"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 
-<table class='table2' width='100%'>
+<table class='table' width='100%'>
     <tr>
 		<td>Nomor</td>
         <td>  			
@@ -53,7 +56,7 @@
 		<td rowspan='4'>
 			<div id="customer_info" name="customer_info" class='thumbnail' style='width:300px;height:100px'>
 				<?=$customer_info?>
-			</div?
+			</div>
 		</td>
 		        
     </tr>
@@ -70,7 +73,9 @@
 	</tr>
      <tr><td>Tanggal</td><td><?         
 			  echo form_input('invoice_date',$invoice_date,'id=invoice_date
-             class="easyui-datetimebox" required style="width:150px"');                 
+             class="easyui-datetimebox" required style="width:150px"
+			data-options="formatter:format_date,parser:parse_date"
+			');                 
          ?></td>
 	</tr>
 	<tr>
@@ -83,7 +88,7 @@
      <tr>
 		<td>Keterangan</td><td colspan="4">
 			<?
-         echo form_input('comments',$comments,'id=comments style="width:300px"');
+         echo form_input('comments',$comments,'id=comments style="width:90%"');
 		 	?>
 		</td>
     </tr>
@@ -190,7 +195,7 @@
   	}
   	function print(){
             txtNo='<?=$invoice_number?>'; 
-            window.open("<?=base_url().'index.php/invoice/print_faktur/'?>"+txtNo,"new");  		
+            window.open("<?=base_url().'index.php/sales_retur/print_bukti/'?>"+txtNo,"new");  		
   	}
   	function payment(){
             txtNo='<?=$invoice_number?>';     

@@ -3,7 +3,7 @@
 	data-options="
 		iconCls: 'icon-edit',
 		singleSelect: true,
-		toolbar: '',
+		toolbar: '',fitColumns: true, 
 		url: '<?=base_url()?>index.php/leasing/loan/items/<?=$loan_id?>'
 	">
 	<thead>

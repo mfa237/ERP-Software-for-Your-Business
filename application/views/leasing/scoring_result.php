@@ -32,6 +32,7 @@ silahkan klik nomor tersebut untuk  proses survey.</p>
 	
 	}
   	function save(){
+		if($("#catatan").val()==""){alert("Isi catatan !");return false;}
 		if(!confirm('Data sudah benar ? Yakin mau disimpan ?')) return false;
 		url='<?=base_url()?>index.php/leasing/scoring/recomend_save';
 		$('#frmMain').form('submit',{

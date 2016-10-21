@@ -8,7 +8,8 @@ if($message==""){
 <thead><th></th><th></th><th></th></thead>
 <tbody>
 <tr><td>Nomor Faktur# </td><td><?=$invoice_no?></td>
-	<td>Tanggal Kunjungan </td><td><input type='text' class='easyui-datetimebox' id='visit_date'
+	<td>Tanggal Kunjungan </td><td><input type='text' class='easyui-datetimebox' 
+				data-options='formatter:format_date,parser:parse_date'  id='visit_date'
 		value="<?=date('m/d/Y')?>" name='visit_date' > </td>
 </tr>
 <tr><td>Nama Debitur </td><td><?=$cust_name?></td><td><?$cust_deal_id?></td>
@@ -32,7 +33,8 @@ if($message==""){
 <tr><td>Hari Telat </td><td><?=$hari_telat?></td></tr>
 <tr><td>Tertagih </td><td><?=form_dropdown("tertagih",array("0"=>"Tertagih","1"=>"Tidak Tertagih"),0)?></td></tr>
 <tr><td>Tertagih Rp. </td><td><?=form_input("tertagih_jumlah",0)?></td></tr>
-<tr><td>Janji Bayar Tanggal </td><td><?=form_input("janji_tanggal",date("Y-m-d")," class='easyui-datetimebox'")?></td></tr>
+<tr><td>Janji Bayar Tanggal </td><td><?=form_input("janji_tanggal",date("Y-m-d")," class='easyui-datetimebox' 
+				data-options='formatter:format_date,parser:parse_date' ")?></td></tr>
 <tr><td>RowId</td><td><?=form_input("id",$id," readonly")?></td></tr>
 </tbody>
 </table>

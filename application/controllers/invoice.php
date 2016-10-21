@@ -2,8 +2,8 @@
 
 class Invoice extends CI_Controller {
     private $limit=10;
-    private $sql="select i.invoice_number,i.invoice_date,i.amount,i.posted, 
-            i.sold_to_customer,c.company,i.salesman,c.city,i.warehouse_code
+    private $sql="select i.invoice_number,i.invoice_date,i.amount, 
+            c.company,i.salesman,i.warehouse_code
             from invoice i
             left join customers c on c.customer_number=i.sold_to_customer
             where  invoice_type='i' ";
@@ -25,6 +25,9 @@ class Invoice extends CI_Controller {
         $this->load->model('inventory_model');
         $this->load->model('type_of_payment_model');
 		$this->load->model('salesman_model');
+		$this->load->model('invoice_lineitems_model');
+		$this->load->model("payment_model");
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -48,9 +51,7 @@ class Invoice extends CI_Controller {
 
 	function set_defaults($record=NULL){
 		$data=data_table($this->table_name,$record);
-		 
-        $data['library_src'] = $this->jquery->script();
-        $data['script_head'] = $this->jquery->_compile();
+ 
 		$data['mode']='';
 		$data['message']='';
         $data['warehouse_code']=$this->access->cid;
@@ -61,10 +62,12 @@ class Invoice extends CI_Controller {
 		$data['customer_info']='';
 		$data['discount_amount']=0;
 		$data['tax_amount']=0;
+		$data['cust_type']="";
 		return $data;
 	}
 	function index()
 	{          
+		if (!allow_mod2('_30160'))  exit;
 		if(!$this->access->is_login()){
 		    redirect(base_url());
 			exit;
@@ -77,15 +80,19 @@ class Invoice extends CI_Controller {
 	}
 	function add()
 	{
+		if (!allow_mod2('_30161'))  exit;
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts(); 
 			$data['invoice_number']=$this->nomor_bukti();
 			$data['invoice_type']='I';
+			
 			$this->invoice_model->save($data);
 			$this->nomor_bukti(true);
 			$id=$data['invoice_number'];
+			$this->syslog_model->add($data['invoice_number'],"invoice","add");
+
             $this->view($id,'Finish');
    		} else {
 			$this->load->model('invoice_lineitems_model');                       
@@ -107,23 +114,24 @@ class Invoice extends CI_Controller {
 		} else {
 			$id=$this->input->post('invoice_number');			
 		}
-		$data['invoice_date']=$this->input->post('invoice_date');
-		$data['sold_to_customer']=$this->input->post('sold_to_customer');
-		$data['salesman']=$this->input->post('salesman');
-		$data['payment_terms']=$this->input->post('payment_terms');
-		$data['due_date']=$this->input->post('due_date');
-		$data['comments']=$this->input->post('comments');			
-		$data['sales_order_number']=$this->input->post('sales_order_number');
+		$data=$this->input->post();
 		$data['invoice_number']=$id;
 		$data['invoice_type']='I';
 		$data['type_of_invoice']='Simple';
+		unset($data['mode']);
+		unset($data['cust_type']); 
         $this->session->set_userdata('invoice_number',$id);
 		 
 		if($mode=="add"){
 			$ok=$this->invoice_model->save($data);
+			$this->syslog_model->add($id,"invoice","add");
+
 		} else {
 			$ok=$this->invoice_model->update($id,$data);			
+			$this->syslog_model->add($id,"invoice","edit");
+
 		}
+		$this->invoice_model->recalc($id);
 		if ($ok){
 			if($mode=="add")$this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'invoice_number'=>$id));
@@ -141,6 +149,8 @@ class Invoice extends CI_Controller {
 			$data['invoice_type']='I'; 
 			$this->invoice_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"invoice","edit");
+
 		} else {
 			$message='Error Update';
 		}
@@ -159,42 +169,32 @@ class Invoice extends CI_Controller {
             $this->load->view('sales/invoice_add_item',$data);
    }
     function save_item(){
+        $this->load->model('invoice_lineitems_model');
+		$this->load->model("sales/promosi_model");
+		
         $item_no=$this->input->post('item_number');
 		$faktur=$this->input->post('invoice_number_item');
         if(!($item_no||$faktur)){
         	$msg='Kode barang atau nomor faktur tidak diisi !';
         }
-
-		$id=$this->input->post('line_number');
-		if($id!='')$data['line_number']=$id;
-
-        $data['invoice_number']=$faktur;
-        $data['item_number']=$item_no;
-        $data['quantity']=$this->input->post('quantity');
-        $data['unit']=$this->input->post('unit');
-        $data['price']=$this->input->post('price');
-        $data['cost']=$this->input->post('cost');			
-        $data['discount']=$this->input->post('discount');			
-
-        $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-		if($item){
-            $data['description']=$item->description;
-		}
-		if($data['cost']==0)$data['cost']=$item->cost;
-        $gross=$data['quantity']*$data['price'];
-		$disc_amount=$data['discount']*$gross;
-		$data['amount']=$gross-$disc_amount;
-	
-        $this->load->model('invoice_lineitems_model');
+		$data=$this->input->post();
+		$data['invoice_number']=$faktur; unset($data['invoice_number_item']);
+		//var_dump($data);
+       	$ok=$this->invoice_lineitems_model->save($data);
 		
-		if($id!=''){
-			$ok=$this->invoice_lineitems_model->update($id,$data);
-		} else {
-        	$ok=$this->invoice_lineitems_model->save($data);
+		if($qty_extra=$this->promosi_model->promo_qty_extra($item_no,$data['quantity'])){
+			if($qty_extra>0){
+				$data['description']="***extra ".$data['description'];
+				$data["quantity"]=$qty_extra;
+				$data['price']=0;				$data['amount']=0;
+				$data['discount']=0;			$data['discount_amount']=0;
+				$data['disc_2']=0;				$data['disc_amount_2']=0;
+				$data['disc_3']=0;				$data['disc_amount_3']=0;
+				$this->invoice_lineitems_model->save($data);
+			}
 		}
-//		$msg=var_dump($data);
-		//$this->invoice_model->recalc($faktur);
-		 
+		
+		$this->invoice_model->recalc($faktur);
 		if ($ok){
 			echo json_encode(array('success'=>true));
 		} else {
@@ -207,6 +207,7 @@ class Invoice extends CI_Controller {
         $this->load->model('invoice_lineitems_model');
         if($this->invoice_lineitems_model->delete($id)) {
 			echo json_encode(array('success'=>true));
+
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
@@ -229,6 +230,7 @@ class Invoice extends CI_Controller {
 		 $data['amount']=$model->amount;
 		 $data['subtotal']=$model->subtotal;
 		 $data['discount']=$model->discount;
+         $data['cust_type']=$this->customer_model->customer_type($data['sold_to_customer']);
 			
 		$data['salesman_list']=$this->salesman_model->select_list();
         $data['payment_terms_list']=$this->type_of_payment_model->select_list();
@@ -266,10 +268,10 @@ class Invoice extends CI_Controller {
 
 	
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Posted','Kode Cust','Nama Customer',
-			'Salesman','Kota','Gudang');
-		$data['fields']=array('invoice_number','invoice_date','amount','posted', 
-            'sold_to_customer','company','salesman','city','warehouse_code');
+		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Nama Customer',
+			'Salesman','Gudang');
+		$data['fields']=array('invoice_number','invoice_date','amount', 
+            'company','salesman','warehouse_code');
 		$data['field_key']='invoice_number';
 		$data['caption']='DAFTAR FAKTUR PENJUALAN';
 		$data['posting_visible']=true;
@@ -306,7 +308,8 @@ class Invoice extends CI_Controller {
 				}
 			}
 		}
-        $sql.=" limit $offset,$limit";
+		if(lock_report_salesman())$sql.=" and i.salesman='".current_salesman()."'";
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 	function amount_paid($faktur){
@@ -320,6 +323,7 @@ class Invoice extends CI_Controller {
 			return $this->invoice_model->crdb_amount($faktur);}
 	
 	function delete($id){
+		if (!allow_mod2('_30163',true))  exit;
 		$id=urldecode($id);
 		$this->load->model("periode_model");
 		$this->load->model("invoice_model");
@@ -355,6 +359,8 @@ class Invoice extends CI_Controller {
 			return false;
 		}
 	 	$this->invoice_model->delete($id);
+		$this->syslog_model->add($id,"invoice","delete");
+
         $this->browse();
 	}
     function detail(){
@@ -404,7 +410,8 @@ class Invoice extends CI_Controller {
 		$data['others']=$invoice->other;
 		$data['tax']=$invoice->sales_tax_percent;
 		$data['tax_amount']=$invoice->sales_tax_percent*($data['sub_total']-$data['disc_amount']);
-        $this->load->view('sales/rpt/print_faktur',$data);    	
+        $data['content']=load_view('sales/rpt/print_faktur',$data);    	
+        $this->load->view('pdf_print',$data);    	
     }
 	function select_list(){
 		
@@ -461,7 +468,7 @@ class Invoice extends CI_Controller {
 				if($saldo!=0){
 					$row['amount']=number_format($row['amount']);
 					$row['saldo']=number_format($saldo);
-					$row['bayar']=form_input("bayar[]","","style='width:100px'");
+					$row['bayar']=form_input("bayar[]","","style='width:100px;color:black;text-align:right'");
 					$row['invoice_number']=$nomor.form_hidden("faktur[]",$nomor);
 					$rows[$i++]=$row;
 				}
@@ -542,7 +549,7 @@ class Invoice extends CI_Controller {
 		$faktur=urldecode($faktur);
 		$this->load->model('invoice_model');
 		$this->invoice_model->recalc($faktur);
-		return "<table><tr><td>Invoice Amount: </td><td>".number_format($this->invoice_model->amount)."</td></tr>"
+		return "<table class='table'><tr><td>Invoice Amount: </td><td>".number_format($this->invoice_model->amount)."</td></tr>"
 			."<tr><td>Payment Amount: </td><td>".number_format($this->invoice_model->amount_paid)."</td></tr>"
 			."<tr><td>Retur Amount: </td><td>".number_format($this->invoice_model->retur_amount)."</td></tr>"
 			."<tr><td>CrDb Amount: </td><td>".number_format($this->invoice_model->crdb_amount)."</td></tr>"
@@ -575,6 +582,7 @@ class Invoice extends CI_Controller {
 		}
 		return $data;
 	}
+	function daftar_saldo(){}
 	function daftar_saldo_faktur()
 	{
 		$sql="select invoice_number,invoice_date,amount,company,due_date  
@@ -594,8 +602,9 @@ class Invoice extends CI_Controller {
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.quantity,p.cost 
-		,p.unit,p.price,p.discount,p.amount,p.line_number,p.revenue_acct_id,coa.account,coa.account_description
+		$sql="select p.item_number,i.description,p.quantity,
+		p.unit,p.price,p.discount,p.amount,p.line_number,p.revenue_acct_id,coa.account,
+		coa.account_description,p.disc_2,p.disc_3,p.cost 
 		from invoice_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		left join chart_of_accounts coa on coa.id=p.revenue_acct_id
@@ -606,11 +615,6 @@ class Invoice extends CI_Controller {
 	function recalc($nomor=''){
 		$nomor=urldecode($nomor);
 		if($nomor!=''){
-			if(($_GET['discount'])){
-				$sql="update invoice set discount=".$_GET['discount'].",sales_tax_percent=".$_GET['tax']
-				.",freight=".$_GET['freight'].",other=".$_GET['others']." where invoice_number='$nomor'";
-				$rs=mysql_query($sql);
-			}
 			
 			$saldo=$this->invoice_model->recalc($nomor);
 			
@@ -646,12 +650,14 @@ class Invoice extends CI_Controller {
 		echo datasource($s);
 	}
 	function unposting($nomor) {
+		if (!allow_mod2('_30165'))  exit;
 		$nomor=urldecode($nomor);
 		$message=$this->invoice_model->unposting($nomor);		
 		$this->view($nomor);
 	}
 	function posting($nomor)
 	{
+		if (!allow_mod2('_30165'))  exit;
 		$nomor=urldecode($nomor);
 		$message=$this->invoice_model->posting($nomor);
 		$this->view($nomor);
@@ -670,7 +676,7 @@ class Invoice extends CI_Controller {
 	}
 	function list_crdb($faktur)
 	{
-		$nomor=urldecode($nomor);
+		$faktur=urldecode($faktur);
 		$sql="select kodecrdb as nomor,tanggal, amount 
 			from crdb_memo i
 			where docnumber='$faktur'";
@@ -699,6 +705,7 @@ class Invoice extends CI_Controller {
 	}	
 	function save_pos()
 	{
+		$this->load->model("sales/promosi_model");
 		$data=$this->input->get();
         $id=$this->nomor_bukti();
 		$data_head['invoice_number']=$id;
@@ -715,41 +722,92 @@ class Invoice extends CI_Controller {
 			$this->nomor_bukti(true);
 			$arItems=$data['items'];
 			//arItem.push([td[0],td[1],td[2],q,p,t]);
+			//			arItem.push([td[0],td[1],td[2],t[3],q,p,t,d]);	
+
 			$total=0;
 			for($i=0;$i<count($arItems);$i++){
 				$detail=$arItems[$i];
 				$data_detail['invoice_number']=$id;
-				$data_detail['item_number']=$detail[0];
-				$data_detail['description']=$detail[1];
-				$data_detail['unit']=$detail[2];
-				$data_detail['quantity']=$detail[3];
-				$data_detail['price']=$detail[4];
-				$data_detail['amount']=$detail[5];
-				$this->db->insert("invoice_lineitems",$data_detail);
-				$total=$total+$detail[5];
+				$data_detail['item_number']=$detail[1];
+				$data_detail['description']=$detail[2];
+				$data_detail['unit']='';//$detail[2];
+				$data_detail['quantity']=$detail[4];
+				$data_detail['price']=$detail[5];
+				$data_detail['amount']=$detail[6];
+				$data_detail['discount']=$detail[7];
+				$this->invoice_lineitems_model->save($data_detail);
+				
+				if($qty_extra=$this->promosi_model->promo_qty_extra($data_detail['item_number'],$data_detail['quantity'])){
+					if($qty_extra>0){
+						$data_detail['description']="***extra ".$data_detail['description'];
+						$data_detail["quantity"]=$qty_extra;
+						$data_detail['price']=0;				$data_detail['amount']=0;
+						$data_detail['discount']=0;				$data_detail['discount_amount']=0;
+						$data_detail['disc_2']=0;				$data_detail['disc_amount_2']=0;
+						$data_detail['disc_3']=0;				$data_detail['disc_amount_3']=0;
+						$this->invoice_lineitems_model->save($data_detail);
+					}
+				}
+				
+				$total=$total+$detail[6];
 			}
-			$this->db->update("invoice",array("paid"=>1,"amount"=>$total));
+			$this->db->where('invoice_number',$id)
+				->update("invoice",array("paid"=>1,"amount"=>$total));
 			$payment=$data['payment'];
 			$cash=$payment['cash'];
 			$card=$payment['card'];
+			$debit=$payment['debit'];
 			$kembali=$cash-$total;
 			if($kembali>0){	
 				$cash=$cash-$kembali;
 			}
-			if($cash>0){
-				$this->db->insert("payments",array("invoice_number"=>$id,
-					"date_paid"=>date("Y-m-d H:i:s"),"how_paid"=>"CASH",
-					"amount_paid"=>$cash,"amount_alloc"=>$kembali));
-			}
-			if($payment['card']>0){
-				$this->db->insert("payments",array("invoice_number"=>$id,
-					"date_paid"=>date("Y-m-d H:i:s"),"how_paid"=>"CARD",
-					"amount_paid"=>$card,"amount_alloc"=>$kembali));
-			
-			}
+			$rec_pay["invoice_number"]=$id;
+			$rec_pay["date_paid"]=date("Y-m-d H:i:s");
+			$rec_pay["amount_alloc"]=$kembali;
+
+			$rec_pay["how_paid"]="CASH";
+			$rec_pay["amount_paid"]=$cash;
+			if($cash<>0) $this->payment_model->save_pos($rec_pay);
+			$rec_pay["how_paid"]="CARD";
+			$rec_pay["amount_paid"]=$card;
+			if($card<>0) $this->payment_model->save_pos($rec_pay);
+			$rec_pay["how_paid"]="DEBIT";
+			$rec_pay["amount_paid"]=$debit;
+			if($debit<>0) $this->payment_model->save_pos($rec_pay);
+
 			echo json_encode(array('success'=>true,'invoice_number'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));
 		}
 	}	
+	function edit_nota($invoice_number){
+		$data['success']=false;
+		$data['msg']="Invoice not found !";
+		if($q=$this->db->where("invoice_number",$invoice_number)
+			->get("invoice")){
+			if($r=$q->row()){
+				$data['invoice']=$r;
+				if($q=$this->db->where("invoice_number",$invoice_number)
+					->get("invoice_lineitems")){
+						$items=null;
+						foreach($q->result() as $r){
+							$items[]=$r;
+						}
+						$data['items']=$items;
+				}
+				if($q=$this->db->where("invoice_number",$invoice_number)
+					->get("payments")){
+						$payment=null;
+						foreach($q->result() as $r){
+							$payment[]=$r;
+						}
+						$data['payments']=$payment;
+				}
+				$data['success']=true;
+				$data['msg']="Invoice Found.";
+			}
+		}
+		echo json_encode($data);
+		
+	}
 }

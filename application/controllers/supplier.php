@@ -4,8 +4,7 @@ class Supplier extends CI_Controller {
 
     private $limit=10;
     private $offset=0;
-    private $sql="select supplier_number,supplier_name,
-                first_name,street,suite,country,state,city
+    private $sql="select supplier_number,supplier_name,city
                 from suppliers where 1=1";
     private $table_name='suppliers';
     private $file_view="purchase/supplier";
@@ -21,7 +20,8 @@ class Supplier extends CI_Controller {
         $this->load->model('chart_of_accounts_model');
 		$this->load->model('type_of_payment_model');
 		$this->load->model('sysvar_model');
-                
+		$this->load->library("list_of_values");
+        $this->load->model('syslog_model');        
 	}
 	function select($search=''){
 		$sql="select supplier_name,supplier_number, city,country
@@ -41,6 +41,22 @@ class Supplier extends CI_Controller {
 		$data['type_of_vendor_list']=$this->sysvar_model->value_list('type_of_vendor');
 		$data['active']='1';
 		$data['saldo']=0;
+
+		$setting['dlgBindId']="payment_terms";
+		$setting['dlgCols']=array( 
+			array("fieldname"=>"type_of_payment","caption"=>"Termin","width"=>"280px")
+		);
+		$setting['dlgRetFunc']="$('#payment_terms').val(row.type_of_payment);";
+		$data['lookup_payment_terms']=$this->list_of_values->render($setting);
+
+		$setting['dlgBindId']="type_of_vendor";
+		$setting['dlgCols']=array( 
+			array("fieldname"=>"type_id","caption"=>"Kode","width"=>"80px"),
+			array("fieldname"=>"type_name","caption"=>"Nama Kelompok","width"=>"200px")
+		);
+		$setting['dlgRetFunc']="$('#type_of_vendor').val(row.type_id+' - '+row.type_name);";
+		$data['lookup_type_of_vendor']=$this->list_of_values->render($setting);
+		
 		return $data;
 	}
 	function index()
@@ -75,11 +91,17 @@ class Supplier extends CI_Controller {
 		$data=$this->input->post();
 		$id=$this->input->post("supplier_number");
 		$mode=$data["mode"];
+		$data['supplier_account_number']=account_id($data['supplier_account_number']);
+		$data['acc_biaya']=account_id($data['acc_biaya']);		 
+		
 	 	unset($data['mode']);
 		if($mode=="add"){ 
 			$ok=$this->supplier_model->save($data);
+			$this->syslog_model->add($id,"supplier","add");
 		} else {
-			$ok=$this->supplier_model->update($id,$data);				
+			$ok=$this->supplier_model->update($id,$data);		
+			$this->syslog_model->add($id,"supplier","edit");
+			
 		}
 		if($ok){
 			echo json_encode(array("success"=>true));
@@ -95,8 +117,12 @@ class Supplier extends CI_Controller {
  		 $id=$this->input->post('supplier_number');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
+			$data['supplier_account_number']=account_id($data['supplier_account_number']);
+			$data['acc_biaya']=account_id($data['acc_biaya']);		 
 			$this->supplier_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"supplier","edit");
+
             $this->browse();
 		} else {
 			$message='Error Update';
@@ -105,6 +131,7 @@ class Supplier extends CI_Controller {
 	}
 	
 	function view($id="",$message=null){
+		if(!allow_mod2('_40010'))return false;
 		$id=urldecode($id);
 		if($id=="") { 
 			echo "Supplier Number not found !";
@@ -117,6 +144,8 @@ class Supplier extends CI_Controller {
 		 $data['id']=$id;
 		 $data['mode']='view';
 		 $data['message']=$message;
+		 $data['supplier_account_number']=account($data['supplier_account_number']);
+		 $data['acc_biaya']=account($data['acc_biaya']);		 
 		 $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
@@ -128,8 +157,8 @@ class Supplier extends CI_Controller {
 	{
         $data['caption']='DAFTAR MASTER SUPPLIER';
 		$data['controller']=$this->controller;		
-		$data['fields_caption']=array('Kode','Nama Supplier','Kontak','Alamat','Gedung','Negara','Provinsi','Kota');
-		$data['fields']=array('supplier_number','supplier_name','first_name','street','suite','country','state','city');
+		$data['fields_caption']=array('Kode','Nama Supplier','Kota');
+		$data['fields']=array('supplier_number','supplier_name','city');
 		$data['field_key']='supplier_number';
 		$data['list_info_visible']=true;
 		
@@ -158,29 +187,11 @@ class Supplier extends CI_Controller {
 		if($cnt){
 			echo json_encode(array("success"=>false,"msg"=>"Masih ada transaksi tidak bisa dihapus"));
 		} else {
+			$this->syslog_model->add($id,"supplier","delete");
 			echo json_encode(array("success"=>true,"msg"=>"Berhasil hapus supplier ini."));
 		}
 	}
-	function grafik_saldo_hutang(){
-		header('Content-type: application/json');
-		$data['label']="Saldo Hutang";
-		$data['data']=$this->supplier_model->saldo_hutang_summary();
-		echo json_encode($data);
-	}	
-	function grafik_saldo_hutang_old(){
-/* create_graph($konfigurasi_grafik, $data, $tipe_grafik, $judul_pd_grafik, $nama_berkas) */		
-		$phpgraph = $this->load->library('PhpGraph');		
-		$cfg['width'] = 300;
-		$cfg['height'] = 200;
-		$cfg['compare'] = false;
-		$cfg['disable-values']=1;
-		$chart_type='vertical-simple-column-graph';
-		$data=$this->supplier_model->saldo_hutang_summary();
-		$file="tmp/".$chart_type.".png";
-		$this->phpgraph->create_graph($cfg, $data,$chart_type,'Saldo Hutang Supplier',$file);
-		echo '<img src="'.base_url().'/'.$file.'"/>';
-		echo '*Display only top ten supplier';
-	}
+	
 	function kartu_hutang($supplier_number)
 	{
 		$supplier_number=urldecode($supplier_number);
@@ -241,5 +252,78 @@ class Supplier extends CI_Controller {
 		$data['sid_city']=$sid_city;
 		
 		$this->template->display_form_input('purchase/supplier_info_list',$data);	
+	}
+	function po_list($supplier_number)
+	{
+		$supplier_number=urldecode($supplier_number);
+		$date_from= $this->input->get('d1');
+		$date_from=  date('Y-m-d', strtotime($date_from));
+		$date_to= $this->input->get('d2');
+		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
+
+		$sql="select purchase_order_number,po_date,due_date,amount 
+			from purchase_order where potype='O' and  supplier_number='$supplier_number' 
+			and po_date between '$date_from' and '$date_to' order by po_date";
+
+        $query=$this->db->query($sql);
+		$row=null; 
+        $i=0;
+		if($query)foreach($query->result_array() as $row) {
+			$row['amount']=number_format($row['amount']);
+			$rows[$i++]=$row;
+		};	
+        $data['total']=$i;
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+
+	}
+	function invoice_list($supplier_number)
+	{
+		$supplier_number=urldecode($supplier_number);
+		$date_from= $this->input->get('d1');
+		$date_from=  date('Y-m-d', strtotime($date_from));
+		$date_to= $this->input->get('d2');
+		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
+
+		$sql="select purchase_order_number as invoice,po_date,due_date,amount,saldo_invoice,paid 
+			from purchase_order where potype='I' and  supplier_number='$supplier_number' 
+			and po_date between '$date_from' and '$date_to' order by po_date";
+
+        $query=$this->db->query($sql);
+		$row=null; 
+        $i=0;
+		if($query)foreach($query->result_array() as $row) {
+			$row['amount']=number_format($row['amount']);
+			$rows[$i++]=$row;
+		};	
+        $data['total']=$i;
+        $data['rows']=$rows;
+                    
+        echo json_encode($data);
+	}
+	function kelompok($action="",$key="",$value="")
+	{
+		$this->load->library("crud");
+		$this->crud->set_table("supplier_type");
+		$this->crud->set_controller("supplier/kelompok");
+		$this->crud->set_action($action,$key,$value);
+		if($action=="save" ){
+			$data=$this->input->post();
+			echo $this->crud->save($data);
+		} elseif ( $action=="delete" ) {
+			echo $this->crud->delete($key,$value);
+		} elseif ( $action=="edit" ) {
+			echo $this->crud->set_value($key,$value);
+			echo $this->crud->set_mode($action);
+			$data["content"]=$this->crud->render();
+			$this->template->display("blank", $data);
+		} elseif ( $action=="browse_data") {
+			$data=$this->input->post();
+			echo $this->crud->browse_data($data);				
+		} else {	// default browse
+			$data["content"]=$this->crud->render();
+			$this->template->display("blank",$data);
+		}		 
 	}
 }

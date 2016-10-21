@@ -11,7 +11,9 @@
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('assembly')">Help</div>
+		<div onclick="show_syslog('assembly','<?=$shipment_id?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -50,7 +52,9 @@
 	<label for="date_received" class="col-sm-3 control-label">Tanggal</label>
 		<div class="col-sm-8">
 			<input type="text" class="form-control easyui-datetimebox" id="date_received"
-			style="width:150px" name="date_received" value="<?=$date_received?>" placeholder="">
+			style="width:150px" name="date_received" value="<?=$date_received?>" 
+			data-options="formatter:format_date,parser:parse_date"
+			placeholder="">
 		</div>
 	</div>
 

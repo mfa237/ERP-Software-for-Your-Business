@@ -1,11 +1,11 @@
-<div style="margin:10px 0;"></div>
+<div style="margin:10px 0;padding:10px;"></div>
 	<ul class="easyui-tree">
 		<li>
 			<span>Sales Modules</span>
 			<ul>
 				<li>
 					<span>Operation</span>
-					<ul><li><span>Sales Order</span>
+					<ul><li   data-options="state:'closed'"><span>Sales Order</span>
 						<ul>
 							<li><?=anchor(base_url().'index.php/sales_order/add#new_so','Buat Sales Order','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/sales_order','Daftar Sales Order','class="info_link"  ');?></li>
@@ -13,7 +13,7 @@
 						</ul>
 						</li>
 					</ul>
-					<ul><li><span>Delivery Order</span><ul>
+					<ul><li   data-options="state:'closed'"><span>Delivery Order</span><ul>
 							<li><?=anchor(base_url().'index.php/delivery_order/add#new_do','Buat DO Baru','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/delivery_order','Daftar Delivery Order (DO)','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/delivery_order/add_from_so#add_from_so','Generate Dari SO','class="info_link"  ');?></li>
@@ -35,11 +35,20 @@
 							<li><?=anchor(base_url().'index.php/payment/print_more#print_more_payment','Cetak Banyak Payment','class="info_link"  ');?></li>
 						</ul></li>
 					</ul>
-					<ul><li><span>Sales Return Invoice</span><ul>
+					<ul><li   data-options="state:'closed'"><span>Sales Return Invoice</span><ul>
 							<li><?=anchor(base_url().'index.php/sales_retur/add#new_invoice_retur','Buat Sales Retur Baru','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/sales_retur','Daftar Sales Return','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/sales_retur/approval','Proses Approve Retur','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/sales_retur/print_more#print_more_retur','Cetak Banyak Retur','class="info_link"  ');?></li>
+						</ul></li>
+					</ul>
+					<ul><li   data-options="state:'closed'"><span>Promosi</span><ul>
+							<li><?=anchor(base_url().'index.php/so/promosi','Promosi Discount Penjualan','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/so/promosi_range','Promosi Discount Quantity','class="info_link"  ');?></li>
+							<li><?=anchor(base_url().'index.php/so/promosi_extra','Promosi Quantity Extra','class="info_link"  ');?></li>
+<!--							<li><?=anchor(base_url().'index.php/so/promosi_one_price','Promosi One Price','class="info_link"  ');?></li>
+-->
+							<li><?=anchor(base_url().'index.php/so/promosi_point','Promosi Point Reward','class="info_link"  ');?></li>
 						</ul></li>
 					</ul>
 				</li>
@@ -69,7 +78,7 @@
 			<li><?=anchor('sales/rpt/slsman_list','Daftar Salesman','class="info_link"' )?></li>
 					</ul>
 				</li>
-				<li  data-options="state:'closed'">
+				<li>
 					<span>Master</span>
 					<ul>
 			<li><?=anchor(base_url().'index.php/customer','Pelanggan','class="info_link"');?></li>

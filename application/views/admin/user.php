@@ -1,4 +1,3 @@
-<h4>USER MANAGEMENT</h4>
 <div class="thumbnail">
 	<?
 	echo link_button('Save', 'save()','save');		
@@ -13,6 +12,7 @@
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help()">Help</div>
+		<div onclick="show_syslog('user','<?=$id?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -27,7 +27,7 @@
 		
 
 <?php echo validation_errors(); ?>
-<div class="col-sm-4 col-md-5" >	
+<div class="col-md-10" >	
 	<form id="frmUser"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
    <?php 
@@ -37,7 +37,7 @@
 			$disabled='';
    		}
    ?> 
-   <table>
+   <table class='table'>
 	<tr><td>User ID </td>
 		<td>
 			<?php
@@ -47,57 +47,33 @@
 				echo form_input('user_id',$id,"id='user_id'");
 			}		
 		?></td>
+		<td>Supervisor</td><td><?php echo form_dropdown('supervisor',$supervisor_list,$supervisor,"id=supervisor");?></td>
 	</tr>	 
-    <tr><td>Username &nbsp&nbsp</td><td><?php echo form_input('username',$username,"id=username");?></td></tr>
-	<tr><td>Password </td><td><?php echo form_input('password',$password,"id=password");?></td></tr> 
-	<tr><td>CID</td><td><?php echo form_input('cid',$cid,"id=cid");?></td></tr>       	
-	 <tr><td>&nbsp;</td></tr>
-	<tr><td colspan='6'>
-		</td>
+    <tr><td>Username &nbsp&nbsp</td><td><?php echo form_input('username',$username,"id=username");?></td>
+		<td>CID </td><td><?php echo form_input('cid',$cid,"id=cid");?></td>
 	</tr>
+	<tr><td>Password </td><td><?php echo form_input('password',$password,"id=password");?></td>
+		<td>Cabang</td><td><?php echo form_dropdown('branch_code',$branch_list,$branch_code,"id=branch_code");?></td>       	
+	</tr> 
    </table>	
 	</form>
-	<div class='thumbnail' style='min-height:100px;min-width:200px'>
-		<h5>User Icon</h5>
-		<?=form_open_multipart(base_url()."index.php/user/do_upload_picture","id='frmUpload'");?>
-		<input type='hidden' id='user_id_image'  name='user_id_image'  value='<?=$id?>'>
-		<input type="file" name="userfile" id="userfile" size="20" title="Pilih Gambar" stye="float:left" />
-		<input type="button" value="Submit" onclick="do_upload()">  
-		<?="</form>"?>
-		<div id='error_upload'></div>
-		<div id='divGambar'>
-			<img width=200 height=200 src='<?=base_url()?>tmp/<?=$path_image?>'/>
-			<? echo $path_image ?>
-		</div>
+</div>
+<div class="easyui-tabs">
+	<div title="User Jobs" style="padding:10px">
+		<?=load_view("admin/user_job_widget.php")?>
+	</div>
+	<div title="Picture" style="padding:10px">
+		<?=load_view("admin/user_foto_widget.php")?>
+	</div>
+	<div title="Division" style="padding:10px">
+		<?=load_view("admin/user_roles_widget.php")?>
+	</div>
+	<div title="Warehouse" style="padding:10px">
+		<?=load_view("admin/user_roles_gudang_widget.php")?>
 	</div>
 </div>
-<div class='col-sm-6 thumbnail'>
-  <p><i>Silahkan cari job yang diinginkan dengan tombol search, 
-  kemudian tekan tombol add job untuk menambahkan job untuk user 
-  yang bersangkutan.</i></p>
-  Pilih Job : <input type='text' name='txtJob' id='txtJob' style='width:100px'>
-  <?=link_button('','lookup_job()','search');?>
-  <?=link_button('Add','add_job()','save');?>
-		<table id="dgJob" class="easyui-datagrid"  
-			data-options="
-				iconCls: 'icon-edit',
-				singleSelect: true,  
-				url: '<?=base_url()?>index.php/user/list_job/<?=$id?>',toolbar:'#cmdJobUser',
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'group_id',width:80">Kode</th>
-					<th data-options="field:'user_group_name',width:200">Nama Job</th>
-				</tr>
-			</thead>
-		</table>  
-</div>
-<div id='cmdJobUser'>
- <?=link_button('Remove','delete_job()','remove');?>
-</div>
-<?=load_view('admin/select_job')?>   	
 
-    <script language='javascript'>
+<script language='javascript'>
 	var url;	
  
   	function save(){
@@ -124,66 +100,8 @@
 				}
 			});
   	}
-  	function do_upload()
-	{
-		var xurl='<?=base_url()?>index.php/user/do_upload_picture';
-		$('#frmUpload').form('submit',{
-			url: url,
-			onSubmit: function(){
-				return $(this).form('validate');
-			},
-			success: function(result){
-				console.log(result);
-				var result = eval('('+result+')');
-				if (result.success){
-					
-					//$.messager.show({
-					//	title:'Success',msg:'Data sudah tersimpan. Silahkan simpan formulir ini.'
-					//});
-					
-					var upload_data=result.upload_data;
-					$('#divGambar').html("<img src='<?=base_url()?>tmp/"+upload_data['file_name']+"'>");
-				} else {
-					$('#error_upload').html(result.error);
-				}
-			}
-		});
-	}
-	function add_job() {
-		var user_id=$("#user_id").val();
-		var job=$("#txtJob").val();
-		var url='<?=base_url()?>index.php/user/add_job';
-		if(user_id==""){alert('Isi user id dulu.');return false;}
-		if(job==""){alert('Pilih job terlebih dahulu.');return false;}
-		$.ajax({
-			type: "GET",
-			url: url,
-			data:'user_id='+user_id+'&job='+job,
-			success: function(msg){
-				$('#dgJob').datagrid('reload');
-				$('#txtJob').val('');
-			},
-			error: function(msg){alert(msg);}
-		});
-	}
-	function delete_job(){
-		var user_id=$("#user_id").val();
-		row = $('#dgJob').datagrid('getSelected');
-		if (row){
-			xurl=CI_ROOT+'user/del_job/'+user_id+'/'+row['group_id'];                             
-			console.log(xurl);
-			xparam='';
-			$.ajax({
-				type: "GET",
-				url: xurl,
-				param: xparam,
-				success: function(msg){
-					$('#dgJob').datagrid('reload');
-				},
-				error: function(msg){$.messager.alert('Info',msg);}
-			});         
-		}
-	}
+
+
 	function delete_user() {
 		$.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
 			if (r){
@@ -195,4 +113,4 @@
 	}
 
 </script>
-   
+

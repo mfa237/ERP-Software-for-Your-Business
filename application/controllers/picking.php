@@ -11,7 +11,7 @@ private $limit=10;
  		$this->load->helper(array('url','form'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
-	 
+		$this->load->model('syslog_model');
 	}
 	function index()
 	{	

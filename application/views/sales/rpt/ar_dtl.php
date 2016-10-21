@@ -72,7 +72,7 @@
 					$tbl.="<td align='right'>".number_format($z_jumlah)."</td>";
 					$tbl.="</tr>";
 					
-					$sql="select i.customer_number,i.tanggal,i.jenis,i.ref,jumlah,i.no_bukti 
+					$sql="select i.customer_number,i.tanggal,i.jenis,i.ref,jumlah,i.nobukti 
 					 from qry_kartu_piutang i where i.tanggal between '$date1' and '$date2'"; 
 					$sql.=" and i.customer_number='".$row_cst->customer_number."'";
 					$sql.=" order by i.customer_number,i.tanggal";
@@ -93,7 +93,7 @@
 						$tbl.="<tr>";
 						$tbl.="<td>".$row->tanggal."</td>";
 						$tbl.="<td>".$row->jenis."</td>";
-						$tbl.="<td>".$row->no_bukti."</td>";
+						$tbl.="<td>".$row->nobukti."</td>";
 						$tbl.="<td>".$row->ref."</td>";
 						$tbl.="<td align='right'>".number_format($db)."</td>";
 						$tbl.="<td align='right'>".number_format($cr)."</td>";

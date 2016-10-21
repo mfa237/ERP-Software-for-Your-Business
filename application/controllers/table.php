@@ -22,7 +22,19 @@ class Table extends CI_Controller {
 		} else {
 			echo json_encode(array("exist"=>false));
 		}
-		
     }
+	function load($table)
+	{
+		$retval=false;
+		$data=null;
+		if($q=$this->db->get($table)){
+			foreach($q->result_array() as $row)
+			{
+				$data[]=$row;
+			}
+			$retval=true;
+		}
+		echo json_encode(array("success"=>$retval,"data"=>$data));
+	}
  }
 	 

@@ -118,8 +118,8 @@ class Counter extends CI_Controller {
 		$this->load->library('search_criteria');
 		$faa[]=criteria("Nama Counter","sid_nama","","style='width:400px'");
 		$data['criteria']=$faa;
-		$data['fields_caption']=array('Kode','Nama Counter','Area','Sales Agent','Telfon','Alamat');
-		$data['fields']=array('counter_id','counter_name','area','sales_agent','phone','address');
+		$data['fields_caption']=array('Kode','Nama Counter','Area','Nama Area','Sales Agent','Telfon','Alamat');
+		$data['fields']=array('counter_id','counter_name','area','area_name','sales_agent','phone','address');
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){

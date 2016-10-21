@@ -17,6 +17,7 @@ class Gl extends CI_Controller {
         $this->load->library('javascript');
         $this->load->library('template');
 		$this->load->library('form_validation');
+		$this->load->model('syslog_model');
 	}
     function index(){	
 	}
@@ -38,7 +39,10 @@ class Gl extends CI_Controller {
 				 $data['date_to']=date('Y-m-d 23:59:59');
 				 $data['select_date']=true;
 				 break;
-			 
+			 case "jurnal_not_balance":
+				$data["select_date"]=false;
+				$data['criteria1']=false;
+				break;
 			 default:
 				 
 				 break;
@@ -94,6 +98,6 @@ class Gl extends CI_Controller {
 	function reports(){
 		$this->template->display('gl/menu_reports');
 	}
-	
+ 	
 }
 ?>

@@ -1,9 +1,9 @@
-<table id="dgItems" class="easyui-datagrid"  
+<table id="dgItems" class="easyui-datagrid"
 	style="width:auto;min-height:200px"
 	data-options="
 		iconCls: 'icon-edit',
 		singleSelect: true,
-		toolbar: '#tbItems',
+		toolbar: '#tbItems',fitColumns: true, 
 		url: '<?=base_url()?>index.php/leasing/app_master/items/<?=$app_id?>'
 	">
 	<thead>
@@ -28,9 +28,11 @@
 <div id='tbItems'>
 <?
 if($show) {
-	echo link_button('Add', 'dgItem_Add()','add');
-	echo link_button('Edit', 'dgItem_Edit()','edit');
-	echo link_button('Delete', 'dgItem_Delete()','remove');
+	if($readonly==""){
+		echo link_button('Add', 'dgItem_Add()','add');
+		echo link_button('Edit', 'dgItem_Edit()','edit');
+		echo link_button('Delete', 'dgItem_Delete()','remove');
+	}
 	echo link_button('Refresh', 'dgItem_Refresh()','reload');
 }
 ?>

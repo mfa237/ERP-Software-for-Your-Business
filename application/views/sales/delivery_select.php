@@ -1,5 +1,5 @@
 <div id='dlgSelectDo'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#toolbar-search-do">
+     closed="true" toolbar="#toolbar-search-do">
 	<table id="dgSelectDo" class="easyui-datagrid"  width='100%'
 		data-options="
 			toolbar: '', fitColumns: true,

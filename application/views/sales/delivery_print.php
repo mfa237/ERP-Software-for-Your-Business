@@ -10,7 +10,7 @@
  <div id='container'>
    <div class='box6'>
     <?=$header?> 
-   <h1 style="text-align: center"SURAT JALAN</H1>
+   <h1> style="text-align: center"SURAT JALAN</h1>
 <table>     
     <tr><td>Nomor</td>
         <td><?='<h2>'.$invoice_number.'</h2>';?></td>        

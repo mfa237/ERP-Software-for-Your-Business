@@ -30,19 +30,27 @@ function __construct(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
+		if($data['payment_amount']==0 and $data['deposit_amount']==0){
+			//echo "Isi jumlah bayar !";
+			return false;
+		};
 		if(isset($data['check_date']))$data['check_date']= date('Y-m-d H:i:s', strtotime($data['check_date'])); 
 		if(isset($data['cleared_date']))$data['cleared_date']= date('Y-m-d H:i:s', strtotime($data['cleared_date'])); 
 		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
-		echo mysql_error();
+		$ok=$this->db->insert_id();
+		if(!$ok){
+			echo mysql_error();
+		}
+		return $ok;
 	}
 	function update($id,$data){
-		 
 		if(isset($data['check_date']))$data['check_date']= date('Y-m-d H:i:s', strtotime($data['check_date'])); 
 		if(isset($data['cleared_date']))$data['cleared_date']= date('Y-m-d H:i:s', strtotime($data['cleared_date'])); 
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
-		echo mysql_error();
+		if(!$ok = $this->db->update($this->table_name,$data)){
+			echo mysql_error();
+		}
+		return $ok;
 	}
 	function delete($id){
 
@@ -172,5 +180,55 @@ function __construct(){
 		$this->update($voucher,$data);
 		
 	}
+	function posting_range_date($date_from,$date_to,$type=0){
+		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('company_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select voucher from check_writer  
+		where check_date between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		order by voucher";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				
+				echo "<br>Posting...".$r_inv_hdr->voucher;
+				$this->posting($r_inv_hdr->voucher);
+						
+			} // foreach rst_inv_hdr
+		} // if rst_inv_hdr
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		Apabila ada kesalahan silahkan periksa mungkin seting akun-akun belum benar, 
+		atau jurnal tidak balance. Silahkan cek ke nomor bukti yang bersangkutan 
+		dan posting secara manual atau ulangi lagi 
+		<a class='btn btn-primary' href='#' onclick='window.history.go(-1); return false;'> Go Back </a>.
+		<p>&nbsp</p><p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+			
+	} // posting	
+	function unposting_range_date($date_from,$date_to,$type=0){
+		$this->load->model('jurnal_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select voucher from check_writer  
+		where check_date  between '$date_from' and '$date_to' and posted=true 
+		order by voucher";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				$this->unposting($r_inv_hdr->voucher);
+				echo "<br>Delete Jurnal: ".$r_inv_hdr->voucher;
+			}
+		}
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		<p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+	}
+	
 
 }

@@ -11,6 +11,7 @@ if(isset($mode)){
 		<? 
 		
 		include_once "cust_master_form_top.php" ?>	
+		<p class='alert alert-warning'><i>*** pastikan simpan dulu sebelum isi detail *** </i></p>
 		
 		<div class="easyui-tabs" >
 			<div title='DATA PRIBADI' class='  box-gradient'><? 
@@ -19,8 +20,12 @@ if(isset($mode)){
 			
 			<div title='PENGHASILAN'><? include_once "penghasilan.php" ?></div>
 			<div title='PEKERJAAN'><? include_once "pekerjaan.php" ?></div>
-			<div title='ALAMAT'><? include_once "alamat.php" ?></div>
-			<div title='KARTU KREDIT'><? include_once "kartukredit.php" ?></div>
+			<div title='ALAMAT'><? 
+				if($mode=='view' or $mode=='edit') include_once "alamat.php" 
+			?></div>
+			<div title='KARTU KREDIT'><? 
+				if($mode=='view' or $mode=='edit') include_once "kartukredit.php" 
+			?></div>
 			<div title='DATA LAINNYA'>
 				<div class='col-sm-6'>
 				<table width='100%' style="border:none">

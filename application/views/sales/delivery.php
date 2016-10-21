@@ -84,7 +84,9 @@
        <tr>
 		<td>Tanggal</td><td><?php 
                 if($mode=='add')echo form_input('date_received',$date_received,
-				'class="easyui-datetimebox" required ');?>
+				'class="easyui-datetimebox" required 
+				data-options="formatter:format_date,parser:parse_date"
+				');
                 else echo $date_received;
                 ?></td>
        </tr>

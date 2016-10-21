@@ -11,7 +11,9 @@
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('work_exec')">Help</div>
+		<div onclick="show_syslog('work_exec','<?=$work_exec_no?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -61,8 +63,14 @@
 				<?=link_button('','lookup_work_order()','search');?>
 				</td>
 			</tr>
-			<tr><td>Start Date</td><td><?=form_input("start_date",$start_date,"id='start_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
-			<tr><td>Expect Date</td><td><?=form_input("expected_date",$expected_date,"id='expected_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
+			<tr><td>Start Date</td><td><?=form_input("start_date",$start_date,
+                                "id='start_date' 
+			data-options='formatter:format_date,parser:parse_date'
+			class='easyui-datetimebox' style='width:150px'")?></td></tr>
+			<tr><td>Expect Date</td><td><?=form_input("expected_date",$expected_date,
+                                "id='expected_date' class='easyui-datetimebox' 
+			data-options='formatter:format_date,parser:parse_date'
+			style='width:150px'")?></td></tr>
 			<tr><td>Department</td><td><?=form_dropdown("dept_code",$dept_list,$dept_code,"id='dept_code' style='height:25px'")?></td></tr>
 			<tr><td>Person</td><td><?=form_dropdown("person_in_charge",$person_list,$person_in_charge,"id='person_in_charge' style='height:25px'")?></td></tr>
 			<tr><td>Status</td><td><?=form_input("status",$status,"id='status'")?></td></tr>

@@ -13,18 +13,7 @@
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
      <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>KARTU HUTANG SUMMARY</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
+     	<td colspan='2'><h2>KARTU HUTANG SUMMARY</h2></td>     	
      </tr>
      <tr>
      	<td>

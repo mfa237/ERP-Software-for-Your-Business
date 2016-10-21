@@ -17,7 +17,9 @@ class Country extends CI_Controller {
 		if($this->controller=="")$this->controller=$this->file_view;
 		if($this->sql=="")$this->sql="select * from ".$this->table_name;
 		$this->load->model('country_model');
+		$this->load->model('syslog_model');		
 		$this->fields=$this->country_model->fields;
+		
     }
     function set_defaults($record=NULL){
 		$data['mode']='';
@@ -54,8 +56,10 @@ class Country extends CI_Controller {
 		$id=$this->input->post("country_id");
 		$mode=$data["mode"];	unset($data['mode']);
 		if($mode=="add"){ 
+			$this->syslog_model->add($id,"country","add");
 			$ok=$this->country_model->save($data);
 		} else {
+			$this->syslog_model->add($id,"country","edit");
 			$ok=$this->country_model->update($id,$data);				
 		}
 		if($ok){
@@ -109,6 +113,7 @@ class Country extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->country_model->delete($id);
+		$this->syslog_model->add($id,"country","delete");
 		$this->browse();
 	}
 	function find($nomor){

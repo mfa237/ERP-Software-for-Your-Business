@@ -2,21 +2,39 @@
 ::moz-selection{ background-color: #E13300; color: white; }
 ::webkit-selection{ background-color: #E13300; color: white; }
 
- 
 a.l-btn span.l-btn-left {
   height: 24px;
 }
 body {
-    font-family:helvetica,tahoma,verdana,sans-serif;
+    font-family: tahoma,helvetica,verdana,sans-serif;
     padding:5px;
     margin:0 auto;
 	--width: auto; 
 	background-color: #E9E7E7;
 }
+ 
+input,select {
+	padding:3px;
+	margin:2px;
+    border: solid 1px #E6E6F5;
+    border-radius: 3px; 
+}
+input[type="radio"], input[type="checkbox"] {
+    line-height: normal;
+    margin-right: 10px;
+    margin-left: 10px;
+	margin-top:3px;
+	margin-bottom:3px;
+}
+.logo-maxon {
+	background: url('images/logo_maxon.png') no-repeat;
+}
+ 
 .navbar-maxon {
 	background-color: #D9E5F0;
 	color:#fff;
 	border:1px solid black;
+	margin-bottom:1px;
 }
  
 .clear				{ clear: both; }

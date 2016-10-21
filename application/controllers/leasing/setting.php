@@ -138,26 +138,29 @@ class Setting extends CI_Controller {
 			}		
 			
 		}	
-		$set=$this->company_model->get_by_id($this->access->cid)->row();
+		$set=null;
+		if( $q=$this->company_model->get_by_id()) {
+			$set=$q->row();
+		}
 	 
-		$data['accounts_payable']=account($set->accounts_payable);
-		$data['inventory_sales']=account($set->inventory_sales);
-		$data['inventory']=account($set->inventory);
-		$data['inventory_cogs']=account($set->inventory_cogs);
-		$data['accounts_receivable']=account($set->accounts_receivable);
-		$data['default_cash_payment_account']=account($set->default_cash_payment_account);
-		$data['default_bank_account_number']=account($set->default_bank_account_number);
+		$data['accounts_payable']=(!$set)?'':account($set->accounts_payable);
+		$data['inventory_sales']=(!$set)?'':account($set->inventory_sales);
+		$data['inventory']=(!$set)?'':account($set->inventory);
+		$data['inventory_cogs']=(!$set)?'':account($set->inventory_cogs);
+		$data['accounts_receivable']=(!$set)?'':account($set->accounts_receivable);
+		$data['default_cash_payment_account']=(!$set)?'':account($set->default_cash_payment_account);
+		$data['default_bank_account_number']=(!$set)?'':account($set->default_bank_account_number);
 
-		$data['txtUangMukaBeli']=account($this->sysvar->getvar('COA Uang Muka Pembelian'));
-		$data['txtUangMukaJual']=account($this->sysvar->getvar('COA Uang Muka Penjualan'));
+		$data['txtUangMukaBeli']=(!$set)?'':account($this->sysvar->getvar('COA Uang Muka Pembelian'));
+		$data['txtUangMukaJual']=(!$set)?'':account($this->sysvar->getvar('COA Uang Muka Penjualan'));
 		
-		$data['ar_bunga']=account($this->sysvar->getvar('COA Piutang Bunga'));
-		$data['sales_leasing']=account($this->sysvar->getvar('COA Pendapatan Leasing'));
-		$data['sales_bunga']=account($this->sysvar->getvar('COA Pendapatan Bunga'));
-		$data['sales_admin']=account($this->sysvar->getvar('COA Pendapatan Admin'));
-		$data['sales_denda']=account($this->sysvar->getvar('COA Pendapatan Denda'));
-		$data['sales_dp']=account($this->sysvar->getvar('COA Pendapatan DP'));
-		$data['leasing_inventory']=account($this->sysvar->getvar('COA Persediaan Leasing'));
+		$data['ar_bunga']=(!$set)?'':account($this->sysvar->getvar('COA Piutang Bunga'));
+		$data['sales_leasing']=(!$set)?'':account($this->sysvar->getvar('COA Pendapatan Leasing'));
+		$data['sales_bunga']=(!$set)?'':account($this->sysvar->getvar('COA Pendapatan Bunga'));
+		$data['sales_admin']=(!$set)?'':account($this->sysvar->getvar('COA Pendapatan Admin'));
+		$data['sales_denda']=(!$set)?'':account($this->sysvar->getvar('COA Pendapatan Denda'));
+		$data['sales_dp']=(!$set)?'':account($this->sysvar->getvar('COA Pendapatan DP'));
+		$data['leasing_inventory']=(!$set)?'':account($this->sysvar->getvar('COA Persediaan Leasing'));
 		return $data;
 	}	
 }

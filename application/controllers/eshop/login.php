@@ -3,22 +3,35 @@
 class Login extends CI_Controller {
 	private $success=false;
 	private	$message="";
+ 
 
 	function __construct()
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-		$this->load->library('template');
+		$this->load->library('template_eshop');
+		 
 	}
 	function index() {	
-		$data['caption']="User Login";
-		$this->template->display_eshop("eshop/login",$data);
+		$data['caption']="Home Page";
+		$data['content']=true;
+		$data['slider']=true;
+		$data['footer']='footer';
+		$data['sidebar']='category_list';
+		$this->template_eshop->display("home",$data);
+	}
+	function start() {	
+		$data['caption']="Login";
+		$data['content']=true;
+		$data['footer']='footer';
+		$this->template_eshop->display("login",$data);
 	}
 	function verify() {
 		$cust_id=$this->input->post('cust_id');
 		$cust_pass=$this->input->post('cust_pass');
 		$ok=false;
 		$message="Username tidak dikenal atau password salah.!";
+		$user_admin="";
 		if($q=$this->db->select("company,first_name,phone,email,city,password")
 			->where("customer_number",$cust_id)
 			->get("customers"))
@@ -34,15 +47,14 @@ class Login extends CI_Controller {
 					$this->session->set_userdata("cust_name",$row->company);
 					$this->session->set_userdata("cust_first_name",$row->first_name);
 					$this->session->set_userdata("cust_city",$row->city);
-					
 					// check if this user as admin for backend application ?
 					$this->load->model("user_jobs_model");
-					$this->session->set_userdata("user_admin",
-						$this->user_jobs_model->is_job("ADM",$cust_id));
+					$user_admin=$this->user_jobs_model->is_job("ADM",$cust_id);
+					$this->session->set_userdata("user_admin",$user_admin);
 				}
 			}
 		}
-		$data=array("success"=>$ok,"message"=>$message);
+		$data=array("success"=>$ok,"message"=>$message,"user_admin"=>$user_admin);
 		echo json_encode($data);
 	}
 	function logout(){
@@ -51,6 +63,9 @@ class Login extends CI_Controller {
 		$this->session->unset_userdata("cust_name");
 		$this->session->unset_userdata("cust_first_name");
 		$this->session->unset_userdata("cust_city");
+		$this->session->unset_userdata("user_admin");
+		$this->session->unset_userdata("so_number");
+		$this->session->unset_userdata('cart');	
 		header("Location:".base_url()."index.php/eshop/home");
 	}
 }

@@ -20,6 +20,7 @@ class Purchase_DbMemo extends CI_Controller {
 		$this->load->model('crdb_model');
 		$this->load->model('supplier_model');
 		$this->load->model('purchase_order_model');
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -83,6 +84,7 @@ class Purchase_DbMemo extends CI_Controller {
 	
 	function add()
 	{
+		if(!allow_mod2('_40101'))return false;   
 		$data=$this->set_defaults();
 		$data['kodecrdb']=$this->nomor_bukti();
 		$data['tanggal']=date('Y-m-d');
@@ -108,10 +110,13 @@ class Purchase_DbMemo extends CI_Controller {
 			$data['transtype']=$this->input->post('transtype');
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
+			$this->syslog_model->add($data['kodecrdb'],"crdb","edit");
+
 		} else {echo 'Save: Invalid Invoice Number';}
 	
 	}
 	function view($id,$message=null){
+		if(!allow_mod2('_40100'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
@@ -149,6 +154,8 @@ class Purchase_DbMemo extends CI_Controller {
 	function delete($nomor) {
 		$nomor=urldecode($nomor);
 		$this->crdb_model->delete($nomor);
+		$this->syslog_model->add($nomor,"crdb","delete");
+
 	}
 	function posting_all() {
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));

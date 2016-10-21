@@ -6,7 +6,7 @@
 if ( ! function_exists('browse_select'))
 {
     function browse_select($sql_array,$caption='',$class='',
-            $field_key='',$offset=0,$limit=20
+            $field_key='',$offset=0,$limit=200
             ,$order_column='',$order_type='asc',$show_action=true)
     {
         $fields_input='';
@@ -32,25 +32,37 @@ if ( ! function_exists('browse_select'))
            if(isset($sql_array['group_by']))$group_by=$sql_array['group_by']; 
 		   
         };
-        
-        //echo '<script src="'.base_url().'public/js/browse.js"></script>';
-        //echo '<script src="'.base_url().'public/ui/jquery-1.8.0.min.js"></script>';
         $CI =& get_instance();
         $CI->load->library('template');
         $CI->load->library('table');
-        $i=0+$offset;        
-        $query=$CI->db->query($sql.' limit 1');
-        $result = mysql_query($sql.' limit 1');
-        $count = mysql_num_fields($result);
-        $type[0]='';$flds[0]='';            
-        for ($i=0; $i < $count; $i++) {
-            $type[$i]  = mysql_field_type($result, $i);
-            $flds[$i]  = mysql_field_name($result, $i);
-            $len   = mysql_field_len($result, $i);
-            $flags = mysql_field_flags($result, $i);
-            //echo $type . " " . $name . " " . $len . " " . $flags . "\n";
-        }
-
+        $i=0+$offset;
+		$count=0;
+		$type=array();	$name=array();	$len=array(); $flag=array();
+		$fld=array();	$flds=array();
+		if( substr(CI_VERSION,0,1)== '2' ) {
+			$query=$CI->db->query($sql.' limit 1');
+			$result = mysql_query($sql.' limit 1');
+			$count = mysql_num_fields($result);
+			$type[0]='';$flds[0]='';            
+			for ($i=0; $i < $count; $i++) {
+				$type[$i]  = mysql_field_type($result, $i);
+				$flds[$i]  = mysql_field_name($result, $i);
+				$len   = mysql_field_len($result, $i);
+				$flags = mysql_field_flags($result, $i);
+				//echo $type . " " . $name . " " . $len . " " . $flags . "\n";
+			}
+		} else {
+			$query=$CI->db->query($sql.' limit 1');
+			if($fields=$query->field_data()){
+				foreach($fields as $fld){
+					$type[]=$fld->type;
+					$name[]=$fld->name;
+					$flds[]=$fld->name;
+					$len[]=$fld->max_length;
+					$count++;
+				}
+			}		
+		}
         $where='';
         for($i=0;$i<$count;$i++){
             $fld=$flds[$i];
@@ -66,6 +78,8 @@ if ( ! function_exists('browse_select'))
             $fld=ucfirst(str_replace('_',' ',$fld));
             
             if(!$lhide)  $flds2[$i]=$fld;
+			 
+			
 
             if(isset($_GET[$flds[$i]])){
                 $val=$_GET[$flds[$i]];
@@ -89,15 +103,14 @@ if ( ! function_exists('browse_select'))
                 $sql=$sql.' WHERE '.$where;                
             }
             if($order_column!='') $sql=$sql.' ORDER BY '.$order_column.' '.$order_type;
-            $sql=$sql.' limit '.$offset*$limit.', '.$limit;
+            //$sql=$sql.' limit '.$offset*$limit.', '.$limit;
             $query=$CI->db->query($sql);
         } else {
             if($order_column!='') $sql=$sql.' ORDER BY '.$order_column.' '.$order_type;
-            $sql=$sql.' limit '.$offset*$limit.', '.$limit;
+            //$sql=$sql.' limit '.$offset*$limit.', '.$limit;
             $query=$CI->db->query($sql);
             
         }
-        //echo $sql;
         if($show_action){ 
             if($caption!='')$flds2[$i++]='Action';else $flds2[$i++]='Act';
         }
@@ -110,8 +123,10 @@ if ( ! function_exists('browse_select'))
 		}
 		$eof=false;
 		$rows=$query->result_array();
+
 		$k=0;
 		$old_val="";$new_val="";
+		//echo "<h1>".count($rows)."</h1>";
 		if(count($rows)){
 		$row=$rows[$k];
         while( ! $eof and $k<count($rows) ){
@@ -148,7 +163,13 @@ if ( ! function_exists('browse_select'))
 						}
 						if(!$lhide){
 							if($type[$i]=='real'){
-								$newrow[$i]= '<div align="right">'.number_format($row[$fld]).'</div>';
+								$val=$row[$fld];
+								if($val>0 and $val<1){
+									$val=number_format($val,2);
+								} else {
+									$val=number_format($val);
+								}
+								$newrow[$i]= '<div align="right">'.$val.'</div>';
 							} else {
 								$newrow[$i]=$row[$fld];
 							}
@@ -195,11 +216,15 @@ if ( ! function_exists('browse_select'))
 					if($k<count($rows)){
 						$row=$rows[$k];
 						$eof = ! $row;
+					}
+					if($row){
 						if($group_by1){
 							$new_val=$row[$group_by1];
 						}
 					}
+					
 				}
+				
 				if($group_by1){
 					if(isset($fields_sum[0])){
 //						$CI->table->add_row("<strong>Sub total  $group_by1 : $old_val Rp. ".$sub_ttl[$fields_sum[0]]."</strong>");
@@ -215,6 +240,8 @@ if ( ! function_exists('browse_select'))
 						$CI->table->add_row($s2);						
 					}
 				}
+			
+			
 			}
         };
 		}

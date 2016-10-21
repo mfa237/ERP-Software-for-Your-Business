@@ -16,6 +16,7 @@ public $tax=0;
 function __construct(){
 	parent::__construct();
 }
+ 
 function recalc($nomor){
 	
     $this->load->model('payment_model');
@@ -150,7 +151,7 @@ function update($id,$data){
 		$gudang=$data['warehouse_code'];	
 		$this->db->query("update invoice_lineitems set warehouse_code='$gudang' 
 		where invoice_number='$id'");			
-		unset($data['warehouse_code']);
+		//unset($data['warehouse_code']);
 	}
 	if(isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
 	if(isset($data['due_date']))$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
@@ -185,7 +186,8 @@ function delete($id){
         $query=$this->db->query("delete from invoice_lineitems
             where line_number=".$line);
     }
-	function save_from_so_items($faktur,$qty_order,$from_so_line,$gudang,$ship_date){
+	function save_from_so_items($faktur,$qty_order,$from_so_line,$gudang,
+		$ship_date,$qty_unit){
 		$this->load->model('sales_order_lineitems_model');
 		$this->load->model('inventory_model');
 		$this->load->model('invoice_lineitems_model');
@@ -196,16 +198,33 @@ function delete($id){
 			if($line_number>0){
 				if($qty_do>0) {
 					$so=$this->sales_order_lineitems_model->get_by_id($line_number)->row();
-					$item=$this->inventory_model->get_by_id($so->item_number)->row();
+					$unit="Pcs";
+					if($item=$this->inventory_model->get_by_id($so->item_number)->row()){
+						$unit=$item->unit_of_measure;
+					}
 					
 					$data['invoice_number']=$faktur;
 					$data['item_number']=$so->item_number;
 					$data['description']=$so->description;
 					$data['unit']=$so->unit;
-					if($data['unit']=='')$data['unit']=$item->unit_of_measure;
+					if($qty_unit[$i]!=""){
+						$data['unit']=$qty_unit[$i];
+					}
+					if($data['unit']=='')$data['unit']=$unit;
+					
+					
+					
 					$data['quantity']=$qty_do;
 					$data['price']=$so->price;
 					$data['discount']=$so->discount;
+					$data['discount_amount']=$so->discount_amount;
+					$data['disc_2']=$so->disc_2;
+					$data['disc_amount_2']=$so->disc_amount_2;
+					$data['disc_3']=$so->disc_3;
+					$data['disc_amount_3']=$so->disc_amount_3;
+					$data['mu_qty']=$so->mu_qty;
+					$data['mu_harga']=$so->mu_harga;
+					$data['multi_unit']=$so->multi_unit;
 					
 					$data['amount']=$data['quantity']*$data['price'];
 					$data['warehouse_code']=$gudang;	
@@ -213,6 +232,7 @@ function delete($id){
 					$data['from_line_doc']=$so->sales_order_number;
 					$data['from_line_type']="SO";
 					$data['ship_date']=date('Y-m-d H:i:s', strtotime($ship_date));
+					 
 					$this->invoice_lineitems_model->save($data);
 					$this->db->query("update sales_order_lineitems set ship_date='".$data['ship_date']."' 
 					 where line_number='".$so->line_number."'");
@@ -239,13 +259,13 @@ function delete($id){
 		$this->invoice_model->update($nomor,$data);
 	
 	}
-	function unposting_rang_date($date_from,$date_to){
+	function unposting_range_date($date_from,$date_to){
 		$this->load->model('jurnal_model');
 		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
 		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
 		$s="select invoice_number 
 		from invoice where invoice_type='I' 
-		and invoice_date between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		and invoice_date between '$date_from' and '$date_to' and posted=true 
 		order by invoice_number";
 		$rst_inv_hdr=$this->db->query($s);
 		if($rst_inv_hdr){
@@ -254,9 +274,14 @@ function delete($id){
 				echo "<br>Delete Jurnal: ".$r_inv_hdr->invoice_number;
 			}
 		}
-		echo "<br>Finish. Please back when ready."; 
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		<p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
 	}
 	function posting($nomor) {
+	 
 		$saldo=$this->recalc($nomor);
 		$faktur=$this->get_by_id($nomor)->row();
 		$message="";
@@ -272,12 +297,14 @@ function delete($id){
 
 		$cid=$this->access->cid;
 		$set=$this->company_model->get_by_id($cid)->row();
+		 
 
 		$coa_tax=$set->so_tax;
 		$coa_freight=$set->so_freight;
 		$coa_other=$set->so_other;
 		$coa_ar=$set->accounts_receivable;
 		$coa_disc=$set->so_discounts_given;
+		$coa_sales=$set->inventory_sales;
 
 		$detail=$this->invoice_lineitems_model->get_by_nomor($nomor);
 		foreach($detail->result() as $item) {
@@ -292,7 +319,7 @@ function delete($id){
 				$coa_hpp=$r_stok->cogs_account>0?$r_stok->cogs_account:$set->inventory_cogs;
 				if($item->cost==0){
 					$item->cost=$r_stok->cost;
-					$this->db->query("update invoice_lineitems set cost=".$item->cost." where line_number=".$item->line_number);
+					$this->db->query("update invoice_lineitems set cost=".floatval($item->cost)." where line_number=".$item->line_number);
 				}
 				if($item->cost==0){
 					$item->cost=$r_stok->cost_from_mfg;
@@ -361,11 +388,19 @@ function delete($id){
 			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
 				
 				echo "<br>Posting...".$r_inv_hdr->invoice_number;
-				$this->posting($rst_inv_hdr->invoice_number);
+				$this->posting($r_inv_hdr->invoice_number);
 						
 			} // foreach rst_inv_hdr
 		} // if rst_inv_hdr
-		echo "<br>Finish. Please back when ready."; 
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		Apabila ada kesalahan silahkan periksa mungkin seting akun-akun belum benar, 
+		atau jurnal tidak balance. Silahkan cek ke nomor bukti yang bersangkutan 
+		dan posting secara manual atau ulangi lagi 
+		<a class='btn btn-primary' href='#' onclick='window.history.go(-1); return false;'> Go Back </a>.
+		<p>&nbsp</p><p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
 			
 	} // posting
 	function posting_retur($nomor) {
@@ -456,7 +491,57 @@ function delete($id){
 		// validate jurnal
 		if($this->jurnal_model->validate($nomor)) {	$data['posted']=true;	} else {$data['posted']=false;}
 		$this->invoice_model->update($nomor,$data);
-		
-	
 	}	
-}
+	function posting_retur_range_date($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('company_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select invoice_number 
+		from invoice where invoice_type='R' 
+		and invoice_date between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		order by invoice_number";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				
+				echo "<br>Posting...".$r_inv_hdr->invoice_number;
+				$this->posting_retur($r_inv_hdr->invoice_number);
+						
+			} // foreach rst_inv_hdr
+		} // if rst_inv_hdr
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		Apabila ada kesalahan silahkan periksa mungkin seting akun-akun belum benar, 
+		atau jurnal tidak balance. Silahkan cek ke nomor bukti yang bersangkutan 
+		dan posting secara manual atau ulangi lagi 
+		<a class='btn btn-primary' href='#' onclick='window.history.go(-1); return false;'> Go Back </a>.
+		<p>&nbsp</p><p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+			
+	} // posting
+	function unposting_retur_range_date($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select invoice_number 
+		from invoice where invoice_type='R' 
+		and invoice_date between '$date_from' and '$date_to' and posted=true 
+		order by invoice_number";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				$this->unposting_retur($r_inv_hdr->invoice_number);
+				echo "<br>Delete Jurnal: ".$r_inv_hdr->invoice_number;
+			}
+		}
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		<p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+	}
+	
+} ?>

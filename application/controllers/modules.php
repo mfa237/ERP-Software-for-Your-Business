@@ -12,7 +12,9 @@ class Modules extends CI_Controller {
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
-                $this->load->model('modules_model');
+        $this->load->model('modules_model');
+		$this->load->model("syslog_model");
+		
 	}
 	function set_defaults($record=NULL){
         $data=data_table($this->table_name,$record); 
@@ -73,6 +75,8 @@ class Modules extends CI_Controller {
 			} else {
 				$ok=$this->modules_model->save($data);
 			}
+			$this->syslog_model->add($id,"modules",$mode);
+
 		} else {
 			$ok=false;
 		}	
@@ -90,7 +94,9 @@ class Modules extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$this->modules_model->update($id,$data);
-                        $message='Update Success';
+            $message='Update Success';
+			$this->syslog_model->add($id,"modules","edit");
+
 		} else {
 			$message='Error Update';
 		}
@@ -131,6 +137,8 @@ class Modules extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->modules_model->delete($id);
+		$this->syslog_model->add($id,"modules","delete");
+
 	 	$this->browse();
 	}
 	function find($module_id=''){

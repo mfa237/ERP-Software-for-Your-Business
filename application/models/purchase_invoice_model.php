@@ -47,12 +47,16 @@ public $sub_total=0;
 
 		$this->db->where($this->primary_key,$nomor);
 		$this->db->update($this->table_name,array('amount'=>$this->amount,
-		'tax_amount'=>$tax_amount,'subtotal'=>$this->sub_total));
+		'tax_amount'=>$tax_amount,'disc_amount_1'=>$disc_amount,'subtotal'=>$this->sub_total));
 		
 		$this->add_payables($nomor);
 	    $this->amount_paid=$this->payables_payments_model->total_amount($nomor);
 		
-	    $this->saldo= $this->amount-$this->amount_paid+$this->retur_amount($nomor)+$this->crdb_amount($nomor);
+	    $this->saldo= $this->amount-$this->amount_paid-$this->retur_amount($nomor)+$this->crdb_amount($nomor);
+		
+		$data['saldo_invoice']=$this->saldo;
+		$data['paid']=$this->saldo==0;		
+		$this->db->where('purchase_order_number',$nomor)->update('purchase_order',$data);
 
 	    return $this->saldo;
 	}
@@ -170,7 +174,11 @@ public $sub_total=0;
 	{
 		$row=$this->db->query("select bill_id from payables where purchase_order_number='".$invoice."'");
 		if($row){
-			return $row->row()->bill_id;
+			if($bill_id=$row->row()->bill_id){
+				return $bill_id;
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -199,13 +207,28 @@ public $sub_total=0;
 		$gl_id=$nomor;
 		$debit=0; $credit=0;$operation="";$source="";
 		// posting hutang / ap
-		if($akun_hutang=="")$akun_hutang=$supplier->supplier_account_number;
-		if($akun_hutang=="")$akun_hutang=$this->company_model->setting("accounts_payable");
-		
+		if(invalid_account($akun_hutang))$akun_hutang=$supplier->supplier_account_number;
+		if(invalid_account($akun_hutang))$akun_hutang=$this->company_model->setting("accounts_payable");
 		$account_id=$akun_hutang; $debit=0; $credit=$faktur->amount;
 		$operation="AP Posting"; $source=$faktur->comments;
 		
 		$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
+		// posting tax amount
+		$tax_amount=$faktur->tax_amount;
+		if($tax_amount>0){
+			$akun_ppn=$this->company_model->setting("po_tax");
+			$account_id=$akun_ppn; $debit=0; $credit=$tax_amount;
+			$operation="AP Tax Posting"; $source=$faktur->comments;
+			$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
+		}
+		// posting discount amount
+		$disc_amount_1=$faktur->disc_amount_1;
+		if($disc_amount_1>0){
+			$akun_disc=$this->company_model->setting("po_discounts_taken");
+			$account_id=$akun_disc; $debit=0; $credit=$disc_amount_1;
+			$operation="Discount Posting"; $source=$faktur->comments;
+			$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
+		}
 		
 		// posting persediaan
 		$items=$this->purchase_order_lineitems_model->get_by_nomor($nomor);
@@ -223,11 +246,87 @@ public $sub_total=0;
 		}
 		
 		// validate jurnal
+		
 		if($this->jurnal_model->validate($nomor)) {
 			$data['posted']=true;
 		} else {
 			$data['posted']=false;
 		}
+		
 		$this->purchase_order_model->update($nomor,$data);
 	}	
+
+	function posting_range_date($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('company_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select purchase_order_number from purchase_order where potype='I' 
+		and po_date between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		order by purchase_order_number";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				
+				echo "<br>Posting...".$r_inv_hdr->purchase_order_number;
+				$this->posting($r_inv_hdr->purchase_order_number);
+						
+			} // foreach rst_inv_hdr
+		} // if rst_inv_hdr
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		Apabila ada kesalahan silahkan periksa mungkin seting akun-akun belum benar, 
+		atau jurnal tidak balance. Silahkan cek ke nomor bukti yang bersangkutan 
+		dan posting secara manual atau ulangi lagi 
+		<a class='btn btn-primary' href='#' onclick='window.history.go(-1); return false;'> Go Back </a>.
+		<p>&nbsp</p><p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+			
+	} // posting	
+	function unposting_range_date($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select purchase_order_number from purchase_order where potype='I' 
+		and po_date between '$date_from' and '$date_to' and posted=true 
+		order by purchase_order_number";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				$this->unposting($r_inv_hdr->purchase_order_number);
+				echo "<br>Delete Jurnal: ".$r_inv_hdr->purchase_order_number;
+			}
+		}
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		<p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+	}
+	function has_payment($invoice) {
+		$bill_id=intval($this->get_bill_id($invoice));
+		$amount=floatval($this->paid_amount($invoice));
+		if ( $amount <> 0 ) {
+			return true; 
+		} else {
+			return false;
+		}
+	}
+	function has_retur($invoice){
+		if ( floatval($this->retur_amount($invoice))<>0 ) {
+			return true; 
+		} else {
+			return false;
+		}
+	}
+	function has_memo($invoice){
+		if ( floatval($this->crdb_amount($invoice))<>0 ) {
+			return true; 
+		} else {
+			return false;
+		}
+	}
+		
 }	 

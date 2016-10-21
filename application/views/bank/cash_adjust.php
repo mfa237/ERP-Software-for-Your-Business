@@ -1,4 +1,3 @@
-<div><h4>ADJUSTMENT REKENING</h4>
 	<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_this()','save');		
@@ -17,7 +16,9 @@
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('bank_adjust')">Help</div>
+		<div onclick="show_syslog('bank_adjust','<?=$voucher?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -65,7 +66,8 @@
        </tr>
        <tr>
             <td>Tanggal</td><td><?php echo form_input('check_date',$check_date,'id=check_date 
-             class="easyui-datetimebox" required style="width:150px"');?></td>
+             class="easyui-datetimebox"
+				data-options="formatter:format_date,parser:parse_date"  required style="width:150px"');?></td>
        </tr>
        <tr>
             <td>Sumber Rekening</td><td><?php echo form_dropdown( 'account_number',

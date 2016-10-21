@@ -18,7 +18,7 @@ class Table_model extends CI_Model {
 	
     function table_def($table_name=''){
 		if($table_name!='')$this->table_name=$table_name;
-        $q = mysql_query('DESCRIBE '.$this->table_name);
+       /*  $q = mysql_query('DESCRIBE '.$this->table_name);
         while($row = mysql_fetch_array($q)) {
     //        echo "{$row['Field']} - {$row['Type']}\n";
             preg_match('/([a-zA-Z]+)(\(\d+\))?/', $row['Type'], $matches);
@@ -35,7 +35,22 @@ class Table_model extends CI_Model {
             $F->visible=True;
             $F->caption=str_replace('_',' ',$F->name);
             $retval[] = $F;
-        }
+        } */
+		$retval=array();	$name=array();	$len=array(); $flag=array();
+		if($fields=$this->db->field_data($table_name)){
+			foreach($fields as $fld){
+				$F				= new stdClass();
+				$F->name		= $fld->name;
+				$F->type		= $fld->type;
+				//$F->default		= $row['Default'];
+				$F->max_length	= $fld->max_length;
+				$F->primary_key = $fld->primary_key;
+				$F->visible=True;
+				$F->caption=str_replace('_',' ',$F->name);
+				$retval[] = $F;
+			}
+		}
+		
         return $retval;
     }
          function data($table_name='',$offset=0,$limit=10,$field_key='',$field_val=''){

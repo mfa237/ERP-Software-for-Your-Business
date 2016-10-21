@@ -24,6 +24,7 @@ class Delivery extends CI_Controller {
 		$this->load->model('inventory_products_model');
 		$this->load->model('inventory_model');
 		$this->load->model('shipping_locations_model');
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -50,8 +51,10 @@ class Delivery extends CI_Controller {
             $data['mode']='';
             $data['message']='';
             $data['item_number_list']=$this->inventory_model->item_list();
-			$data['date_received']=date("Y-m-d H:i:s");
-			if($record==NULL)$data['shipment_id']=$this->nomor_bukti();			
+			if($record==NULL){
+				$data['date_received']=date("Y-m-d H:i:s");
+				$data['shipment_id']=$this->nomor_bukti();
+			}
             return $data;
 	}
 	function index()
@@ -65,6 +68,7 @@ class Delivery extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_80071'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -75,6 +79,8 @@ class Delivery extends CI_Controller {
 			$this->nomor_bukti(true);
 	        $data['message']='update success';
 	        $data['mode']='view';
+			$this->syslog_model->add($id,"delivery","add");
+
 	        $this->browse();
 		} else {
             $data['warehouse_list']=$this->shipping_locations_model->select_list();
@@ -91,23 +97,27 @@ class Delivery extends CI_Controller {
  		 $id=$this->input->post($this->primary_key);
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                    
-                        unset($data['id']);
-                        $this->inventory_products_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+			unset($data['id']);
+			$this->inventory_products_model->update($id,$data);
+			$message='Update Success';
+			$this->syslog_model->add($id,"delivery","edit");
+
+			$this->browse();
 		} else {
 			$message='Error Update';
-         		$this->view($id,$message);		
+			$this->view($id,$message);		
 		}		
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80070'))return false;   
 		$id=urldecode($id);
 		 $data['shipment_id']=$id;
 		 $model=$this->inventory_products_model->get_by_id($id)->row();	
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
          $data['warehouse_list']=$this->shipping_locations_model->select_list();
+		  
 		$this->template->display_form_input($this->file_view,$data);
 	}
 	 // validation rules
@@ -158,12 +168,15 @@ class Delivery extends CI_Controller {
 			$sql.=" and date_received between '$d1' and '$d2'";
 			if($nama!='')$sql.=" and supplier_name like '$nama%'";	
 		}
-        $sql.=" limit $offset,$limit";
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }
 	function delete($id){
+		if(!allow_mod2('_80073'))return false;   
 		$id=urldecode($id);
 	 	$this->inventory_products_model->delete($id);
+		$this->syslog_model->add($id,"delivery","delete");
+
 	 	$this->browse();
 	}
 	function detail(){
@@ -189,7 +202,7 @@ class Delivery extends CI_Controller {
 			<script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
 		";
 		echo $s." ".browse_simple($sql);
-	}
+	} 
 	function save() {
 		$this->load->model('inventory_products_model');
 		$id=$this->input->post('shipment_id');
@@ -197,7 +210,10 @@ class Delivery extends CI_Controller {
 		$data['date_received']=$this->input->post('date_received');
 		$data['supplier_number']=$this->input->post('supplier_number');
 		$ok=$this->inventory_products_model->update($id,$data);
+		 
 		if ($ok){
+			$this->syslog_model->add($id,"delivery","edit");
+
 			echo json_encode(array('success'=>true,'shipment_id'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
@@ -207,14 +223,11 @@ class Delivery extends CI_Controller {
     function save_item(){
         $item_no=$this->input->post('item_number');
 		$id=$this->input->post('shipment_id');
+		$line=$this->input->post("line_number");
         $data['item_number']=$item_no;
         $data['quantity_received']=$this->input->post('quantity');
         $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-        if($item){
-        	$cost=$item->cost;
-        } else {
-        	$cost=0;
-        }
+       	$cost=item_cost($item_no);
         $data['cost']=$cost;
         $data['unit']=$this->input->post('unit');
         $data['shipment_id']=$id;
@@ -224,7 +237,11 @@ class Delivery extends CI_Controller {
 		$data['date_received']=$this->input->post('date_received');;
 		$data['comments']=$this->input->post('comments');;
 		$data['supplier_number']=$this->input->post('supplier_number');
-		$ok=$this->inventory_products_model->save($data);
+		if($line>0){
+			$ok=$this->inventory_products_model->update($line,$data);
+		} else {
+			$ok=$this->inventory_products_model->save($data);			
+		}
 		if ($ok){
 			echo json_encode(array('success'=>true,'shipment_id'=>$id));
 		} else {
@@ -232,13 +249,15 @@ class Delivery extends CI_Controller {
 		}
 	}         
     function print_bukti($nomor){
+		if(!allow_mod2('_80074'))return false;   
 		$nomor=urldecode($nomor);
         $adj=$this->inventory_products_model->get_by_id($nomor)->row();
 		$data['shipment_id']=$adj->shipment_id;
 		$data['date_received']=$adj->date_received;
 		$data['warehouse_code']=$adj->warehouse_code;
 		$data['comments']=$adj->comments;
-		$this->load->view('inventory/rpt/print_delivery_etc',$data);
+		$data['content']=load_view('inventory/rpt/print_delivery_etc',$data);
+		$this->load->view('pdf_print',$data);
     }
     function del_item(){
     	$id=$this->input->post('line_number');
@@ -253,7 +272,7 @@ class Delivery extends CI_Controller {
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.quantity_received, 
+		$sql="select p.item_number,i.description,p.quantity_received as quantity, 
 		p.unit,p.cost,p.id as line_number,p.total_amount
 		from inventory_products p
 		left join inventory i on i.item_number=p.item_number

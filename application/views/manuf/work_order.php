@@ -11,7 +11,9 @@
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('work_order')">Help</div>
+		<div onclick="show_syslog('work_order','<?=$work_order_no?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -48,8 +50,14 @@
 				</td>
 				
 			</tr>
-			<tr><td>Start Date</td><td><?=form_input("start_date",$start_date,"id='start_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
-			<tr><td>Expect Date</td><td><?=form_input("expected_date",$expected_date,"id='expected_date' class='easyui-datetimebox' style='width:150px'")?></td></tr>
+			<tr><td>Start Date</td><td><?=form_input("start_date",$start_date,
+                                "id='start_date' class='easyui-datetimebox' 
+			data-options='formatter:format_date,parser:parse_date'
+			style='width:150px'")?></td></tr>
+			<tr><td>Expect Date</td><td><?=form_input("expected_date",$expected_date,
+                                "id='expected_date' class='easyui-datetimebox' 
+			data-options='formatter:format_date,parser:parse_date'
+			style='width:150px'")?></td></tr>
 			<tr><td>Customer</td>
 				<td><?=form_input("customer_number",$customer_number,"id='customer_number'")?>
 				<?=link_button('','select_customer()','search');?>

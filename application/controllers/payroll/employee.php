@@ -171,20 +171,6 @@ class Employee extends CI_Controller {
 		$ok=$this->employee_type_model->delete($kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
-	function group(){
-		$data['caption']="GROUP PEGAWAI";		
-		$this->template->display("payroll/group",$data);
-	}
-   function group_add(){
-		$data = $this->input->post(NULL, TRUE); //getallpost			
-		$ok=$this->employee_group_model->save($data);
-		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
-   }
-   function group_delete($kode){
-		$kode=urldecode($kode);
-		$ok=$this->employee_group_model->delete($kode);
-		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
-   }
 	function experience($cmd,$id=''){
 		$id=urldecode($id);
 		if($cmd=="save"){
@@ -236,6 +222,137 @@ class Employee extends CI_Controller {
 		if($cmd=="delete") {
 			$this->db->where("id",$id);
 			$ok=$this->db->delete("employeeeducations");
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}	
+	function family($cmd,$id=''){
+		$id=urldecode($id);
+		if($cmd=="save"){
+			 
+			$data=$this->input->post();
+			if($data['id']=="" or $data['id']=="0") {
+				unset($data['id']);
+				$ok=$this->db->insert("employeefamily",$data);
+			} else {
+				$id=$data['id'];
+				$this->db->where("id",$id);
+				$ok=$this->db->update("employeefamily",$data);
+			}
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));}   	
+		}
+		if($cmd=="load") {
+			$sql="select * from employeefamily where employeeid='$id'";
+			echo datasource($sql);
+		}
+		if($cmd=="delete") {
+			$this->db->where("id",$id);
+			$ok=$this->db->delete("employeeefamily");
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}	
+	function medical($cmd,$id=''){
+		$id=urldecode($id);
+		$table_name="employeemedical";
+		if($cmd=="save"){
+			 
+			$data=$this->input->post();
+			if($data['id']=="" or $data['id']=="0") {
+				unset($data['id']);
+				$ok=$this->db->insert($table_name,$data);
+			} else {
+				$id=$data['id'];
+				$this->db->where("id",$id);
+				$ok=$this->db->update($table_name,$data);
+			}
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));}   	
+		}
+		if($cmd=="load") {
+			$sql="select * from $table_name where employeeid='$id'";
+			echo datasource($sql);
+		}
+		if($cmd=="delete") {
+			$this->db->where("id",$id);
+			$ok=$this->db->delete($table_name);
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}	
+	function reward($cmd,$id=''){
+		$id=urldecode($id);
+		$table_name="employeerewardpunish";
+		if($cmd=="save"){
+			 
+			$data=$this->input->post();
+			if($data['id']=="" or $data['id']=="0") {
+				unset($data['id']);
+				$ok=$this->db->insert($table_name,$data);
+			} else {
+				$id=$data['id'];
+				$this->db->where("id",$id);
+				$ok=$this->db->update($table_name,$data);
+			}
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));}   	
+		}
+		if($cmd=="load") {
+			$sql="select * from $table_name where employeeid='$id'";
+			echo datasource($sql);
+		}
+		if($cmd=="delete") {
+			$this->db->where("id",$id);
+			$ok=$this->db->delete($table_name);
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}	
+		
+	function license($cmd,$id=''){
+		$id=urldecode($id);
+		$table_name="employeelicense";
+		if($cmd=="save"){
+			 
+			$data=$this->input->post();
+			if($data['id']=="" or $data['id']=="0") {
+				unset($data['id']);
+				$ok=$this->db->insert($table_name,$data);
+			} else {
+				$id=$data['id'];
+				$this->db->where("id",$id);
+				$ok=$this->db->update($table_name,$data);
+			}
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));}   	
+		}
+		if($cmd=="load") {
+			$sql="select * from $table_name where employeeid='$id'";
+			echo datasource($sql);
+		}
+		if($cmd=="delete") {
+			$this->db->where("id",$id);
+			$ok=$this->db->delete($table_name);
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+	}
+	
+	function training($cmd,$id=''){
+		$id=urldecode($id);
+		$table_name="employeetraining";
+		if($cmd=="save"){
+			 
+			$data=$this->input->post();
+			if($data['id']=="" or $data['id']=="0") {
+				unset($data['id']);
+				$ok=$this->db->insert($table_name,$data);
+			} else {
+				$id=$data['id'];
+				$this->db->where("id",$id);
+				$ok=$this->db->update($table_name,$data);
+			}
+			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));}   	
+		}
+		if($cmd=="load") {
+			$sql="select * from $table_name where employeeid='$id'";
+			echo datasource($sql);
+		}
+		if($cmd=="delete") {
+			$this->db->where("id",$id);
+			$ok=$this->db->delete($table_name);
 			if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
 		}
 	}	

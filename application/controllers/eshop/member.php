@@ -8,14 +8,21 @@ class Member extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-		$this->load->library('template');
+		$this->load->library('template_eshop');
 	}
 	function index() {	
-		$data['caption']="Member List";
-		//$this->template->display_eshop("eshop/login",$data);
+		header("location: ".base_url()."index.php/eshop/home");
 	}
 	function add() {
-		$data['caption']="Member Registration";
+		$data=$this->set_default();
+		$data['caption']="Member Registration";		
+		$data['mode']="add";
+		$data['content']=true;
+		$data['footer']='footer';
+		$data['sidebar']='category_list';
+		$this->template_eshop->display("member",$data);
+	}
+	function set_default() {
 		$data['customer_number']="";
 		$data['company']="";
 		$data['street']="";
@@ -24,10 +31,15 @@ class Member extends CI_Controller {
 		$data['email']="";
 		$data['password']="";
 		$data['zip_postal_code']="";		
-		$this->template->display_eshop("eshop/member",$data);
+		$data['mode']='add';
+		return $data;
 	}
-	function save($mode='add') {
+ 
+	function save() {
 		$data=$this->input->post();
+		$mode=$data['mode'];
+		unset($data['mode']);
+		
 		if($mode=="add"){
 			$ok=$this->db->insert("customers",$data);
 		} else {

@@ -7,6 +7,7 @@
 				<th data-options="field:'counter_name',width:150">Nama Counter</th>
 				<th data-options="field:'counter_id',width:80">Kode Counter</th>
 				<th data-options="field:'area',width:80">Area</th>
+				<th data-options="field:'area_name',width:80">Area Name</th>
 			</tr>
 		</thead>
 	</table>

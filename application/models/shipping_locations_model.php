@@ -41,14 +41,28 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
-        function select_list(){
-                $query=$this->db->query("select location_number from ".$this->table_name);
-                $ret=array();
-                $ret['']='- Select -';
-                foreach ($query->result() as $row)
-                {
-                        $ret[$row->location_number]=$row->location_number;
-                }		 
-                return $ret;
-        }
+	function select_list(){
+			$query=$this->db->query("select location_number from ".$this->table_name);
+			$ret=array();
+			$ret['']='- Select -';
+			foreach ($query->result() as $row)
+			{
+					$ret[$row->location_number]=$row->location_number;
+			}		 
+			return $ret;
+	}
+	function get_all_array(){
+		$sql="select location_number,no_urut from shipping_locations";
+		$i=0;
+		$retval=null;
+		if($query=$this->db->query($sql)){
+			foreach($query->result() as $row){
+				$retval[$i]["gudang"]=$row->location_number;
+				$retval[$i]["no_urut"]=$row->no_urut;
+				$i++;
+			}
+		}
+		
+		return $retval;
+	}
 }

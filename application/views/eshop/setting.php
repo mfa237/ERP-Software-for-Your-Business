@@ -1,18 +1,7 @@
-<div class='thumbnail' style='margin-top:30px'>
-
 <?
 if(!isset($active_tab))$active_tab=1;
 ?>
-<div class="row-fluid">
-	<div class="col-sm-3 box-left  panel panel-primary">
-		<ol class="breadcrumb box-bcum"'>
-		  <li><a href="<?=base_url()?>index.php/eshop/home"> Home</a></li>
-		  <li class="active">Pengaturan</li>
-		</ol>
-		<? include_once 'box_sub_cat.php' ?>
-		<? include_once 'box_item.php' ?>
-	</div>
-	<div class="col-sm-9">
+ 
 		<img src="<?=base_url()?>images/ico_setting.png" 
 		style="float:left"><h1 class='glyphicon glyphicon-ok'> <?=$caption?></h1>
 		<p>Dihalaman ini anda dipersilahkan untuk merubah data 
@@ -22,32 +11,14 @@ if(!isset($active_tab))$active_tab=1;
 		<ul class="nav nav-tabs" style='background-color:white'>
 		  <li role="presentation" 
 				class=" <?=$active_tab==1?"active":""?>">
-				<a class='glyphicon glyphicon-user' 
-				href='<?=base_url()?>index.php/eshop/setting/view/member_view/1'> UMUM</a></li>
+				<a href='<?=base_url()?>index.php/eshop/setting/view/member_view/1'>
+				<span class='glyphicon glyphicon-user' ></span> UMUM</a></li>
 		  <li role="presentation"class="<?=$active_tab==2?"active":""?>">
-				<a class='glyphicon glyphicon-euro' 
-				href='<?=base_url()?>index.php/eshop/setting/view/member_trans/2'> TAGIHAN</a></li>
-			<?
-				$is_admin=$this->session->userdata('user_admin');
-				if($is_admin) {
-				  $active="";
-					if($active_tab==3)$active="active";
-				  echo "<li role='presentation' class='$active'>
-						<a class='glyphicon glyphicon-phone' 
-						href='".base_url()."index.php/eshop/setting/view/items_mas/3'>
-						PRODUCTS</a></li>";
-				  $active="";
-					if($active_tab==4)$active="active";
-				  echo "<li role='presentation' class='$active'>
-						<a class='glyphicon glyphicon-phone' 
-						href='".base_url()."index.php/eshop/setting/view/items_cat/4'>
-						CATEGORY</a></li>";
-				}
-			?>
+				<a href='<?=base_url()?>index.php/eshop/setting/view/member_trans/2'>
+				<span class='glyphicon glyphicon-euro'></span> TAGIHAN</a></li>
 		</ul>
 		<? echo load_view("eshop/$file") ?>
-	</div>
-</div>
+ 
 <script language='javascript'>
 
 var cart=null;

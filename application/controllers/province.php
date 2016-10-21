@@ -19,6 +19,7 @@ class Province extends CI_Controller {
 		if($this->sql=="")$this->sql="select * from ".$this->table_name;
 		$this->load->model('province_model');
 		$this->fields=$this->province_model->fields;
+		$this->load->model('syslog_model');
     }
     function set_defaults($record=NULL){
 		$data['mode']='';
@@ -56,8 +57,12 @@ class Province extends CI_Controller {
 		$mode=$data["mode"];	unset($data['mode']);
 		if($mode=="add"){ 
 			$ok=$this->province_model->save($data);
+			$this->syslog_model->add($id,"province","add");
+
 		} else {
 			$ok=$this->province_model->update($id,$data);				
+			$this->syslog_model->add($id,"province","edit");
+
 		}
 		if($ok){
 			echo json_encode(array("success"=>true));
@@ -110,6 +115,8 @@ class Province extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->province_model->delete($id);
+		$this->syslog_model->add($id,"province","crdb");
+
 		$this->browse();
 	}
 	function find($nomor){

@@ -20,7 +20,7 @@ for($i=0;$i<count($themes_list);$i++){
 			data-options="iconCls:'icon-save',closable:true,
 			collapsible:true,minimizable:true,maximizable:true">
 		<div class='col-md-3'>
-			<img src=''  >
+			<img src='<?=base_url()?>themes/<?=$name?>/images/screenshoot.png'  >
 			<div class='tm_info'>
 				Themes Name : <?=$name?>, 
 				Version: <?=$version?>, 

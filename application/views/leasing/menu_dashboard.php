@@ -49,13 +49,18 @@
 			if (allow_mod('_18000.022'))	
 			add_button_menu("Jadwal Kontrak Admin","leasing/loan_create_schedule/admin","ico_sales.png",
 					"Jadwal Kontrak Untuk Admin");
-			//if (allow_mod('_18001.000'))	
+					
+			if (allow_mod('_18001.000'))	
+			add_button_menu("Proses Harian","leasing/loan/daily_process","rocket.png",
+			"Proses Harian untuk menghitung saldo piutang, hari telat, denda dan lainnya");
+		
 			add_button_menu("Laporan","leasing/reports","ico_akun.png",
 					"Daftar laporan modul leasing");
 			if (allow_mod('_18000.900'))	add_button_menu("Clear Data Transaksi","leasing/clear_data/trans","ico_setting.png",
 					"Clear All Data Transaksi");
 			if (allow_mod('_18000.901'))	add_button_menu("Clear Data Master","leasing/clear_data/master","ico_setting.png",
 					"Clear All Data Master");
+					
 			?>
 		</div>
 		

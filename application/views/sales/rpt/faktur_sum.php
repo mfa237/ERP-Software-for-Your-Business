@@ -10,27 +10,15 @@
     $CI->load->model('sales_order_model');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
-<table cellspacing="0" cellpadding="1" border="0" width='800px'> 
+<table cellspacing="0" cellpadding="1" border="0" width='100%'> 
      <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>DAFTAR FAKTUR PENJUALAN</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
+     	<td colspan='5'><h2>DAFTAR FAKTUR PENJUALAN</h2></td>     	
      </tr>
      <tr>
      	<td>
      		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>
      	</td>
      </tr>
-     <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
      <tr>
      	<td colspan="8">
 	     		<table class='titem'>

@@ -134,8 +134,8 @@ private $table_name='crdb_memo';
 			$this->load->model('customer_model');
 			$this->load->model('invoice_model');
 			$faktur=$this->invoice_model->get_by_id($docnumber)->row();
-			if($accountid=="" or $accountid=="0")$accountid=$faktur->account_id;
-			if($accountid==""  or $accountid=="0") {
+			if(invalid_account($accountid))$accountid=$faktur->account_id;
+			if(invalid_account($accountid)) {
 				$accountid=$this->company_model->setting("accounts_receivable");
 				$this->db->query("update invoice set account_id='".$accountid."' 
 					where invoice_number='".$docnumber."'");
@@ -145,8 +145,8 @@ private $table_name='crdb_memo';
 			$this->load->model('supplier_model');
 			$this->load->model('purchase_order_model');
 			if($faktur=$this->purchase_order_model->get_by_id($docnumber)->row()){
-				if($accountid=="")$accountid=$faktur->account_id;
-				if($accountid==""){
+				if(invalid_account($accountid))$accountid=$faktur->account_id;
+				if(invalid_account($accountid)){
 					$accountid=$this->company_model->setting("accounts_payable");
 					$this->db->query("update purchase_order set account_id='".$accountid."' 
 						where purchase_order_number='".$docnumber."'");
@@ -186,5 +186,61 @@ private $table_name='crdb_memo';
 		if($this->jurnal_model->validate($nomor)) {$data['posted']=true;} else {$data['posted']=false;}
 		$this->update($nomor,$data);
 		
-	}	
-}
+	}
+	function posting_range_date($date_from,$date_to,$type=0){
+		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('company_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$where="where transtype in ('SO-CREDIT MEMO','SO-DEBIT MEMO')";
+		if($type==1) $where="where transtype in ('PO-CREDIT MEMO','PO-DEBIT MEMO')";
+		$s="select kodecrdb 
+		from crdb_memo $where  
+		and tanggal between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		order by kodecrdb";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				
+				echo "<br>Posting...".$r_inv_hdr->kodecrdb;
+				$this->posting($r_inv_hdr->kodecrdb);
+						
+			} // foreach rst_inv_hdr
+		} // if rst_inv_hdr
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		Apabila ada kesalahan silahkan periksa mungkin seting akun-akun belum benar, 
+		atau jurnal tidak balance. Silahkan cek ke nomor bukti yang bersangkutan 
+		dan posting secara manual atau ulangi lagi 
+		<a class='btn btn-primary' href='#' onclick='window.history.go(-1); return false;'> Go Back </a>.
+		<p>&nbsp</p><p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+			
+	} // posting	
+	function unposting_range_date($date_from,$date_to,$type=0){
+		$this->load->model('jurnal_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$where="where transtype in ('SO-CREDIT MEMO','SO-DEBIT MEMO')";
+		if($type==1) $where="where transtype in ('PO-CREDIT MEMO','PO-DEBIT MEMO')";
+		$s="select kodecrdb 
+		from crdb_memo $where 
+		and tanggal between '$date_from' and '$date_to' and posted=true 
+		order by kodecrdb";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				$this->unposting($r_inv_hdr->kodecrdb);
+				echo "<br>Delete Jurnal: ".$r_inv_hdr->kodecrdb;
+			}
+		}
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		<p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+	}
+	
+} ?>

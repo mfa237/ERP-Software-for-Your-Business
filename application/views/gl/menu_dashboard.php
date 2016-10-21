@@ -24,6 +24,21 @@
 				</map>
 			</div>
 		</div>	
+
+                <div class="easyui-panel themes" title="Reports" 
+                    data-options="iconCls:'icon-save',closable:true,
+                    collapsible:true,minimizable:true,maximizable:true">
+
+                    <?php include_once "menu_reports.php" ?>
+
+                </div>		
+
+	<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
+
+                <div class="easyui-panel themes" title="Reports" 
+                    data-options="iconCls:'icon-save',closable:true,
+                    collapsible:true,minimizable:true,maximizable:true">
+	
 		<div class="row">
 			<div class="thumbnail col-md-6" >
 				<h4>Saldo Perkiraan</h4>
@@ -35,7 +50,7 @@
 			</div>
 		</div>
 
-
+				</div>
 	</div>
 </div>
 

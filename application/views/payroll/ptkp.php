@@ -29,7 +29,7 @@
 			echo "<strong>$kode</strong>";
 			echo form_hidden('kode',$kode,"id=kode");
 		} else { 
-			echo form_input('kode',$kode,"id=ptkp");
+			echo form_input('kode',$kode,"id=kode");
 		}		
 		?></td>
 	</tr>	 
@@ -58,6 +58,7 @@
 						$.messager.show({
 							title:'Success',msg:'Data sudah tersimpan.'
 						});
+						remove_tab_parent();
 					} else {
 						$.messager.show({
 							title: 'Error',

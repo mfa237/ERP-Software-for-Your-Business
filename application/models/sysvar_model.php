@@ -39,6 +39,10 @@ function __construct(){
 			$this->db->update($this->table_name,$data);
 		}
 	}
+	function delete_id($id){
+		$this->db->where("id",$id);
+		$this->db->delete($this->table_name);
+	}
 	function delete($id){
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
@@ -53,6 +57,7 @@ function __construct(){
                 $ret[$row->varvalue]=$row->company;
         }		 
         return $ret;
-}
+	}
+	function lookup($varname){ return value_list($varname); }
 
 }

@@ -1,33 +1,37 @@
- <div class="max-tool "><h4>PURCHASE ORDER</h4><div class="thumbnail tool box-gradient">
+ <div class="max-tool "><div class=" tool box-gradient">
 	<?
 	$disabled="";$disabled_edit="";
 	if(!($mode=="add" or $mode=="edit"))$disabled=" disabled";
 	if($mode=="edit")$disabled_edit=" disabled";
-	if($mode=="edit" or $mode=="add") echo link_button('Save', 'save_po()','save');		
+	if($mode=="edit" or $mode=="add") echo link_button('Save', 'save_po()','save',"false");		
 	if($mode=="view") {
-		echo link_button('Edit', '','edit','true',base_url().'index.php/purchase_order/view/'.$purchase_order_number.'/edit');		
-		echo link_button('Add','','add','true',base_url().'index.php/purchase_order/add');		
-		echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_order/view/'.$purchase_order_number);		
-		echo link_button('Delete', 'delete_nomor()','cut');		
+		if (!$has_receive) echo link_button('Edit', '','edit','false',base_url().'index.php/purchase_order/view/'.$purchase_order_number.'/edit');		
+		echo link_button('Add','','add','false',base_url().'index.php/purchase_order/add');		
+		echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_order/view/'.$purchase_order_number);		
+		if (!$has_receive) echo link_button('Delete', 'delete_nomor()','cut','false');		
 	}
-	echo link_button('Print', 'print_po()','print');		
-	echo link_button('Search','','search','true',base_url().'index.php/purchase_order');		
-	echo link_button('Help', 'load_help(\'purchase_order\')','help');		
-	
+	echo link_button('Print', 'print_po()','print','false');		
+	echo link_button('Search','','search','false',base_url().'index.php/purchase_order');		
+	echo "<div style='float:right'>";
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('purchase_order')">Help</div>
+		<div onclick="show_syslog('purchase_order','<?=$purchase_order_number?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+	<?php 
+		echo link_button('Help', 'load_help(\'purchase_order\')','help','false');		
+		echo "</div>";
+	?>
 </div>
-<div class="thumbnail">	
+<div>	
 <form id='frmPo' method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-   <table class='table2' width="100%">
+   <table class='table' width="100%">
 		<tr>
 			<td>Nomor PO</td>
 			<td><?php
@@ -35,34 +39,42 @@
 				$purchase_order_number,"id='purchase_order_number' 
 				class='easyui-validatebox' data-options='required:true,	validType:length[3,30]' ".$disabled.$disabled_edit); 
 			?></td>
-			<td rowspan='5'>
-				<span id='supplier_name' name='supplier_name' class='thumbnail' style='height:100px;width:300px'><?=$supplier_info?></span>
-			</td>
-       </tr>	 
-       <tr>
-        	<td>Tanggal</td><td><?php echo form_input('po_date',$po_date,'id=po_date  
-        	class="easyui-datetimebox" required:true '.$disabled);?></td>
-       </tr>	 
-       <tr>
             <td>Supplier</td><td><?php 
             echo form_input('supplier_number',$supplier_number,
             "id=supplier_number class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]'".$disabled.$disabled_edit);
-			if($mode=="add") echo link_button('','select_supplier()',"search","true"); 
+			if($mode=="add") echo link_button('','select_supplier()',"search","false"); 
 			 
             ?>
 			</td>
-            
+       </tr>	 
+       <tr>
+        	<td>Tanggal</td><td><?php echo form_input('po_date',$po_date,'id=po_date  
+        	class="easyui-datetimebox" required:true 
+			data-options="formatter:format_date,parser:parse_date"
+			'.$disabled);?></td>
+
+			<td rowspan='2' colspan='3'>
+				<span id='supplier_name' name='supplier_name' class='' style='height:50px;width:300px'><?=$supplier_info?></span>
+			</td>
+			
        </tr>	 
        <tr>
             <td>Termin</td><td><?php echo form_dropdown('terms',$term_list,$terms,"id=terms 
 			class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]'            
             ".$disabled);?></td>
+            
+       </tr>	 
+       <tr>
+			
+            <td>Rencana Diterima</td>
+            <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" required
+			data-options="formatter:format_date,parser:parse_date"
+			'.$disabled);?></td>
+			
        </tr>
        <tr>
-            <td>Rencana Diterima</td>
-            <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" required'.$disabled);?></td>
        </tr>
        <tr>
             <td>Keterangan</td><td colspan="3"><?php echo form_input('comments',$comments,'id=comments style="width:80%"'.$disabled);?></td>
@@ -84,7 +96,7 @@
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
-				toolbar: '#tb',
+				toolbar: '#tb',fitColumns: true, 
 				url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
 			">
 			<thead>
@@ -94,7 +106,9 @@
 					<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
 					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
 					<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
-					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
+					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%1</th>
+					<th data-options="field:'disc_2',width:50,editor:'numberbox'">Disc%2</th>
+					<th data-options="field:'disc_3',width:50,editor:'numberbox'">Disc%3</th>
 					<th data-options="field:'total_price',width:60,align:'right',editor:'numberbox'">Jumlah</th>
 					<th data-options="field:'qty_recvd',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty Recvd</th>
 					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
@@ -103,7 +117,7 @@
 		</table>
 	<!-- END PURCHASE_ORDER_LINEITEMS -->
 		<div id='divTotal'> 
-			<table class="table2" width="100%">
+			<table class="table" width="100%">
 				<tr>
 					<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
 					<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
@@ -123,10 +137,10 @@
 	</div>	
 	</div>
 	<div title='Receive' style="padding:10px">
-		<table id="dgRcv" class="easyui-datagrid"  
+		<table id="dgRcv" class="easyui-datagrid table"  
 			style="min-height:700px"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns: true, 
 				singleSelect: true, toolbar: '#tbRcv',
 				url: '<?=base_url()?>index.php/receive_po/list_by_po/<?=$purchase_order_number?>'
 			">
@@ -147,10 +161,10 @@
 	</div>
 
 	<div title='Invoice' style="padding:10px">
-		<table id="dgInvoice" class="easyui-datagrid"  
+		<table id="dgInvoice" class="easyui-datagrid table"  
 			style="min-height:700px"
 			data-options="
-				iconCls: 'icon-edit',
+				iconCls: 'icon-edit',fitColumns: true, 
 				singleSelect: true, toolbar: '#tbInvoice',
 				url: '<?=base_url()?>index.php/purchase_invoice/list_by_po/<?=$purchase_order_number?>'
 			">
@@ -171,10 +185,16 @@
 
 <? include_once 'supplier_select.php' ?>
 <div id="tbRcv" class="box-gradient	">
-	<?=link_button('Add','','add','true',base_url().'index.php/receive_po/add/'.$purchase_order_number);	?>	
+	<?=link_button('Add','add_receive()','add');	?>	
 	<?=link_button('Refresh','load_receive()','reload');	?>	
 	<?=link_button('View','view_receive()','edit');	?>	
 </div>
+<div id="tbInvoice" class="box-gradient	">
+	<?=link_button('Add','add_invoice()','add');	?>	
+	<?=link_button('Refresh','load_invoice()','reload');	?>	
+	<?=link_button('View','view_invoice()','edit');	?>	
+</div>
+
 <script type="text/javascript">
 	var url;	
 	var has_receive='<?=$has_receive?>';
@@ -255,7 +275,7 @@
 						$.messager.show({
 							title:'Success',msg:result.msg
 						});	
-						//window.open('<?=base_url()?>index.php/purchase_order','_self');
+						window.open('<?=base_url()?>index.php/purchase_order','_self');
 					} else {
 						$.messager.show({
 							title:'Error',msg:result.msg
@@ -277,10 +297,35 @@
         if (row){
 			shipment_id=row['shipment_id'];
 			url="<?=base_url()?>index.php/receive_po/view/"+shipment_id;
-			window.open(url,"_self");
+			add_tab_parent('view_receive_'+shipment_id,url);
 		}
 	
 	}
-		
+	function add_receive() {
+		var url='<?=base_url()?>index.php/receive_po/add/<?=$purchase_order_number?>';		
+		add_tab_parent('add_receive_<?=$purchase_order_number?>',url);
+	}
+	function load_invoice()
+	{
+		var url='<?=base_url()?>index.php/purchase_invoice/list_by_po/<?=$purchase_order_number?>';
+		$('#dgInvoice').datagrid({url:url});
+		$('#dgInvoice').datagrid('reload');
+	}
+	function view_invoice()
+	{
+        row = $('#dgInvoice').datagrid('getSelected');
+        if (row){
+			invoice_number=row['purchase_order_number'];
+			url="<?=base_url()?>index.php/purchase_invoice/view/"+invoice_number;
+			add_tab_parent('view_invoice_'+invoice_number,url);
+		}
+	
+	}
+	function add_invoice() {
+		var url='<?=base_url()?>index.php/purchase_invoice/add/<?=$purchase_order_number?>';		
+		add_tab_parent('add_invoice_<?=$purchase_order_number?>',url);
+	}		
+	
+
 </script>
     

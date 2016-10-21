@@ -102,6 +102,7 @@ class Articles extends CI_Controller {
 		 $data['mode']='view';
          $data['message']=$message;
 		 $data['category']=$catid;
+		 $data['hide_comments']=true;
          $this->template->display_website("articles",$data,'');	
 	}
 	 // validation rules

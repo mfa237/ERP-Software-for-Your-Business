@@ -9,6 +9,7 @@ public $amount=0;
 public $sub_total=0;
 	function __construct(){
 		parent::__construct();
+		$this->load->model('purchase_order_lineitems_model');
 	}
 	function retur_amount($purchase_order_number) {
 		$sql="select sum(amount) as z_amount 
@@ -54,8 +55,12 @@ public $sub_total=0;
 		$this->add_payables($nomor);
 	    $this->amount_paid=$this->payables_payments_model->total_amount($nomor);
 		
-	    $this->saldo= $this->amount-$this->amount_paid+$this->retur_amount($nomor)+$this->crdb_amount($nomor);
-
+	    $this->saldo= $this->amount-$this->amount_paid-$this->retur_amount($nomor)+$this->crdb_amount($nomor);
+		
+		$data['saldo_invoice']=$this->saldo;
+		$data['paid']=$this->saldo==0;		
+		$this->db->where('purchase_order_number',$nomor)->update('purchase_order',$data);
+		
 	    return $this->saldo;
 	}
 	
@@ -64,6 +69,14 @@ public $sub_total=0;
 		$this->load->model('payables_model');
 		$faktur=$this->get_by_id($nomor)->row();
 		$bill_id=$this->payables_model->get_bill_id($nomor);
+		//valid only purchase invoice
+		$po_type=$this->db->select("potype")->where('purchase_order_number',$nomor)
+			->get('purchase_order')->row()->potype;
+		if($po_type!='I'){
+			$this->db->query("delete from payables_items where bill_id='$bill_id'");
+			$this->db->query("delete from payables where bill_id='$bill_id'");
+			return false;
+		}
 		$data['purchase_order']=1;
 		$data['purchase_order_number']=$nomor;
 		$data['expense_type']='Purchase Order';
@@ -129,7 +142,9 @@ public $sub_total=0;
 			}
 		}
 		$this->db->where($this->primary_key,$id);
-		return $this->db->update($this->table_name,$data);
+		$ok=$this->db->update($this->table_name,$data);
+		$this->recalc($id);
+		return $ok;
 	}
 	function validate_delete_po($po_number)
 	{
@@ -209,5 +224,62 @@ public $sub_total=0;
 		
 		$this->db->query($s);
 		$this->update_received($nomor_po); 
+	}
+	function nomor_bukti($add=false)
+	{
+		$key="Purchase Order Numbering";
+		$no='';
+		if($add){
+		  	$this->sysvar->autonumber_inc($key);
+		} else {			
+			$no=$this->sysvar->autonumber($key,0,'!PO~$00001');
+		 
+			for($i=0;$i<100;$i++){			
+				$no=$this->sysvar->autonumber($key,0,'!PO~$00001');
+				$rst=$this->get_by_id($no)->row();
+				if($rst){
+				  	$this->sysvar->autonumber_inc($key);
+				} else {
+					break;					
+				}
+			}
+		}
+		return $no;
+	}
+	
+	function create_po_by_request($row_id) {
+		$in_row_id='';for($i=0;$i<count($row_id);$i++){
+			if($row_id[$i]=='') $in_row_id .= $row_id[$i].',';	
+		}
+		if(substr($in_row_id,-1,1)==',')$in_row_id=substr($in_row_id,0,strlen($in_row_id)-1);
+		$new_po=null;
+		if($in_row_id<>''){
+			$sql="select distinct i.supplier_number	from purchase_order_lineitems p 
+			left join inventory i on i.item_number=p.item_number where line_number in (".$in_row_id.") 	";
+			if($query=$this->db->query($sql)){
+				$sql='';
+				foreach($query->result() as $row){
+					$data=data_table($this->table_name,null);
+					$supplier_number='UNKNOWN';
+					if($row->supplier_number)$supplier_number=$row->supplier_number;
+					$purchase_order_number=$this->nomor_bukti();
+					if($purchase_order_number=='')$purchase_order_number='PO'.date('Y-m-d H:i:s');
+					$data['purchase_order_number']=$purchase_order_number;
+					$data['po_date']=date('Y-m-d H:i:s');
+					$data['potype']='P';			$data['supplier_number']=$supplier_number;
+					$data['terms']=$this->supplier_model->valueof('payment_terms',$data['supplier_number']);
+					if($data['terms']=='')$data['terms']=$this->type_of_payment_model->default_terms();
+					$data['due_date']=$this->type_of_payment_model->due_date($data['terms'],$data['po_date']);
+					$data['ordered_by']=user_id();	$data['po_ref']='PO Request';
+					if($ok=$this->save($data)){
+						$new_po[]=$purchase_order_number;
+						$this->purchase_order_lineitems_model->create_po_by_request($supplier_number,$purchase_order_number);
+						$this->nomor_bukti(true);
+						$this->recalc($data['purchase_order_number']);
+					}
+				}
+			}
+		}
+		return $new_po;
 	}
 }	 

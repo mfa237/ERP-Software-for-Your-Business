@@ -24,6 +24,7 @@ foreach($new_contract_list->result() as $row){
 	echo "<tr><td>$row->app_id</td><td>$row->app_date</td><td>$row->cust_name</td>
 	<td>$row->loan_id</td><td>$row->status</td>
 	<td><input type='text' name='loan_date[]' class='easyui-datetimebox' 
+				data-options='formatter:format_date,parser:parse_date' 
 	value='$tanggal'></td>
 	<td>$row->create_by</td>
 	<td><input type='checkbox' name='loan_id[]' value='$row->loan_id'></td>

@@ -21,6 +21,7 @@ class Loan extends CI_Controller {
 		if($this->help=="")$this->help=$this->table_name;
 		
 		$this->load->model('leasing/loan_master_model');
+		$this->load->model('leasing/invoice_header_model');
     }
     function set_defaults($record=NULL){
 		$data['mode']='';
@@ -63,21 +64,20 @@ class Loan extends CI_Controller {
 		$data=$this->input->post();
 		$id=$this->input->post("loan_id");
 		$mode=$data["mode"];	unset($data['mode']);
-		if($mode=="add"){ 
-			
+		$app_id=$data['app_id'];
+		$spk=$this->db->select('dp_amount,admin_amount')
+			->where("app_id",$app_id)->get("ls_app_master")->row();
+		if($spk){
+			$data['adm_amount']=$spk->admin_amount;
+			$data['dp_amount']=$spk->dp_amount;
+		} else {
+			$data['adm_amount']=0;
+			$data['dp_amount']=0;			
+		}
+		if($mode=="add"){ 			
 			$ok=$this->loan_master_model->save($data);
 		} else {
-			$app_id=$data['app_id'];
-			$spk=$this->db->select('dp_amount,admin_amount')
-				->where("app_id",$app_id)->get("ls_app_master")->row();
 			$data['loan_id']=$id;
-			if($spk){
-				$data['adm_amount']=$spk->admin_amount;
-				$data['dp_amount']=$spk->dp_amount;
-			} else {
-				$data['adm_amount']=0;
-				$data['dp_amount']=0;			
-			}
 			unset($data['app_id']);
 			$ok=$this->loan_master_model->update($id,$data);				
 		}
@@ -102,7 +102,8 @@ class Loan extends CI_Controller {
 		$data['form_controller']=$this->controller;
 		$data['sales_name']="";
 		$data['sales_id']="";
-		if($query=$this->db->query("select a.create_by,u.username from ls_app_master a 
+		if($query=$this->db->query("select a.create_by,u.username 
+			from ls_app_master a 
 			left join `user` u on a.create_by=u.user_id 
 			where a.app_id='".$data['app_id']."'")){
 			if($row=$query->row()){
@@ -112,7 +113,8 @@ class Loan extends CI_Controller {
 		}
 		
 		$data['field_key']=$this->primary_key;
-		$this->loan_master_model->calc_hari_telat($id); 
+		//$this->loan_master_model->calc_hari_telat($id);
+		//$this->loan_master_model->update_all_invoice_with_query($id);
 		$this->template->display_form_input($this->file_view,$data);
     }
      // validation rules
@@ -139,6 +141,9 @@ class Loan extends CI_Controller {
 
 		$this->load->library('search_criteria');
 		$faa[]=criteria("Nama Pelanggan","sid_nama");
+		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
+		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
+		$faa[]=criteria("Nomor Kontrak","sid_number");
 		$data['criteria']=$faa;
 		$data['other_menu']="leasing/loan_menu";
         $this->template->display_browse2($data);            
@@ -149,17 +154,28 @@ class Loan extends CI_Controller {
 		from ls_loan_master l 
 		left join ls_cust_master c on c.cust_id=l.cust_id ";
         $s .= ' where 1=1';
+		$no=$this->input->get('sid_number');
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		if($no!=''){
+			$s.=" and l.loan_id='".$no."'";
+		} else {
+			$s.=" and l.loan_date between '$d1' and '$d2'";
+		}		
 		if($this->input->get("sid_nama"))$s .= " and c.cust_name like '%".$this->input->get("sid_nama")."%'";
         echo datasource($s);
     }	   
 	function delete($id){
 		$id=urldecode($id);
-	 	$this->loan_master_model->delete($id);
-		$this->browse();
+		if($this->loan_master_model->delete($id)){
+			$this->browse();
+		} else {
+			echo "<div class='alert alert-warning'><h2>Sudah ada pembayaran tidak bisa dihapus !</div>";
+		}
 	}
 	function find($nomor){
 		$nomor=urldecode($nomor);
-		$query=$this->db->query("select * from $table_name where loan_id='$nomor'");
+		$query=$this->db->query("select * from $this->table_name where loan_id='$nomor'");
 		echo json_encode($query->row_array());
  	}	
 	function items($loan_id,$id=''){
@@ -197,21 +213,27 @@ class Loan extends CI_Controller {
 		}
 	}
 	function invoice($loan_id){
-		echo datasource("select * from ls_invoice_header where loan_id='".$loan_id."' 
+		echo datasource("select invoice_number,invoice_date,idx_month,
+		amount-coalesce(saldo_titip,0) as amount2,amount,pokok,bunga,denda_tagih,
+		paid,date_paid,amount_paid,pokok_paid,bunga_paid,denda,
+		saldo,voucher,payment_method,saldo_titip,hari_telat
+		from ls_invoice_header where loan_id='".$loan_id."' 
 		order by invoice_date");
 	}
 	function list_all($search){
 		$search=urldecode($search);
 		$s="select c.cust_id,cust_name,i.invoice_number, i.invoice_date, 
 		i.idx_month,i.amount,i.paid,i.voucher,i.amount_paid,i.payment_method,i.date_paid,i.hari_telat,
-		i.bunga,i.pokok,i.bunga_paid,i.pokok_paid 
+		i.bunga,i.pokok,i.bunga_paid,i.pokok_paid,i.denda_tagih,i.denda,i.saldo,i.saldo_titip,
+		i.amount-coalesce(i.saldo_titip,0) as amount2
 		from ls_invoice_header i left join ls_cust_master c on c.cust_id=i.cust_deal_id 
-		where cust_name like '%".$search."%' 
-		order by i.invoice_number";
+		where (i.loan_id='".$search."' or cust_name like '%".$search."%') 
+		order by i.invoice_number LIMIT 100";
 		echo datasource($s);	
 	}
 	function list_not_paid($search){
 		$search=urldecode($search);
+		 
 		$s="select distinct loan_id from ls_invoice_header i 
 		join ls_cust_master c on c.cust_id=i.cust_deal_id 
 		where i.paid=0 and (c.cust_name like '%".$search."%' or i.loan_id='$search') ";
@@ -221,45 +243,99 @@ class Loan extends CI_Controller {
 			foreach($query->result() as $inv){
 				$this->loan_master_model->calc_hari_telat($inv->loan_id); 				
 			}
-		}
+		} 
 		$s="select c.cust_id,cust_name,i.invoice_number, i.invoice_date, 
 		i.idx_month,i.amount,i.paid,i.voucher,i.amount_paid,i.payment_method,i.date_paid,i.hari_telat,
-		i.bunga,i.pokok,i.bunga_paid,i.pokok_paid 
+		i.bunga,i.pokok,i.bunga_paid,i.pokok_paid,i.denda_tagih,i.denda,i.saldo,i.saldo_titip,
+		i.amount-coalesce(i.saldo_titip,0) as amount2
 		 from ls_invoice_header i left join ls_cust_master c on c.cust_id=i.cust_deal_id 
 		where paid=0 and  (cust_name like '%".$search."%'  or i.loan_id='$search') 
-		order by i.invoice_date 
-		LIMIT 10";
-		echo datasource($s);
+		order by i.invoice_number 
+		LIMIT 100";
+		echo datasource($s);		
+	}
+	function pay_with_titipan($jumlah,$base_faktur,$tgl)
+	{
+		$this->load->model("leasing/invoice_header_model");
+		$this->load->model("leasing/payment_model");
+		$retval=0;
+		if($curr_inv=$this->db->select("loan_id,idx_month")->where("invoice_number",$base_faktur)
+		->get("ls_invoice_header")->row())
+		{
+			$prev_idx_month=$curr_inv->idx_month-1;
+			if($prev_idx_month>0)
+			{
+				if($prev_inv=$this->db->select("loan_id,date_paid,voucher,invoice_number")
+					->where("loan_id",$curr_inv->loan_id)
+					->where("idx_month",$prev_idx_month)
+					->get("ls_invoice_header")->row())
+				{ 
+					 
+					$retval=$this->payment_model->paid_all($prev_inv->loan_id,
+						$tgl,$prev_inv->voucher,
+						$jumlah,'Cash');
+					//perlu diubah payment versi yg lalu
+					$this->db->query("update ls_invoice_payments 
+						set amount_paid=denda+pokok+bunga 
+						where voucher_no='".$prev_inv->voucher."'");
+					//perlu diubah juga invoice yg lalu 
+					$this->invoice_header_model->recalc_saldo(
+						$prev_inv->invoice_number,true);
+				}
+			}
+		}				
+		return $retval;
 	}
 	function add_payment($faktur){
+		
+		
 		$this->load->model("leasing/invoice_header_model");
 		$this->load->model("leasing/payment_model");
 
 		$faktur=urldecode($faktur);
 
-		//masuk ke tabel ls_invoice_payment sekaligus update ls_invoice_header
-		
-		$data=array("invoice_number"=>$faktur,
-			"amount_paid"=>$this->input->post('amount_paid'),
-			"denda"=>$this->input->post("denda"),
-			"pokok"=>$this->input->post("pokok"),
-			"bunga"=>$this->input->post("bunga"));
-		$data['date_paid']=$this->input->post('date_paid');
-		$data['date_paid']=date("Y-m-d",strtotime($data['date_paid']));
-		$data['how_paid']=$this->input->post('how_paid');
-		$data['voucher_no']="P".$faktur.date("d",strtotime($data['date_paid']));
-			
-		$ok = $this->payment_model->save($data);
-		
-		$ok = $this->invoice_header_model->recalc_balance($faktur);
-		if($ok){
-			echo json_encode(array("success"=>true));
+		$tgl=$this->input->post('date_paid');
+		$next_number="P".$faktur.date("d",strtotime($tgl));
+		$saldo_titip=$this->input->post('saldo_titip');
+		$amount_paid=$this->input->post('amount_paid');
+		$id=0; 
+		if($saldo_titip>0) { // bulan lalu ada bayar lebih ?
+			$id=$this->pay_with_titipan($saldo_titip,$faktur,$tgl);
+			$amount_paid=$amount_paid-$saldo_titip;
+			$saldo_titip=0;
+		}
+		//baru bayar dg amount_paid sekarang
+		$loan_id=$this->db->select("loan_id")->where("invoice_number",$faktur)
+		->get("ls_invoice_header")->row()->loan_id;
+		$id=$this->payment_model->paid_all(
+				$loan_id,$tgl,$next_number,
+				$amount_paid,$this->input->post('how_paid')
+			);
+/*		else {
+			$max_id=$this->db->query("select max(id) as nmax from ls_invoice_payments")->row()->nmax;
+			$max_id=$max_id+1;
+			$next_number="P".$faktur."-".$max_id;
+			//masuk ke tabel ls_invoice_payment sekaligus update ls_invoice_header
+			$amount=$this->db->select('amount')->where('invoice_number',$faktur)
+				->get('ls_invoice_header')->row()->amount;
+			$data['saldo_titip']=$saldo_titip;
+			$data["invoice_number"]=$faktur;
+			$data["amount_paid"]=$amount_paid;
+			$data["denda"]=$this->input->post("denda");
+			$data["pokok"]=$this->input->post("pokok");
+			$data["bunga"]=$this->input->post("bunga");
+			$data['date_paid']=$tgl;
+			$data['how_paid']=$this->input->post('how_paid');
+			$data['voucher_no']=$next_number;
+			$id = $this->payment_model->save($data);		
+			$ok = $this->invoice_header_model->recalc_saldo($faktur);
+		}
+*/		
+		if($id){
+			echo json_encode(array("success"=>true,"id"=>$id));
 		} else {
 			echo json_encode(array("msg"=>"Error ".mysql_error()));
 		}		
-		
-	
-		
 	}
 	function tagih($invoice_no,$id){
 		$invoice_no=urldecode($invoice_no);
@@ -325,13 +401,24 @@ class Loan extends CI_Controller {
 				$t="<table class='table2'><thead><th>Loan Id</th>
 				<th>Tanggal</th><th>Customer</th><th>Dealer</th>
 				<th>Pinjaman Rp.</th><th>Bulan Ke</th><th>Pelunasan Rp.</th>
-				<th>Saldo</th><th>Action</th></thead><tbody>";
+				<th>Saldo</th><th>Saldo Pokok</th><th>Action</th></thead><tbody>";
 				foreach($query->result() as $row){
+					
+					$saldo_pokok=0;
+					$sql="select sum(coalesce(q.pokok,0)-coalesce(z_pokok_paid,0))  as saldo_pokok
+					from qry_ls_inv_pay_sum q 
+					left join ls_invoice_header h on h.invoice_number=q.invoice_number
+					where h.loan_id='$row->loan_id'";
+
+					if($q=$this->db->query($sql)){
+						$saldo_pokok=$q->row()->saldo_pokok;
+					}
 					$t.="<tr><td>".$row->loan_id."</td>
 					<td>".$row->loan_date."</td><td>".$row->cust_name."</td>
 					<td>".$row->dealer_name."</td><td cellalgin='right'>".number_format($row->loan_amount)."</td>
 					<td>".$row->last_idx_month."</td><td cellalign='right'>".number_format($row->total_amount_paid)."</td>
 					<td cellalign='right'>".number_format($row->ar_bal_amount)."</td>
+					<td cellalign='right'>".number_format($saldo_pokok)."</td>
 					<td><input style='width:100px'  type='button' class='btn btn-info' value='View'
 					onclick=\"view_loan('".$row->loan_id."');return false;\" >
 					<input style='width:100px' type='button' class='btn btn-warning' value='Bayar'
@@ -396,6 +483,79 @@ class Loan extends CI_Controller {
 		
 		$this->template->display("leasing/kolektor_view",$data);
 	}
-	
+	function change_date_aggr($loan_id,$new_date) {
+		$this->load->model("leasing/invoice_header_model");
+		$tgl_tagih=date('Y-m-d 00:00:00', strtotime($new_date));
+		$ok=$this->db->where("loan_id",$loan_id)->update("ls_loan_master", 
+			array("loan_date_aggr"=>$tgl_tagih));
+		$msg='Success. Silahkan refresh bila diperlukan.';
+		if($q=$this->db->where("loan_id",$loan_id)->order_by("idx_month")->get("ls_invoice_header"))
+		{
+			foreach($q->result() as $inv) {
+				$faktur=$inv->invoice_number;
+				$idx_month=$inv->idx_month;
+				$data['invoice_date']=add_date($tgl_tagih,0,$idx_month);
+				$ok=$this->invoice_header_model->update($faktur,$data);
+			}
+		}
+		echo json_encode(array("result"=>$ok,"message"=>$msg.mysql_error()));
+	}
+	function daily_process() {
+		$this->loan_master_model->daily_process();
+	}
+	function recalc_balance_faktur($faktur){
+		$this->invoice_header_model->recalc_balance($faktur);
+	}
+	function recreate_invoice($loan_id) {
+		$loan_id=urldecode($loan_id);
+		$this->loan_master_model->recreate_invoice($loan_id);
+	}
+	function recalc_all_invoice($loan_id){
+		$loan_id=urldecode($loan_id);
+		$this->loan_master_model->update_all_invoice_with_query($loan_id);
+		$this->view($loan_id);
+	}
+    function cetak($id){
+		$id=urldecode($id);
+		$data[$this->primary_key]=$id;
+		$model=$this->loan_master_model->get_by_id($id)->row();
+		$data=$this->set_defaults($model);
+		$data['data']=$data;		
+		$data['mode']='view';
+		$data['title']=$this->title;
+		$data['help']=$this->help;
+		$data['sales_name']="";
+		$data['sales_id']="";
+		if($query=$this->db->query("select a.create_by,u.username 
+			from ls_app_master a 
+			left join `user` u on a.create_by=u.user_id 
+			where a.app_id='".$data['app_id']."'")){
+			if($row=$query->row()){
+				$data['sales_id']=$row->create_by;
+				$data['sales_name']=$row->username;
+			}
+		}
+		
+		$data['field_key']=$this->primary_key;
+		$this->loan_master_model->calc_hari_telat($id);
+		$data['items']=$this->db->where('loan_id',$id)->get('ls_loan_obj_items');
+		$data['invoice']=$this->db->where('loan_id',$id)->order_by('idx_month')->get('ls_invoice_header');
+		$this->template->display_form_input("leasing/loan_print",$data);
+    }
+	function saldo_pokok($loan_id)
+	{
+		$saldo_pokok=0;
+		$result=false;
+		$sql="select  sum(coalesce(q.pokok,0)-coalesce(z_pokok_paid,0))  as saldo_pokok
+		from qry_ls_inv_pay_sum q 
+		left join ls_invoice_header h on h.invoice_number=q.invoice_number
+		where h.loan_id='$loan_id'";
+		if($saldo_pokok=$this->db->query($sql)->row()->saldo_pokok)
+		{
+			$result=true;
+		}
+		echo json_encode(array("success"=>$result,"saldo_pokok"=>$saldo_pokok));
+		
+	}
 }
 ?>

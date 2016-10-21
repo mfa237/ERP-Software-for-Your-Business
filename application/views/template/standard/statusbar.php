@@ -9,10 +9,10 @@
 	<div id="panel3" class="msg-border-1" style="width:10%">
 	
 	</div>
-	<div id="panel4" class="msg-border-1" style="width:7%" align="right">
+	<div id="panel4" class="msg-border-1" style="width:100px" align="right">
 	
 	</div>
-	<div id="panel5" class="msg-border-1" style="width:5%" align="right">
+	<div id="panel5" class="msg-border-1" style="width:50px" align="right">
 	
 	</div>
 </div>

@@ -30,7 +30,7 @@
 <table class='table2' style='width:100%'>
 	<tr><td>Masa Kerja</td><td><?=form_input("v3_year")?></td></tr>
 	<tr><td>Nama Atasan</td><td><?=form_input("v3_supervisor")?></td></tr>
-	<tr><td>Nama Bagian HRD</td><td><?=form_input("v3_hrd")?></td></tr>
+	<tr><td>Nama HRD</td><td><?=form_input("v3_hrd")?></td></tr>
 	<tr><td>Gaji Rp.</td><td><?=form_input("v3_salary")?></td></tr>
 	<tr><td>Status Karyawan</td><td><?=form_input("v3_emp_status")?></td></tr>
 <!--	

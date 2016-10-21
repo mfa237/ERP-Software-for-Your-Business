@@ -44,7 +44,8 @@ class Scoring_model extends CI_Model {
 			}
 		}
 		$score=round($score/14*100);
-		
+		$data['create_by']=user_id();
+		$data['create_date']=date('Y-m-d H:i:s');
 		$ok=$this->db->insert($this->table_name,$data);            
 		if($ok){
 			if($score>75){
@@ -60,6 +61,8 @@ class Scoring_model extends CI_Model {
 		return $ok;
 	}
 	function update($id,$data){
+		$data['update_date']=date('Y-m-d H:i:s');
+		$data['update_by']=user_id();
 		$this->db->where($this->primary_key,$id);
 		return  $this->db->update($this->table_name,$data);
 	}
@@ -68,3 +71,4 @@ class Scoring_model extends CI_Model {
 		$this->db->delete($this->table_name);
 	}
 }
+?>

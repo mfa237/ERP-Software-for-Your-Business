@@ -1,7 +1,8 @@
 <?
 
 function add_shortcut($label,$icon,$color='#cdc',$url='',$content='',$app_id='') {
-	echo "<div class='mxmod col-md-5 col-sm-5 col-xs-5' onclick='load_menu(\"$url\");'> 
+	echo "<div class='mxmod col-md-5 col-sm-6 col-xs-6' 
+		onclick='load_menu(\"$url\");'> 
 		<div class='mxicon'>
 			<img src='".base_url()."images/$icon' width='90' height='90'>
 		</div>

@@ -1,20 +1,24 @@
-<legend>MASTER REKENING</legend>
+
 <div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/banks/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/banks');		
-	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/banks/view/'.$bank_account_number);		
+	echo link_button('Add','','add','false',base_url().'index.php/banks/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/banks');		
+	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/banks/view/'.$bank_account_number);		
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'banks\')','help');		
 	
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('banks')">Help</div>
+		<div onclick="show_syslog('banks','<?=$bank_account_number?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 <div class="easyui-tabs" >
@@ -24,9 +28,9 @@
 		<form id="myform"  method="post" action="<?=base_url()?>index.php/banks/save">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 		<?php echo validation_errors(); ?>
-		<table class="table2" width="100%">
+		<table class="table" width="100%">
 			<tr>
-				<td>Nomor Rekening</td><td>
+				<td>Nomor Rekening / Kode</td><td>
 				<?php
 				if($mode=='view'){
 					echo "<strong>".$bank_account_number."</strong>";
@@ -37,10 +41,10 @@
 				?></td>
 			</tr>	 
 			   <tr>
-					<td>Nama Bank</td><td><?php echo form_input('bank_name',$bank_name);?></td>
+					<td>Nama Bank / Kas</td><td><?php echo form_input('bank_name',$bank_name);?></td>
 			   </tr>
 			   <tr>
-					<td>Jenis Bank</td><td><?php echo form_dropdown('type_bank',array("Bank","Kas"),$type_bank,"style='width:200px'");?></td>
+					<td>Jenis		</td><td><?php echo form_dropdown('type_bank',array("Bank","Kas"),$type_bank,"style='width:200px'");?></td>
 			   </tr>
 			   <tr>
 					<td>Alamat</td><td><?php echo form_input('street',$street,"style='width:400px;'");?></td>
@@ -68,9 +72,11 @@
 			<form method="post">
 			<table width="100%" class="table2">
 			<tr><td>Date From</td>
-			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" 
+				data-options="formatter:format_date,parser:parse_date"  ');?></td>
 			<td>Date To</td>
-			<td><?=form_input('date_to',date("Y-m-d"),'id=date_to  class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_to',date("Y-m-d"),'id=date_to  class="easyui-datetimebox"
+				data-options="formatter:format_date,parser:parse_date"  ');?></td>
 			<td><?=link_button('Search','search_cards()','search');?></td>
 			</tr>
 			</table>

@@ -1,41 +1,62 @@
-<h4>PEMBAYARAN PIUTANG</H4><div class="thumbnail box-gradient">
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'process()','save');		
 	echo link_button('Print', 'print()','print');
-	echo link_button('Add','','add','true',base_url().'index.php/payment/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/payment');
+	echo link_button('Add','','add','false',base_url().'index.php/payment/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/payment');
 		
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'payment\')','help');		
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('payment')">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+	</div>
 </div>
 <div class="thumbnail">	
 	<form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
-	<table class='table2' width='100%'>
+	<table class='table' width='100%'>
 		<tr>
 			<td>Rekening: </td><td><?=form_dropdown('how_paid_acct_id',$account_list,$how_paid_acct_id,"id=how_paid_acct_id");?></td>
+			<td>Tanggal Bayar: <?=form_input('date_paid',$date_paid,'class="easyui-datetimebox"
+			data-options="formatter:format_date,parser:parse_date"
+			');?></td>
 		</tr>
 		<tr>
-			<td>Pelanggan: </td><td><?=form_input('customer_number',$customer_number,"id=customer_number");?>
+			<td>Pelanggan: </td><td colspan='2'><?=form_input('customer_number',$customer_number,"id=customer_number");?>
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-				onclick="select_customer()"></a>			
+				onclick="select_customer()"></a>
+				<input type='text' disabled id='company' style='width:40%'> 				
 			</td>
-			<td colspan="2"><div id="cust_info"></div></td>
+			<td>&nbsp</td>
+
 		</tr>
 		<tr>
 			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro','Transfer'),$how_paid,"id=how_paid style='width:150px'");?></td>
+			<td>
+			<p><?=form_input('credit_card_number',$credit_card_number)?>&nbsp Giro Nomor
+			</p>
+			<p><?=form_input('expiration_date',$expiration_date,'class="easyui-datetimebox"
+			data-options="formatter:format_date,parser:parse_date"
+			')?>&nbsp Tanggal Cair Giro
+			
+			</p>
+			<p><?=form_input('from_bank',$from_bank)?>&nbsp Nama Bank Penerbit
+			
+			</p>
+			<p><i>
+			*apabila dilakukan pembayaran dengan giro silahkan isi informasi giro dan tanggal 
+			jatuh tempo giro.				
+			</i></p>
+			</td>			
 		</tr>
 		<tr>
-			<td>Tanggal Bayar: </td><td><?=form_input('date_paid',$date_paid,'class="easyui-datetimebox"');?></td>
-		</tr>
-		<tr>
-			<td>Jumlah Bayar: </td><td><?=form_input('amount_paid',$amount_paid);?></td>
+			<td>Jumlah Bayar: </td><td><?=form_input('amount_paid',$amount_paid,"id='amount_paid'");?></td>
+			<td>&nbsp</td>
 		</tr>
 	</table>
 	<div id="divItem" >

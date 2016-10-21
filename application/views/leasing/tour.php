@@ -49,8 +49,10 @@
 				<td>Mata Uang </td><td><?=form_input('curr_code',$curr_code);?></td>
 			 </tr>
 			 <tr>
-				<td>Date From</td><td><?=form_input('start',$start,"class='easyui-datetimebox'");?></td>
-				<td>Date To</td><td><?=form_input('until',$until,"class='easyui-datetimebox'");?></td>
+				<td>Date From</td><td><?=form_input('start',$start,"class='easyui-datetimebox' 
+				data-options='formatter:format_date,parser:parse_date' ");?></td>
+				<td>Date To</td><td><?=form_input('until',$until,"class='easyui-datetimebox' 
+				data-options='formatter:format_date,parser:parse_date' ");?></td>
 			 </tr>
 			 <tr><td>Market Area</td><td><?=form_input('market',$market);?></td>
 			 <td>Keterangan</td><td><?=form_input('note',$note);?></td></tr>

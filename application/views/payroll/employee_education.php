@@ -1,5 +1,6 @@
 <table id="dgEdu" class="easyui-datagrid" width='100%'
-	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbEdu',url: ''">
+	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbEdu',
+	url: '<?=base_url()?>index.php/payroll/employee/education/load/<?=$nip?>'">
 	<thead>
 		<tr>
 			<th data-options="field:'educationlevel', width:'80'">Level</th>
@@ -91,18 +92,18 @@
 		var row = $('#dgEdu').datagrid('getSelected');
 		if (row){
 			$('#id_edu').val(row.id);
-			$('[name=company]').val(row.company);
-			$('[name=startdate]').val(row.startdate);
-			$('[name=finishdate]').val(row.finishdate);
-			$('[name=firstposition]').val(row.firstposition);
-			$('[name=endposition]').val(row.endposition);
-			$('[name=place]').val(row.place);
-			$('[name=lastsalary]').val(row.lastsalary);
-			$('[name=supervisor]').val(row.supervisor);
-			$('[name=referencename]').val(row.referencename);
-			$('[name=referencephone]').val(row.referencephone);
-			$('[name=reasontoleave]').val(row.reasontoleave);
-			$('[name=employeeid]').val(row.employeeid);
+			$('#frmEdu input[name=company]').val(row.company);
+			$('#frmEdu input[name=startdate]').val(row.startdate);
+			$('#frmEdu input[name=finishdate]').val(row.finishdate);
+			$('#frmEdu input[name=firstposition]').val(row.firstposition);
+			$('#frmEdu input[name=endposition]').val(row.endposition);
+			$('#frmEdu input[name=place]').val(row.place);
+			$('#frmEdu input[name=lastsalary]').val(row.lastsalary);
+			$('#frmEdu input[name=supervisor]').val(row.supervisor);
+			$('#frmEdu input[name=referencename]').val(row.referencename);
+			$('#frmEdu input[name=referencephone]').val(row.referencephone);
+			$('#frmEdu input[name=reasontoleave]').val(row.reasontoleave);
+			$('#frmEdu input[name=employeeid]').val(row.employeeid);
 			
 			$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
 		}

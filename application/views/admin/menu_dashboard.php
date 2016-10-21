@@ -5,7 +5,7 @@
 	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 	<div title="DASHBOARD" style="padding:10px">
-		<div class="col-md-12 thumbnail">
+		<div class="col-md-12">
 		<?
 			add_button_menu("Perusahaan","company","ico_asset.png",
 			"Pengaturan nama dan alamat perusahaan");		
@@ -15,7 +15,7 @@
 			"Pengaturan Job Kelompok User  dan batasan modul yang dijalankan");		
 			add_button_menu("Periode Akuntansi","periode","ico_purchase.png",
 			"Proses tutup buku periode akuntansi");		
-			add_button_menu("Link Akun","gl_link","ico_setting.png",
+			add_button_menu("Link Akun","company/gl_link","ico_setting.png",
 			"Setting kode perkiraan penghubung / link untuk default transaksi.");		
 			add_button_menu("Penomoran","nomor","ico_inventory.png",
 			"Setting nomor bukti semua transaksi standard.");		
@@ -29,6 +29,16 @@
 			"Instal/Uninstall Daftar Modul, Extension dan Aplikasi MaxON.");		
 			add_button_menu("Themes","admin/themes","ico_sales.png",
 			"Thema dan tampilan layar MaxOn.");		
+			add_button_menu("Cabang","company/branch","ico_setting.png",
+			"Setting kode cabang perusahaan.");		
+			add_button_menu("Departement","company/department","ico_setting.png",
+			"Setting kode department");		
+			add_button_menu("Division","company/division","ico_setting.png",
+			"Setting kode divisi");		
+			add_button_menu("Wilayah","company/wilayah","rocket.png",
+			"Setting kode wilayah pemasaran untuk salesman");		
+			add_button_menu("Hapus Database","clear_db","flame.png",
+			"Hapus semua database.");		
 					
 		?>
 		</div>
@@ -51,7 +61,7 @@
 	
 	
 </div>
-
+ 
 
 <script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>

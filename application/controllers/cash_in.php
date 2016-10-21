@@ -22,6 +22,7 @@ class Cash_in extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('check_writer_model');
 		$this->load->model('bank_accounts_model');
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -54,7 +55,8 @@ class Cash_in extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_60020'))return false;   
+		$this->browse();
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -62,6 +64,7 @@ class Cash_in extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_60021'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
  		 $data['mode']='add';
@@ -70,10 +73,14 @@ class Cash_in extends CI_Controller {
 	}
 	function save(){
 		$data=$this->get_posts();
+		//var_dump($data);
+		//return;
 		$data['voucher']=$this->nomor_bukti();
 		$id=$this->check_writer_model->save($data);
         $message='update success';
 		$this->nomor_bukti(true);
+		$this->syslog_model->add($id,"cash_in","add");			
+
         header('location: '.base_url().'index.php/cash_in/view/'.$data['voucher']);
 	}
 	
@@ -81,6 +88,8 @@ class Cash_in extends CI_Controller {
 	{
 	 
 		 $data=$this->set_defaults();
+		//var_dump($data);
+		//return;
  
 		 $this->_set_rules();
  		 $id=$this->input->post($this->primary_key);
@@ -88,6 +97,8 @@ class Cash_in extends CI_Controller {
 			$data=$this->get_posts();                    
             unset($data['trans_id']);
             $this->check_writer_model->update($id,$data);
+			$this->syslog_model->add($id,"cash_in","edit");			
+
             $message='Update Success';
 		} else {
 			$message='Error Update';
@@ -96,11 +107,13 @@ class Cash_in extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_60020'))return false;   
 		 $data['id']=$id;
 		 $model=$this->check_writer_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
          $data['message']=$message;
+		  
          $this->template->display_form_input($this->file_view,$data,'');
 
 	
@@ -164,7 +177,7 @@ class Cash_in extends CI_Controller {
 				}
 			}
 		}
-        $sql.=" limit $offset,$limit";
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 	function items($voucher) {
@@ -182,6 +195,10 @@ class Cash_in extends CI_Controller {
 			echo json_encode(array('success'=>false,'msg'=>'Nomor voucher tidak ada atau kosong.'));
 			return false;
 		}
+		if(!$line_number=$this->input->post("line_number")){
+			$line_number=0;
+		}
+		
 		$this->load->model('check_writer_model');
 		$trans_id=$this->check_writer_model->get_by_id($voucher)->row()->trans_id;
 		
@@ -195,23 +212,48 @@ class Cash_in extends CI_Controller {
 		$data['description']=$coa->account_description;
 		$data['amount']=$this->input->post('amount');
 		$data['comments']=$this->input->post('comments');
-		if($this->check_writer_items_model->save($data)){
-			echo json_encode(array('success'=>true,'msg'=>'Sukses tambah data.'));
-			return true;
+		$ret['success']=false;
+		$ret['msg']="Unknown Error";
+		if($line_number==0){
+			if($ok = $this->check_writer_items_model->save($data)){
+				$ret['success']=true;
+				$ret['msg']='Sukses tambah data';
+			}
 		} else {
-			echo json_encode(array('success'=>false,'msg'=>'Gagal menyimpan data.'));
-			return false;
+			if($ok = $this->check_writer_items_model->update($line_number,$data)){
+				$ret['success']=true;
+				$ret['msg']='Sukses tambah data';
+			}			
 		}
+		echo json_encode($ret);
+		return $ok;
+		
 	}
+	function delete_item(){
+		$id=$this->input->post("line_number");
+		$data["success"]=false;
+		$data["msg"]="Unknown Error !";
+		if($this->check_writer_items_model->delete($id)){
+			$data["success"]=true;
+			$data["msg"]="Berhasil.";
+			$this->syslog_model->add($id,"cash_in","delete");			
+
+		}
+		echo json_encode($data);
+	}
+	
 	function unposting($voucher) {
+		if(!allow_mod2('_60025'))return false;   
 		$message=$this->check_writer_model->unposting($voucher);
 		$this->view($voucher,$message);
 	}
 	function posting($voucher) {
+		if(!allow_mod2('_60025'))return false;   
 		$message=$this->check_writer_model->posting($voucher);
 		$this->view($voucher,$message);
 	}
 	function delete($voucher) {
+		if(!allow_mod2('_60023'))return false;   
 		$message=$this->check_writer_model->delete($voucher);
 		if($message!=""){
 			$this->view($voucher,$message);

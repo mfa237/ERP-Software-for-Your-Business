@@ -2,7 +2,8 @@
 <?=link_button("Help","load_help()","help")?>
 </div>
 <legend>PROSES VERIFIKASI</legend>
-<p>Dibawah ini adalah daftar aplikasi permohonan kredit yang belum diverifikasi
+<p>Dibawah ini adalah daftar aplikasi permohonan kredit yang belum diverifikasi di area 
+ [<?=$this->access->cid?>] 
 silahkan klik nomor tersebut untuk diverifikasi</p>
 <?=$not_verified?>
 <p>&nbsp</p>

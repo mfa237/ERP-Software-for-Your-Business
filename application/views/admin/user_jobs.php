@@ -1,4 +1,4 @@
-<h4>KELOMPOK USER</H4>
+ 
 <p>Seting tugas dan wewenang modul yang boleh di akses berdasarkan kelompok user yang bersangkutan</p>
 <div class="thumbnail">
 	<?=link_button('Save', 'simpan()','save');?>
@@ -8,9 +8,9 @@
 <div class="thumbnail">
 	<?php	
 		echo form_open('',"id='myform'");
-		echo my_input('Group ID','user_group_id',$user_group_id);
-		echo my_input('Group Name','user_group_name',$user_group_name);
-		echo my_input('Description','description',$description);
+		echo my_input('Group ID','user_group_id',$user_group_id,"","col-md-5");
+		echo my_input('Group Name','user_group_name',$user_group_name,"","col-md-5");
+		echo my_input('Description','description',$description,"","col-md-5");
 	?>
 	<p></p><i><p>Silahkan contreng modul-modul yang diijinkan untuk diakses oleh kelompok dibawah ini</p></i>
 	<div id='divDetail' class='thumbnail' style='font-size:small'>
@@ -51,9 +51,8 @@
 
 <script>
 	function simpan(){
-  		if($('#user_id').val()==''){alert('Isi user id !');return false;}
-  		if($('#username').val()==''){alert('Isi user name !');return false;}
-  		if($('#password').val()==''){alert('Isi password !');return false;}
+  		if($('#user_group_id').val()==''){alert('Isi kode kelompok user !');return false;}
+  		if($('#user_group_name').val()==''){alert('Isi nama kelompok user !');return false;}
 		url='<?=base_url()?>index.php/jobs/save';
 			$('#myform').form('submit',{
 				url: url,

@@ -17,6 +17,7 @@ class Sales extends CI_Controller {
         $this->load->library('javascript');
         $this->load->library('template');
 		$this->load->library('form_validation');
+		$this->load->model('syslog_model');
 	}
     function index(){	
 	}
@@ -25,6 +26,35 @@ class Sales extends CI_Controller {
 		 $data['date_to']=date('Y-m-d 23:59:59');
 		 $data['select_date']=true;		 
     	 switch ($id) {
+			 case 'so_otstand_item':
+				 $data['criteria1']=true;
+				 $data['label1']='Kode Pelanggan';
+				 $data['text1']='';
+				 $data['output1']="text1";
+				 $data['key1']="customer_number";
+				 $data['fields1'][]=array("company","180","Nama");
+				 $data['fields1'][]=array("customer_number","80","Kode");
+				 $data['fields1'][]=array("street","180","Alamat");
+				 $data['ctr1']='customer/select';
+
+				 $data['criteria2']=true;
+				 $data['label2']='Kode Salesman';
+				 $data['text2']='';
+				 $data['output2']="text2";
+				 $data['key2']="salesman";
+				 $data['fields2'][]=array("salesman","180","Salesman");
+				 $data['ctr2']='salesman/select';
+
+				 $data['criteria3']=true;
+				 $data['label3']='Kode Category';
+				 $data['text3']='';
+				 $data['output3']="text3";
+				 $data['key3']="kode";
+				 $data['fields3'][]=array("kode","180","Kode");
+				 $data['fields3'][]=array("category","180","Kategori");
+				 $data['ctr3']='category/select';
+				 
+				 break;			 
 			 case 'ar_dtl':
 				 $data['criteria1']=true;
 				 $data['label1']='Kode Pelanggan';
@@ -69,6 +99,10 @@ class Sales extends CI_Controller {
 				 $data['ctr1']='customer/select';
 
 				 break;			 
+			case 'slsman_list':
+			case 'cust_list':
+				$data['select_date']=false;	
+				break;
 
 			 default:
 				 break;

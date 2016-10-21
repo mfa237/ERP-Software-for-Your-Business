@@ -1,42 +1,59 @@
-<h3>FAKTUR PEMBELIAN</H3>
+ 
 <div class="thumbnail box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;
-	
+	if(!isset($has_payment))$has_payment=false;
+	if($has_payment=="")$has_payment=0;
+	if(!isset($has_retur))$has_retur=false;
+	if($has_retur=="")$has_retur=0;
+	if(!isset($has_memo))$has_memo=false;
+	if($has_memo=="")$has_memo=0;
+	 
 	echo link_button('Save', 'save_po()','save');		
 	echo link_button('Print', 'print_faktur()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/purchase_invoice/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/purchase_invoice');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
+	echo link_button('Add','','add','false',base_url().'index.php/purchase_invoice/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/purchase_invoice');		
+	echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
 	echo link_button('Delete', 'delete_nomor()','cut');
-	echo link_button('Doc Receive', 'select_receive();return false;','search');
 	
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
 	}
-	echo link_button('Help', 'load_help(\'purchase_invoice\')','help');		
-	
-	?>
+	echo "<div style='float:right'>";
+	echo link_button('Doc Receive', 'select_receive();return false;','search');
+?>
+	 
+	<a href="#" class="easyui-splitbutton" data-options="plain:false, menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div id="mmOptions" style="width:200px;">
+		<div onclick="load_help('purchase_invoice')">Help</div>
+		<div onclick="show_syslog('purchase_invoice','<?=$purchase_order_number?>')">Log Aktifitas</div>
+		<div>Update</div>
+		<div>MaxOn Forum</div>
+		<div>About</div>
+	</div>
+	</div> 
 	
 </div>
 <div class="thumbnail">	
 	<form id='frmPo' method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	<table class="table2" width="100%">
+	<table class="table" width="100%">
 	<tr>
 		<td>Nomor Faktur</td><td>
 		<?php echo form_input('purchase_order_number',
                         $purchase_order_number,"id=purchase_order_number"); ?>
                 </td>
 			
-			<td rowspan='5' colspan='3'><div class='thumbnail' style='min-height:100px'>Nama Supplier : <br><?=$supplier_info?></div></td>				
+			<td rowspan='3' colspan='3'><div class='thumbnail' style='min-height:100px'>Nama Supplier : <br><?=$supplier_info?></div></td>				
 				
         </tr>	 
        <tr>
-            <td>Tanggal</td><td><?php echo form_input('po_date',$po_date,'id=po_date   class="easyui-datetimebox" required');?>
+            <td>Tanggal</td><td><?php echo form_input('po_date',$po_date,'id=po_date   class="easyui-datetimebox" 
+			data-options="formatter:format_date,parser:parse_date"
+			required');?>
             </td>
 
         </tr>	 
@@ -57,10 +74,10 @@
                     ,$terms_list,$terms,"id=terms");?>
             </td>
 
-       </tr>
-       <tr>
-            <td>Jangka Waktu</td>
-            <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" required');?></td>
+             <td>Jangka Waktu</td>
+            <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" 
+			data-options="formatter:format_date,parser:parse_date"
+			required');?></td>
        </tr>
        <tr>
             <td>Keterangan</td><td colspan="3"><?php echo form_input('comments'
@@ -77,9 +94,9 @@
 		<!-- PURCASE_ORDER_LINEITEMS -->	
 		<div id='divItem'>
 		<div id='dgItem'>
-			<? include_once "purchase_order_items.php"; ?>
+			<? if(!$posted) include_once "purchase_order_items.php"; ?>
 		</div>
-		<table id="dg" class="easyui-datagrid"  width="100%"
+		<table id="dg" class="easyui-datagrid table"  width="100%"
 			data-options="
 				iconCls: 'icon-edit',fitColumns:true,
 				singleSelect: true,
@@ -94,6 +111,8 @@
 					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
 					<th data-options="field:'price',width:80,align:'right',editor:{type:'numberbox',options:{precision:2}}">Harga</th>
 					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
+					<th data-options="field:'disc_2',width:50,editor:'numberbox'">Disc%2</th>
+					<th data-options="field:'disc_3',width:50,editor:'numberbox'">Disc%3</th>
 					<th data-options="field:'total_price',width:60,align:'right',editor:'numberbox'">Jumlah</th>
 					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 					<th data-options="field:'from_line_doc',width:100,align:'right'">Ref</th>
@@ -104,7 +123,7 @@
 	<!-- END PURCHASE_ORDER_LINEITEMS -->
 		<h5>TOTAL</H5>
 		<div id='divTotal'> 
-			<table class="table2" width="100%">
+			<table class="table" width="100%">
 				<tr>
 					<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
 					<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>
@@ -215,14 +234,17 @@
 	
 <? include_once 'supplier_select.php' ?>
 <? include_once 'select_receive_po_supplier.php' ?>
-
+<?php var_dump($has_payment) ?>
 <script type="text/javascript">
 	var url;	
 	var posted=<?=$posted?>;
 	var closed=<?=$closed?>;
+	var has_payment=<?=$has_payment?>;
+	var has_retur=<?=$has_retur?>;
+	var has_memo=<?=$has_memo?>;
     function save_po(){
 
-		if(posted){alert("Nomor ini sudah di jurnal tidak bisa disiman ulang !");return false;}
+		if(posted){alert("Nomor ini sudah di jurnal tidak bisa disimpan ulang !");return false;}
 		if(closed){alert("Periode sudah ditutup tidak bisa disiman ulang !");	return false;}
 	
         if($('#purchase_order_number').val()==''){alert('Isi nomor purchase order !');return false;}

@@ -15,8 +15,7 @@ class Bca extends CI_Controller {
 	}
  
 }
-
-<?php
+ 
   ini_set('display_errors',1);
   
   include('scrap.bca.php');

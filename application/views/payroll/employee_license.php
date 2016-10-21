@@ -1,75 +1,60 @@
-<table id="dgEdu" class="easyui-datagrid" width='100%'
-	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbEdu',url: ''">
+<table id="dgLic" class="easyui-datagrid" width='100%'
+	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbLic',
+	url: '<?=base_url()?>index.php/payroll/employee/license/load/<?=$nip?>'">
 	<thead>
 		<tr>
-			<th data-options="field:'educationlevel', width:'80'">Level</th>
-			<th data-options="field:'school', width:'80'">Sekolah</th>
-			<th data-options="field:'place', width:'80'">Kota</th>
-			<th data-options="field:'major', width:'80'">Tingkat</th>
-			<th data-options="field:'enteryear', width:'80'">Tahun Masuk</th>
-			<th data-options="field:'graduationyear', width:'80'">Tahun Lulus</th>
-			<th data-options="field:'yearofattend', width:'80'">Lamanya</th>
-			<th data-options="field:'graduate', width:'80'">Lulus</th>
+			<th data-options="field:'licensenumber', width:'80'">Nomor</th>
+			<th data-options="field:'licensetype', width:'80'">Jenis</th>
+			<th data-options="field:'startdate', width:'80'">Tanggal Awal</th>
+			<th data-options="field:'finishdate', width:'80'">Tanggal Akhir</th>
 			<th data-options="field:'employeeid', width:'80'">NIP</th>
 			<th data-options="field:'id', width:'80'">Id</th>
 		</tr>
 	</thead>
 </table>
 	
-<div id="tbEdu">
-	<?=link_button("Tambah","add_edu()","add")?>
-	<?=link_button("Edit","edit_edu()","edit")?>
-	<?=link_button("Hapus","del_edu()","remove")?>
-	<?=link_button("Refresh","load_edu()","reload")?>
+<div id="tbLic">
+	<?=link_button("Tambah","add_lic()","add")?>
+	<?=link_button("Edit","edit_lic()","edit")?>
+	<?=link_button("Hapus","del_lic()","remove")?>
+	<?=link_button("Refresh","load_lic()","reload")?>
 </div>	
 
 
-<div id='dlgEdu'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
-	closed="true" buttons="#tbDlgEdu">
-	<form method="post" id="frmEdu">
+<div id='dlgLic'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
+	closed="true" buttons="#tbDlgLic">
+	<form method="post" id="frmLic">
 		<table style='width:100%'>
 			<tr>
-				<td>Level</td><td><?=form_input("educationlevel")?></td>
+				<td>Nomor </td><td><?=form_input("licensenumber")?></td>
 			</tr>
 			<tr>
-				<td>Sekolah</td><td><?=form_input("school")?></td>
+				<td>Jenis (KTP/SIM)</td><td><?=form_input("licensetype")?></td>
 			</tr>
 			<tr>
-				<td>Kota</td><td><?=form_input("place")?></td>
+				<td>Tanggal Awal</td><td><?=form_input("startdate")?></td>
 			</tr>
 			<tr>
-				<td>Tingkat</td><td><?=form_input("place")?></td>
-			</tr>
-			<tr>
-				<td>Tahun Masuk</td><td><?=form_input("enteryear")?></td>
-			</tr>
-			<tr>
-				<td>Tahun Lulus</td><td><?=form_input("graduationyear")?></td>
-			</tr>
-			<tr>
-				<td>Lamanya</td><td><?=form_input("yearofattend")?></td>
-			</tr>
-			<tr>
-				<td>Lulus</td><td><?=form_input("graduate")?></td>
+				<td>Tanggal Akhir</td><td><?=form_input("finishdate")?></td>
 			</tr>
 		</table>		
-		<input type='hidden' id='id_edu' name='id'>
-		<input type='hidden' id='nip_edu' name='employeeid' value='<?=$nip?>'>
+		<input type='hidden' id='id_lic' name='id'>
+		<input type='hidden' id='nip_lic' name='employeeid' value='<?=$nip?>'>
 	</form>
 </div>
-<div id="tbDlgEdu">
-	<?=link_button("Save","save_edu()","save")?>
+<div id="tbDlgLic">
+	<?=link_button("Save","save_lic()","save")?>
 </div>	
 
 <script language="JavaScript">
-	function add_edu() {
-		$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+	function add_lic() {
+		$('#dlgLic').dialog('open').dialog('setTitle','Lisensi');
 	}
-	function save_edu() {
-        if($('#company').val()===''){alert('Isi dulu nama perusahaan !');return false;};
+	function save_lic() {
+        if($('#licensenumber').val()===''){alert('Isi dulu nomor kartu !');return false;};
 
-		url='<?=base_url()?>index.php/payroll/employee/education/save';
-		$('#frmEdu').form('submit',{
+		url='<?=base_url()?>index.php/payroll/employee/license/save';
+		$('#frmLic').form('submit',{
 			url: url,
 			onSubmit: function(){
 				return $(this).form('validate');
@@ -78,8 +63,8 @@
 				var result = eval('('+result+')');
 				if (result.success){
 					load_exp();
-					$('#dlgEdu').dialog('close');				
-					$('#frmEdu').each(function(){ this.reset(); });
+					$('#dlgLic').dialog('close');				
+					$('#frmLic').each(function(){ this.reset(); });
 					log_msg('Data sudah tersimpan.');
 				} else {
 					log_err(result.msg);
@@ -87,36 +72,27 @@
 			}
 		});	
 	}
-	function edit_edu()	{
-		var row = $('#dgEdu').datagrid('getSelected');
+	function edit_lic()	{
+		var row = $('#dgLic').datagrid('getSelected');
 		if (row){
-			$('#id_edu').val(row.id);
-			$('[name=company]').val(row.company);
-			$('[name=startdate]').val(row.startdate);
-			$('[name=finishdate]').val(row.finishdate);
-			$('[name=firstposition]').val(row.firstposition);
-			$('[name=endposition]').val(row.endposition);
-			$('[name=place]').val(row.place);
-			$('[name=lastsalary]').val(row.lastsalary);
-			$('[name=supervisor]').val(row.supervisor);
-			$('[name=referencename]').val(row.referencename);
-			$('[name=referencephone]').val(row.referencephone);
-			$('[name=reasontoleave]').val(row.reasontoleave);
-			$('[name=employeeid]').val(row.employeeid);
-			
-			$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+			$('#id_lic').val(row.id);
+			$('#frmLic input[name=licensenumber]').val(row.licensenumber);
+			$('#frmLic input[name=licensetype]').val(row.licensetype);
+			$('#frmLic input[name=startdate]').val(row.startdate);
+			$('#frmLic input[name=finishdate]').val(row.finishdate);
+			$('#dlgLic').dialog('open').dialog('setTitle','License');
 		}
 	}
 	function load_edu()	{
 		nip=$('#nip').val();
-		xurl='<?=base_url()?>index.php/payroll/employee/education/load/'+nip;
-		$('#dgEdu').datagrid({url:xurl});
+		xurl='<?=base_url()?>index.php/payroll/employee/license/load/'+nip;
+		$('#dgLic').datagrid({url:xurl});
 	}
-	function del_edu()	{
-		var row = $('#dgEdu').datagrid('getSelected');
+	function del_lic()	{
+		var row = $('#dgLic').datagrid('getSelected');
 	 
 		if (row){
-			url='<?=base_url()?>index.php/payroll/employee/education/delete/'+row.id;
+			url='<?=base_url()?>index.php/payroll/employee/license/delete/'+row.id;
 			$.ajax({
 				type: "GET", url: url,
 				success: function(msg){

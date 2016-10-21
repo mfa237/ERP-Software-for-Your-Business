@@ -24,5 +24,4 @@ function __construct(){
 		if($query)foreach ($query->result() as $row){$ret[$row->div_code]=$row->div_name;}		 
 		return $ret;
 	}
-
 }

@@ -7,17 +7,26 @@
  </head>
  
  <body>
- 	<div id='hd' style="border-bottom:#95B8E7 5px solid;height:100px">
-	   	<div id='hd_left' style="float:left;margin:10px;width:50%">
-	    	<?=$header?> 
+ 	<div id='hd' >
+	   	<div id='hd_left'  >
+	    	<? 
+			if( !isset($header)) $header="";
+			echo $header;
+			?> 
 	    </div>
-	    <div id='hd_right' style="float:left;margin:10px">
+	    <div id='hd_right' >
 	   		<h1><?php echo $caption?></H1>
 	   	</div>
    	</div>
-   	<div>
-   		<?php echo $content?>		  
+   	<div  >
+   		<?php 
+		if(isset($before_print))echo load_view($before_print);
+		echo $content;		
+		?>		  
     </div>      
+	<div class='sql clearfix'>
+		<? if(isset($sql)) //echo $sql; ?>
+	</div>
  </body>
 </html>
 

@@ -21,11 +21,11 @@
 			<area shape="circle" alt="Slip Gaji" coords="275,55,30" href="<?=base_url()?>index.php/payroll/salary" class="info_link"  title="Slip Gaji" />
 			<area shape="circle" alt="" coords="368,55,29"href="<?=base_url()?>index.php/payroll/overtime" class="info_link"  title="Overtime" />
 			<area shape="circle" alt="" coords="471,53,30" href="<?=base_url()?>index.php/payroll/pinjaman" class="info_link"  title="Pinjaman" />
-			<area shape="circle" alt="" coords="163,212,31"href="<?=base_url()?>index.php/payroll/salary/generate" class="info_link"  title="Generate Slip Gaji Bulanan" />
+			<area shape="circle" alt="" coords="163,212,31"href="<?=base_url()?>index.php/payroll/generate" class="info_link"  title="Generate Slip Gaji Bulanan" />
 			<area shape="circle" alt="" coords="271,212,31" href="<?=base_url()?>index.php/payroll/periode" class="info_link"  title="Seting Periode Penggajian" />
 			<area shape="circle" alt="" coords="92,323,30" href="<?=base_url()?>index.php/payroll/pph21" class="info_link"  title="Proses PPH 21" />
-			<area shape="circle" alt="" coords="221,322,29" href="<?=base_url()?>index.php/payroll/pengobatan" class="info_link"  title="Pengobatan" />
-			<area shape="circle" alt="" coords="354,321,28" href="<?=base_url()?>index.php/payroll/employee/group" class="info_link"  title="Group Level Penggajian" />
+			<area shape="circle" alt="" coords="221,322,29" href="<?=base_url()?>index.php/payroll/medical" class="info_link"  title="Pengobatan" />
+			<area shape="circle" alt="" coords="354,321,28" href="<?=base_url()?>index.php/payroll/group" class="info_link"  title="Group Level Penggajian" />
 			<area shape="circle" alt="" coords="470,317,29" href="<?=base_url()?>index.php/payroll/cuti" class="info_link" title="Data Cuti Karyawan" />
 			<area shape="default" nohref="nohref" alt="" />
 			</map>

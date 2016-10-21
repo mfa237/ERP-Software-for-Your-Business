@@ -39,4 +39,9 @@ echo form_close();
 		var url="<?=base_url()?>index.php/leasing/approve/view_spk/"+app_id;
 		add_tab_parent("view_spk_"+app_id,url);
 	}
+	function view_cust(cust_id){
+		var url="<?=base_url()?>index.php/leasing/cust_master/view/"+cust_id+"/view/false";
+		add_tab_parent("ViewCst"+cust_id,url);
+	}
+	
 </script>

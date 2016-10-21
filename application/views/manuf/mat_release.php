@@ -11,7 +11,9 @@
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('mat_release)">Help</div>
+		<div onclick="show_syslog('mat_release','<?=$mat_rel_no?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -41,7 +43,9 @@
 			</tr>
 			<tr><td>Date</td>
 				<td><?=form_input("date_rel",$date_rel,"id='date_rel' 
-					class='easyui-datetimebox' style='width:150px'")?>
+					class='easyui-datetimebox' style='width:150px'
+					data-options='formatter:format_date,parser:parse_date'
+					")?>
 				</td>
 				<td>Person</td><td><?=form_input("person",$person,"id='person'")?></td>
 			</tr>

@@ -1,6 +1,6 @@
 <!-- PILIH PELANGGAN --> 
 <div id='dlgSelectSupp'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-supp">
+     closed="true" toolbar="#button-select-supp">
      <div id='divSelectSupp'> 
 		<table id="dgSelectSupp" class="easyui-datagrid"  width="100%"
 			data-options="
@@ -23,7 +23,6 @@
 	Enter Text: <input id="search_supp_lov" style='width:180' name="search_supp_lov">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search"  onclick="select_supplier();return false;">Filter</a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selected_supplier();return false;">Select</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"   onclick="dlgSelectSupp_Close();return false;">Close</a>
 </div>
 
 

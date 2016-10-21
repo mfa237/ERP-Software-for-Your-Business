@@ -7,7 +7,7 @@
 	</form>
 </div>
 <div id="btnSelectReceive" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selected_received_no();return false;">Proses</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="false" onclick="selected_received_no();return false;">Proses</a>
 </div>
 <SCRIPT language="javascript">
 	function select_receive(){

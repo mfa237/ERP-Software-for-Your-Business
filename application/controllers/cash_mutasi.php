@@ -23,6 +23,7 @@ class Cash_mutasi extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('check_writer_model');
 		$this->load->model('bank_accounts_model');
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -54,7 +55,8 @@ class Cash_mutasi extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_60030'))return false;   
+        $this->browse();
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -62,6 +64,7 @@ class Cash_mutasi extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_60031'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
  		 $data['mode']='add';
@@ -77,6 +80,8 @@ class Cash_mutasi extends CI_Controller {
 		$message=mysql_error();
 		if($message=="") $message='update success';
 		$this->nomor_bukti(true);
+		$this->syslog_model->add($id,"cash_mutasi","add");			
+
 		$this->view($data['voucher'],$message);
 	}
 	
@@ -93,6 +98,8 @@ class Cash_mutasi extends CI_Controller {
             unset($data['trans_id']);
             $this->check_writer_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"cash_mutasi","edit");			
+
 		} else {
 			$message='Error Update';
 		}	  
@@ -172,22 +179,26 @@ class Cash_mutasi extends CI_Controller {
 				}
 			}
 		}
-        $sql.=" limit $offset,$limit";
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 	function unposting($voucher) {
+		if(!allow_mod2('_60035'))return false;   
 		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->unposting($voucher);
 		$this->view($voucher,$message);
 	}
 	function posting($voucher) {
+		if(!allow_mod2('_60035'))return false;   
 		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->posting($voucher);
 		$this->view($voucher,$message);
 	}
 	function delete($voucher) {
+		if(!allow_mod2('_60033'))return false;   
 		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->delete($voucher);
+		$this->syslog_model->add($voucher,"cash_mutasi","delete");
 		if($message!=""){
 			$this->view($voucher,$message);
 			return false;

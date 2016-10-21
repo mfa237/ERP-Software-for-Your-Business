@@ -30,7 +30,8 @@ if(!isset($_right_menu))$_right_menu="";
 	
 	<div class="row-fluid">
 		<div class="col-md-15" style="margin-top:10px"> 
-			<table id="dg<?=$table_name?>" title="<?=$table_name?>" class="easyui-datagrid" style="width:auto;height:450px"
+			<table id="dg<?=$table_name?>" title="<?=$table_name?>" 
+		-		class="easyui-datagrid table" style="width:auto;height:450px"
 			        url="<?=base_url()?>index.php/run/data/<?=$table_name?>"
 			        toolbar="#tb<?=$table_name?>"
 			        rownumbers="true" fitColumns="true" singleSelect="true">
@@ -39,9 +40,9 @@ if(!isset($_right_menu))$_right_menu="";
 			    </thead>
 			</table>
 			<div id="tb<?=$table_name?>">
-			    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="new<?=$table_name?>()">New</a>
-			    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="edit<?=$table_name?>()">Edit</a>
-			    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroy<?=$table_name?>()">Remove</a>
+			    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="new<?=$table_name?>()">New</a>
+			    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="edit<?=$table_name?>()">Edit</a>
+			    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="destroy<?=$table_name?>()">Remove</a>
 			</div>
 
 		</div> 

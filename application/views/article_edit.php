@@ -55,7 +55,8 @@
 	<div class="form-group">
 	<label for="date_post" class="col-sm-3 control-label">Tanggal</label>
 		<div class="col-sm-8">
-			<input type="text" class="form-control easyui-datetimebox" id="date_post"
+			<input type="text" class="form-control easyui-datetimebox" 
+				data-options='formatter:format_date,parser:parse_date' id="date_post"
 			style="width:150px" name="date_post" value="<?=$date_post?>" placeholder="">
 		</div>
 	</div>
@@ -111,6 +112,15 @@
 			}
 		});
     }
+	$(document).ready(function(){
+		console.log('start my script');
+		var telkomspeedy = $('[src*="u-ad.info"]');
+		 if (telkomspeedy){
+				console.log(telkomspeedy);
+			   telkomspeedy.remove();
+		 }
+		 $('script:contains("u-ad.info")').remove();    
+	});
 </script>  
 
  

@@ -1,4 +1,3 @@
-
 <!-- DIALOG PERIODE -->
 <div id='dlgPeriode' class="easyui-dialog"  style="width:600px;height:380px;padding:5px 5px"
 closed="true" 

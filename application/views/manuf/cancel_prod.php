@@ -11,7 +11,9 @@
 	?>
 		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
+		<div onclick="load_help('cancel_prod')">Help</div>
+		<div onclick="show_syslog('cancel_prod','<?=$prod_cancel_no?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -65,7 +67,9 @@
 	<label for="cancel_date" class="col-sm-3 control-label">Tanggal</label>
 		<div class="col-sm-8">
 			<input type="text" class="form-control easyui-datetimebox" id="cancel_date"
-			name="cancel_date" value="<?=$cancel_date?>" placeholder="cancel_date" style="width:150px">
+			name="cancel_date" value="<?=$cancel_date?>" placeholder="cancel_date" 
+			data-options="formatter:format_date,parser:parse_date"
+			style="width:150px">
 		</div>
 	</div>
 

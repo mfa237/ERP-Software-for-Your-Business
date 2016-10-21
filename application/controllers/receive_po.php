@@ -24,6 +24,7 @@ class Receive_po extends CI_Controller {
         $this->load->model('supplier_model');
         $this->load->model('shipping_locations_model');
         $this->load->model('inventory_products_model');
+		$this->load->model('syslog_model');
 	}
 	function index()
 	{
@@ -52,6 +53,7 @@ class Receive_po extends CI_Controller {
 	        
     function add($po_number='')
     {
+		if(!allow_mod2('_80051'))return false;
 		$po_number=urldecode($po_number);
         $this->_set_rules();
         $data=$this->set_defaults(); 
@@ -84,6 +86,8 @@ class Receive_po extends CI_Controller {
 
 	if ($this->purchase_order_model->save($data)){
 			$this->nomor_bukti(true);
+			$this->syslog_model->add($id,"receive_po","edit");
+
 			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
@@ -116,6 +120,8 @@ class Receive_po extends CI_Controller {
                    $id=$this->input->post('shipment_id');
                    $this->inventory_products_model->update($id,$data);
                    $message='Update Success';
+				   $this->syslog_model->add($id,"receive_po","edit");
+
            } else {
                    $message='Error Update';
            }
@@ -123,13 +129,16 @@ class Receive_po extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80050'))return false;
 		$id=urldecode($id);
             $model=$this->inventory_products_model->get_by_id($id)->row();
             $data=$this->set_defaults($model);
             $data['mode']='view';
             $data['message']=$message;
             $data['supplier_info']=$this->supplier_model->info($data['supplier_number']);
-            $this->template->display('inventory/receive_po_view',$data);
+			$data['has_invoice']=$this->inventory_products_model->has_invoice($id);
+             
+			$this->template->display('inventory/receive_po_view',$data);
     }
          
     function receive_items($id){
@@ -191,17 +200,19 @@ class Receive_po extends CI_Controller {
 			$sql.=" and date_received between '$d1' and '$d2'";
 			if($nama!='')$sql.=" and supplier_name like '$nama%'";	
 		}
-        $sql.=" limit $offset,$limit";
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }
 	function delete($id){
+		if(!allow_mod2('_80053'))return false;
 		$id=urldecode($id);
 		$nomor_po=$this->inventory_products_model->get_by_id($id)->row()->purchase_order_number;
 		if($this->inventory_products_model->validate_delete_receive_po($id) and $this->inventory_products_model->delete($id)){
 
 			$this->load->model('purchase_order_model');
 			$this->purchase_order_model->recalc_qty_recvd($nomor_po);
-			
+			$this->syslog_model->add($id,"receive_po","delete");
+
 			echo json_encode(array("success"=>true,"msg"=>"Berhasil hapus nomor ini."));
 		} else {
 			echo json_encode(array("success"=>false,"msg"=>"Gagal hapus nomor ini. <br>Mungkin sudah dibuatkan faktur."));
@@ -240,11 +251,13 @@ class Receive_po extends CI_Controller {
 		$data['warehouse_code']=$rcv->warehouse_code;
 		$data['comments']=$rcv->comments;
 		$data['purchase_order_number']=$rcv->purchase_order_number;
-		$this->load->view('inventory/rpt/print_receive',$data);
+		$data['content']=load_view('inventory/rpt/print_receive',$data);
+		$this->load->view('pdf_print',$data);
 	}
 
 	function proses()
 	{
+		if(!allow_mod2('_80050'))return false;
 		$this->load->model('inventory_products_model');
 		$this->load->model('inventory_model');
 		$this->load->model('purchase_order_lineitems_model');
@@ -271,15 +284,22 @@ class Receive_po extends CI_Controller {
 				$poline=$this->purchase_order_lineitems_model->get_by_id($line[$i])->row();
 				$itemno=$poline->item_number;
 				$stock=$this->inventory_model->get_by_id($itemno)->row();
-				
+				$qty_now=$qty[$i];
+				$qty_sisa=($poline->quantity-$poline->qty_recvd);
+				if($qty_now>$qty_sisa) $qty_now=$qty_sisa;
+				$unit=$poline->unit;
+				if($unit=="")$unit=$stock->unit_of_measure;
+				$cost=$poline->cost;
+				if($cost==0)$cost=$stock->cost;
+				if($cost==0)$cost=$stock->cost_from_mfg;
 				$data['item_number']=$stock->item_number;
-				$data['cost']=$stock->cost;
-				$data['quantity_received']=$qty[$i];
-				$data['unit']=$stock->unit_of_measure;
+				$data['cost']=$cost;
+				$data['quantity_received']=$qty_now;
+				$data['unit']=$unit;
 				$data['total_amount']=$data['quantity_received']*$data['cost'];
 				$data['from_line_number']=$line[$i];
 				$this->inventory_products_model->save($data);
-				$this->purchase_order_lineitems_model->update_qty_received($line[$i],$qty[$i]);
+				$this->purchase_order_lineitems_model->update_qty_received($line[$i],$qty_now);
 			}
 		}
 		$this->purchase_order_model->update_received($po_number);
@@ -349,16 +369,32 @@ class Receive_po extends CI_Controller {
 			if($q->row()){
 				$item_name=$q->row()->description;
 			}
+			$from_line=$row->from_line_number;
+			$discount=0;	$disc_2=0;	$disc_3=0;	$price=0;
+			if($from_line>0){
+				if($qpo=$this->db->where("line_number",$from_line)->get("purchase_order_lineitems"))
+				{
+					if($rpo=$qpo->row()){
+						$discount=$rpo->discount;
+						$disc_2=$rpo->disc_2;
+						$disc_3=$rpo->disc_3;
+						$price=$rpo->price;
+					}
+				}
+			}
 			$data['purchase_order_number']=$invoice_number;
 			$data['item_number']=$row->item_number;
 			$data['description']=$item_name;
-			$data['price']=$row->cost;
+			$data['price']=$price;
 			$data['quantity']=$row->quantity_received;
 			$data['unit']=$row->unit;
 			$data['warehouse_code']=$row->warehouse_code;
 			$data['from_line_number']=$row->id;
 			$data['from_line_doc']=$row->shipment_id;
 			$data['total_price']=$row->total_amount;
+			$data['discount']=$discount;
+			$data['disc_2']=$disc_2;
+			$data['disc_3']=$disc_3;
 			$data['from_line_type']="RCV";
 			$ok=$this->purchase_order_lineitems_model->save($data);
 		}

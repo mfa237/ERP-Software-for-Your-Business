@@ -1,3 +1,6 @@
+<?php 
+if($this->config->item('google_ads_visible')) {
+?>
 <div class="easyui-panel " title="IKLAN">
 	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 	<!-- maxonerp -->
@@ -10,3 +13,4 @@
 	</script>
 </div>
 
+<?php } ?>

@@ -12,6 +12,7 @@ private $limit=10;
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		//$this->load->model('receive_approve_model');
+		$this->load->model('syslog_model');
 	}
 	function index()
 	{	

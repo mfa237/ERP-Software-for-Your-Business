@@ -18,6 +18,7 @@ class Purchase_CrMemo extends CI_Controller {
         $this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('crdb_model');
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -41,7 +42,7 @@ class Purchase_CrMemo extends CI_Controller {
 	function index()
 	{	
 		if(!allow_mod2('_40090'))return false;   
-            $this->browse();
+        $this->browse();
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
@@ -71,6 +72,7 @@ class Purchase_CrMemo extends CI_Controller {
 	
 	function add()
 	{
+		if(!allow_mod2('_40091'))return false;   
 		$data['kodecrdb']=$this->nomor_bukti();
 		$data['tanggal']=date('Y-m-d');
 		$data['docnumber']='';
@@ -94,10 +96,13 @@ class Purchase_CrMemo extends CI_Controller {
 			$data['transtype']=$this->input->post('transtype');
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
+			$this->syslog_model->add($data['kodecrdb'],"crdb","edit");
+
 		} else {echo 'Save: Invalid Invoice Number';}
 	
 	}
 	function view($id,$message=null){
+		if(!allow_mod2('_40090'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->crdb_model->get_by_id($id)->result_array();

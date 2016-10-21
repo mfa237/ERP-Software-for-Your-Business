@@ -44,7 +44,7 @@
                     data: param,
                     success: function(msg){
                         $('#dlgItem').dialog({  
-                           title: 'Pilih Nama Barang',  
+                           title: 'Pilih Nama Barang', 
                            width: 400,height: 400,  closed: false, cache: false,
                            modal: true,
                             buttons: [{

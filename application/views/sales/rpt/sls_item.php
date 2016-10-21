@@ -1,7 +1,4 @@
 <?
-//var_dump($_POST);
-?>
-<?
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
@@ -11,27 +8,15 @@
     $CI->load->model('sales_order_model');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
-<table cellspacing="0" cellpadding="1" border="0" width='800px'> 
+<table cellspacing="0" cellpadding="1" border="0" width='100%'> 
      <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>PENJUALAN PER BARANG</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
+     	<td colspan='5'><h2>PENJUALAN PER BARANG</h2></td>     	
      </tr>
      <tr>
      	<td>
      		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>
      	</td>
      </tr>
-     <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
      <tr>
      	<td colspan="8">
 	     		<table class='titem'>
@@ -51,7 +36,8 @@
      			c.company,i.due_date,i.payment_terms,i.salesman,i.sales_order_number
      			 from invoice i left join customers c on c.customer_number=i.sold_to_customer
      			 left join invoice_lineitems il on il.invoice_number=i.invoice_number
-	            where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2'  ";
+	            where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2'  
+				and il.quantity<>0";
 				if($kode_barang!="")$sql.=" and il.item_number='".$kode_barang."'";
 				$sql.=" order by il.item_number";
 				
@@ -65,6 +51,7 @@
 					$item_new=$row->item_number;	
 					$item_old=$item_new;
 					$z_qty=0;
+					$z_amt=0;
 					while ($item_old==$item_new && $i<count($rst_so)) {
 						$tbl.="<tr>";
 						$tbl.="<td>".$row->item_number."</td>";
@@ -85,7 +72,7 @@
 						$tbl.="</tr>";
 						
 						$z_qty=$z_qty+$row->quantity;
-						
+						$z_amt=$z_amt+$row->amount;
 						$i++;
 						if($i<count($rst_so)-1){
 							$row=$rst_so[$i];
@@ -93,12 +80,15 @@
 						}
 					}
 					
-					$tbl.="<tr>
+					$tbl.="
+					<thead>
+					<tr>
 	     				<td>Sub Total</td><td>$item_old</td><td>$z_qty</td><td></td>
-	     				<td></td><td></td><td>Jumlah</td>
+	     				<td>Jumlah</td><td></td><td align='right'>".number_format($z_amt)."</td>
 	     				<td></td><td></td><td></td><td></td>
 	     				<td></td><td></td><td></td>
 	     			</tr>
+					</thead>
 					";
 					
                 };

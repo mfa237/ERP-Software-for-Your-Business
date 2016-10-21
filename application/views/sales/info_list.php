@@ -1,7 +1,7 @@
 <? if($offset==0){ ?>
 	<div class='thumbnail'>
 		<?=link_button("Add", "add();return false;","add","true");?>
-		<?=link_button('List','list();return false;','list');?>
+		<?=link_button('List','list();return false;','search');?>
 		<?=link_button('Search','search_list('.$offset.');','search');?>
 	</div>
 	<div class='thumbnail'>

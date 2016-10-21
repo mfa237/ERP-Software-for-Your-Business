@@ -1,31 +1,17 @@
 <?
          $CI =& get_instance();
-         $CI->load->model('company_model');
-         $model=$CI->company_model->get_by_id($CI->access->cid)->row();
          $CI->load->model('inventory_model');
-?>
-<link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
-<table cellspacing="0" cellpadding="1" border="0" width='800px'> 
-     <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>BUKTI PENERIMAAN BARANG</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td>Nomor: <?=$shipment_id?></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td colspan=4 style='border-bottom: black solid 1px'><?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>     	
-     	
-     </tr>
+?> 
+<h1>BUKTI PENERIMAAN BARANG</h1>
+<h2>Nomor: <?=$shipment_id?></h2>
+<table cellspacing="0" cellpadding="1" border="0"  > 
+ 
      <tr>
      	<td>Tanggal Terima</td><td><?=$date_received?></td>
      	<td colspan='2'></td>
      </tr>
      <tr>
-     	<td>Gudang Penyimpanan</td><td><?=$warehouse_code?></td>
+     	<td>Gudang </td><td><?=$warehouse_code?></td>
      	<td colspan='2'></td>
      </tr>
      <tr>
@@ -33,21 +19,16 @@
      	<td colspan='2'></td>
      </tr>
      <tr>
-     	<td></td><td></td>
-     	<td colspan='2'></td>
-     </tr>
-     <tr>
-     	<td></td><td></td>
-     	<td colspan='2'></td>
-     </tr>
-     <tr>
      	<td colspan="8">
-     	<table class='titem'>
+     	<table border="1" cellpadding="3">
      		<thead>
-     			<tr><td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
+     			<tr><td height="30" width="100">Kode Barang</td>
+				<td width="200">Nama Barang</td>
+				<td width="50">Qty</td>
+				<td width="50">Unit</td>
      			</tr>
      		</thead>
-     		<tbody>
+     		<tbody >
      			<?
 		       $sql="select i.item_number,s.description,i.quantity_received,i.unit 
 		                from inventory_products i left join inventory s on s.item_number=i.item_number
@@ -57,10 +38,10 @@
      			$tbl="";
                  foreach($query->result() as $row){
                     $tbl.="<tr>";
-                    $tbl.="<td>".$row->item_number."</td>";
-                    $tbl.="<td>".$row->description."</td>";
-                    $tbl.="<td align='right'>".number_format($row->quantity_received)."</td>";
-                    $tbl.="<td>".$row->unit."</td>";
+                    $tbl.="<td height=\"20\" width=\"100\">".$row->item_number."</td>";
+                    $tbl.="<td width=\"200\">".$row->description."</td>";
+                    $tbl.="<td  width=\"50\" align=\"right\">".number_format($row->quantity_received)."</td>";
+                    $tbl.="<td  width=\"50\">".$row->unit."</td>";
                     $tbl.="</tr>";
                };
 			   echo $tbl;
@@ -71,4 +52,7 @@
      	
      	</td>
      </tr>
+	 
+	 <tr><td></td><td></td></tr>
+	 <tr><td><h3>Penerima</h3></td><td><h3>Pengirim</h3></td></tr>
 </table>

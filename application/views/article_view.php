@@ -6,8 +6,8 @@
 ?>
 <article id='post-$id' >
 			<header class='post-title'><h1><?=$title?></h1></header>
-			<p class='post-date'><strong><?=$day?></br></strong>
-			<em><?=$dayname?></br></em><span><?=$daydate?></span>
+			<p class='post-date'><strong><?=$day?></strong></br>
+			<em><?=$dayname?></em></br><span><?=$daydate?></span>
 			</p>
 	<div class='post-info clear-fix'>
 		<p>Posted 

@@ -69,8 +69,10 @@ class cust_master extends CI_Controller {
 		if($record==NULL) {
 			$data['create_date']=date("Y-m-d");
 			$data['create_by']=user_id();
+			$data['username']=user_name();
+		} else {
+			$data['username']=user_name($data['create_by']);
 		}
-		$data['username']=user_name();
 		
 		return $data;
     }
@@ -139,7 +141,7 @@ class cust_master extends CI_Controller {
 			$this->cust_master_model->personal(),
 			$this->cust_master_model->company());
 
-		$data['birth_date']= date("m/d/Y",strtotime($data['birth_date']));
+		$data['birth_date']= date("Y-m-d",strtotime($data['birth_date']));
 
 		// benerin field_sama
 		$data['com_street']=$data['street'];
@@ -165,8 +167,8 @@ class cust_master extends CI_Controller {
 		$data['form_controller']=$this->controller;
 		$data['field_key']=$this->primary_key;
 		
-		$data['spouse_birth_date']= date("m/d/Y",strtotime($data['spouse_birth_date']));
-		$data['id_card_exp']= date("m/d/Y",strtotime($data['id_card_exp']));
+		$data['spouse_birth_date']= date("Y-m-d",strtotime($data['spouse_birth_date']));
+		$data['id_card_exp']= date("Y-m-d",strtotime($data['id_card_exp']));
 		$data['show_tool']=$show_tool;
 		
 		$this->template->display_form_input($this->file_view,$data);
@@ -194,11 +196,22 @@ class cust_master extends CI_Controller {
 		$faa[]=criteria("Nama Debitur","sid_nama");
 		$data['criteria']=$faa;
 		$data['other_menu']="leasing/cust_master_menu";
+		$data['msg_left']="<i>Ketik nama yang ingin dicari, lalu klik tombol cari.</i>";
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
-        $sql=$this->sql." where create_by='".user_id()."'";
-		if($this->input->get("sid_nama"))$sql .= " and cust_name like '%".$this->input->get("sid_nama")."%'";
+		if(user_admin() or $this->access->cid=="ALL"){
+			$sql=$this->sql." where 1=1";
+		} else {
+			$sql=$this->sql." where create_by='".user_id()."'";
+		}
+		$nama=$this->input->get("sid_nama");
+		if($nama!=""){
+			$sql .= " and cust_name like '%".$nama."%'";
+		} else {
+			$sql.=" order by create_date desc limit 10";
+		}
+		
         echo datasource($sql);
     }	   
 	function delete($id){
@@ -295,10 +308,11 @@ class cust_master extends CI_Controller {
 		}	
 	}
 	function filter($search=''){
-		$sql="select * from ls_cust_master";
+		$sql="select * from ls_cust_master where 1=1";
 		if($search!=""){
-			$sql.=" where cust_name like '%".$search."%'";
+			$sql.=" and cust_name like '%".$search."%'";
 		}
+		$sql.=" and create_by='".user_id()."'";
 		echo datasource($sql);
 	}
 	function upload_foto(){

@@ -191,7 +191,7 @@ class Scoring extends CI_Controller {
 		$data['sa_v3_com_name']=$com->comp_name;
 		$data['sa_v3_street']=$com->street;
 		$data['sa_v3_bidang']=$com->bussiness_type;
-		$emp_status=array('Tetap','Kontrak','Lainnya');
+		$emp_status=array('Tetap','Kontrak','Wirausaha','Lainnya');
 		$data['sa_v3_emp_status']=$emp_status[$com->emp_status];
 		$data['sa_v3_jabatan']=$com->job_level;
 		$office_status=array('Sendiri','Perusahaan','Keluarga','Lainnya');
@@ -255,13 +255,9 @@ class Scoring extends CI_Controller {
 		$this->template->display("leasing/scoring_result",$data);
 	}
 	function recomend_save(){
+		// boleh disurvey karena hasil score bagus
 		$data_spk=$this->input->post("pilih");
-		for($i=0;$i<count($data_spk);$i++){
-			$ok=$this->db->where("app_id",$data_spk[$i])->update("ls_app_master",array("confirmed"=>1,"status"=>"Need Survey"));
-		}
-	}
-	function not_recomend_save(){
-		$data_spk=$this->input->post("pilih");
+		$catatan=$this->input->post('catatan');
 		for($i=0;$i<count($data_spk);$i++){
 			$from=user_id();
 			$app_id=$data_spk[$i];
@@ -275,8 +271,32 @@ class Scoring extends CI_Controller {
 					->get("ls_cust_master")->row()->cust_name;
 				}
 			}
-			inbox_send($from,$to_user,$app_id." - Nama: $cust_name - Not Recommended",
-				"Nomor Aplikasi: $app_id tidak setujui $from  - Nama: $cust_name."); 
+			inbox_send($from,$to_user,$app_id." - Nama: $cust_name - boleh disurvey",
+				"Nomor Aplikasi: $app_id boleh disurvey $from  - Nama: $cust_name. 
+				Catatan: $catatan"); 
+			$ok=$this->db->where("app_id",$data_spk[$i])->update("ls_app_master",array("confirmed"=>1,"status"=>"Need Survey"));
+		}
+	}
+	function not_recomend_save(){
+		// tidak boleh disurvey karena hasil score kurang
+		$data_spk=$this->input->post("pilih");
+		$catatan=$this->input->post('catatan');
+		for($i=0;$i<count($data_spk);$i++){
+			$from=user_id();
+			$app_id=$data_spk[$i];
+			$app=$this->db->select("create_by,cust_id")->where("app_id",$app_id)
+				->get("ls_app_master")->row();
+			if($app) {
+				$to_user=$app->create_by;
+				$cust_name=$app->cust_id;
+				if($cust_name!="" ){
+					$cust_name=$this->db->select("cust_name")->where("cust_id",$cust_name)
+					->get("ls_cust_master")->row()->cust_name;
+				}
+			}
+			inbox_send($from,$to_user,$app_id." - Nama: $cust_name - tidak boleh disurvey",
+				"Nomor Aplikasi: $app_id tidak boleh disurvey $from  - Nama: $cust_name.
+				Catatan: $catatan"); 
 			$ok=$this->db->where("app_id",$app_id)->update("ls_app_master",array("confirmed"=>2,"status"=>"Not Recomend"));
 		}
 	}

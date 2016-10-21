@@ -2,7 +2,7 @@
 	<h1>DEBIT MEMOx<div class="thumbnail">
 	<?
 	echo link_button('Save', 'save_db_memo()','save');		
-	echo link_button('Print', 'print()','print');		
+	echo link_button('Print', 'print_crdb()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/sales_dbmemo/add');		
 	echo link_button('Search','','search','true',base_url().'index.php/sales_dbmemo');		
 	echo link_button('Help', 'load_help()','help');		
@@ -11,6 +11,7 @@
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help()">Help</div>
+		<div onclick="show_syslog('crdb','<?=$kodecrdb?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -35,7 +36,9 @@
         </tr>	 
         <tr>
             <td>Tanggal</td><td><?php echo form_input('tanggal',$tanggal,'id=tanggal 
-             class="easyui-datetimebox" required style="width:150px"');?>
+             class="easyui-datetimebox" required style="width:150px"
+			data-options="formatter:format_date,parser:parse_date"
+			');?>
             </td>
         </tr>
        <tr>
@@ -198,5 +201,9 @@
 				$('#kodecrdb_id').val(row.kodecrdb);
 			}
 		}
+  	function print_crdb(){
+            txtNo='<?=$kodecrdb?>'; 
+            window.open("<?=base_url().'index.php/crdb/print_bukti/'?>"+txtNo,"new");  		
+  	}
     
 </script>

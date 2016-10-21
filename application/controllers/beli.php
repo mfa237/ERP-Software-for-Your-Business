@@ -14,6 +14,7 @@ class Beli extends CI_Controller {
 		$this->load->model('purchase_order_model');
 		$this->load->model('supplier_model');
 		$this->load->model('inventory_model');
+		$this->load->model('syslog_model');
 		 
 	}
 	function set_defaults($record=NULL){
@@ -67,9 +68,12 @@ class Beli extends CI_Controller {
 			$data=$this->get_posts();                           
                         $data['potype']='I';
 			$this->purchase_order_model->save($data);
-                        $id=$this->input->post('purchase_order_number');
-                        $this->sysvar->autonumber_inc($this->access->cid." Pembelian Numbering");
-                        redirect('/beli/view/'.$id, 'refresh');
+			$id=$this->input->post('purchase_order_number');
+			$this->sysvar->autonumber_inc($this->access->cid." Pembelian Numbering");
+
+			$this->syslog_model->add($id,"purchase_invoice","add");			
+
+			redirect('/beli/view/'.$id, 'refresh');
 		} else {
                         
 			$data['mode']='add';
@@ -92,7 +96,9 @@ class Beli extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$this->purchase_order_model->update($id,$data);
-                        $message='Update Success';
+            $message='Update Success';
+			$this->syslog_model->add($id,"purchase_invoice","edit");			
+
 		} else {
 			$message='Error Update';
 		}
@@ -184,6 +190,8 @@ class Beli extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->purchase_order_model->delete($id);
+		$this->syslog_model->add($id,"purchase_invoice","delete");			
+
 		$this->browse();
 	}
         

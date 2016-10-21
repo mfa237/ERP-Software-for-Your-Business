@@ -11,16 +11,23 @@ class Company extends CI_Controller {
     private $file_view='admin/company';
     private $primary_key='company_code';
     private $controller='company';
+	private $sql_error=array();
 
     function __construct()    {
             parent::__construct();
-			if(!$this->access->is_login())redirect(base_url());
+			
+			 if(!$this->access->is_login()){
+				 
+				redirect(base_url());
+			}  
+			
             $this->load->helper(array('url','form','mylib_helper'));
 	        $this->load->library('sysvar');
             $this->load->library('template');
             $this->load->library('form_validation');
             $this->load->model('company_model');
             $this->load->model('chart_of_accounts_model');
+			$this->load->model('syslog_model');
     }
     function set_defaults($record=NULL){
             $data['mode']='';
@@ -34,10 +41,15 @@ class Company extends CI_Controller {
 		
     }
     function get_posts(){
-            $data=data_table_post($this->table_name);
+		if($this->input->post()){
+            $data=$this->input->post();
+		} else {
+            $data=data_table_post($this->table_name);			
+		}
             return $data;
     }
     function add()   {
+		if (!allow_mod2('_00000'))	exit;
              $data=$this->set_defaults();
              $this->_set_rules();
              if ($this->form_validation->run()=== TRUE){
@@ -45,6 +57,8 @@ class Company extends CI_Controller {
                     $this->company_model->save($data);
 		            $data['message']='update success';
 		            $data['mode']='view';
+					$this->syslog_model->add($data['company_code'],"company","edit");
+
 		            $this->browse();
             } else {
                     $data['mode']='add';
@@ -59,8 +73,11 @@ class Company extends CI_Controller {
              $id=$this->input->post('company_code');
              if ($this->form_validation->run()=== TRUE){
                     $data=$this->get_posts();
+					unset($data['company_code']);
                     $this->company_model->update($id,$data);
                     $message='Update Success';
+					$this->syslog_model->add($id,"company","edit");
+
                     $this->browse();
             } else {
                     $message='Error Update';
@@ -69,8 +86,13 @@ class Company extends CI_Controller {
     }
 
     function view($id,$message=null)	{
+		if (!allow_mod2('_00000'))	exit;
 		$id=urldecode($id);
 		 $data['id']=$id;
+		 if($id=="ALL" || $id==""){
+			 //bila all ambil saja yang paling atas
+			 $id=$this->db->select("company_code")->get("preferences")->row()->company_code;
+		 }
 		 $model=$this->company_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
@@ -115,8 +137,11 @@ class Company extends CI_Controller {
         echo datasource($sql);
     }	   
 	function delete($id){
+		if (!allow_mod2('_00000'))	exit;
 		$id=urldecode($id);
 	 	$this->company_model->delete($id);
+		$this->syslog_model->add($id,"company","delete");
+
 	 	$this->browse();
 	}
 	function find($nomor){
@@ -158,7 +183,7 @@ class Company extends CI_Controller {
 			$data['historical_balance_account']=$this->acc_id($this->input->post('historical_balance_account'));
 			$data['default_bank_account_number']=$this->acc_id($this->input->post('default_bank_account_number'));
 			$data['default_credit_card_account']=$this->acc_id($this->input->post('default_credit_card_account'));
-			
+			 
 			$this->company_model->update($this->access->cid,$data);
 
 
@@ -173,6 +198,7 @@ class Company extends CI_Controller {
 			$this->sysvar->save('CoaGift',$this->acc_id($this->input->post('txtGift')));
 
 		}	
+		 
 		$set=$this->company_model->get_by_id($this->access->cid)->row();
 	 
 		$data['accounts_payable']=account($set->accounts_payable);
@@ -219,7 +245,22 @@ class Company extends CI_Controller {
         $this->template->display_form_input('admin/sales',$data);		
 	}
 	function inventory(){
-		$data['a']='';
+		$this->load->library("crud");
+		$unit=new $this->crud();
+		$unit->set_sql("select * from unit_of_measure");
+		$unit->set_name("company_inventory_unit");
+		$unit->title="Unit Of Measure";
+		$unit->table_input="unit_of_measure";
+		$unit->fnc_edit="
+			$('#from_unit').val(row.from_unit);
+			$('#to_unit').val(row.to_unit);
+			$('#to_unit').val(row.to_unit);
+			$('#unit_value').val(row.unit_value);
+			$('#id').val(row.id);
+			$('#mode').val('edit');
+			";
+			
+		$data['unit']=$unit->render();
         $this->template->display_form_input('admin/inventory',$data);		
 	}
 	function others(){
@@ -242,7 +283,6 @@ class Company extends CI_Controller {
 		$ok=$this->department_model->delete($kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
-
 	function division(){
 		$data['caption']="DIVISI";		
 		$this->template->display("admin/division",$data);
@@ -259,6 +299,168 @@ class Company extends CI_Controller {
 		$ok=$this->division_model->delete($kode);
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
-	
+	function branch(){
+		$data['caption']="CABANG";		
+		$this->template->display("admin/branch",$data);
+	}
+   function branch_add(){
+		$this->load->model('branch_model');
+		$data = $this->input->post(NULL, TRUE); //getallpost			
+		$ok=$this->branch_model->save($data);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function branch_delete($kode){
+		$kode=urldecode($kode);
+		$this->load->model('branch_model');
+		$ok=$this->branch_model->delete($kode);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+	function wilayah(){
+		$data['caption']="WILAYAH PEMASARAN SALESMAN";		
+		$this->template->display("admin/wilayah",$data);
+	}
+   function wilayah_add(){
+		$this->load->model('wilayah_model');
+		$data = $this->input->post(NULL, TRUE); //getallpost			
+		$ok=$this->wilayah_model->save($data);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }
+   function wilayah_delete($kode){
+		$kode=urldecode($kode);
+		$this->load->model('wilayah_model');
+		$ok=$this->wilayah_model->delete($kode);
+		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+   }	
+   function new_folder($company)
+   {
+	   $company=urldecode($company);
+	   $company=str_replace(" ","",$company);
+	   	$s='Loading data...';
+		$base_folder=__DIR__;
+		$root_folder=$base_folder.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR;
+		$base_folder=$root_folder."company".DIRECTORY_SEPARATOR;
+		$com_folder=$base_folder.$company;
+	   if($folder_exist = @opendir($com_folder))
+	   {
+		   $data[]="Your company [$company] is exist, cannot continue.!"; 
+	   } else {
+			$data[]=$s."OK";
+			$s='Creating new folder...';
+		   if(mkdir($com_folder, 0700))
+		   {
+				$data[]=$s."OK";
+
+				$s='Copying sample company...';		
+				$source=$base_folder."company.zip";
+				$dest=$base_folder.DIRECTORY_SEPARATOR.$company.DIRECTORY_SEPARATOR."company.zip";
+				//if(copy($source,$dest)){
+					$data[]=$s."OK";
+				//}
+				$ok=false;
+				$s='Extracting...';
+				$zip = new ZipArchive;
+				if ($zip->open($source) === TRUE) {
+					$zip->extractTo($com_folder);
+					$zip->close();
+					$data[]=$s."OK";
+					$ok=true;
+				} else {
+					$data[]=$s."ERROR";
+				}
+				if($ok){
+					$ok=false;
+					$s='Installing New Database...';
+					$this->load->dbforge();
+					$db_name=$company;
+					$ok=$this->dbforge->create_database($db_name);
+					$data[]=$s."OK";
+					
+				}
+				if($ok){
+					$s='Building Database...';
+					$dsn2 = 'mysql://root:@localhost/'.$company;
+					$db2= $this->load->database($dsn2, true);
+					$file_sql=$root_folder.DIRECTORY_SEPARATOR."simak.sql";
+					$ok=$this->execute_sql_file($file_sql,$db2);
+					if($ok){
+						$data[]=$s."OK";
+					} else {
+						$data[]=$s."ERROR";						
+					}
+				}
+				if($ok){
+					$ok=false;
+					$s='Building default setting...';
+					if($ok=$this->execute_def_set($db2)){
+						$data[]=$s."OK";
+					} else {
+						$data[]=$s."ERROR";
+					}
+				}
+				if($ok){
+					$s="Writing configuration..";
+					if($ok=$this->write_config($com_folder,$company)){
+						$data[]=$s."OK";
+					} else {
+						$data[]=$s."ERROR";
+					}
+				}
+				if($ok){
+					$data[]='Finish.';
+				} else {
+					$data[]='Not Finish. Error reporting...!!!';					
+				}
+		   } else {
+				$data[]="Error create new folder [$company], cannot continue.!"; 			   
+		   }
+	   }
+		echo json_encode(array("success"=>true,'data'=>$data,
+		"company"=>$company,"sql_error"=>$this->sql_error));
+
+	   
+   }
+   function execute_def_set($db)
+   {
+	   return true;
+   }
+   function write_config($folder,$company)
+   {
+	   $ok=false;
+	   $file_conf_db=$folder.DIRECTORY_SEPARATOR."application".
+			DIRECTORY_SEPARATOR."config".DIRECTORY_SEPARATOR."database.php";
+		$this->load->helper("file");
+		if($data=read_file($file_conf_db))
+		{
+			$data=str_replace("simak",$company,$data);
+			$ok=write_file($file_conf_db,$data);
+		}
+	   $file_conf_route=$folder.DIRECTORY_SEPARATOR."application".
+			DIRECTORY_SEPARATOR."config".DIRECTORY_SEPARATOR."routes.php";
+		$this->load->helper("file");
+		if($data=read_file($file_conf_route))
+		{
+			$data=str_replace("frontend/home","login",$data);
+			$ok=write_file($file_conf_route,$data);
+		}
+		return $ok;
+   }
+   function execute_sql_file($file_sql,$db)
+   {
+		$this->load->helper("file");
+	   $ok=false;
+	   $sql = read_file($file_sql);
+	   $sqls = explode(';', $sql);
+	   $err=array();
+		array_pop($sqls);
+		foreach($sqls as $statement){
+			$statment = $statement . ";";
+			$ok=$db->query($statement);  
+			if(!$ok){
+				$err[]=mysql_error();
+			}
+		}
+		//$this->sql_error=$err;
+		return $ok;
+   }
 }
 ?>

@@ -32,11 +32,11 @@ class Check_writer_items_model extends CI_Model {
 	}
 	function update($id,$data){
 		$this->db->where($this->primary_key,$id);
-		$this->db->update($this->table_name,$data);
+		return $this->db->update($this->table_name,$data);
 	}
 	function delete($id){
 		$this->db->where($this->primary_key,$id);
-		$this->db->delete($this->table_name);
+		return $this->db->delete($this->table_name);
 	}
 
 }

@@ -18,6 +18,7 @@ class sales_crmemo extends CI_Controller {
         $this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('crdb_model');
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -40,7 +41,8 @@ class sales_crmemo extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if (!allow_mod2('_30120'))  exit;
+        $this->browse();
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
@@ -79,6 +81,7 @@ class sales_crmemo extends CI_Controller {
 	
 	function add()
 	{
+		if (!allow_mod2('_30121'))  exit;
 		$data=$this->set_defaults();
 		$data['kodecrdb']=$this->nomor_bukti();
 		$data['tanggal']=date('Y-m-d');
@@ -104,10 +107,13 @@ class sales_crmemo extends CI_Controller {
 			$data['transtype']=$this->input->post('transtype');
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
+			$this->syslog_model->add($data['kodecrdb'],"crdb","edit");
+
 		} else {echo 'Save: Invalid Invoice Number';}
 	
 	}
 	function view($id,$message=null){
+		if (!allow_mod2('_30120'))  exit;
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
@@ -136,20 +142,26 @@ class sales_crmemo extends CI_Controller {
 		return $data;
 	}
 	function posting($nomor) {
+		if (!allow_mod2('_30125'))  exit;
 		$nomor=urldecode($nomor);
 		$this->crdb_model->posting($nomor);
 		$this->view($nomor);
 	}	
 	function unposting($nomor) {
+		if (!allow_mod2('_30125'))  exit;
 		$nomor=urldecode($nomor);
 		$this->crdb_model->unposting($nomor);
 		$this->view($nomor);
 	}	
 	function delete($nomor) {
+		if (!allow_mod2('_30123'))  exit;
 		$nomor=urldecode($nomor);
 		$this->crdb_model->delete($nomor);
+		$this->syslog_model->add($nomor,"crdb","delete");
+
 	}
 	function posting_all() {
+		if (!allow_mod2('_30125'))  exit;
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
 		$sql="select distinct kodecrdb from crdb_memo"; 

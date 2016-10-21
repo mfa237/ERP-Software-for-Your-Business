@@ -19,6 +19,8 @@
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
+		<div onclick="recalc_all_invoice()">Recalc All Invoice</div>
+		<div onclick="change_doc_number()">Ubah Nomor Kontrak</div>
 		<div onclick="load_help()">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
@@ -30,14 +32,20 @@
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 		<table style='width:100%' class='table2'>
 			<tr><td>Nomor Kredit</td><td><?=form_input('loan_id',$loan_id,"id='loan_id' readonly")?></td>
-				<td>Tanggal</td><td><?=form_input('loan_date',$loan_date,"id='loan_date' class='easyui-datetimebox'")?></td></tr>
+				<td>Tanggal</td><td><?=form_input('loan_date',$loan_date,"id='loan_date' class='easyui-datetimebox'
+				data-options='formatter:format_date,parser:parse_date' ")?></td></tr>
 			<tr><td>Nomor Permohonan </td>
-				<td colspan='3'><?=form_input('app_id',$app_id,"id='app_id' ".$readonly);?> 
+				<td ><?=form_input('app_id',$app_id,"id='app_id' ".$readonly);?> 
 					<? if($mode=="add"){ ?>
 						<input type='button' class='btn btn-info' onclick='cmdPilihSpk()' value='Pilih'>
 						<input type='button' class='btn btn-info' onclick='cmdViewSpk()' value='View'>
 					<?  } ?>					
 				</td>
+				<td>Tanggal Penagihan</td>
+				<td><?=form_input('loan_date_aggr',$loan_date_aggr,"id='loan_date_aggr' class='easyui-datetimebox'
+				data-options='formatter:format_date,parser:parse_date' disabled")?>
+				<input type='button' value='Change' id='cmdChDateAggr' onclick='change_date_aggr();return false;' class='btn btn-default btn-sm'>
+				</td></tr>
 			</tr> 
 			<tr><td>Kode Pelanggan </td><td><?=form_input('cust_id',$cust_id,'id="cust_id" disabled');?></td>
 				<td>Nama Pelanggan </td><td><?=form_input('cust_name',$cust_name,'id="cust_name" disabled');?></td>
@@ -190,6 +198,65 @@
 			$('#sales_id').val(row.sales_id);
 			$('#dlgAppMaster').dialog('close');
 		}
+	}
+	function recalc_all_invoice()
+	{
+		$.messager.confirm('Confirm','Yakin mau dihitung ulang faktur dan pembayaran untuk nomor kontrak ini ?',
+		function(r){if (r){
+			var loan_id=$('#loan_id').val();
+			if(loan_id==""){alert("Pilih nomor kontrak!");return false;} 
+			var user_admin='<?=user_admin();?>';
+			if(user_admin!="1"){alert("Anda bukan admin !");return false} 
+			var url="<?=base_url()?>index.php/leasing/loan/recalc_all_invoice/"+loan_id;	
+			window.open(url,"_self");
+			
+		}});
+	}
+	function change_doc_number()
+	{
+		var user_admin='<?=user_admin();?>';
+		if(user_admin!="1"){alert("Anda bukan admin !");return false} 
+		var nomor = prompt ("Nomor Baru","");
+		if(nomor=="")return false;
+		$.ajax({
+			type: "GET",
+			url: '<?=base_url()?>index.php/leasing/loan/find/'+nomor,
+			success: function(result){
+				if(IsJsonString(result))
+				{
+					var result = eval('('+result+')');
+					if (result.length) {
+						alert("Nomor sudah ada, ulangi !");
+						return false;
+					}
+					window.open("<?=base_url()?>index.php/leasing/loan/change_doc_number/"+nomor,"_self");
+				} else {
+					alert("Unhandled Error !");
+					console.log(result);
+				}
+			},
+			error: function(result){alert(result);}
+		}); 
+	}
+	function change_date_aggr() {
+		var user_admin='<?=user_admin();?>';
+		var tanggal = prompt ("Input tanggal penagihan baru, isi dengan format (YYYY-MM-DD)","");
+		if(tanggal=="" || tanggal.length<10)return false;
+		
+		var next_url="<?=base_url()?>index.php/leasing/loan/view/"+$('#loan_id').val();
+		var url="<?=base_url()?>index.php/leasing/loan/change_date_aggr/"+$('#loan_id').val()+'/'+tanggal;
+		ajax_get(url,'',next_url);
+		
+	}
+	function loan_delete() {
+  		if($('#loan_id').val()==''){alert('Isi nomor kontrak kredit !');return false;}
+		var url='<?=base_url()?>index.php/leasing/loan/delete/'+$('#loan_id').val();
+		window.open(url,'_self');
+	}
+	function loan_print(){
+  		if($('#loan_id').val()==''){alert('Isi nomor kontrak kredit !');return false;}
+		var url='<?=base_url()?>index.php/leasing/loan/cetak/'+$('#loan_id').val();
+		window.open(url,'_leasing_print');		
 	}
 
 </script>

@@ -140,7 +140,9 @@
 			echo link_button('','lookup_coa(\'sales_bunga\')','search');
 		?></td></tr>
 		<tr><td>Pendapatan Administrasi</td><td>
-		<? 	echo form_input(array("name"=>'sales_admin',
+		<? 
+		
+		echo form_input(array("name"=>'sales_admin',
 			"id"=>"sales_admin"
 			,"style"=>"width:250px"),$sales_admin);
 			echo link_button('','lookup_coa(\'sales_admin\')','search');

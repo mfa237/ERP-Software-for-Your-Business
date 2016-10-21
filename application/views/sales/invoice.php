@@ -1,27 +1,31 @@
-<legend>FAKTUR PENJUALAN  </legend>
+ 
 <div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/invoice/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/invoice');		
-	if($mode=="view") echo link_button('Delete','','cut','true',base_url().'index.php/invoice/delete/'.$invoice_number);		
-	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/invoice/view/'.$invoice_number);		
+	echo link_button('Add','','add','false',base_url().'index.php/invoice/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/invoice');		
+	if($mode=="view") echo link_button('Delete','','cut','false',base_url().'index.php/invoice/delete/'.$invoice_number);		
+	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/invoice/view/'.$invoice_number);		
 
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/invoice/unposting/'.$invoice_number);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/invoice/unposting/'.$invoice_number);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/invoice/posting/'.$invoice_number);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/invoice/posting/'.$invoice_number);		
 	}
+	
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'invoice\')','help');		
 	
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('invoice')">Help</div>
+		<div onclick="show_syslog('invoice','<?=$invoice_number?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 <div class="thumbnail">	
@@ -39,7 +43,8 @@
 
 <form id="frmInvoice"  method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<table class='table2' width='100%'>
+<input type='hidden' id='cust_type' value='<?=$cust_type?>'>
+<table class='table' width='100%'>
     <tr>
      	<td>Pelanggan</td><td><?
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
@@ -49,7 +54,7 @@
 			onclick="select_customer()"></a>
 			<? } ?>     
 		</td>
-		<td rowspan="5" colspan='6'>
+		<td rowspan="3" colspan='6'>
 				<div class="thumbnail" id="customer_info" style="width:300px;height:100px"><?=$customer_info?></div>
 			</td>
 	</tr>
@@ -64,24 +69,29 @@
     </tr>
      <tr><td>Tanggal</td><td><?         
 			  echo form_input('invoice_date',$invoice_date,'id=invoice_date
-             class="easyui-datetimebox" required style="width:150px"');                 
+             class="easyui-datetimebox" required style="width:150px"
+			data-options="formatter:format_date,parser:parse_date"
+			');                 
          ?></td>
 	</tr>
 	<tr>
 		 <td>Salesman</td><td><?
 			 echo form_dropdown('salesman',$salesman_list,$salesman); 
         ?></td> 
-	</tr>
-     <tr>
-     	<td>Termin</td><td><?
+		<td>Termin</td><td><?
 			echo form_dropdown('payment_terms',$payment_terms_list,$payment_terms,"id=payment_terms"); 
-        ?></td>
+        ?></td>		
 	</tr>
+     
+     	
+	 
 	<tr>
      	
 		<td>Jatuh Tempo</td><td><? 
 	     echo form_input('due_date',$due_date,'id=due_date 
-             class="easyui-datetimebox" required style="width:150px"');
+             class="easyui-datetimebox" required style="width:150px"
+			data-options="formatter:format_date,parser:parse_date"
+			');
 	    ?></td>
 		
 		<td>Nomor Surat Jalan</td>
@@ -95,11 +105,47 @@
      <tr>
 		<td>Keterangan</td><td colspan="6">
 			<?
-         echo form_input('comments',$comments,'id=comments style="width:300px"');
+         echo form_input('comments',$comments,'id=comments style="width:90%"');
 		 	?>
 		</td>
     </tr>
 	</table>	
+	<div id='divTotal' class='thumbnail'> 
+		<table class='table2' width='100%'>
+			<tr>
+				<td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
+				<td>Discount %: </td><td><input id='disc_total_percent' name='discount' 
+					value='<?=$discount?>' style='width:50px'>
+				</td>
+				<td>Disc Amount:</td>
+				<td>
+					<input id='disc_amount_1' name='disc_amount_1'
+					value='<?=number_format($disc_amount_1)?>' style='width:100px'>
+				</td>
+			</tr>
+			<tr>
+				<td>Ongkos Angkut: </td><td><input id='freight' name='freight' value='<?=$freight?>' style='width:80px'></td>
+				<td>Pajak PPN %: </td><td><input id='sales_tax_percent' name='sales_tax_percent'
+					value='<?=$sales_tax_percent?>' style='width:50px'>
+				</td>
+				<td>Tax Amount:</td>
+				<td>
+					<input id='tax' name='tax'
+					value='<?=number_format($tax)?>' style='width:100px'>
+				</td>
+
+			</tr>
+			<tr>
+				<td>Biaya Lain: </td><td><input id='other' name='other' value='<?=number_format($other)?>' style='width:80px'></td>
+				<td>&nbsp</td><td>&nbsp</td>
+				<td>JUMLAH: </td><td><input id='total' name='amount' value='<?=number_format($amount)?>' style='width:100px;'>
+					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
+					   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
+					
+				</td>
+			</tr>
+		</table>		
+	</div>
 
 				
 </form>
@@ -127,16 +173,19 @@
 						formatter: function(value,row,index){
 							return number_format(value,2,'.',',');}">Harga</th>
 
-					<th data-options="field:'discount',editor:'numberbox'">Disc%</th>
+					<th data-options="field:'discount',editor:'numberbox'">Disc1%</th>
+					<th data-options="field:'disc_2',editor:'numberbox'">Disc2%</th>
+					<th data-options="field:'disc_3',editor:'numberbox'">Disc3%</th>
 					<th data-options="field:'amount',width:60,align:'right',editor:'numberbox',
 						formatter: function(value,row,index){
 							return number_format(value,2,'.',',');}">Jumlah</th>
-
+<!--
 					<th data-options="field:'account',align:'left'">Account</th>
 					<th data-options="field:'account_description',align:'left'">Account Description</th>
 					<th data-options="field:'cost',width:60,align:'right',editor:'numberbox',
 						formatter: function(value,row,index){
 							return number_format(value,2,'.',',');}">Cost</th>
+-->							
 					<th data-options="field:'line_number',align:'right'">Line</th>
 				</tr>
 			</thead>
@@ -229,42 +278,6 @@
 	</DIV>
 	
 	
-</div>
-<div id='divTotal' class='thumbnail'> 
-	<table class='table2' width='100%'>
-		<tr>
-			<td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
-			<td>Discount %: </td><td><input id='disc_total_percent' 
-				value='<?=$discount?>' style='width:50px'>
-			</td>
-			<td>Disc Amount:</td>
-			<td>
-				<input id='disc_amount_1' 
-				value='<?=number_format($disc_amount_1)?>' style='width:100px'>
-			</td>
-		</tr>
-		<tr>
-			<td>Ongkos Angkut: </td><td><input id='freight' value='<?=$freight?>' style='width:80px'></td>
-			<td>Pajak PPN %: </td><td><input id='sales_tax_percent' 
-				value='<?=$sales_tax_percent?>' style='width:50px'>
-			</td>
-			<td>Tax Amount:</td>
-			<td>
-				<input id='tax' 
-				value='<?=number_format($tax)?>' style='width:100px'>
-			</td>
-
-		</tr>
-		<tr>
-			<td>Biaya Lain: </td><td><input id='others' value='<?=number_format($other)?>' style='width:80px'></td>
-			<td>&nbsp</td><td>&nbsp</td>
-			<td>JUMLAH: </td><td><input id='total' value='<?=number_format($amount)?>' style='width:100px;'>
-				 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-				   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
-				
-			</td>
-		</tr>
-	</table>		
 </div>
 		
 <? include_once 'customer_select.php' ?>

@@ -16,6 +16,7 @@ class Gudang extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('shipping_locations_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
 		$data['mode']='';
@@ -31,7 +32,8 @@ class Gudang extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_80030'))return false;   
+        $this->browse();
 	}
 	function get_posts(){
 		$data['location_number']=$this->input->post('location_number');
@@ -40,13 +42,15 @@ class Gudang extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_80031'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$id=$this->shipping_locations_model->save($data);
-                        $data['mode']='view';
-                        $this->browse();
+			$data['mode']='view';
+
+			$this->browse();
 		} else {
 			$data['mode']='add';
                          $this->template->display_form_input($this->file_view,$data,'');
@@ -62,8 +66,10 @@ class Gudang extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
 			$this->shipping_locations_model->update($id,$data);
-                        $message='Update Success';
-                        $this->browse();
+			$message='Update Success';
+			$this->syslog_model->add($id,"gudang","edit");
+
+			$this->browse();
 		} else {
 			$message='Error Update';
          		$this->view($id,$message);		
@@ -71,6 +77,7 @@ class Gudang extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80030'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->shipping_locations_model->get_by_id($id)->row();
@@ -121,8 +128,11 @@ class Gudang extends CI_Controller {
     }
  
 	function delete($id){
+		if(!allow_mod2('_80033'))return false;   
 		$id=urldecode($id);
 	 	$this->shipping_locations_model->delete($id);
+		$this->syslog_model->add($id,"gudang","delete");
+
 	 	$this->browse();
 	}
 	

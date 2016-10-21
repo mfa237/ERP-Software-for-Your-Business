@@ -22,10 +22,15 @@
 					<label class="control-label col-sm-5" for="sidebar">Display Google Ads</label>
 					<div class="col-sm-5"><?=form_checkbox("google_ads_visible",true,$google_ads_visible)?></div>
 				</div>
+				<div class="row">
+					<label class="control-label col-sm-5" for="chatbox">Display Chat Box</label>
+					<div class="col-sm-5"><?=form_checkbox("chatbox_visible",true,$chatbox_visible)?></div>
+				</div>
 
 
-				<div class="row thumbnail">
-					<?=form_submit("submit","Submit");?>
+
+				<div class="row thumbnail ">
+					<?=form_submit("submit","Submit","class='btn btn-primary right'");?>
 				</div>
 			</form>
 	</div>

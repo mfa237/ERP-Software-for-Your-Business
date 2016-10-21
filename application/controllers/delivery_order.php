@@ -20,6 +20,8 @@ class Delivery_order extends CI_Controller {
         $this->load->model('inventory_model');
         $this->load->model('type_of_payment_model');
 		$this->load->model('salesman_model');
+		$this->load->library("list_of_values");
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -44,8 +46,7 @@ class Delivery_order extends CI_Controller {
 
 	function set_defaults($record=NULL){
 		$data=data_table($this->table_name,$record);
-        $data['library_src'] = $this->jquery->script();
-        $data['script_head'] = $this->jquery->_compile();
+        
 		$data['mode']='';
 		$data['message']='';
         $data['warehouse_code']=$this->access->cid;
@@ -56,6 +57,7 @@ class Delivery_order extends CI_Controller {
 	}
 	function index()
 	{          
+		if(!allow_mod2('_80060'))return false;   
 		$this->browse();
 	}
 	function get_posts(){
@@ -64,6 +66,7 @@ class Delivery_order extends CI_Controller {
 	}
 	function add()
 	{
+		if (!allow_mod2('_30061'))  exit;
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		$this->load->model('invoice_lineitems_model');        
@@ -101,16 +104,21 @@ class Delivery_order extends CI_Controller {
 		
 		
 		if($mode=="add"){
+
 			$ok=$this->invoice_model->save($data);
 			$this->invoice_model->save_from_so_items($data['invoice_number'],
 			$this->input->post('qty_order'),
 			$this->input->post('line_number'),
 			$this->input->post('warehouse_code'),
-			$this->input->post('invoice_date')
+			$this->input->post('invoice_date'),
+			$this->input->post('qty_unit')
+			
 			);
+
 		} else {
 			$ok=$this->invoice_model->update($id,$data);
 		}
+		$this->syslog_model->add($id,"delivery_order",$mode);
 		
 		$this->load->model('sales_order_model');
 		$this->sales_order_model->recalc_ship_qty($data['sales_order_number']);
@@ -155,7 +163,50 @@ class Delivery_order extends CI_Controller {
             $data['item_lookup']=$this->inventory_model->item_list();
             $this->load->view('sales/invoice_add_item',$data);
    }
-    function save_item(){ 
+	function save_item(){
+        $item_no=$this->input->post('item_number');
+		$faktur=$this->input->post('invoice_number_item');
+        if(!($item_no||$faktur)){
+        	$msg='Kode barang atau nomor faktur tidak diisi !';
+        }
+
+		$id=$this->input->post('line_number');
+		if($id!='')$data['line_number']=$id;
+
+        $data['invoice_number']=$faktur;
+        $data['item_number']=$item_no;
+        $data['quantity']=$this->input->post('quantity');
+        $data['unit']=$this->input->post('unit');
+        $data['price']=$this->input->post('price');
+        $data['cost']=$this->input->post('cost');			
+        $data['discount']=$this->input->post('discount');			
+
+        $item=$this->inventory_model->get_by_id($data['item_number'])->row();
+		if($item){
+            $data['description']=$item->description;
+		}
+		if($data['cost']==0)$data['cost']=$item->cost;
+        $gross=$data['quantity']*$data['price'];
+		$disc_amount=$data['discount']*$gross;
+		$data['amount']=$gross-$disc_amount;
+	
+        $this->load->model('invoice_lineitems_model');
+		
+		if($id!=''){
+			$ok=$this->invoice_lineitems_model->update($id,$data);
+		} else {
+        	$ok=$this->invoice_lineitems_model->save($data);
+		}
+//		$msg=var_dump($data);
+		//$this->invoice_model->recalc($faktur);
+		 
+		if ($ok){
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
+    }    
+    function save_item_ex(){ 
         $item_no=$this->input->post('item_number');
 		$faktur=$this->input->post('invoice_number');
 		$data['warehouse_code']=$this->input->post('warehouse_code');
@@ -186,6 +237,7 @@ class Delivery_order extends CI_Controller {
         return $this->invoice_lineitems_model->delete($id);
     }        
 	function view($id,$message=null){
+		if(!allow_mod2('_80060'))return false;   
 		$id=urldecode($id);
 		$message=urldecode($message);
 		$this->load->model('invoice_lineitems_model');
@@ -266,11 +318,13 @@ class Delivery_order extends CI_Controller {
 			if($nama!='')$sql.=" and company like '$nama%'";	
 			if($so!='')$sql.=" and sales_order_number='$so'";
 		}
-        $sql.=" limit $offset,$limit";
+		if(lock_report_salesman())$sql.=" and i.salesman='".current_salesman()."'";
+        //$sql.=" limit $offset,$limit";
 		
         echo datasource($sql);
     }	 
 	function delete($id){
+		if (!allow_mod2('_30063',true))  exit;
 		$id=urldecode($id);
 		$so='';
 		if($q=$this->invoice_model->get_by_id($id)->row()){
@@ -278,6 +332,8 @@ class Delivery_order extends CI_Controller {
 		}
 	 	$this->invoice_model->delete($id);
 		if($so!='') {
+			$this->syslog_model->add($id,"delivery_order","delete");
+
 			$this->load->model('sales_order_model');
 			$this->sales_order_model->recalc_ship_qty($so);
 		}
@@ -305,6 +361,7 @@ class Delivery_order extends CI_Controller {
         echo browse_simple($sql);
    }
     function print_faktur($nomor){
+		if(!allow_mod2('_80064'))return false;   
 		$nomor=urldecode($nomor);
         $invoice=$this->invoice_model->get_by_id($nomor)->row();
 		$saldo=$this->invoice_model->recalc($nomor);
@@ -314,22 +371,19 @@ class Delivery_order extends CI_Controller {
 		$data['comments']=$invoice->comments;
 		$data['sales_order_number']=$invoice->sales_order_number;
 		$data['due_date']=$invoice->due_date;
-        $this->load->view('sales/rpt/print_do',$data);
+        $data['content']=load_view('sales/rpt/print_do',$data);
+        $this->load->view('pdf_print',$data);
     }    
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity 
-		,p.unit,p.price,p.discount,p.amount,p.line_number
+		,p.unit,p.price,p.discount,p.amount,p.line_number,
+		p.discount,p.disc_2,p.disc_3
 		from invoice_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where invoice_number='$nomor'";
-		$rs = mysql_query($sql);
-		$result = array();
-		while($row = mysql_fetch_object($rs)){
-			array_push($result, $row);
-		}
-		echo json_encode($result);
+		echo datasource($sql);
 	}
 	function select_do_open($cust) {
 		$cust=urldecode($cust);
@@ -341,23 +395,165 @@ class Delivery_order extends CI_Controller {
 	function insert_invoice($nomor_do,$nomor_faktur) {
 		$nomor_do=urldecode($nomor_do);
 		$nomor_faktur=urldecode($nomor_faktur);
-		$sql="insert into invoice_lineitems(invoice_number,item_number,description,quantity,unit,
-		warehouse_code,from_line_number,from_line_type,from_line_doc,price,discount,cost,amount)
-		
-		select '$nomor_faktur',item_number,description,quantity,unit,
-		warehouse_code,line_number,'DO',invoice_number,price,discount,cost,amount 
-		from invoice_lineitems 
-		where invoice_number='$nomor_do'";
-		
-//		echo $sql;
-		
-		$this->db->query($sql);
-		
+		$this->load->model("invoice_lineitems_model");
+		if($q=$this->db->where("invoice_number",$nomor_do)
+			->get("invoice_lineitems"))
+		{
+			foreach($q->result() as $row)
+			{
+				$price=$row->price;
+				$discount=$row->discount;
+				$disc_2=$row->disc_2;
+				$disc_3=$row->disc_3;
+				$cost=$row->cost;
+				$unit=$row->unit;
+				$from_line_so=$row->from_line_number;
+				if((double)$from_line_so>0){
+					if($q=$this->db->where("line_number",$from_line_so)->get("sales_order_lineitems"))
+					{
+						if($r=$q->row()){
+							$discount=$r->discount;
+							$disc_2=$r->disc_2;
+							$disc_3=$r->disc_3;
+							if($unit==$r->unit){
+								$price=$r->price;
+								$cost=$r->cost;
+								$unit=$r->unit;
+							}
+						}
+					}
+				}
+				$data['item_number']=$row->item_number;
+				$data['description']=$row->description;
+				$data['warehouse_code']=$row->warehouse_code;
+				$data['from_line_number']=$row->line_number;
+				$data['from_line_type']="DO";
+				$data['from_line_doc']=$row->invoice_number;
+				$data['price']=$price;
+//				$data['mu_harga']=$row->mu_harga;
+				$data['discount']=$discount;
+//				$data['discount_amount']=$row->discount_amount;
+				$data['disc_2']=$disc_2;
+//				$data['disc_amount_2']=$row->disc_amount_2;
+				$data['disc_3']=$disc_3;
+//				$data['disc_amount_3']=$row->disc_amount_3;
+				$data['cost']=$cost;
+//				$data['amount']=$row->amount;
+				$data['quantity']=$row->quantity;
+//				$data['mu_qty']=$row->mu_qty;
+				$data['unit']=$unit;
+//				$data['multi_unit']=$row->multi_unit;
+				$data['invoice_number']=$nomor_faktur;
+				$this->invoice_lineitems_model->save($data);
+			}
+		}
 		$sql="update invoice set do_invoiced=true where invoice_number='$nomor_do'";
 		$this->db->query($sql);
 		
 	}
-
+	function alloc_item_line($line_number)
+	{
+		$do=$this->db->select("item_number,description,quantity,unit")
+			->where("line_number",$line_number)->get("invoice_lineitems");
+		if($row=$do->row()){
+			$data["item_no_old"]=$row->item_number;
+			$data["item_qty_old"]=$row->quantity;
+			$data["item_unit_old"]=$row->unit;
+			$data["item_desc_old"]=$row->description;
+		}
+		$data["item_no_line"]=$line_number;
+		
+		$setting['dlgBindId']="inventory";
+		$setting['dlgCols']=array( 
+			array("fieldname"=>"item_number","caption"=>"Kode","width"=>"80px"),
+			array("fieldname"=>"description","caption"=>"Nama Barang","width"=>"200px")
+		);
+		$setting['dlgRetFunc']="$('#item').val(row.item_number); 
+		$('#desc').val(row.description); ";
+		$data['lookup_items']=$this->list_of_values->render($setting);
+		
+		$session=array();
+		$key="DO_ALLOC_LINE_".$line_number;
+		$this->session->set_userdata($key,$session);
+		
+		$this->template->display("sales/delivery_alloc_line",$data);
+	}
+	function alloc_item_submit()
+	{
+		$this->load->model("invoice_lineitems_model");
+		$line=$this->input->get('from_line');
+		$sj=$this->db->where("line_number",$line)->get("invoice_lineitems")->row();
+		$ok=false;
+		if($data=$this->session->userdata("DO_ALLOC_LINE_".$line))
+		{
+			for($i=0;$i<count($data);$i++)
+			{
+				$d2=$data[$i];			
+				$ok=$this->invoice_lineitems_model->save($d2);
+			}
+			
+		}
+		if($ok){
+			//if success delete / update line to other
+			if($line){
+				$this->db->where("line_number",$line)
+				->update("invoice_lineitems",
+				array("invoice_number"=>$sj->invoice_number."-DO_ALLOC"));
+			}
+			$result=true;
+			$msg="Success.";
+			$data=$this->db->where("from_line_number",$line)
+				->where("from_line_doc","DO_ALLOC")
+				->get("invoice_lineitems")->result_array();
+				
+			$session=array();
+			$key="DO_ALLOC_LINE_".$line;
+			$this->session->set_userdata($key,$session);
+			$this->session->unset_userdata($key);
+				
+		} else {
+			$result=false;
+			$msg="Error !";
+		};
+		echo json_encode(array("success"=>true,"msg"=>$msg,"data"=>$session));
+	}
+	function alloc_item_line_add()
+	{
+		$line=$this->input->get('from_line');
+		$d2['item_number']=$this->input->get("item");
+		$sj=$this->db->where("line_number",$line)->get("invoice_lineitems")->row();
+		$item=$this->db->where("item_number",$d2['item_number'])
+			->get("inventory")->row();
+		$d2['invoice_number']=$sj->invoice_number;
+		$d2['discount']=$sj->discount;
+		$d2['disc_2']=$sj->disc_2;
+		$d2['disc_3']=$sj->disc_3;
+		$d2['warehouse_code']=$sj->warehouse_code;
+		$d2['quantity']=$this->input->get('qty');
+		$d2['description']=$item->description;
+		$d2['unit']=$item->unit_of_measure;
+		$d2['price']=$item->retail;
+		$d2['cost']=$item->cost;
+		$d2['from_line_number']=$line;
+		$d2['from_line_doc']="DO_ALLOC";
+		$d2['amount']=$d2['quantity']*$d2['price'];
+		$session=$this->session->userdata("DO_ALLOC_LINE_".$line);
+		$session[]=$d2;
+		$this->session->set_userdata("DO_ALLOC_LINE_".$line,$session);
+		$msg="";
+		echo json_encode(array("success"=>true,"msg"=>$msg,"data"=>$session));
+	}
+	function alloc_item_line_delete($id)
+	{
+		$id=urldecode($id);
+		if($result=$this->db->where("line_number",$id)
+			->delete("invoice_lineitems"))
+		{
+			echo json_encode(array("success"=>true));
+		} else {
+			echo json_encode(array("success"=>false));
+		}
+	}
 }
 
 

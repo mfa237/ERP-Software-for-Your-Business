@@ -16,10 +16,28 @@ function get_by_id($id){
 	return $this->db->get($this->table_name);
 }
 function save($data){
+	if($unit=exist_unit($data['unit'])){
+		$data['mu_qty']=$data['quantity']*$unit['unit_value'];
+		$data['mu_harga']=item_sales_price($data['item_number']);
+		$data['multi_unit']=$unit['from_unit'];		
+	} else {
+		$data['mu_qty']=$data['quantity'];
+		$data['mu_harga']=$data['price'];
+		$data['multi_unit']=$data['unit'];
+	}
 	$this->db->insert($this->table_name,$data);
 	return $this->db->insert_id();
 }
 function update($id,$data){
+	if($unit=exist_unit($data['unit'])){
+		$data['mu_qty']=$data['quantity']*$unit['unit_value'];
+		$data['mu_harga']=item_sales_price($data['item_number']);
+		$data['multi_unit']=$unit['from_unit'];		
+	} else {
+		$data['mu_qty']=$data['quantity'];
+		$data['mu_harga']=$data['price'];
+		$data['multi_unit']=$data['unit'];
+	}
 	$this->db->where($this->primary_key,$id);
 	return $this->db->update($this->table_name,$data);
 }

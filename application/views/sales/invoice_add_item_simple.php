@@ -1,12 +1,12 @@
-<table class='table2' width='100%'>
+<table class='table' width='100%'>
 	<tr>
 		<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
-		<td>Harga</td><td>Disc%</td><td>Jumlah</td><td></td>
+		<td>Harga</td><td>Disc%1</td><td>Disc%2</td><td>Disc%3</td><td>Jumlah</td><td></td>
 	</tr>
 	<tr>
 	    <form id="frmItem" method='post' >
 	         <td><input onblur='find();return false;' id="item_number" style='width:50px' 
-	         	name="item_number"   class="easyui-validatebox" required="true">
+	         	name="item_number"  >
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
 				onclick="searchItem()"></a>
 	         </td>
@@ -15,30 +15,37 @@
 	         <td><input id="unit" name="unit"  style='width:30px' ></td>
 	         <td><input id="price" name="price"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
 	        <td><input id="discount" name="discount"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+	        <td><input id="disc_2" name="disc_2"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+	        <td><input id="disc_3" name="disc_3"  style='width:30px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
 	        <td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
 	        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-     		   plain='true'	onclick='save_item()'>AddItem</a>
+     		   plain='false'	onclick='save_item()'>Add</a>
 			</td>
 	        <input type='hidden' id='invoice_number_item' name='invoice_number_item'>
 	        <input type='hidden' id='line_number' name='line_number'>
 	    </form>
 	</tr>
 </table>
-<div id="tb" class='box-gradient'>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem();return false;">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem(); return false;">Delete</a>	
-</div>
+<?php 
+if(!isset($show_tool))$show_tool=true; 
+if($show_tool){
+?>
+	<div id="tb" class='box-gradient'>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem();return false;">Edit</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem(); return false;">Delete</a>	
+	</div>
+<?php } ?>
 
 <div id="tb_search" class='box-gradient'>
 	Enter Text: <input  id="search_item" style='width:180' 
  	name="search_item">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search"  
-	onclick="searchItem();return false;"></a>        
+	onclick="searchItem();return false;">Filter</a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItem();return false;">Select</a>
 </div>
 
 <div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#tb_search">
+        closed="true" toolbar="#tb_search">
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  width='100%'
 			data-options="
@@ -58,8 +65,10 @@
 
 <script language="JavaScript">
 		function find(){
-		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val();
-		    console.log(xurl);
+			var item=$("#item_number").val();
+			if( item=="" || item=="undefined")return false;
+			var cust_type=$('#cust_type').val();
+		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val()+'/'+cust_type;
 		    $.ajax({
 		                type: "GET",
 		                url: xurl,
@@ -71,6 +80,10 @@
 		                    $('#cost').val(obj.cost);
 		                    $('#unit').val(obj.unit_of_measure);
 		                    $('#description').val(obj.description);
+							$('#discount').val(obj.disc_prc_1);
+							$('#disc_2').val(obj.disc_prc_2);
+							$('#disc_3').val(obj.disc_prc_3);
+							
 		                    hitung();
 		                },
 		                error: function(msg){alert(msg);}
@@ -79,13 +92,14 @@
 		function hitung(){
 	        if($('#quantity').val()==0)$('#quantity').val(1);
 	        gross=$('#quantity').val()*$('#price').val();
-	        disc_prc=$('#discount').val();
-	        if(disc_prc>1){
-	        	disc_prc=disc_prc/100;
-	        	$('#discount').val(disc_prc);
-	        }	
-	        disc_amt=Math.round(gross*disc_prc,2);
-	        $('#amount').val(gross-disc_amt);
+	        disc_1=$('#discount').val(); if(disc_1>1)disc_1=disc_1/100;
+			disc_2=$('#disc_2').val();  if(disc_2>1)disc_2=disc_2/100;
+			disc_3=$('#disc_3').val(); if(disc_3>1)disc_3=disc_3/100;
+			gross=gross-(gross*disc_1);
+			gross=gross-(gross*disc_2);
+			gross=gross-(gross*disc_3);
+	        $('#amount').val(gross);			
+
 	        hitung_jumlah();			
 		}
 		function save_item(){
@@ -93,6 +107,8 @@
 			if(mode=="add"){alert("Simpan dulu nomor ini !");return false;}
 			var url = '<?=base_url()?>index.php/invoice/save_item';
 			$('#invoice_number_item').val($('#invoice_number').val());
+			loading();
+			hitung();
 						 
 			$('#frmItem').form('submit',{
 				url: url,
@@ -100,19 +116,15 @@
 					return $(this).form('validate');
 				},
 				success: function(result){
+					loading_close();
 					var result = eval('('+result+')');
 					if (result.success){
 						$('#dg').datagrid('reload');
-						$('#frmItem').form('clear');
-						$('#item_number').val('');
-						$('#discount').val('0');
-						$('#unit').val('Pcs');
-						$('#item_number').val('');
-						$('#line_number').val('');
-						$('#quantity').val(1);
+///						$("#dgItem").datagrid("reload");
 						
-						find();
-						hitung();
+//						find();
+						
+						clear_input();
 						
 						$.messager.show({
 							title: 'Success',
@@ -126,6 +138,19 @@
 					}
 				}
 			});
+		}
+		function clear_input(){
+			$('#frmItem').form('clear');
+			$('#item_number').val('');
+			$('#discount').val('0');
+			$('#unit').val('Pcs');
+			$('#item_number').val('');
+			$('#line_number').val('');
+			$('#quantity').val(1);
+			$('#description').val('');
+			$('#price').val('');
+			$('#disc_2').val('');
+			$('#disc_3').val('');
 		}
 		function selectSearchItem()
 		{
@@ -169,7 +194,6 @@
 		function editItem(){
 			var row = $('#dg').datagrid('getSelected');
 			if (row){
-				console.log(row);
 				$('#frmItem').form('load',row);
 				$('#item_number').val(row.item_number);
 				$('#description').val(row.description);
@@ -177,6 +201,8 @@
 				$('#unit').val(row.unit);
 				$('#price').val(row.price);
 				$('#discount').val(row.discount);
+				$('#disc_2').val(row.disc_2);
+				$('#disc_3').val(row.disc_3);
 				$('#amount').val(row.amount);
 				$('#line_number').val(row.line_number);
 				$('#so_number').val(row.so_number);

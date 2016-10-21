@@ -38,10 +38,16 @@
 				<td>Perusahaan</td><td><?=form_input("company")?></td>
 			</tr>
 			<tr>
-				<td>Tgl Mulai</td><td><?=form_input("startdate",date("Y-m-d"),"class='easyui-datetimebox' style='width:150px'")?></td>
+				<td>Tgl Mulai</td><td><?=form_input("startdate",date("Y-m-d"),
+                                        "class='easyui-datetimebox' 
+					data-options='formatter:format_date,parser:parse_date'
+					style='width:150px'")?></td>
 			</tr>
 			<tr>
-				<td>Tgl Berhenti</td><td><?=form_input("finishdate",date("Y-m-d"),"class='easyui-datetimebox' style='width:150px'")?></td>
+				<td>Tgl Berhenti</td><td><?=form_input("finishdate",date("Y-m-d"),
+                                        "class='easyui-datetimebox' 
+					data-options='formatter:format_date,parser:parse_date'
+					style='width:150px'")?></td>
 			</tr>
 			<tr>
 				<td>Posisi Awal</td><td><?=form_input("firstposition")?></td>

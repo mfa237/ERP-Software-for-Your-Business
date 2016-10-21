@@ -73,6 +73,7 @@ class item_master extends CI_Controller {
 		}
 	}	
 	function edit($id){
+		$id=urldecode($id);
 		$this->view($id,"edit");
 	}
 	
@@ -122,6 +123,8 @@ class item_master extends CI_Controller {
     function browse_data($offset=0,$limit=100,$nama=''){
         $sql=$this->sql.' where 1=1';
 		if($this->input->get("sid_nama"))$sql .= " and description like '%".$this->input->get("sid_nama")."%'";
+		$sql.=" order by description";
+		
         echo datasource($sql);
     }	   
 	function delete($id){

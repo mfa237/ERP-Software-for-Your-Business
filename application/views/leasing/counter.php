@@ -9,7 +9,8 @@ echo validation_errors();
 <form id="frmMain"  method="post" role='form' class='form-horizontal'>
 	<?=my_input('Kode','counter_id',$counter_id)?>
 	<?=my_input('Nama Counter','counter_name',$counter_name)?>
-	<?=my_input('Area','area',$area)?>
+	<?=my_input('Kode Area','area',$area)?>
+	<?=my_input('Nama Area','area_name',$area_name)?>
 	<?=my_dropdown('Sales Agent','sales_agent',$sales_agent,$sales_agent_list)?>
 	<?=my_input('Alamat','address',$address)?>
 	<?=my_input('Telfon','phone',$phone)?>

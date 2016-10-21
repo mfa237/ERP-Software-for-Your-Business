@@ -10,6 +10,8 @@
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('stock_adjust')">Help</div>
+		<div onclick="show_syslog('stock_adjust','<?=$shipment_id?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -27,7 +29,8 @@
        <tr>
 		<td>Tanggal</td><td><?php  
                 echo form_input('date_received',$date_received
-				,"id='date_received' class='easyui-datetimebox' required");
+				,"id='date_received' class='easyui-datetimebox' required 
+				data-options='formatter:format_date,parser:parse_date'");
                 
         ?></td>
        </tr>

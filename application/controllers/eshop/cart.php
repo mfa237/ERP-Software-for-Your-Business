@@ -9,13 +9,16 @@ class Cart extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-		$this->load->library('template',"sysvar");
+		$this->load->library('template_eshop',"sysvar");
 	}
 	function index() {	
 		$cart=$this->session->userdata('cart');	
 		$data['cart']=$cart;
 		$data['caption']='CHECKOUT';
-		$this->template->display_eshop("eshop/cart",$data);
+		$data['content']=true;
+		$data['footer']='footer';
+		$data['sidebar']='category_list';
+		$this->template_eshop->display("cart",$data);
 	}
 	function checkout_save() {
 		$cart=$this->session->userdata('cart');
@@ -53,10 +56,13 @@ class Cart extends CI_Controller {
 				$this->session->set_userdata("so",$so);
 				$this->save_detail(); 
 			}
+			
 		}
-		$this->template->display_eshop("eshop/checkout",$data);
+		$data['sidebar']='category_list';
+		$this->template_eshop->display("checkout",$data);
 	}
 	function clear_cart(){
+		$this->session->unset_userdata("so_number");
 		$this->session->unset_userdata('cart');	
 	}
 	function save_detail(){
@@ -68,7 +74,8 @@ class Cart extends CI_Controller {
 		for($i=0;$i<count($cart);$i++){
 			$item_no=$cart[$i]['item_number'];
 			$qty=$cart[$i]['qty'];
-			$item=$this->db->select("description,unit_of_measure,retail,cost")
+			$item=$this->db->select("description,unit_of_measure,
+				retail,cost,sales_count,create_by")
 				->where("item_number",$item_no)
 				->get("inventory")->row();
 			$detail['item_number']=$item_no;
@@ -85,6 +92,11 @@ class Cart extends CI_Controller {
 			if($ok){
 				array_push($ar_detail,$detail);
 			}
+			$sales_count=$item->sales_count+$qty;
+			$this->db->where("item_number",$item_no)->update('inventory',
+				array("sales_count"=>$sales_count));
+			$this->db->where('sales_order_number',$so_number)->update('sales_order',
+				array('supplier_number'=>$item->create_by));
 		}
 		$this->session->set_userdata("so_detail",$ar_detail);
 		$this->sales_order_model->recalc($so_number);		
@@ -99,7 +111,10 @@ class Cart extends CI_Controller {
 		$so_number=$this->session->userdata("so_number");
 		$data['so_number']=$so_number;
 		$data['message']='';
-		$this->template->display_eshop("eshop/checkout",$data);
+		$data['content']=true;
+		$data['footer']='footer';
+		$data['sidebar']='category_list';
+		$this->template_eshop->display("checkout",$data);
 	}
 	function checkout() {
 		$cust_login=$this->session->userdata('cust_login');
@@ -112,9 +127,8 @@ class Cart extends CI_Controller {
 			} else {
 				$this->checkout_view();
 			}
-			$this->clear_cart();
 		} else {
-			$url=base_url()."index.php/eshop/login";
+			$url=base_url()."index.php/eshop/login/start";
 			header("location:".$url);
 		}
 	}
@@ -140,7 +154,10 @@ class Cart extends CI_Controller {
 	}
 	function confirm(){
 		$data['caption']='KONFIRMASI';
-		$this->template->display_eshop("eshop/confirm",$data);
+		$data['content']=true;
+		$data['footer']='footer';
+		$data['sidebar']='category_list';
+		$this->template_eshop->display("confirm",$data);
 	}
 	function confirm_save(){
 		$so_number=$this->session->userdata("so_number");
@@ -155,7 +172,7 @@ class Cart extends CI_Controller {
 		$this->db->where("sales_order_number",$so_number)
 			->update("sales_order",array("status"=>1));
 		
-		$this->session->unset_userdata("so_number");
+		$this->clear_cart();
 		
 		echo json_encode(array("success"=>$ok,$message="Finih"));
 	}

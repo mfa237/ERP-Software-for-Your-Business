@@ -7,7 +7,7 @@ class Stock_mutasi extends CI_Controller {
         ,date_trans,ip.from_qty,ip.unit,ip.cost,ip.from_location,ip.to_location
                 from inventory_moving ip left join inventory i
                 on ip.item_number=i.item_number
-                where 1=1 
+                where  ip.from_location<>ip.to_location 
                 ";
     private $file_view='inventory/stock_mutasi';
     private $primary_key='transfer_id';
@@ -24,7 +24,7 @@ class Stock_mutasi extends CI_Controller {
         $this->load->library('javascript');
 		$this->load->model('shipping_locations_model');
 		$this->load->model('inventory_model');
-		
+		$this->load->model('syslog_model');
 	}
 	function index()
 	{
@@ -54,8 +54,11 @@ class Stock_mutasi extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='add';
             $data['message']='';
-			$data['date_trans']=date("Y-m-d H:i:s");
-			if($record==NULL)$data['transfer_id']=$this->nomor_bukti();			
+			if($record==NULL) {
+				$data['transfer_id']=$this->nomor_bukti();			
+				$data['date_trans']=date("Y-m-d H:i:s");
+			}
+			$data['status_list']=array("0"=>"Not Verified","1"=>"Verified","2"=>"Canceled");
             return $data;
 	}	
 	function get_posts(){
@@ -66,11 +69,13 @@ class Stock_mutasi extends CI_Controller {
 		$data['from_qty']=$this->input->post('from_qty');              
 		$data['item_number']=$this->input->post('item_number');              
 		$data['unit']=$this->input->post('unit');              
+		$data['status']=$this->input->post('status');              
                 
 		return $data;
 	}
 	function add()
 	{
+		if(!allow_mod2('_80041'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();		 
 		 if ($this->form_validation->run()=== TRUE){
@@ -81,10 +86,16 @@ class Stock_mutasi extends CI_Controller {
 			$this->nomor_bukti(true);
             $data['message']='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"stock_mutasi","add");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
 			$data['message']='';			 
+			$this->load->model("user_model");
+			$gudang=$this->user_model->roles_gudang();
+			if(is_array($gudang))$gudang=$gudang[0];
+            $data['from_location']=$gudang;
             $data['warehouse_list']=$this->shipping_locations_model->select_list();
 			$this->template->display_form_input('inventory/stock_mutasi',$data);			
 		}
@@ -99,6 +110,8 @@ class Stock_mutasi extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$this->inventory_moving_model->update($id,$data);
 		    $data['message']='update success';
+			$this->syslog_model->add($id,"stock_mutasi","edit");
+
 		} else {
 			$data['message']='Error Update';
 		}
@@ -168,17 +181,25 @@ class Stock_mutasi extends CI_Controller {
 
 		if($no!=''){
 			$sql.=" and transfer_id='".$no."'";
-		} 
+		} else {
+			$sql.=" and date_trans between '$d1' and '$d2'";
+		}
         echo datasource($sql);
     }
 	 
 	function delete($id){
+		if(!allow_mod2('_80043'))return false;   
 		$id=urldecode($id);
 	 	$this->inventory_moving_model->delete($id);
+		$this->syslog_model->add($id,"stock_mutasi","delete");
+
 	 	$this->browse();
 	}	
 	 
     function save_item(){
+			$this->load->model("user_model");
+			$gudang=$this->user_model->roles_gudang();
+
             $item_no=$this->input->post('item_number');
 			$id=$this->input->post('transfer_id');
             $data['item_number']=$item_no;
@@ -194,12 +215,22 @@ class Stock_mutasi extends CI_Controller {
             $data['unit']=$this->input->post('unit');
             $data['transfer_id']=$id;
             $data['from_location']=$this->input->post('from_location');
+			if(!$data['from_location']){
+				if(is_array($gudang))$gudang=$gudang[0];
+				$data['from_location']=$gudang;
+			}
             $data['to_location']=$this->input->post('to_location');
 			$data['date_trans']=$this->input->post('date_trans');;
 			$data['comments']=$this->input->post('comments');
 			$data['total_amount']=$cost*$data['from_qty'];
+			$data['status']=$this->input->post('status');
 			
-			$ok=$this->inventory_moving_model->save($data);
+			$line=$this->input->post('line_number');
+			if($line==""){
+				$ok=$this->inventory_moving_model->save($data);
+			} else {
+				$ok=$this->inventory_moving_model->update($line,$data);				
+			}
 			if ($ok){
 				echo json_encode(array('success'=>true,'transfer_id'=>$id));
 			} else {
@@ -207,6 +238,7 @@ class Stock_mutasi extends CI_Controller {
 			}
 	}         
     function print_bukti($nomor){
+		if(!allow_mod2('_80044'))return false;   
 		$nomor=urldecode($nomor);
         $mov=$this->inventory_moving_model->get_by_id($nomor)->row();
 		$data['transfer_id']=$mov->transfer_id;
@@ -216,8 +248,8 @@ class Stock_mutasi extends CI_Controller {
 		$data['quantity']=$mov->from_qty;
 		$data['date_trans']=$mov->date_trans;
 		$data['comments']=$mov->comments;
-		$this->load->view('inventory/rpt/print_mutasi',$data);
-
+		$data['content']=load_view('inventory/rpt/print_mutasi',$data);
+		$this->load->view('pdf_print',$data);
     }
     function del_item(){
     	$id=$this->input->post('line_number');
@@ -228,5 +260,20 @@ class Stock_mutasi extends CI_Controller {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
     }        
+	function verify($nomor){
+		$nomor=urldecode($nomor);
+		$status=$this->db->select("status")->where("transfer_id",$nomor)
+			->get("inventory_moving")
+			->row()->status;
+		if($status=="0" || $status==""){
+			$data["verify_by"]=user_id();
+			$data["verify_date"]=date("Y-m-d H:i:s");
+			$data["status"]=$this->input->get("status");
+			$this->db->where("transfer_id",$nomor)->update("inventory_moving",$data);
+			echo "Sukses nomor sudah diupdate statusnya.";
+		} else {
+			echo "Nomor ini tidak bisa diubah statusnya";
+		}
+	}
 
 }

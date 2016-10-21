@@ -29,8 +29,11 @@ function __construct(){
 		return $this->db->get($this->table_name);
 	}
 	function info($id){
-		$emp=$this->get_by_id($id)->row();
-		return $emp->nama.' '.$emp->alamat;
+		if($emp=$this->get_by_id($id)->row()){
+			return $emp->nama.' '.$emp->alamat;
+		} else {
+			return "";
+		}
 	}
 	function save($data){
 		if(isset($data['hireddate']))$data['hireddate']= date('Y-m-d H:i:s', strtotime($data['hireddate']));
@@ -56,6 +59,10 @@ function __construct(){
 		$ret=array();$ret['']='- Select -';
  		foreach ($query->result() as $row){$ret[$row->nip]=$row->nama;}		 
 		return $ret;
+	}
+	function loadlist($where=''){
+		if($where!="")$this->db->where($where);
+		return $this->db->order_by('nama')->get($this->table_name);
 	}
 		
 }

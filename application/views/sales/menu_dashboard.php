@@ -7,13 +7,14 @@
 	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 	<div title="DASHBOARD" style="padding:10px">
-		<div class="thumbnail">
+	 
 
  
 <div style="margin:10px 0;"></div>
-	<div title="Sales Dashboard" style="padding:10px">
-		<div class='row'>
-		<div class='thumbnail col-md-9'  style='margin:5px'>
+	<div title="Sales Dashboard" style="padding:10px"  class="easyui-panel themes" title="Saldo Hutang Supplier" 
+				data-options="iconCls:'icon-help',closable:true,
+				collapsible:true,minimizable:true,maximizable:true">
+				
 			<img src="<?=base_url()?>images/sales.png" usemap="#sales" class="map">
 			<map id="sales" name="sales">
 			<area shape="circle" alt="Customer" coords="70,56,31" href="<?=base_url()?>index.php/customer" class="info_link" title="Customer" />
@@ -29,29 +30,67 @@
 			<area shape="circle" alt="" coords="470,317,29" href="<?=base_url()?>index.php/jurnal" class="info_link" title="General Ledger" />
 			<area shape="default" nohref="nohref" alt="" />
 			</map>
-			 
-		</div>
-		</div>
-		<div class="row">
-			<div class="thumbnail col-md-6 " >
-				<div id="p" class="thumbnail" title="Saldo Piutang Pelanggan"  
-					data-options="iconCls:'icon-help'" >
-					<div id='divCustomer' style="height:200px;padding:5px;">
+			
+	</div>		 
+
+	<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
+	
+	<div title="Daftar Laporan" style="padding:10px"  class="easyui-panel themes" title="Saldo Hutang Supplier" 
+				data-options="iconCls:'icon-help',closable:true,
+				collapsible:true,minimizable:true,maximizable:true">	 
+		 
+			<?php include_once "menu_reports.php" ?>
+	</div>		
+		 
+		 
+	<div title="Sales Dashboard" style="padding:10px"  class="easyui-panel themes" title="Saldo Hutang Supplier" 
+				data-options="iconCls:'icon-help',closable:true,
+				collapsible:true,minimizable:true,maximizable:true">				
+				<div id="p" class="" title="Saldo Piutang Pelanggan"  
+					data-options="iconCls:'icon-help'" > 
+					<div id='divCustomer' name='divCustomer' 
+						style="float:left;height:200px;padding:5px;width:400px">
 						 <img src="<?=base_url()?>images/loading.gif">		
 					</div>
+					
+					<table id="dgRetur" class="easyui-datagrid"  
+							style="min-height:300px:width:300px"
+							data-options="title: 'Omzet Salesman',
+								iconCls: 'icon-tip',
+								singleSelect: true,
+								toolbar: '',
+								url: '<?=base_url()?>index.php/invoice/omzet_salesman'
+							">
+							<thead>
+								<tr>
+									<th data-options="field:'salesman',width:180">Nama Salesman</th>
+									<th data-options="field:'jumlah',width:80,align:'right',editor:'numberbox',
+										formatter: function(value,row,index){
+											return number_format(value,2,'.',',');}">Jumlah</th>
+								</tr>
+							</thead>
+						</table>		
+
+						
 				</div>
 			</div>
 			
-			<div class="thumbnail col-md-6 " >
-				<div id="p" class="thumbnail" title="Total Penjualan"  
+<			<div title="Sales Dashboard" style="padding:10px"  class="easyui-panel themes" title="Saldo Hutang Supplier" 
+				data-options="iconCls:'icon-help',closable:true,
+				collapsible:true,minimizable:true,maximizable:true">
+
+				
+				
+				<div id="p" class="" title="Total Penjualan"  
 					data-options="iconCls:'icon-help'" >
-					<div id='divSales'  style="height:200px;padding:5px;"><img src="<?=base_url()?>images/loading.gif"></div>
+
+				<div id='divSales'  style="float:left;width:500px;height:200px;padding:5px;">
+					<img src="<?=base_url()?>images/loading.gif">
 				</div>
-			</div>
-			<div class="thumbnail col-md-6 " >
-					<div id='divFaktur'  style="height:200px;padding:5px;">
+					
+				<div id='divFaktur'  style="height:200px;padding:5px;">
 						<table id="dgRetur" class="easyui-datagrid"  
-							style="width:400px;min-height:300px"
+							style="min-height:300px"
 							data-options="title: 'Faktur Jatuh Tempo',
 								iconCls: 'icon-tip',
 								singleSelect: true,
@@ -71,35 +110,18 @@
 							</thead>
 						</table>					
 				</div>
-			</div>
-			<div class="thumbnail col-md-6 " >
-					<div id='divFaktur'  style="height:200px;padding:5px;">
-						<table id="dgRetur" class="easyui-datagrid"  
-							style="width:400px;min-height:300px"
-							data-options="title: 'Omzet Salesman',
-								iconCls: 'icon-tip',
-								singleSelect: true,
-								toolbar: '',
-								url: '<?=base_url()?>index.php/invoice/omzet_salesman'
-							">
-							<thead>
-								<tr>
-									<th data-options="field:'salesman',width:180">Nama Salesman</th>
-									<th data-options="field:'jumlah',width:80,align:'right',editor:'numberbox',
-										formatter: function(value,row,index){
-											return number_format(value,2,'.',',');}">Jumlah</th>
-								</tr>
-							</thead>
-						</table>					
+					
+					
 				</div>
+				
+				
 			</div>
-
-		</div>
-	</div>
+ 
+ 
 </div>
 
 
-	</div>
+	
 </div>
 
 
@@ -146,7 +168,8 @@ $().ready(function(){
 		}
 		 
 
-		$.plot('#divCustomer', data, {
+		$.plot($('#divCustomer'), data, {
+			 
 				series: {
 					pie: { show: true}
 				},

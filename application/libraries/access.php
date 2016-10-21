@@ -22,6 +22,7 @@ class Access
 	
 	 $this->users_model =& $this->CI->users_model;
      $data=$this->CI->session->userdata('logged_in');
+	  
      $this->user_id=$data['user_id'];
      $this->username=$data['username'];
      $this->cid=$data['cid'];         
@@ -66,17 +67,43 @@ class Access
 		   $this->log_text("LOGOUT","");
    }
     function print_info(){
-    	echo "<img src='".base_url()."images/administrator.png'
-    	align='left'>"; 
+    	echo "<img src='".base_url()."images/administrator.png'	align='left'>"; 
         echo ' Welcome [<strong>'.$this->username.'</strong>]';
-		echo '<a href="'.base_url().'index.php/login/logout"
+        echo "&nbsp&nbsp";
+        echo '<a href="'.base_url().'index.php/login/logout"
 		class="easyui-linkbutton" 
 		data-options="iconCls:\'icon-no\',
-		plain:true">Logout</a>';
+		plain:false" style=\'text-color:red;\' ">Logout</a>';
 //            .'<br/>CID: '.$this->cid; 
     }
 	function user_id(){
 		return $this->user_id;		
 	}
 	function user_name(){ return $this->username; }
+	function cid(){ return $this->cid; }
+	
+	function user_with_job($group_id=null)
+	{
+		if(!$group_id) return $this->user_id;
+		$sql="";
+		if( !is_array($group_id) ) {
+			$sql="select user_id from user_job where group_id='$group_id'";
+		} else {
+			$in="";
+			for($i=0;$i<count($group_id);$i++)
+			{
+				$in .= "'".$group_id[$i]."',";
+			}
+			if(substr($in,-1)==",")$in=substr($in,0,strlen($in)-1);
+			if($in=="") {
+				$sql="select user_id from user_job where group_id='$group_id' ";				
+			} else {
+				$sql="select user_id from user_job where group_id in ($in) ";				
+			}
+		}
+		
+        $query=$this->CI->db->query($sql);
+
+		return $query->result_array();
+	}
 }

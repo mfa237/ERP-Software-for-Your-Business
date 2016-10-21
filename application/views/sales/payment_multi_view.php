@@ -1,29 +1,32 @@
-<h4>PEMBAYARAN PIUTANG</H4><div class="thumbnail box-gradient">
+<div class="thumbnail box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;	
 	echo link_button('Print', 'print_pay()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/payment/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/payment');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/payment/view/'.$voucher);		
+	echo link_button('Add','','add','false',base_url().'index.php/payment/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/payment');		
+	echo link_button('Refresh','','reload','false',base_url().'index.php/payment/view/'.$voucher);		
 	
-	echo link_button('Delete','','cut','true',base_url().'index.php/payment/delete_no_bukti/'.$voucher);		
+	echo link_button('Delete','','cut','false',base_url().'index.php/payment/delete_no_bukti/'.$voucher);		
 
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/payment/unposting/'.$voucher);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/payment/unposting/'.$voucher);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/payment/posting/'.$voucher);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/payment/posting/'.$voucher);		
 	}
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'payment\')','help');		
 	
 	?>
 	
-		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('payment')">Help</div>
+		<div onclick="show_syslog('payment','<?=$voucher?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 
@@ -41,24 +44,25 @@
 <div class="thumbnail">	
 
 <form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
-	<table class='table2' width='100%'>
+	<table class='table' width='100%'>
 		<tr>
 			<td>Nomor Bukti: </td><td><h4><?=$voucher?></h4></td>
-		</tr>
-		<tr>
-			<td>Pelanggan: </td><td><div class='thumbnail'><?=$cust_info?></div></td>
-		</tr>
-		<tr>
 			<td>Tanggal Bayar: </td><td><?=$date_paid?></td>
+		</tr>
+		<tr>
+			<td>Pelanggan: </td><td colspan=3><div class='thumbnail'><?=$cust_info?></div></td>
 		</tr>
 		<tr>
 			<td>Rekening: </td><td><?=$account_number?></td>
 		</tr>
 		<tr>
 			<td>Jenis Bayar: </td><td><?=$trans_type?></td>
+			<td>Jumlah Bayar: </td><td><h4></h4><?=number_format($amount_paid);?></td>
 		</tr>
 		<tr>
-			<td>Jumlah Bayar: </td><td><h4></h4><?=number_format($amount_paid);?></td>
+			<td>Nomor Giro : <?=$credit_card_number?></td>
+			<td>Tanggal Giro : <?=$expiration_date?></td>
+			<td>Giro Bank : <?=$from_bank?></td>
 		</tr>
 	</table>
 	

@@ -41,9 +41,11 @@
 	     		</thead>
 	     		<tbody>
      			<?
-     			$sql="select i.tanggal,i.kodecrdb,i.customer_number,
-     			c.company,i.docnumber,i.amount,i.keterangan,i.amount,i.doc_type
-     			 from crdb_memo i left join customers c on c.customer_number=i.customer_customer
+     			$sql="select i.tanggal,i.kodecrdb,c.customer_number,
+     			c.company,i.docnumber,i.amount,i.keterangan,i.amount,i.transtype
+     			 from crdb_memo i 
+				 left join invoice inv on inv.invoice_number=i.docnumber
+				 left join customers c on c.customer_number=inv.sold_to_customer
 	            where i.tanggal between '$date1' and '$date2'  ";
      			$rst_so=$CI->db->query($sql);
      			$tbl="";
@@ -56,7 +58,7 @@
                     $tbl.="<td>".$row->docnumber."</td>";
                     $tbl.="<td>".$row->amount."</td>";
                     $tbl.="<td>".$row->keterangan."</td>";
-                    $tbl.="<td>".$row->doc_type."</td>";
+                    $tbl.="<td>".$row->transtype."</td>";
                     $tbl.="</tr>";
                };
 			   echo $tbl;

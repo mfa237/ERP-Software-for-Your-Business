@@ -18,18 +18,38 @@ class User extends CI_Controller {
 		$this->load->model('user_model');
 		$this->load->model('user_jobs_model');
 		$this->load->model('modules_groups_model');
+		$this->load->model('branch_model');
 		//$this->load->model('user_group_modul_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
 			$data['id']="";
+
+			$this->load->library("list_of_values");
+
+			$setting['dlgBindId']="divisions";
+			$setting['dlgCols']=array( 
+				array("fieldname"=>"div_code","caption"=>"Kode","width"=>"80px"),
+				array("fieldname"=>"div_name","caption"=>"Nama Kelompok","width"=>"200px")
+			);
+			$setting['dlgRetFunc']="$('#divisions_search').val(row.div_code);";
+			$data['lookup_division']=$this->list_of_values->render($setting);
+			 
+			$setting['dlgBindId']="warehouse";
+			$setting['dlgCols']=array( 
+				array("fieldname"=>"location_number","caption"=>"Gudang","width"=>"80px"),
+				array("fieldname"=>"address_type","caption"=>"Jenis","width"=>"200px")
+			);
+			$setting['dlgRetFunc']="$('#warehouse_search').val(row.location_number);";
+			$data['lookup_gudang']=$this->list_of_values->render($setting);
+
             return $data;
 	}
 	function index()
 	{	
-			
 		if (!allow_mod2('_00020')){
 			if($this->access->user_id!="admin") exit;
 		}
@@ -42,6 +62,7 @@ class User extends CI_Controller {
 	}
 	function add()
 	{
+		if (!allow_mod2('_00021')) exit;
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -54,14 +75,17 @@ class User extends CI_Controller {
 			$this->user_model->save($data);
 			$data['jobs']=$pilih;
 			$this->user_jobs_model->update($user_id,$data);
-            $message='update success';
-            $data['mode']='view';
-            $this->browse();
+			$message='update success';
+			$data['mode']='view';
+			$this->syslog_model->add($user_id,"users","add");
+			$this->browse();
 		} else {
 			$data['mode']='add';
-		    $data['joblist']=$this->modules_groups_model->get_all();
+			$data['joblist']=$this->modules_groups_model->get_all();
 		 	$data['userjobs']="";
-            $this->template->display_form_input($this->file_view,$data,'');
+			$data['supervisor_list']=array_data_table('user','user_id','username');
+			$data['branch_list']=array_data_table('branch','branch_code','branch_name');
+			$this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
 	function update(){ 
@@ -74,13 +98,16 @@ class User extends CI_Controller {
 			$data['jobs']=$this->input->post('jobs');
 			$this->user_model->update($id,$data);
             $message='Update Success';
-            $this->browse();
+			$this->syslog_model->add($id,"users","edit");
+
+			$this->browse();
 		} else {
 			$message='Error Update';
 			$this->view($id,$message);
 		}	  
 	}
  	function view($id,$message=null){
+		if (!allow_mod2('_00020')) exit;
 		 $id=urldecode($id);
 		 $model=$this->user_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
@@ -89,6 +116,9 @@ class User extends CI_Controller {
          $data['message']=$message;
 		 $data['joblist']=$this->modules_groups_model->get_all();
 		 $data['userjobs']=$this->user_jobs_model->list_jobs($id);
+		 $data['supervisor_list']=array_data_table('user','user_id','username');
+ 		 $data['branch_list']=array_data_table('branch','branch_code','branch_name');
+		 
          $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
@@ -102,39 +132,43 @@ class User extends CI_Controller {
 	 // date_validation callback
 	function valid_date($str)
 	{
-	 if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',$str))
-	 {
-		 $this->form_validation->set_message('valid_date',
-		 'date format is not valid. yyyy-mm-dd');
-		 return false;
-	 } else {
-	 	return true;
-	 }
+            if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',$str))
+            {
+                    $this->form_validation->set_message('valid_date',
+                    'date format is not valid. yyyy-mm-dd');
+                    return false;
+            } else {
+                   return true;
+            }
 	}
    function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
-		$data['controller']='user';
-		$data['fields_caption']=array('User ID','Nama User','Kelompok');
-		$data['fields']=array('user_id','username','cid');
-		$data['field_key']='user_id';
-		$data['list_info_visible']=true;
-		$data['caption']='DAFTAR USER LOGIN';
+        $data['controller']='user';
+        $data['fields_caption']=array('User ID','Nama User','Kelompok');
+        $data['fields']=array('user_id','username','cid');
+        $data['field_key']='user_id';
+        $data['print_visible']=true;
+        $data['caption']='DAFTAR USER LOGIN';
+        $data['list_info']=false;
 
-		$this->load->library('search_criteria');
-		$faa[]=criteria("Nama user","sid_nama");
-		$faa[]=criteria("Kelompok","sid_kel");
-		$data['criteria']=$faa;
+        $this->load->library('search_criteria');
+        $faa[]=criteria("Nama user","sid_nama");
+        $faa[]=criteria("Kelompok","sid_kel");
+        $data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
         $sql=$this->sql.' where 1=1';
-		if($this->input->get('sid_nama')!='')$sql.=" username like '".$this->input->get('sid_nama')."%'";
-		if($this->input->get('sid_kel')!='')$sql.=" cid like '".$this->input->get('sid_kel')."%'";
+        if($this->input->get('sid_nama')!='')$sql.=" username like '".$this->input->get('sid_nama')."%'";
+        if($this->input->get('sid_kel')!='')$sql.=" cid like '".$this->input->get('sid_kel')."%'";
         echo datasource($sql);
     }	      
     
 	function delete($id){
+		if (!allow_mod2('_00023')) exit;
 		$id=urldecode($id);
 	 	$this->user_model->delete($id);
+		$this->syslog_model->add($id,"user","delete");
+
 	 	$this->browse();
 	}
 	function list_info($offset=0){
@@ -233,7 +267,9 @@ class User extends CI_Controller {
 			$data['sidebar_position_right']=$this->session->userdata('sidebar_position')=="right"?1:0;
 			$data['donate_visible']=$this->session->userdata('donate_visible');
 			$data['google_ads_visible']=$this->sysvar->getvar('google_ads_visible','true');
-			
+
+			$data['chatbox_visible']=$this->session->userdata('chatbox_visible');
+
 			$this->template->display_form_input("preference",$data);
 		} else {
 			if($this->input->post("last_running_visible")){
@@ -248,6 +284,12 @@ class User extends CI_Controller {
 				$this->session->set_userdata('donate_visible',FALSE);
 			}
 			$this->sysvar->save('google_ads_visible',$this->input->post("google_ads_visible"));
+
+			if($this->input->post("chatbox_visible")){
+				$this->session->set_userdata('chatbox_visible',TRUE);
+			} else {
+				$this->session->set_userdata('chatbox_visible',FALSE);
+			}
 			echo "Pengaturan sudah disimpan. Tekan refersh atau F5.";		
 		}
 	}
@@ -289,10 +331,83 @@ class User extends CI_Controller {
 		$data['data']=$dt;
 		echo json_encode($data);
 	}
-	function log_activity(){
+	function log_activity_run(){
 		$sql="select * from sys_log_run order by id desc limit 100";
 		$data['syslog']=$this->db->query($sql);
 		$this->template->display("log_list",$data);
+		
+	}
+	function log_activity(){
+		$sql="select * from syslog where 1=1";
+		$nomor="";$jenis="";$user="";
+		if($this->input->post()){
+			if($nomor=$this->input->post('nomor')){
+				if($nomor!="")$sql.=" and no_bukti='$nomor'";
+			}
+			if($user=$this->input->post('user')){
+				if($user!="")$sql.=" and userid='$user'";
+			}
+			if($jenis=$this->input->post('jenis')){
+				if($jenis!="")$sql.=" and jenis_cmd='$jenis'";
+			}
+			
+		}
+		$sql.=" order by tgljam desc limit 1000";
+		$data["user"]=$user;
+		$data["nomor"]=$nomor;
+		$data["jenis"]=$jenis;
+		
+		$data['syslog']=$this->db->query($sql);
+		$this->template->display("log_list",$data);
+	}
+	function roles($cmd,$user_id="",$type="",$id="")
+	{	
+		switch($cmd) {
+		case "add":
+			$data['user_id']=$this->input->get('user_id');
+			$data['roles_type']=$type;
+			$data['roles_item']=$this->input->get('roles_item');
+			if($type=="1"){
+				$data['description']=$this->db->select('div_name')
+					->where('div_code',$data['roles_item'])
+					->get('divisions')->row()->div_name;
+			}
+			if($type=="2"){
+				$data['description']=$data['roles_item'];
+			}
+			$ok=$this->user_model->roles_add($data);
+			break;
+		case "update":
+			$data['user_id']=$this->input->get('user_id');
+			$data['roles_type']=$type;
+			$data['roles_item']=$this->input->get('roles_item');
+			$ok=$this->user_model->roles_update($id,$data);
+			break;
+		case "delete":
+			$ok=$this->user_model->roles_delete($id);
+			break;
+		case "list":
+			return $this->user_model->roles_list($user_id,$type);
+			break;
+		}
+	}
+	function print_user()
+	{
+		$this->load->helper('browse_select');
+		$data['caption']="USERNAME AND ROLES";
+		$sql="select u.username,mg.user_group_id,mg.user_group_name,mg.description
+			,u.supervisor,u.active,u.branch_code,u.active
+			from modules_groups mg
+			join user_job uj on uj.group_id=mg.user_group_id
+			join user u on u.user_id=uj.user_id";
+		$data['content']=browse_select(	
+		array('sql'=>$sql,
+			'show_action'=>false,
+			'group_by'=>array('username')
+			)
+		);
+		$data['header']=company_header();
+		$this->load->view('simple_print.php',$data);    		
 	}
 	
 }

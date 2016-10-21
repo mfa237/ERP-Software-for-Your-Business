@@ -21,19 +21,21 @@ dan hasil survey.</p>
 <li><a href="#" onclick="view_survey();return false">Data Hasil Survey</a>
 <li><a href="#" onclick="view_scoring();return false">Data Hasil Scoring</a>
 <p></p>
-<p>Tekan tombol <strong>APPROVED</strong> untuk mulai menyimpan data 
-dan menyetujui nomor tersebut dibuatkan akad kredit.</p>
+<p class='alert alert-warning'>Tekan tombol <strong>APPROVED/NOT</strong> untuk mulai menyimpan data 
+nomor tersebut dan akan dibuatkan akad kredit. Jangan lupa isi alasannya.</p>
+<h5><strong>CATATAN</strong></h5>
+<textarea name='reason' id='reason' style="width:300px;height:100px"></textarea>
+<p><i>*Isi alasan atau keterangannya</i></p>
+<div class='row'>
+	<div id='div_reason_msg' style='color:red'></div>
+</div>	
+
 <div class='thumbnail'>
 	<button type="button" onclick="save()" class="btn btn-info">APPROVED</button>
+	<button type="button" onclick="save_not_approved()" class="btn btn-warning">NOT Approved</button>
 	<div id='save_output'></div>
 </div>	
 
-<p>Tekan tombol <strong>NO APPROVED</strong> untuk tidak menyetujui nomor tersebut dibuatkan akad kredit.</p>
-<div class='row'>
-	<button type="button" onclick="save_not_approved()" class="btn btn-warning">NOT Approved</button>
-	<input type='text' name='reason' id='reason' placeholder="Tulis alasannya" style="width:450px">
-	<div id='div_reason_msg' style='color:red'></div>
-</div>	
 
 <script language="javascript">
 function view_cust(){
@@ -61,17 +63,32 @@ function view_scoring(){
 }
 
 function save(){
+	var reason=$("#reason").val();
+	if(reason==""){alert("Isi keterangan atau alasannya !");return false;}
 	if(!confirm('Data sudah benar ? Yakin mau disimpan ?')) return false;
-	url='<?=base_url()?>index.php/leasing/app_master/approve/<?=$app_id?>';
-	get_this(url,'','save_output');
+	var xurl='<?=base_url()?>index.php/leasing/app_master/approve';
+	console.log(xurl);
+	var app_id="<?=$app_id?>";
+	$.ajax({type: "GET",
+		//async: false,
+		url: xurl,
+		data: {"reason":reason,"app_id":app_id},
+		success: function(msg){
+			parseScript(msg);
+			msg=msg+" Silahkan refresh browsernya.";
+			$('#div_reason_msg').html(msg);
+			xurl='<?=base_url()?>index.php/leasing/menu/load/leasing';
+			//remove_tab();
+			setTimeOut(window.open(xurl,"_self"),3000);
+			alert(msg);
+			
+		},error: function(msg){log_err(msg);}
+	}); 
 }
 function save_not_approved(){
 	var app_id="<?=$app_id?>";
 	var reason=$("#reason").val();
-	if(!reason!=""){
-		$("#div_reason_msg").html('').html("<i>Isi alasan tidak direkomendasikan.</i>");
-		return false
-	};
+	if(reason==""){alert("Isi keterangan atau alasannya !");return false;}
 	$.ajax({type: "GET",
 		url: '<?=base_url()?>index.php/leasing/app_master/not_recomended',
 		data: {"reason":reason,"app_id":app_id},

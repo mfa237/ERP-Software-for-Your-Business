@@ -49,10 +49,17 @@ class Risk extends CI_Controller {
     }
 	function save(){
 		$app=$this->input->post('pilih');
+		$catatan=$this->input->post('comments');
 		for($i=0;$i<count($app);$i++){
 			$app_id=$app[$i];
 			$ok=$this->db->where("app_id",$app_id)->update("ls_app_survey",array("recomended"=>1));
 			$ok=$this->db->where("app_id",$app_id)->update("ls_app_master",array("status"=>"Wait Approval"));
+			$from=user_id();
+			$to_user=$this->db->select("create_by")->where("app_id",$app_id)
+				->get("ls_app_master")->row()->create_by;
+			inbox_send($from,$to_user,$app_id." - Recomended By Risk",
+				"Nomor Aplikasi: $app_id di setujui oleh $from, Catatan: $catatan"); 
+			
 		}
 		if($ok){
 			echo json_encode(array("success"=>true));
@@ -62,6 +69,7 @@ class Risk extends CI_Controller {
 	}	
 	function not_recomend(){
 		$app=$this->input->post('pilih');
+		$catatan=$this->input->post('comments');
 		for($i=0;$i<count($app);$i++){
 			$app_id=$app[$i];
 			$ok=$this->db->where("app_id",$app_id)->update("ls_app_survey",array("recomended"=>2));
@@ -69,8 +77,8 @@ class Risk extends CI_Controller {
 			$from=user_id();
 			$to_user=$this->db->select("create_by")->where("app_id",$app_id)
 				->get("ls_app_master")->row()->create_by;
-			inbox_send($from,$to_user,$app_id." - Not Recomended",
-				"Nomor Aplikasi: $app_id tidak setujui $from"); 
+			inbox_send($from,$to_user,$app_id." - Not Recomended by Risk",
+				"Nomor Aplikasi: $app_id tidak setujui $from, catatan: $catatan"); 
 			
 		}
 		if($ok){

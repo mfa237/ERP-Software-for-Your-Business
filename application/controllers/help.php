@@ -118,9 +118,10 @@ class Help extends CI_Controller {
 	} 
 	function doc_help(){
 		echo "<p>Following this community you can interact with other user.</p>
-		<li><a href='http://forum.maxonerp.com'>Maxon ERP Forum</li>
-		<li><a href='http://www.facebook.com/maxon51' target='new'>Maxon ERP Facebook</li>
-		<li><a href='http://www.twitter.com/talagasoft' target='new'>Maxon ERP Twitter</li>";
+		<li><a href='http://help.maxonerp.com'  target='_blank'>Maxon Tutorial</li>
+		<li><a href='http://forum.maxonerp.com'  target='_blank'>Maxon ERP Forum</li>
+		<li><a href='http://www.facebook.com/maxon51' target='_blank'>Maxon ERP Facebook</li>
+		<li><a href='http://www.twitter.com/talagasoft' target='_blank'>Maxon ERP Twitter</li>";
 	}
 	function error(){
 		echo "<p>Following this community you can submit error and interact with other user.</p>

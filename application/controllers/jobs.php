@@ -17,6 +17,7 @@ class Jobs extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('user_jobs_model');
         $this->load->model('modules_groups_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
@@ -48,6 +49,9 @@ class Jobs extends CI_Controller {
 			if($modules)$this->modules_groups_model->save_module($group_id,$modules);
             $message='Update Success';
             $data['mode']='view';
+			
+			$this->syslog_model->add($group_id,"jobs","add");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -69,6 +73,8 @@ class Jobs extends CI_Controller {
             $message='Update Success';
             $data['mode']='view';
 			$ok=true;
+			$this->syslog_model->add($group_id,"jobs","edit");
+
 		} else {
 			$ok=false;
 		}	
@@ -100,6 +106,7 @@ class Jobs extends CI_Controller {
 		$data['fields']=array('user_group_id','user_group_name','description');
 		$data['field_key']='user_group_id';
 		$data['caption']='DAFTAR USER JOB';
+		$data['print_visible']=true;
 
 		$this->load->library('search_criteria');
 		$faa[]=criteria("Nama user","sid_nama");
@@ -119,6 +126,8 @@ class Jobs extends CI_Controller {
 		$id=urldecode($id);
 	 	$this->modules_groups_model->delete($id);
 //	 	$this->browse();
+		$this->syslog_model->add($id,"jobs","delete");
+
 	}
 	
 	function list_modules_html($group_id,$filter=''){
@@ -129,21 +138,11 @@ class Jobs extends CI_Controller {
 	}
 	function list_modules_json(){
 		$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-		$result = array();
-		$rs = mysql_query("select * from modules where parentid='$id'");
-		while($row = mysql_fetch_array($rs)){
-			$node = array();
-			$node['id'] = $row['module_id'];
-			$node['module_name'] = $row['module_name'];
-			$node['state'] = $this->has_child($row['module_id']) ? 'closed' : 'open';
-			array_push($result,$node);
-		}
-		echo json_encode($result);
+		$sql="select * from modules where parentid='$id'";
+		echo datasource($sql);
 	}
 	function has_child($id){
-		$rs = mysql_query("select count(*) from modules where parentid='$id'");
-		$row = mysql_fetch_array($rs);
-		return $row[0] > 0 ? true : false;		
+		return $this->db->query("select * from modules where parentid='$id' limit 1")->num_rows();
 	}
 	function list_modules($group_id,$filter=''){
 		$group_id=urldecode($group_id);
@@ -257,4 +256,27 @@ class Jobs extends CI_Controller {
 		$module_id=urldecode($module_id);
 		$this->modules_groups_model->delete_module($group_id,$module_id);
 	}	
+	function print_jobs()
+	{
+		$this->load->helper('browse_select');
+		$data['caption']="JOB MODULES ROLES";
+		$sql="select mg.user_group_id,mg.user_group_name
+			,m.parentid,mp.module_name
+			,ugm.module_id,m.module_name,m.description
+			from modules_groups mg
+			join user_group_modules ugm on ugm.group_id=mg.user_group_id
+			join modules m on m.module_id=ugm.module_id
+			left join modules mp on mp.module_id=m.parentid 
+			where (m.parentid='_00000' or m.parentid='0' or m.parentid like '_%0000')";
+		$data['content']=browse_select(	
+		array('sql'=>$sql,
+			'show_action'=>false,
+			'group_by'=>array('user_group_id','parentid','module_id'),
+			'hidden'=>array('user_group_id','user_group_name'),
+			'order_column'=>'user_group_id,module_id'
+			)
+		);
+		$data['header']=company_header();
+		$this->load->view('simple_print.php',$data);    		
+	}
 }

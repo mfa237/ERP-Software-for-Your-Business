@@ -1,4 +1,4 @@
-<div id="tb" style="height:auto" class="box-gradient">
+ 
 	<table width="100%" class="table2">
 		<tr>
 			<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td><td>Button</td>
@@ -20,24 +20,14 @@
 				<input type='hidden' id='line_number' name='line_number'>
 		</tr>
 	</table>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
-</div>
-
-<div id="tb_search" style="height:auto">
-	Enter Text: <input  id="search_item" style='width:180px' 
- 	name="search_item">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem();return false;"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem();return false;">Select</a>
-</div>
-
+	
+	
 <div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px"
-        closed="true" buttons="#tb_search">
+        closed="true" toolbar="#tb_search">
      <div id='divItemSearchResult'> 
-		<table id="dgItemSearch" class="easyui-datagrid"  
+		<table width="100%" id="dgItemSearch" class="easyui-datagrid"  
 			data-options="
-				toolbar: '',fitColumns:true,
+				toolbar: 'tb_item',fitColumns:true,
 				singleSelect: true,
 				url: '<?=base_url()?>index.php/inventory/filter'
 			">
@@ -50,6 +40,20 @@
 		</table>
     </div>   
 </div>	   
+	
+<div id="tb_item">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
+</div> 
+
+<div id="tb_search" style="height:auto">
+	Enter Text: <input  id="search_item" style='width:180px' 
+ 	name="search_item">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
+	onclick="searchItem();return false;"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem();return false;">Select</a>
+</div>
+
 
 <script language="JavaScript"> 
 	function deleteItem(){
@@ -71,10 +75,12 @@
 	function editItem(){
 		var row = $('#'+grid_output).datagrid('getSelected');
 		if (row){
+			console.log(row);
 			$('#frmItem').form('load',row);
 			$('#item_number').val(row.item_number);
 			$('#description').val(row.description);
-			$('#quantity').val(row.quantity);
+			$('#quantity').val(row.from_qty);
+			///$('#from_qty').val(row.quantity);
 			$('#unit').val(row.unit);
 			$('#line_number').val(row.line_number);
 		}

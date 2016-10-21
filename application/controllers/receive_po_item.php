@@ -11,6 +11,7 @@ private $limit=10;
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('receive_item_model');
+		$this->load->model('syslog_model');
 	}
 	function index()
 	{
@@ -63,6 +64,8 @@ private $limit=10;
 			$data=$this->get_posts();
 			$id=$this->receive_item_model->save($data);
 		    $data['message']='update success';
+			$this->syslog_model->add($id,"receive_po","edit");
+
 			redirect('receive/view_item/'.$recv_id);			
 		} else {
 			$data['mode']='add';

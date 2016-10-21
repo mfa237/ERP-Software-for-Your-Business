@@ -73,4 +73,53 @@ function __construct(){
 			where uj.group_id='".$group_id."'";
 		return $this->db->query($sql);
 	 }
+	 
+	function roles_list($user_id,$type) {
+		$user_id=urldecode($user_id);
+		$s="select roles_item,roles_value1,roles_value2,
+			description,id 
+			from user_roles
+			where user_id='$user_id' and roles_type='$type'";
+		echo datasource($s);
+	}
+	function roles_add($data){
+		return $this->db->insert("user_roles",$data);
+	}
+	function roles_delete($id) {
+		return $this->db->where("id",$id)->delete("user_roles");		
+	}
+	function roles_update($id,$data){
+		return $this->db->where("id",$id)->update("user_roles",$data);
+	}
+	function roles_gudang($user_id=""){
+		return $this->roles_type($user_id,"2");
+	}	
+	function roles_division($user_id=""){
+		return $this->roles_type($user_id,"1");
+	}	
+	function roles_type($user_id="",$type='1'){
+		$user_id=urldecode($user_id);
+		if($user_id=="")$user_id=user_id();
+		$s="select roles_item,roles_value1,roles_value2,
+			description,id 
+			from user_roles
+			where user_id='$user_id' and roles_type='$type'";
+		$rows=$this->db->query($s);
+		$data=array();
+		$type="";
+		foreach($rows->result() as $row){
+			$data[]=$row->roles_item;
+		}
+		if(count($data)>1) {
+			return $data;
+		} else {
+			if(count($data)){
+				return $data[0];
+			} else {
+				return "";
+			}
+		}
+	}	
+
+	
 }

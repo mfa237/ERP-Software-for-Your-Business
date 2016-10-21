@@ -22,6 +22,7 @@ class Cash_adjust extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('check_writer_model');
 		$this->load->model('bank_accounts_model');
+		$this->load->model("syslog_model");
 	}
 	function nomor_bukti($add=false)
 	{
@@ -53,7 +54,8 @@ class Cash_adjust extends CI_Controller {
 	}
 	function index()
 	{	
-			echo "Silahkan buat dengan transaksi kas masuk atau kas keluar untuk koreksi.";
+		if(!allow_mod2('_60080'))return false;   
+		echo "Silahkan buat dengan transaksi kas masuk atau kas keluar untuk koreksi.";
 	}
 	function get_posts(){
             $data=data_table_post($this->table_name);
@@ -61,6 +63,7 @@ class Cash_adjust extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_60081'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
  		 $data['mode']='add';
@@ -73,6 +76,8 @@ class Cash_adjust extends CI_Controller {
 		$id=$this->check_writer_model->save($data);
         $message='update success';
 		$this->nomor_bukti(true);
+		$this->syslog_model->add($id,"cash_adjust","add");			
+
         header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
 	}
 	
@@ -88,12 +93,15 @@ class Cash_adjust extends CI_Controller {
             unset($data['trans_id']);
             $this->check_writer_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"cash_adjust","edit");			
+
 		} else {
 			$message='Error Update';
 		}	  
         header('location: '.base_url().'index.php/cash_out/view/'.$data['voucher']);
 	}
 	function view($id,$message=null){
+		if(!allow_mod2('_60080'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->check_writer_model->get_by_id($id)->row();
@@ -154,7 +162,7 @@ class Cash_adjust extends CI_Controller {
 			if($rek!='')$sql.=" and account_number like '$rek%'";	
 			if($this->input->get('sid_type')!='')$sql.=" trans_type='".$this->input->get('sid_type')."'";
 		}
-        $sql.=" limit $offset,$limit";
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }	 
 	function items($voucher) {
@@ -195,20 +203,25 @@ class Cash_adjust extends CI_Controller {
 		}
 	}
 	function unposting($voucher) {
+		if(!allow_mod2('_60085'))return false;   
 		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->unposting($voucher);
 		$this->view($voucher,$message);
 	}
 	function posting($voucher) {
+		if(!allow_mod2('_60085'))return false;   
 		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->posting($voucher);
 		$this->view($voucher,$message);
 	}
 	function delete($voucher) {
+		if(!allow_mod2('_60083'))return false;   
 		$voucher=urldecode($voucher);
 		$message=$this->check_writer_model->delete($voucher);
 		if($message!=""){
 			$this->view($voucher,$message);
+			$this->syslog_model->add($voucher,"cash_adjust","delete");			
+
 			return false;
 		} 
 		$this->browse();

@@ -26,6 +26,7 @@ class Purchase_retur extends CI_Controller {
 		$this->load->model('supplier_model');
 		$this->load->model('inventory_model');
         $this->load->model('shipping_locations_model');
+		$this->load->model('syslog_model');
 		 
 	}
 	function set_defaults($record=NULL){
@@ -90,8 +91,12 @@ class Purchase_retur extends CI_Controller {
 		
 		if($mode=="add"){
 			$ok=$this->purchase_order_model->save($data);
+			$this->syslog_model->add($id,"purchase_retur","add");
+
 		} else {
-			$ok=$this->purchase_order_model->update($id,$data);			
+			$ok=$this->purchase_order_model->update($id,$data);	
+			$this->syslog_model->add($id,"purchase_retu","edit");
+			
 		}
 
 		if ($ok){
@@ -132,6 +137,7 @@ class Purchase_retur extends CI_Controller {
          }
 	}
 	function add()	{
+		if(!allow_mod2('_40061'))return false;   
 	    $data=$this->set_defaults();
 		$this->_set_rules();
 		$data['mode']='add';
@@ -163,6 +169,8 @@ class Purchase_retur extends CI_Controller {
 		 	$data['potype']='R';
 			$this->purchase_order_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"purchase_retur","edit");
+
 		} else {
 			$message='Error Update';
 		}
@@ -172,6 +180,7 @@ class Purchase_retur extends CI_Controller {
 	 
         
 	function view($id,$message=null){
+		if(!allow_mod2('_40060'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->purchase_order_model->get_by_id($id)->row();
@@ -241,6 +250,7 @@ class Purchase_retur extends CI_Controller {
     }	 
   
 	function delete($id){
+		if(!allow_mod2('_40063'))return false;   
 		$id=urldecode($id);
 		$this->load->model('jurnal_model');
 		if($q=$this->jurnal_model->get_by_gl_id($id)){
@@ -251,6 +261,8 @@ class Purchase_retur extends CI_Controller {
 			}
 		}
 		$this->purchase_order_model->delete($id);
+		$this->syslog_model->add($id,"purchase_retur","delete");
+
 		$this->browse();
 	}
 	function lineitems($nomor){
@@ -310,12 +322,14 @@ class Purchase_retur extends CI_Controller {
 			$this->load->view('purchase/print_retur',$data);
         }
 		function posting($nomor)	{
+		if(!allow_mod2('_40065'))return false;   
 			$nomor=urldecode($nomor);
 			$this->load->model('purchase_retur_model');
 			$this->purchase_retur_model->posting($nomor);			
 			$this->view($nomor);
 		}
 	function unposting($nomor) {
+		if(!allow_mod2('_40065'))return false;   
 		$nomor=urldecode($nomor);
 		$this->load->model('purchase_retur_model');
 		$this->purchase_retur_model->unposting($nomor);			

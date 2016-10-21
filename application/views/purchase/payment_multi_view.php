@@ -1,29 +1,29 @@
-<div><h4>PEMBAYARAN HUTANG</H4><div class="thumbnail box-gradient">
+<div class="thumbnail box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;	
-//	echo link_button('Save', 'save_pay()','save');		
 	echo link_button('Print', 'print_pay()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/payables_payments/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/payables_payments');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/payables_payments/view/'.$voucher);		
+	echo link_button('Add','','add','false',base_url().'index.php/payables_payments/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/payables_payments');		
+	echo link_button('Refresh','','reload','false',base_url().'index.php/payables_payments/view/'.$voucher);		
 	
-	echo link_button('Delete','','cut','true',base_url().'index.php/payables_payments/delete_no_bukti/'.$voucher);		
+	echo link_button('Delete','','cut','false',base_url().'index.php/payables_payments/delete_no_bukti/'.$voucher);		
 
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/payables_payments/unposting/'.$voucher);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/payables_payments/unposting/'.$voucher);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/payables_payments/posting/'.$voucher);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/payables_payments/posting/'.$voucher);		
 	}
-	echo link_button('Help', 'load_help(\'payables_payments\')','help');			
 	?>
-	
-		<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div style='float:right'>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false, menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('payables_payments')">Help</div>
+		<div onclick="show_syslog('payables_payments','<?=$voucher?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 
@@ -61,6 +61,15 @@
 	</tr>
 	<tr>
 		<td>Jumlah Bayar: </td><td><?=$amount_paid;?></td>
+	</tr>
+	<tr>
+		<td>Nomor Giro </td><td><?=$credit_card_number?></td>
+	</tr>
+	<tr>
+		<td>Tanggal Giro </td><td><?=$expiration_date?></td>
+	</tr>
+	<tr>
+		<td>Giro Bank </td><td><?=$from_bank?></td>
 	</tr>
 	 
 </table>

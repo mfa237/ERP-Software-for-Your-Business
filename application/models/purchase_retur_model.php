@@ -30,11 +30,8 @@ private $table_name='purchase_order';
 		$gl_id=$nomor;
 		$debit=0; $credit=0;$operation="";$source="";
 		// posting hutang / ap
-		if($akun_hutang=="" or $akun_hutang=="0")$akun_hutang=$supplier->supplier_account_number;
-		if($akun_hutang==""  or $akun_hutang=="0")$akun_hutang=$this->company_model->setting("accounts_payable");
-		if($akun_hutang=="0"){
-			echo "Akun Hutang: ".$akun_hutang;
-		}
+		if(invalid_account($akun_hutang))$akun_hutang=$supplier->supplier_account_number;
+		if(invalid_account($akun_hutang))$akun_hutang=$this->company_model->setting("accounts_payable");
 		$account_id=$akun_hutang; $debit=$faktur->amount; $credit=0;
 		$operation="AP Posting"; $source=$faktur->comments;
 		$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
@@ -90,4 +87,53 @@ private $table_name='purchase_order';
 		$this->purchase_order_model->update($nomor,$data);
 	}
 	
+	function posting_range_date($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('company_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select purchase_order_number from purchase_order where potype='R' 
+		and po_date between '$date_from' and '$date_to' and ifnull(posted,false)=false 
+		order by purchase_order_number";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				
+				echo "<br>Posting...".$r_inv_hdr->purchase_order_number;
+				$this->posting($r_inv_hdr->purchase_order_number);
+						
+			} // foreach rst_inv_hdr
+		} // if rst_inv_hdr
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		Apabila ada kesalahan silahkan periksa mungkin seting akun-akun belum benar, 
+		atau jurnal tidak balance. Silahkan cek ke nomor bukti yang bersangkutan 
+		dan posting secara manual atau ulangi lagi 
+		<a class='btn btn-primary' href='#' onclick='window.history.go(-1); return false;'> Go Back </a>.
+		<p>&nbsp</p><p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+			
+	} // posting	
+	function unposting_range_date($date_from,$date_to){
+		$this->load->model('jurnal_model');
+		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
+		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
+		$s="select purchase_order_number from purchase_order where potype='R' 
+		and po_date between '$date_from' and '$date_to' and posted=true 
+		order by purchase_order_number";
+		$rst_inv_hdr=$this->db->query($s);
+		if($rst_inv_hdr){
+			foreach ($rst_inv_hdr->result() as $r_inv_hdr) {
+				$this->unposting($r_inv_hdr->purchase_order_number);
+				echo "<br>Delete Jurnal: ".$r_inv_hdr->purchase_order_number;
+			}
+		}
+		echo "<legend>Finish.</legend><div class='alert alert-info'>
+		<p>Apabila tidak ada kesalahan silahkan close tab ini.
+		<a class='btn btn-primary' href='#' onclick='remove_tab_parent(); return false;'> Close </a>.		
+		</p>
+		</div>"; 
+	}
 }

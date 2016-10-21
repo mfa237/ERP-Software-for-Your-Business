@@ -11,7 +11,9 @@
     
 </table>
 </form>
-<table id="dg" class="easyui-datagrid" title="Silahkan input barang yang dijual." style="width:800px;height:auto"
+<table id="dg" class="easyui-datagrid" 
+		title="Silahkan input barang yang dijual." 
+		style="width:800px;min-height:300px"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
@@ -110,6 +112,10 @@
 		                    $('#price').val(obj.retail);
 		                    //$('#cost').val(obj.cost);
 		                    //$('#unit').val(obj.unit_of_measure);
+							//$('#discount').val("10+20+10");
+							//$('#disc_2').val(2);
+							//$('#disc_3').val(3);							
+							//alert("here");
 		                    $('#description').val(obj.description);
 		                    hitung();
 		                },
@@ -119,13 +125,20 @@
 		function hitung(){
 	        if($('#quantity').val()==0)$('#quantity').val(1);
 	        gross=$('#quantity').val()*$('#price').val();
-	        disc_prc=$('#discount').val();
-	        if(disc_prc>1){
-	        	disc_prc=disc_prc/100;
-	        	$('#discount').val(disc_prc);
-	        }	
-	        disc_amt=Math.round(gross*disc_prc,2);
-	        $('#amount').val(gross-disc_amt);			
+	        d=$('#discount').val();
+			d2=d.split("+");
+			console.log(d2);
+			if(d2.legth==0)   	$('#discount').val(disc_prc);
+			gross_disc=gross;
+			for(i=0;i<d2.length;i++){
+				disc_prc=d2[i];
+				if(disc_prc>1){
+					disc_prc=disc_prc/100;
+				}	
+				disc_amt=Math.round(gross_disc*disc_prc,2);
+				gross_disc=gross_disc-disc_amt;
+			}
+	        $('#amount').val(gross_disc);			
 		}
 
 

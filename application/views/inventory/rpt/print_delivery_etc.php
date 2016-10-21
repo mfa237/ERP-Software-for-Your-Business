@@ -1,48 +1,29 @@
 <?
          $CI =& get_instance();
-         $CI->load->model('company_model');
-         $model=$CI->company_model->get_by_id($CI->access->cid)->row();
-         $CI->load->model('inventory_model');
+		 $CI->load->model('inventory_model');
 ?>
-<link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
-<table cellspacing="0" cellpadding="1" border="0" width='800px'> 
-     <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>BUKTI PENGELUARAN BARANG</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td>Nomor: <?=$shipment_id?></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td colspan=4 style='border-bottom: black solid 1px'><?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>     	
-     	
-     </tr>
+<h1>BUKTI BARANG KELUAR</h1>
+<h3>Nomor: <?=$shipment_id?></h3>
+<table cellspacing="0" cellpadding="1" border="0"> 
      <tr>
      	<td>Tanggal Keluar</td><td><?=$date_received?></td>
-     	<td colspan='2'></td>
+     	<td colspan="2"></td>
      </tr>
      <tr>
      	<td>Gudang Penyimpanan</td><td><?=$warehouse_code?></td>
-     	<td colspan='2'></td>
-     </tr>
-     <tr>
-     	<td>Catatan</td><td><?=$comments?></td>
-     	<td colspan='2'></td>
+     	<td colspan="2"></td>
      </tr>
      <tr>
      	<td></td><td></td>
-     	<td colspan='2'></td>
+     	<td colspan="2"></td>
      </tr>
      <tr>
      	<td></td><td></td>
-     	<td colspan='2'></td>
+     	<td colspan="2"></td>
      </tr>
      <tr>
      	<td colspan="8">
-     	<table class='titem'>
+     	<table cellpadding="3" border="1">
      		<thead>
      			<tr><td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
      			</tr>
@@ -67,8 +48,13 @@
     			?>
      		</tbody>
      	</table>
-     	
-     	
      	</td>
+     </tr>
+     <tr>
+     	<td>Catatan</td><td colspan="3"><?=$comments?></td>
+     </tr>
+     <tr>
+     	<td><h3>Tanda Tangan</h3></td><td></td>
+     	<td colspan="2"></td>
      </tr>
 </table>

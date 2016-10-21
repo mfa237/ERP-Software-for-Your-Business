@@ -4,8 +4,8 @@
 			singleSelect: true,	url: '' ">
 		<thead>
 			<tr>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
+				<th data-options="field:'description',width:150"  sortable="true">Nama Barang</th>
+				<th data-options="field:'item_number',width:80"  sortable="true">Kode Barang</th>
 				<th data-options="field:'retail',width:80">Harga</th>
 				<th data-options="field:'unit_of_measure',width:80">Unit</th>
 			</tr>

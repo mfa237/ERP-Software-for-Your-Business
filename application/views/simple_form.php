@@ -30,6 +30,9 @@ foreach($fields as $field) {
 			if($field['name']==$field_key)$field_key_value=$value;
 			$caption=$field['caption'];
 			$control=$field['control'];
+			$readonly="";
+			if($name==$field_key && $mode=="view")$readonly=" readonly";
+			
 			if($control=='radio'){
 				$values=$field['list'];
 				for($j=0;$j<sizeof($values);$j++) {
@@ -49,8 +52,6 @@ foreach($fields as $field) {
 				</div>								
 					";
 			} else {
-				$readonly="";
-				if($name=="id")$readonly=" readonly";
 				echo "<input type='text' class='form-control' name='$name' $readonly
 				id='$name' placeholder='$caption' value='$value'>";
 			} 

@@ -1,8 +1,7 @@
 		 
-	<table id="dgPay" class="easyui-datagrid"  
-		style="min-height:800px"
+	<table id="dgPay" class="easyui-datagrid"    width='100%'
 		data-options="
-			iconCls: 'icon-edit',
+			iconCls: 'icon-edit', fitColumns: true,
 			singleSelect: true,
 			toolbar: '#tbPay',
 			url: '<?=base_url()?>index.php/payment/data/<?=$invoice_number?>'
@@ -21,7 +20,7 @@
 		</thead>
 	</table>
 
-<div id='dlgPayment'class="easyui-dialog" style="width:500px;height:450px;padding:10px 20px"
+<div id='dlgPayment'class="easyui-dialog" style="width:500px;height:350px;padding:10px 20px"
     closed="true" buttons="#dlg-buttons-pay">
 	
 	<?

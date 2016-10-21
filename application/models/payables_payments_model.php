@@ -16,9 +16,14 @@ private $table_name='payables_payments';
 		return $this->db->get($this->table_name);
 	}
 	function save($data){		 
+		$this->load->model('purchase_order_model');
+		$no_bukti=$data['purchase_order_number'];
 		if($data['date_paid'])$data['date_paid']= date('Y-m-d H:i:s', strtotime($data['date_paid']));
-		return $this->db->insert($this->table_name,$data);
+		$ok=$this->db->insert($this->table_name,$data);
 		//return $this->db->insert_id();
+		
+		$this->purchase_order_model->recalc($no_bukti);
+		return $ok;
 	}
 	function update($id,$data){
 		if($data['date_paid'])$data['date_paid']= date('Y-m-d H:i:s', strtotime($data['date_paid']));
@@ -39,7 +44,7 @@ private $table_name='payables_payments';
         $this->db->from($this->table_name);
         $row=$this->db->get();
         $r=$row->row();
-        return $r->total_amount;
+        return floatval($r->total_amount);
     }
 	function browse($purchase_order_number)
 	{

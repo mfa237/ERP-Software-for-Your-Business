@@ -1,13 +1,33 @@
 <?
-//var_dump($_POST);
-?>
-<?
-     $CI =& get_instance();
-     $CI->load->model('company_model');
-     $model=$CI->company_model->get_by_id($CI->access->cid)->row();
+ $CI =& get_instance();
+ if(!$CI->input->post('cmdPrint')){
+	 $data['date_from']=date('Y-m-d 00:00:00');
+	 $data['date_to']=date('Y-m-d 23:59:59');
+	 $data['select_date']=true;
+	$data['criteria1']=true;
+	$data['label1']='Kelompok Barang';
+	$data['text1']='';
+	
+	$data['criteria2']=true;
+	$data['label2']='Gudang';
+	$data['text2']='';
+
+	$data['criteria3']=true;
+	$data['label3']='Kode Barang';
+	$data['text3']='';
+	
+	$data['caption']='DAFTAR KARTU STOCK SUMMARY';
+	$data['rpt_controller']="inventory/rpt/$id";
+	$CI->template->display_form_input('criteria',$data,'');
+} else {	
+	$CI->load->model('company_model');
+	$model=$CI->company_model->get_by_id($CI->access->cid)->row();
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
-	$supplier= $CI->input->post('text1');
+	$kel=$CI->input->post("text1");
+	$gudang=$CI->input->post("text2");
+	$kode=$CI->input->post("text3");
+	
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
@@ -41,7 +61,11 @@
  		</thead>
  		<tbody>
      			<?
-     			$sql="select item_number,description,category from inventory order by description";
+     			$sql="select item_number,description,category 
+				from inventory where 1=1";
+				if($kel!="")$sql.=" and category='$kel'";
+				if($kode!="")$sql.=" and item_number='$kode'";
+				$sql.=" order by description";
 				$rst_item=$CI->db->query($sql);
 				foreach($rst_item->result() as $row_item){
 	     			$tbl="";
@@ -51,7 +75,9 @@
 					$qty_akhir=0;
 					$amount=0;	
 
-					$sql="select location_number from shipping_locations order by location_number";
+					$sql="select location_number from shipping_locations where 1=1";					
+					if($gudang!="")$sql.=" and location_number='$gudang'";
+					$sql.=" order by location_number";
 					$rst_gdg=$CI->db->query($sql);
 					foreach ($rst_gdg->result() as $row_gdg) {
 
@@ -60,6 +86,8 @@
 		                from qry_kartustock_union k
 		                where k.gudang='".$row_gdg->location_number."' 
 		                and  k.tanggal<'$date1' and item_number='".$row_item->item_number."'";
+						
+						
 				        $row=$CI->db->query($sql)->row();
 						if($row){
 		                 	$qty_awal=$row->sisa_qty;
@@ -86,6 +114,7 @@
 		                 	$qty_akhir=$row->sisa_qty;
 						    $amount=$row->amount;
 		               };
+					   if($qty_akhir!=0){
 	                    $tbl.="<tr>";
 	                    $tbl.="<td>".$row_item->item_number."</td>";
 	                    $tbl.="<td>".$row_item->description."</td>";
@@ -97,8 +126,9 @@
 	                    $tbl.="<td align='right'>".number_format($qty_akhir)."</td>";
 	                    $tbl.="<td align='right'>".number_format($amount)."</td>";
 	                    $tbl.="</tr>";
+						}
 					}	//rst_gudang
-                    $tbl.="<tr>";
+                   /*  $tbl.="<tr>";
                     $tbl.="<td></td>";
                     $tbl.="<td></td>";
                     $tbl.="<td></td>";
@@ -108,7 +138,7 @@
                     $tbl.="<td align='right'></td>";
                     $tbl.="<td align='right'></td>";
                     $tbl.="<td align='right'></td>";
-                    $tbl.="</tr>";
+                    $tbl.="</tr>"; */
 
 				   echo $tbl;
 				}	// rst_item
@@ -121,3 +151,4 @@
      	</td>
      </tr>
 </table>
+	<?php } ?>

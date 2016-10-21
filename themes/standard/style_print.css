@@ -1,7 +1,9 @@
 body {
 	background-color: #fff;
 	margin: 10px;
-	font: 10px normal  Helvetica, Arial, sans-serif;
+	--font-stretch: semi-condensed;						
+	font-family: courier;
+	font-size: small;
 }
  
 a {
@@ -13,9 +15,22 @@ a {
 .box6{
     width:600px;
 }
+h1 {
+	---font-stretch: semi-condensed;						
+	--font-family: sans-serif;
+	--font-weight: 900;
+	--font-size: 24px;
+}
+h2 {
+	--font-stretch: semi-condensed;						
+	--font-family:  sans-serif;
+	--font-weight: 900;
+	--font-size: 18px;
+}
+
 table {
-    font-size:11px;
-    width:100%;
+	--font-stretch: semi-condensed;						
+	--font-family: sans-serif;
     margin: 2px; 
     text-align: left;
     border-collapse: collapse;
@@ -36,7 +51,7 @@ table {
 .titem thead th {
     background-color: #E0ECFF; 
     border:#95B8E7 1px solid;
-    font-weight: 900;
+    --font-weight: 900;
     height:30px;
 	background: linear-gradient(to bottom,#EFF5FF 0,#E0ECFF 100%);
     padding-left:5px;
@@ -44,5 +59,6 @@ table {
 }
 
 .titem tbody td {
-    border:#95B8E7 1px solid;
+    border:#989EA7 1px solid;
+	padding:3px;
 }

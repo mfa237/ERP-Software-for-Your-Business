@@ -50,8 +50,7 @@ $order_column='',$order_type='asc')
         $nama=$_GET['nama'];
     }
     $this->db->select('item_number,description,category,s.supplier_name,retail,cost');
-    $this->db->join('suppliers s','s.supplier_number=i.supplier_number','left');
-    $this->db->from('inventory i');
+    $this->db->join('suppliers s','i.supplier_number=s.supplier_number','left');
     if($nama!='') $this->db->where("description like '%$nama%'");
     if (empty($order_column)||empty($order_type))
     { 
@@ -59,7 +58,7 @@ $order_column='',$order_type='asc')
     } else {
         $this->db->order_by($order_column,$order_type);
     }
-    return $this->db->get('',$limit,$offset);
+    return $this->db->get($this->table_name." i",$limit,$offset);
 }
 function count_all(){
 	return $this->db->count_all($this->table_name);
@@ -70,7 +69,6 @@ function get_by_id($id){
 }
 
 function exist($id){
-   
    return $this->db->count_all($this->table_name." where item_number='".$id."'")>0;
 }
 function save($data){
@@ -105,10 +103,51 @@ function update($id,$data){
 
 	return $ok;
 }
-function delete($id){
-	$this->db->where($this->primary_key,$id);
-	$this->db->delete($this->table_name);
-}
+	function exist_transaction($id){
+		$ret="";
+		if($cnt=$this->db->select("count(1) as cnt")->where("item_number",$id)
+			->get("sales_order_lineitems")->row()->cnt){
+			$ret="Masih ada transaksi sales order !";
+			return $ret;
+		}
+		
+		if($cnt=$this->db->select("count(1) as cnt")->where("item_number",$id)
+			->get("invoice_lineitems")->row()->cnt){
+			$ret="Masih ada transaksi faktur atau surat jalan !";
+			return $ret;
+		}
+		if($cnt=$this->db->select("count(1) as cnt")->where("item_number",$id)
+			->get("inventory_products")->row()->cnt){
+			$ret="Masih ada transaksi keluar masuk barang !";
+			return $ret;
+		}
+		if($cnt=$this->db->select("count(1) as cnt")->where("item_number",$id)
+			->get("inventory_moving")->row()->cnt){
+			$ret="Masih ada transaksi adjustmen atau transfer !";
+			return $ret;
+		}
+		
+	}
+
+	function delete($id){
+		$ret=$this->exist_transaction($id);
+		if($ret==""){
+			$this->db->where($this->primary_key,$id);
+			$this->db->delete($this->table_name);
+		}
+		return $ret;
+	}
+	function item_list_all(){
+		$query=$this->db->query("select item_number,description,retail,
+			cost,cost_from_mfg,supplier_number
+            from inventory order by description");
+		$ret=array();
+ 		foreach ($query->result_array() as $row)
+		{
+			$ret[]=$row;
+		}		 
+		return $ret;
+	}
 	function item_list(){
 		$query=$this->db->query("select item_number,description
                      from inventory order by description");
@@ -278,6 +317,79 @@ function delete($id){
 		where item_number='$item_number'";
 		$query=$this->db->query($sql);		
 		return $query->row()->qty;
+	}
+	function qty_gudang($item_number,$gudang)
+	{
+		$qty=0;
+		if($q=$this->db->select('quantity')->where('item_number',$item_number)
+		->where('warehouse_code',$gudang)->get('inventory_warehouse')
+		)
+		{
+			if($row=$q->row())$qty=$row->quantity;
+		}
+		return $qty;
+	}
+	function sales_discount($item,$cust,$min_qty=0)
+	{
+		$disc=0;	$disc_prc=0;	$disc_amt=0;
+		if($q=$this->db->select("category")->where("item_number",$item)
+		->get("inventory"))
+		{
+			if($cat_row=$q->row()){
+				$cat=$cat_row->category;
+				if($min_qty>1){
+					$this->db->order_by("min_qty_sold");
+				}
+				$disc_prc=0;
+				if($q=$this->db->where("cust_no",$cust)
+					->where("category",$cat)->get("inventory_price_customers"))
+				{
+					$item_disc="";
+					$dprc=0;
+					foreach($q->result() as $row){
+					 
+						if($disc_prc==0 and $min_qty >= $row->min_qty){
+							$disc_prc=$row->disc_prc_to;
+							$disc_amt=$row->disc_amount;
+							if($disc_amt>0) {
+								$disc=$disc_amt;
+							} else {
+								if($disc_prc>=1)$disc_prc=floatval($disc_prc/100);
+
+								if($row->disc_prc_2>0){
+									$dprc=$row->disc_prc_2;
+									if($dprc>=1)$dprc=floatval($dprc/100);
+									$disc_prc.="+".$dprc;
+								}
+								if($row->disc_prc_3>0){
+									$dprc=$row->disc_prc_3;
+									if($dprc>=1)$dprc=floatval($dprc/100);
+									$disc_prc.="+".$dprc;
+								}
+								$disc=$disc_prc;
+							}
+						}
+					}
+
+				}
+			}
+		}
+		
+		$cust_disc="";
+		if($disc_prc==0 and $disc_amt==0){
+			if($q=$this->db->select("discount_percent,disc_prc_2,disc_prc_3")
+				->where("customer_number",$cust)->get("customers"))
+			{
+					if($r=$q->row()){
+						if($r->discount_percent>0)$cust_disc.=$r->discount_percent;
+						if($r->disc_prc_2>0)$cust_disc.="+".$r->disc_prc_2;
+						if($r->disc_prc_3>0)$cust_disc.="+".$r->disc_prc_3;
+					}
+			}
+			if($cust_disc!="")$disc=$cust_disc;
+		}
+		
+		return $disc;
 	}
 	 
 

@@ -29,8 +29,11 @@ function getvar($varname,$varvalue=""){
 	}
 	return $var;
 }
+function update($varname,$varvalue){
+	$this->save($varname,$varvalue);
+}
 function save($varname,$varvalue){
-	$data['varname']=$varname;
+	//$data['varname']=$varname;
 	$data['varvalue']=$varvalue;
 	$this->CI->db->where($this->primary_key,$varname);
 	return $this->CI->db->update($this->table_name,$data);
@@ -154,5 +157,11 @@ function autonumber_inc($varName){
 function autonumber_dec($varName){
 	$this->autonumber($varName,-1);
 }
-
+function lookup($varname){
+		$query=$this->CI->db->query("select varvalue,keterangan from ".$this->table_name
+			." where varname='Lookup.".$varname."' order by varvalue");
+		$ret=array();$ret['']='- Select -';
+ 		foreach ($query->result() as $row){$ret[$row->varvalue]=$row->keterangan;}		 
+		return $ret;
+	}
 }

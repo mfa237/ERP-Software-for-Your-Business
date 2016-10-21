@@ -40,6 +40,9 @@ class Verify_model extends CI_Model {
 		if(isset($data['v2_date_birth'])){
 			$data['v2_date_birth']=date('Y-m-d H:i:s', strtotime($data['v2_date_birth']));
 		}
+		$data['create_by']=user_id();
+		$data['create_date']=date('Y-m-d H:i:s');
+
 		if($this->db->where("app_id",$app_id)->get($this->table_name)->num_rows()){
 			unset($data['id']);
 			$ok=$this->db->where("app_id",$app_id)->update($this->table_name,$data);            			
@@ -57,6 +60,8 @@ class Verify_model extends CI_Model {
 	function update($id,$data){
 //		$data['app_date']=date('Y-m-d H:i:s', strtotime($data['app_date']));
 		$data['v2_date_birth']=date('Y-m-d H:i:s', strtotime($data['v2_date_birth']));
+		$data['update_by']=user_id();
+		$data['update_date']=date('Y-m-d H:i:s');
 		$this->db->where($this->primary_key,$id);
 		return  $this->db->update($this->table_name,$data);
 	}
@@ -65,3 +70,4 @@ class Verify_model extends CI_Model {
 		$this->db->delete($this->table_name);
 	}
 }
+?>

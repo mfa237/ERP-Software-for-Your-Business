@@ -50,7 +50,10 @@
 				<td>NIP</td><td><? echo form_input('nip',$nip,"id=nip"); echo link_button("","lookup_employee()","search")?></td>
 			</tr>
 		   <tr>
-				<td>Tanggal Pinjam</td><td><?=form_input('date_loan',$date_loan,"class='easyui-datetimebox' style='width:150px'");?></td>
+				<td>Tanggal Pinjam</td><td><?=form_input('date_loan',$date_loan,
+                                        "class='easyui-datetimebox' 
+					data-options='formatter:format_date,parser:parse_date'
+					style='width:150px'");?></td>
 		   </tr>
 		   <tr>
 				<td>Jumlah Pinjaman</td><td><?=form_input('loan_amount',$loan_amount);?></td>

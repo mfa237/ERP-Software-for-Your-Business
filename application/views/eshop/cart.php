@@ -1,14 +1,4 @@
-<div class="row-fluid">
-	<div class="col-sm-3 box-left panel panel-primary">
-		<ol class="breadcrumb box-bcum"'>
-		  <li><a class='glyphicon glyphicon-home' 
-		  href="<?=base_url()?>index.php/eshop/home"> Home</a></li>
-		  <li class="active">Keranjang</li>
-		</ol>
-		<? include_once 'box_sub_cat.php' ?>
-		<? include_once 'box_item.php' ?>
-	</div>
-	<div class="col-sm-9">
+ <div class='col-md-12 col-lg-12'>
 		<img src='<?=base_url()?>images/ico_sales.png' 
 		style='float:left;margin-right:20px'>
 		<h1>Data Kantong Belanja</h1>
@@ -45,8 +35,23 @@
 	?>
 		</table>
 		<a href="<?=base_url()?>index.php/eshop/cart/checkout" class='btn btn-primary'>Check Out</a>
-	</div>
+</div>	 
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p>
+<div class='col-md-12 col-lg-12'>
+<div class='alert alert-info'>
+<p>
+Silahkan klik tombol checkout atau anda masih ingin berbelanja barang lain lagi 
+untuk item yang menarik dibawah ini.
+</p>
 </div>
+</div>
+
+<div class='col-md-12 col-lg-12'>
+<?php echo load_view('eshop/category'); ?> 
+</div>
+
 <script language='javascript'>
 
 var cart=null;
@@ -75,4 +80,3 @@ function edit_row(idx){
 	alert(idx);
 }
 </script>
-<link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">

@@ -23,17 +23,21 @@ class Sales_order_model extends CI_Model
 	    $this->sub_total=$this->sales_order_lineitems_model->total_amount($nomor);
 
     	$so=$this->get_by_id($nomor)->row();
-		$disc_amount=$so->discount*$this->sub_total;
-		$this->disc_amount_1=$disc_amount;
+		$disc_amount=0;
+		$tax_amount=0;
 		
-	    $this->amount=$this->sub_total-$disc_amount;
-		$tax_amount=$so->sales_tax_percent*$this->amount;
-		$this->tax=$tax_amount;
-		
-		$this->amount=$this->amount+$tax_amount;
-		$this->amount=$this->amount+$so->freight;
-		$this->amount=$this->amount+$so->other;
-
+		if($so){
+			$disc_amount=$so->discount*$this->sub_total;
+			$this->disc_amount_1=$disc_amount;
+			$this->amount=$this->sub_total-$disc_amount;
+			$tax_amount=$so->sales_tax_percent*$this->amount;
+			
+			$this->tax=$tax_amount;
+			
+			$this->amount=$this->amount+$tax_amount;
+			$this->amount=$this->amount+$so->freight;
+			$this->amount=$this->amount+$so->other;
+		}
 
 		$this->db->where($this->primary_key,$nomor);
 		$this->db->update($this->table_name,array('amount'=>$this->amount,
@@ -144,40 +148,23 @@ class Sales_order_model extends CI_Model
 			
 			$ship_date=$q->invoice_date;
 		}
-
-
-		$s="update sales_order 
-		
-		left join (select sales_order_number,sum(quantity) as z_qty,
-		sum(ship_qty) as z_ship_qty 
-		from sales_order_lineitems
-		where sales_order_number='$nomor_so'
-		group by sales_order_number) il
-		on il.sales_order_number=sales_order.sales_order_number
-		
-		set delivered=true,ship_date='$ship_date' 
-		
-		where z_ship_qty>=z_qty 
-		and sales_order.sales_order_number='$nomor_so'";
+		$delivered=false;
+		$status=$this->db->select("status")->where("sales_order_number",$nomor_so)->get("sales_order")->row()->status;
+		if ($q=$this->db->select("sum(quantity) as z_qty,
+		sum(ship_qty) as z_ship_qty")->where("sales_order_number",$nomor_so)
+		->get("sales_order_lineitems")) {
+			if($r=$q->row()){
+				if($r->z_ship_qty>=$r->z_qty){
+					$delivered=true;
+					$status="2";
+				}
+			}
+		}
+		$s="update sales_order set delivered='$delivered',
+		ship_date='$ship_date',status='$status' 
+		where  sales_order_number='$nomor_so'";
 		
 		$this->db->query($s);
-
-		$s="update sales_order 
-		
-		left join (select sales_order_number,sum(quantity) as z_qty,
-		sum(ship_qty) as z_ship_qty 
-		from sales_order_lineitems
-		where sales_order_number='$nomor_so'
-		group by sales_order_number) il
-		on il.sales_order_number=sales_order.sales_order_number
-		
-		set delivered=false,ship_date='$ship_date'
-		
-		where z_ship_qty<z_ship_qty 
-		and sales_order.sales_order_number='$nomor_so'";
-
-		$this->db->query($s);
-
 		
 	}
 }

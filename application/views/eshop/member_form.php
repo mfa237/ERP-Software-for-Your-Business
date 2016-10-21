@@ -1,11 +1,14 @@
 <form class="form" id='frmMain' method='post'>
+	<input type='hidden' id='mode' name='mode' value='<?=isset($mode)?$mode:"add";?>'>
 	<div class="form-group">
 	  <label>Nama Anda</label>
 	  <input value='<?=$company?>' name='company' id='company' type="text" class="form-control" placeholder="Isi nama anda">
 	</div>
 	<div class="form-group">
 	  <label>Username</label>
-	  <input value='<?=$customer_number?>' <?=$customer_number!=""?"readonly":""?>  name='customer_number' id='customer_number' type="text" class="form-control" placeholder="Isi username anda">
+	  <input value='<?=$customer_number?>' <?=$customer_number!=""?"readonly":""?>  
+		name='customer_number' id='customer_number' 
+		type="text" class="form-control" placeholder="Isi username anda">
 	  <i>username akan dipakai sebagai login kedalam toko kami</i>
 	</div>
 	<div class="form-group">
@@ -36,5 +39,3 @@
 </form>
 <div id='message'></div>
 
-<a href="#" onclick='frmMain_Save();return false;' 
-class='btn btn-primary'>Submit</a>

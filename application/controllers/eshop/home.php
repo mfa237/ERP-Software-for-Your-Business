@@ -8,22 +8,27 @@ class Home extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-		$this->load->library('template');
+		$this->load->library('template_eshop');
 	}
 	function index() {	
 		$data['message']='';
 		$data['active_tab']=1;
-		$this->template->display_eshop('eshop/home',$data);
+		$data['content']=true;
+		$data['slider']=true;
+		$data['footer']='footer';
+		$data['sidebar']='category_list';
+		
+		$this->template_eshop->display('home',$data);
 	}
 	function popular() {	
 		$data['message']='';
 		$data['active_tab']=2;
-		$this->template->display_eshop('eshop/home',$data);
+		$this->template_eshop->display('home',$data);
 	}
 	function hot() {	
 		$data['message']='';
 		$data['active_tab']=3;
-		$this->template->display_eshop('eshop/home',$data);
+		$this->template_eshop->display('home',$data);
 	}
 	
 }

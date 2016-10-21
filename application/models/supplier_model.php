@@ -114,6 +114,7 @@ function select_list(){
 		order by sum(p.amount) desc
 		limit 0,10";
 		$query=$this->db->query($sql);
+                $data=null;
 		foreach($query->result() as $row){
 			$supp=$row->supplier_number;
 			if($supp=="")$supp="Unknown";
@@ -127,6 +128,15 @@ function select_list(){
 	function saldo($supplier_number){
 		$sql="select sum(amount) as z_amt from qry_kartu_hutang where supplier_number='$supplier_number'";
 		return $this->db->query($sql)->row()->z_amt;
+	}
+	function valueof($ret_field,$search){
+		$retval='';
+		if($query=$this->db->select($ret_field)->where('supplier_number',$search)->get($this->table_name)){
+			if($row=$query->row_array()){
+				$retval=$row[$ret_field];
+			}
+		}
+		return $retval;
 	}
 
 }

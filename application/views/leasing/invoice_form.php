@@ -7,6 +7,7 @@
 		echo my_input("Bulan ke",'idx_month','','col-sm-5');
 		echo my_input("Jumlah",'amount','','col-sm-5');
 	?>
+		<input type='hidden' id='mode' name='mode' value='edit'>
 	</form>
 </div>	   
 <div id='tbAddInvoice'>
@@ -15,6 +16,7 @@
 </div>
 <script language="JavaScript">
 	function dgInvoice_Add(){
+		$("#mode").val("add");
 		$('#dlgAddInvoice').dialog('open').dialog('setTitle','Tambah Faktur');
 	}
 	function dgInvoice_Edit(){
@@ -34,6 +36,19 @@
 		$('#dlgAddInvoice').dialog('close');
 	}
 	function dlgAddInvoice_Save(){
-		alert("save");
+		url='<?=base_url()?>index.php/leasing/invoice_header/save';
+		$('#frmAddInvoice').form('submit',{
+			url: url, onSubmit: function(){	return $(this).form('validate'); },
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success){
+					log_msg('Data sudah tersimpan.');
+					$("#dlgAddInvoice").dialog("close");
+					$("#dgInvoice").datagrid("reload");
+				} else {
+					log_err(result.msg);
+				}
+			}
+		});	
 	}
 </script>

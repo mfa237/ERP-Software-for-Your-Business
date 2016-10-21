@@ -1,75 +1,52 @@
-<table id="dgEdu" class="easyui-datagrid" width='100%'
-	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns:true, toolbar: '#tbEdu',url: ''">
+<table id="dgMed" class="easyui-datagrid" width='100%'
+	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns:true, toolbar: '#tbMed',
+	url: '<?=base_url()?>index.php/payroll/employee/medical/load/<?=$nip?>'">
 	<thead>
 		<tr>
-			<th data-options="field:'educationlevel', width:'80'">Level</th>
-			<th data-options="field:'school', width:'80'">Sekolah</th>
-			<th data-options="field:'place', width:'80'">Kota</th>
-			<th data-options="field:'major', width:'80'">Tingkat</th>
-			<th data-options="field:'enteryear', width:'80'">Tahun Masuk</th>
-			<th data-options="field:'graduationyear', width:'80'">Tahun Lulus</th>
-			<th data-options="field:'yearofattend', width:'80'">Lamanya</th>
-			<th data-options="field:'graduate', width:'80'">Lulus</th>
+			<th data-options="field:'medicaldate', width:'80'">Medical Date</th>
+			<th data-options="field:'description', width:'280'">Keterangan</th>
 			<th data-options="field:'employeeid', width:'80'">NIP</th>
 			<th data-options="field:'id', width:'80'">Id</th>
 		</tr>
 	</thead>
 </table>
 	
-<div id="tbEdu">
-	<?=link_button("Tambah","add_edu()","add")?>
-	<?=link_button("Edit","edit_edu()","edit")?>
-	<?=link_button("Hapus","del_edu()","remove")?>
-	<?=link_button("Refresh","load_edu()","reload")?>
+<div id="tbMed">
+	<?=link_button("Tambah","add_med()","add")?>
+	<?=link_button("Edit","edit_med()","edit")?>
+	<?=link_button("Hapus","del_med()","remove")?>
+	<?=link_button("Refresh","load_med()","reload")?>
 </div>	
 
 
-<div id='dlgEdu'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
-	closed="true" buttons="#tbDlgEdu">
-	<form method="post" id="frmEdu">
+<div id='dlgMed'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
+	closed="true" buttons="#tbDlgMed">
+	<form method="post" id="frmMed">
 		<table style='width:100%'>
 			<tr>
-				<td>Level</td><td><?=form_input("educationlevel")?></td>
+				<td>Tanggal Medical</td><td><?=form_input("medicaldate")?></td>
 			</tr>
 			<tr>
-				<td>Sekolah</td><td><?=form_input("school")?></td>
-			</tr>
-			<tr>
-				<td>Kota</td><td><?=form_input("place")?></td>
-			</tr>
-			<tr>
-				<td>Tingkat</td><td><?=form_input("place")?></td>
-			</tr>
-			<tr>
-				<td>Tahun Masuk</td><td><?=form_input("enteryear")?></td>
-			</tr>
-			<tr>
-				<td>Tahun Lulus</td><td><?=form_input("graduationyear")?></td>
-			</tr>
-			<tr>
-				<td>Lamanya</td><td><?=form_input("yearofattend")?></td>
-			</tr>
-			<tr>
-				<td>Lulus</td><td><?=form_input("graduate")?></td>
+				<td>Keterangan Medical</td><td><?=form_input("description")?></td>
 			</tr>
 		</table>		
 		<input type='hidden' id='id_edu' name='id'>
 		<input type='hidden' id='nip_edu' name='employeeid' value='<?=$nip?>'>
 	</form>
 </div>
-<div id="tbDlgEdu">
-	<?=link_button("Save","save_edu()","save")?>
+<div id="tbDlgMed">
+	<?=link_button("Save","save_med()","save")?>
 </div>	
 
 <script language="JavaScript">
-	function add_edu() {
-		$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+	function add_med() {
+		$('#dlgMed').dialog('open').dialog('setTitle','Medical');
 	}
-	function save_edu() {
-        if($('#company').val()===''){alert('Isi dulu nama perusahaan !');return false;};
+	function save_med() {
+        if($('#description').val()===''){alert('Isi dulu keterangan medical !');return false;};
 
-		url='<?=base_url()?>index.php/payroll/employee/education/save';
-		$('#frmEdu').form('submit',{
+		url='<?=base_url()?>index.php/payroll/employee/medical/save';
+		$('#frmMed').form('submit',{
 			url: url,
 			onSubmit: function(){
 				return $(this).form('validate');
@@ -77,9 +54,9 @@
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
-					load_exp();
-					$('#dlgEdu').dialog('close');				
-					$('#frmEdu').each(function(){ this.reset(); });
+					load_med();
+					$('#dlgMed').dialog('close');				
+					$('#frmMed').each(function(){ this.reset(); });
 					log_msg('Data sudah tersimpan.');
 				} else {
 					log_err(result.msg);
@@ -87,40 +64,30 @@
 			}
 		});	
 	}
-	function edit_edu()	{
-		var row = $('#dgEdu').datagrid('getSelected');
+	function edit_med()	{
+		var row = $('#dgMed').datagrid('getSelected');
 		if (row){
-			$('#id_edu').val(row.id);
-			$('[name=company]').val(row.company);
-			$('[name=startdate]').val(row.startdate);
-			$('[name=finishdate]').val(row.finishdate);
-			$('[name=firstposition]').val(row.firstposition);
-			$('[name=endposition]').val(row.endposition);
-			$('[name=place]').val(row.place);
-			$('[name=lastsalary]').val(row.lastsalary);
-			$('[name=supervisor]').val(row.supervisor);
-			$('[name=referencename]').val(row.referencename);
-			$('[name=referencephone]').val(row.referencephone);
-			$('[name=reasontoleave]').val(row.reasontoleave);
-			$('[name=employeeid]').val(row.employeeid);
+			$('#id_med').val(row.id);
+			$('#frmMed input[name=medicaldate]').val(row.medicaldate);
+			$('#frmMed input[name=description]').val(row.description);
 			
-			$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+			$('#dlgMed').dialog('open').dialog('setTitle','Medical');
 		}
 	}
-	function load_edu()	{
+	function load_med()	{
 		nip=$('#nip').val();
-		xurl='<?=base_url()?>index.php/payroll/employee/education/load/'+nip;
-		$('#dgEdu').datagrid({url:xurl});
+		xurl='<?=base_url()?>index.php/payroll/employee/medical/load/'+nip;
+		$('#dgMed').datagrid({url:xurl});
 	}
-	function del_edu()	{
-		var row = $('#dgEdu').datagrid('getSelected');
+	function del_med()	{
+		var row = $('#dgMed').datagrid('getSelected');
 	 
 		if (row){
-			url='<?=base_url()?>index.php/payroll/employee/education/delete/'+row.id;
+			url='<?=base_url()?>index.php/payroll/employee/medical/delete/'+row.id;
 			$.ajax({
 				type: "GET", url: url,
 				success: function(msg){
-					load_edu();
+					load_med();
 				},
 				error: function(msg){alert(msg);}
 			});

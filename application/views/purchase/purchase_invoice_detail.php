@@ -99,7 +99,7 @@
         row = $('#dgItem').datagrid('getSelected');
         if (row){
             xurl=CI_ROOT+'purchase_invoice/delete_item/'+row['line_number'];                             
-            console.log(xurl);xparam='';
+            xparam='';
             $.ajax({
                 type: "GET",url: xurl,param: xparam,
                 success: function(msg){

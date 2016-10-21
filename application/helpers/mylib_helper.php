@@ -1,22 +1,207 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 date_default_timezone_set("Asia/Jakarta");
- 
 
+if(!function_exists("menu")){
+function menu($title,$url,$func=false){
+		if(!$func){
+			echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	
+		} else {
+			echo "<div><a href='#' onclick=\"load_menu('$url')\"  class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";
+		}
+	}
+}
+if(!function_exists("add_menu_drop")){
+	function add_menu_drop($menu_id,$caption,$mod_id) {
+		if(allow_mod($mod_id)){
+			echo "<li><a onclick=load_menu('$menu_id') href='#'>$caption</a></li>";
+		}
+	}
+}
+if(!function_exists("add_menu_drop_2")){
+	function add_menu_drop_2($menu_id,$caption,$mod_id) {
+		if(allow_mod($mod_id)){
+			echo "<li><a href='".base_url()."index.php/$menu_id'
+			class='info_link' >$caption</a></li>";
+		}
+	}
+	
+}
+if(!function_exists("load_picture")){
+	function load_picture($file=''){
+		if($file=='') return base_url()."images/no-images.png";
+		$f=FCPATH . "tmp/".$file;
+		if(file_exists($f)){
+			return base_url()."tmp/".$file;
+		} else {
+			return base_url()."images/no-images.png";
+		}
+	}
+}
 if(!function_exists("my_input_date")){
-	function my_input_date($caption,$field_name,$field_value,$class_cap="col-sm-4",$class_text="col-sm-5"){
+	function my_input_date($caption,$field_name,$field_value,$class_cap="",$class_text=""){
 		echo "<div class='form-group'>
 		<label class='control-label ".$class_cap."' for='".$field_name."'>".$caption."</label>
 		<div class='".$class_text."'>".form_input($field_name,$field_value,
-		"id='".$field_name."' class='form-control input-sm easyui-datetimebox '")."</div></div>";	
+		"id='".$field_name."' class='form-control input-sm easyui-datetimebox' 
+		data-options='formatter:format_date,parser:parse_date'
+		")."</div></div>";
+	}
+}
+if(!function_exists("form_input_date")){
+	function form_input_date($field_name,$field_value,$class_cap="",$class_text=""){
+		echo form_input($field_name,$field_value,
+		"id='".$field_name."' class='easyui-datetimebox' 
+		data-options='formatter:format_date,parser:parse_date'
+		");
+	}
+}
+if(!function_exists("my_button")){
+	function my_button($caption,$func,$icon,$tooltip){
+		echo "<a href='#' onclick='$func'
+		class='btn btn-primary glyphicon glyphicon-$icon'
+		title='$tooltip'>$caption</a>";
+	}
+}
+if(!function_exists("my_button_submit")){
+	function my_button_submit($caption='Submit'){
+		echo "<input type='submit' value='$caption' name='submit' name='submit' 
+		class='btn btn-primary'>";
 	}
 }
 
+if(!function_exists("my_input_2")){
+	function my_input_2($data,$field_name='',$field_value=''){
+		my_input($data,$field_name,$field_value,"x","x");
+	}
+}
 if(!function_exists("my_input")){
-	function my_input($caption,$field_name,$field_value='',$class_cap="col-sm-4",$class_text="col-sm-5",$style=""){
+	function my_input($data,$field_name='',$field_value='',$caption_class="",$text_class="",$style=""){
+		$caption=$data;
+		$sub_caption="";
+		$align="";
+		$text_class_field='';
+		$param=""; $show_button="";
+		$clear_line="";
+		if(is_array($data)){
+			foreach($data as $key=>$value)
+			{
+				if ( $key == "caption" ) $caption=$value;
+				if ( $key == "sub_caption" ) $sub_caption=$value;
+				if ( $key == "field_name" ) $field_name=$value;
+				if ( $key == "value" ) $field_value=$value;
+				if ( $key == "caption_class" ) $caption_class=$value;
+				if ( $key == "text_class" ) $text_class=$value;
+				if ( $key == "style" ) $style=$value;
+				if ( $key == "align" ) $align=' align="'.$value.'" ';
+				if ( $key == "text_class_field" ) $text_class_field=$value;
+				if ( $key == "param" ) $param=$value;
+				if ( $key == "show_button" ) $show_button=$value;
+				if ( $key == "clear_line" ) $clear_line=$value;
+			}
+		}
+		if($caption_class=="")$caption_class="col-xs-3";
+		if($text_class=="")$text_class="col-xs-4";
 		echo "<div class='form-group'>
-		<label class='control-label ".$class_cap."' for='".$field_name."'>".$caption."</label>
-		<div class='".$class_text."'>".form_input($field_name,$field_value,
-		"id='".$field_name."' class='form-control input-sm' $style")."</div></div>";	
+		<label $align class='control-label $caption_class ' for='$field_name'>$caption</label>
+		<div class='$text_class'>"
+		.form_input($field_name,$field_value,
+		"$param id='$field_name' class='form-control input-sm  $text_class_field ' $style")
+		."";
+		if ($clear_line!="") echo "<div class='clear'>";
+		if ($sub_caption!="") echo "<i>$sub_caption</i>";
+		if ($clear_line!="") echo "</div>";
+		echo "</div>";
+		if ($show_button!="") echo $show_button;
+		echo "</div>";
+	}
+}
+if(!function_exists("my_hidden")){
+	function my_hidden($data,$field_name='',$field_value='',$caption_class="",$text_class="",$style=""){
+		$caption=$data;
+		if(is_array($data)){
+			foreach($data as $key=>$value)
+			{
+				if ( $key == "field_name" ) $field_name=$value;
+				if ( $key == "value" ) $field_value=$value;
+			}
+		}
+		echo form_hidden($field_name,$field_value,"id='$field_name'");
+	}
+}
+
+if(!function_exists("my_textarea")){
+	function my_textarea($data,$field_name='',$field_value='',$caption_class="",$text_class="",$style=""){
+		$caption=$data;
+		$sub_caption="";
+		$align="";
+		$text_class_field='';
+		if(is_array($data)){
+			foreach($data as $key=>$value)
+			{
+				if ( $key == "caption" ) $caption=$value;
+				if ( $key == "sub_caption" ) $sub_caption=$value;
+				if ( $key == "field_name" ) $field_name=$value;
+				if ( $key == "value" ) $field_value=$value;
+				if ( $key == "caption_class" ) $caption_class=$value;
+				if ( $key == "text_class" ) $text_class=$value;
+				if ( $key == "style" ) $style=$value;
+				if ( $key == "align" ) $align=' align="'.$value.'" ';
+				if ( $key == "text_class_field" ) $text_class_field=$value;
+			}
+		}
+		echo "<div class='form-group ' >
+		<label  $align class='control-label $caption_class' for='$field_name'>$caption</label>
+			<div class='$text_class'>"
+			.form_textarea($field_name,$field_value,
+			"id='$field_name' class='form-control input-sm $text_class_field ' $style ")
+			."</div>
+		</div>";
+	}
+}
+
+if(!function_exists("my_input_file")){
+	function my_input_file($data,$field_name='',$field_value='',$caption_class="",$text_class="",$style=""){
+		$caption=$data;
+		$sub_caption="";
+		$align="";
+		$text_class_field='';
+		$add_text_field=false;
+		$new_control='';
+		$show_images=false;
+		$images_control='';
+		if(is_array($data)){
+			foreach($data as $key=>$value)
+			{
+				if ( $key == "caption" ) $caption=$value;
+				if ( $key == "sub_caption" ) $sub_caption=$value;
+				if ( $key == "field_name" ) $field_name=$value;
+				if ( $key == "value" ) $field_value=$value;
+				if ( $key == "caption_class" ) $caption_class=$value;
+				if ( $key == "text_class" ) $text_class=$value;
+				if ( $key == "style" ) $style=$value;
+				if ( $key == "align" ) $align=' align="'.$value.'" ';
+				if ( $key == "text_class_field" ) $text_class_field=$value;
+				if ( $key == "add_text_field" ) $add_text_field=$value;
+				if ( $key == "show_images" ) $show_images=$value;
+			}
+		}
+		if($add_text_field) {
+			$new_control="<input type='text' name='$field_name' id='$field_name'
+					value='$field_value'  class='form-control input-sm  $text_class_field ' $style/>";
+		}
+		if($show_images) {
+			$images_control="<div class='thumbnail '>
+				<img src='".base_url()."images/$field_value'>
+			</div>";
+		}
+		echo "<div class='form-group'>
+			<label class='control-label $caption_class' for='$field_name'>$caption</label>
+			<div class='$text_class'>
+				<input type='file' name='img_$field_name' id='img_$field_name' title='Select'/>
+				$new_control
+				$images_control
+			</div>
+		</div>";
 	}
 }
 if(!function_exists("my_input_tr")){
@@ -29,23 +214,79 @@ if(!function_exists("my_input_tr")){
 	}
 }
 if(!function_exists("my_dropdown")){
-	function my_dropdown($caption,$field_name,$field_value,$array_list,$class_cap="col-sm-4",$class_text="col-sm-5"){
+	function my_dropdown($caption,$field_name,$field_value,$array_list,$class_cap="",$class_text=""){
 		echo "<div class='form-group'>
 		<label class='control-label ".$class_cap."' for='".$field_name."'>".$caption."</label>
 		<div class='".$class_text."'>".form_dropdown($field_name,$array_list,$field_value,
-		"id='".$field_name."' class='form-control'")."</div></div>";	
+		"id='".$field_name."' class='form-control'")."</div></div>";
+	}
+}
+if(!function_exists("array_data_table")){
+	function array_data_table($table,$field_key,$field_val,$query=""){
+        $CI =& get_instance();
+		$data2=$CI->db->select("$field_key,$field_val")->get("$table")->result_array();
+		$data[]=array($field_key=>"",$field_val=>"--Select--");
+		$data=array_merge($data,$data2);
+		$list=null;for($i=0;$i<count($data);$i++){$list[$data[$i][$field_key]]=$data[$i][$field_val];}
+		return $list;
 	}
 }
 if(!function_exists("my_checkbox")){
-	function my_checkbox($caption,$field_name,$field_value,$class_cap="col-sm-4",$class_text="col-sm-2"){
-		$checked=$field_value=="1"?true:false;
-		echo "<div class='form-group'>
+	function my_checkbox($caption,$field_name,$field_value,$array_list,$class_cap="col-sm-4",$class_text="col-sm-2"){
+		echo "<div class='form-group' >
 		<label class='control-label ".$class_cap."' for='".$field_name."'>".$caption."</label>
-		<div class='".$class_text."'>".form_checkbox($field_name,$field_value,$checked,
-		"id='".$field_name."' class='form-control input-sm'")."</div></div>";	
+		<div class='col-md-6'>";
+		$field_value_array=explode(",",$field_value);
+		foreach( $array_list as $key => $value ) {
+			$found=false;
+			if(is_array($field_value_array)){
+				for($j=0;$j<count($field_value_array);$j++) {
+					if($field_value_array[$j]==$value){
+						$found=true;
+					}
+				}
+				$checked=$found;
+			} else {
+				$checked=$field_value==$value?true:false;
+			}
+			echo "<label class='control-label col-md-4'>";
+			echo form_checkbox($field_name.'[]', $key, $checked,
+				"id='".$field_name."' class='checkbox'").' '.$value.' ';
+			echo "</label>";
+		}
+		echo "</div>
+		</div>
+		<div class='clearfix'></div>";
 	}
 }
-
+if(!function_exists("render_form")) {
+	function render_form($form) {
+	$data[]=null;
+	foreach($form as $frm)
+	{
+		$data=array_merge($data,$frm['data']);
+		switch($frm['input_type'])
+		{
+			case "dropdown":
+				break;
+			case "datetime":
+				break;
+			case "textarea":
+				my_textarea($data);
+				break;
+			case "file":
+				my_input_file($data);
+				break;
+			case "hidden":
+				my_hidden($data);
+				break;
+			default:
+				my_input($data);
+				break;
+		}
+	}
+	}
+}
 if(!function_exists("add_button_menu")){
 	function add_button_menu($caption,$modul,$ico,$description,$on_click=""){
 	$click="href='".base_url()."index.php/$modul'";
@@ -58,23 +299,24 @@ if(!function_exists("add_button_menu")){
 }
 if(!function_exists("format_sql_date")){
 	function format_sql_date($value){
-		return  date('Y-m-d H:i:s', strtotime($value));		
+		return  date('Y-m-d H:i:s', strtotime($value));
 	}
 }
 if(!function_exists("dropdown_data")){
 	function dropdown_data($table,$field_key="",$field_value="",$where=""){
+        $CI =& get_instance();
 		$ret['']='- Select -';
 		$sql="select $field_key,$field_value from $table";
 		if($where!="")$sql .= $where;
-		if($query=$this->db->query($sql)) {
+		if($query=$CI->db->query($sql)) {
 			foreach ($query->result_array_assoc() as $row){
 				$ret[]=$row;
-			}		 
+			}
 		}
 		return $ret;
 	}
 }
-if(!function_exists('add_date')){	
+if(!function_exists('add_date')){
 	function add_date($givendate,$day=0,$mth=0,$yr=0) {
 		  $cd = strtotime($givendate);
 		  $newdate = date('Y-m-d h:i:s', mktime(date('h',$cd),
@@ -83,9 +325,13 @@ if(!function_exists('add_date')){
 		  return $newdate;
 	}
 }
-if(!function_exists('add_log_run')){	
+if(!function_exists('add_log_run')){
 	function add_log_run($url){
         $CI =& get_instance();
+		$max_id=$CI->db->select('max(id) as z_max')->get('sys_log_run')->row();
+		if($max_id->z_max>100){
+			$CI->db->query("delete from sys_log_run where id<".($max_id->z_max-100));
+		} 
 		$data['user_id']=$CI->access->user_id();
 		$data['url']=$url;
 		$data['controller']=$CI->uri->segment(1);
@@ -98,10 +344,10 @@ if(!function_exists('add_log_run')){
 if(!function_exists("view_syslog")){
 	function view_syslog(){
         $CI =& get_instance();
-		$sql="select distinct url,controller,method,param1 
-		from sys_log_run where user_id='".$CI->access->user_id()."' 
+		$sql="select distinct url,controller,method,param1
+		from sys_log_run where user_id='".$CI->access->user_id()."'
 		order by id desc limit 20 ";
-		$q=$CI->db->query($sql);		
+		$q=$CI->db->query($sql);
 		$sys_log_run="";
 		if($q){
 			foreach ($q->result() as $row) {
@@ -110,8 +356,8 @@ if(!function_exists("view_syslog")){
 				if(!$row->param1=='0')$url.="/".$row->param1;
 				$sys_log_run.="<li><a  class='info_link'  href='".base_url()."index.php/".$url."'>".$url."</a></li>";
 			}
-		}	
-		return $sys_log_run;	
+		}
+		return $sys_log_run;
 	}
 }
 if(!function_exists("my_log")){
@@ -128,17 +374,74 @@ if(!function_exists("user_id")){
 		return $CI->access->user_id();
 	}
 }
-if(!function_exists("user_name")){
-	function user_name(){
+if(!function_exists("lock_report_salesman")){
+	function lock_report_salesman(){
         $CI =& get_instance();
-		return $CI->access->user_name();
+		$salesman="";
+		$lock=false;
+		if($q=$CI->db->select('salesman,lock_report')->where('user_id',$CI->access->user_id())
+			->get("salesman")){
+			if($qrow=$q->row()){
+				$salesman=$qrow->salesman;
+				$lock=$qrow->lock_report;
+			}
+		}
+		return $lock;
+	}
+}
+if(!function_exists("current_salesman")){
+	function current_salesman(){
+        $CI =& get_instance();
+		$salesman="";
+		$lock=false;
+		if($q=$CI->db->select('salesman,lock_report')->where('user_id',$CI->access->user_id())
+			->get("salesman")){
+			if($qrow=$q->row()){
+				$salesman=$qrow->salesman;
+				$lock=$qrow->lock_report;
+			}
+		}
+		return $salesman;
 	}
 }
 
-if(!function_exists('account')){	
+if(!function_exists("cust_id")){
+	function cust_id(){
+        $CI =& get_instance();
+		return $CI->session->userdata('cust_id');
+	}
+}
+
+if(!function_exists("user_name")){
+	function user_name($user_id=""){
+        $CI =& get_instance();
+		if($user_id==""){
+			return $CI->access->user_name();
+ 		} else {
+ 			if($q=$CI->db->where('user_id',$user_id)->get('user')){
+				if($row=$q->row()){
+					return $row->username;
+				} else {
+					return $CI->access->user_name();
+				}
+			} else {
+				return $CI->access->user_name();
+
+			}
+ 		}
+
+	}
+}
+if(!function_exists("user_admin")){
+	function user_admin(){
+        $CI =& get_instance();
+		return $CI->session->userdata('user_admin');
+	}
+}
+if(!function_exists('account')){
 	function account($account_id){
         $CI =& get_instance();
-        $query=$CI->db->query("select account,account_description from chart_of_accounts 
+        $query=$CI->db->query("select account,account_description from chart_of_accounts
         where id='$account_id'")->row();
 		if($query){
 			return $query->account." - ".$query->account_description;
@@ -147,8 +450,29 @@ if(!function_exists('account')){
 		}
 	}
 }
+if(!function_exists('account_id')){
+	function account_id($account){
+		$account=urldecode($account);
+        $CI =& get_instance();
+		$data=explode(" - ", $account);
+		$coa=$CI->chart_of_accounts_model->get_by_id($data[0])->row();
+		if($coa){
+			return $coa->id;
+		} else {
+			return 0;
+		}
+	}
+}
+        
+if(!function_exists('invalid_account')){
+	function invalid_account($account_id){
+		$ret= ($account_id=="" || $account_id=="0" || $account_id==0);
+		if( !$ret ) $ret=account($account_id)=="";
+		return $ret;
+	}
+}
 
-if(!function_exists('criteria')){	
+if(!function_exists('criteria')){
 	function criteria($capt,$fld,$cls='easyui-input',$style=""){
         $CI =& get_instance();
 		$fnc=new search_criteria();
@@ -156,8 +480,8 @@ if(!function_exists('criteria')){
 			$value=$CI->input->get($fld);
 			$CI->session->set_userdata($fld,$value);
 		} else {
-			$value=$CI->session->userdata($fld);		
-		}		
+			$value=$CI->session->userdata($fld);
+		}
 		$fnc->caption=$capt;
 		$fnc->field_id=$fld;
 		$fnc->field_class=$cls;
@@ -167,15 +491,28 @@ if(!function_exists('criteria')){
 	}
 }
 if(!function_exists('link_button')){
-    function link_button($caption,$func,$icon='',$plain='true',$url='',$title=''){
+    function link_button($caption,$func,$icon='',$plain='false',$url='',$title=''){
     	if($url==''){
-	        return '<a href="#" class="easyui-linkbutton" 
-	        data-options="iconCls:\'icon-'.$icon.'\', 
+	        return '<a href="#" class="easyui-linkbutton"
+	        data-options="iconCls:\'icon-'.$icon.'\',
 	        plain: '.$plain.'" onclick="'.$func.';return false;">'.$caption.'</a>';
 		} else {
-	        return '<a href="'.$url.'" class="easyui-linkbutton" 
-	        data-options="iconCls:\'icon-'.$icon.'\', 
-	        plain: '.$plain.'"  " >'.$caption.'</a>';			
+	        return '<a href="'.$url.'" class="easyui-linkbutton"
+	        data-options="iconCls:\'icon-'.$icon.'\',
+	        plain: '.$plain.'"  " >'.$caption.'</a>';
+		}
+    }
+}
+if(!function_exists('link_button2')){
+    function link_button2($caption,$func,$icon='',$plain='false',$url='',$title=''){
+    	if($url==''){
+	        return '<a href="#" class="btn btn-default glyphicon glyphicon-'.$icon.'"
+	        data-optionsx="iconClsx:\'icon-'.$icon.'\',
+	        plain: '.$plain.'" onclick="'.$func.';return false;"> '.$caption.'</a>';
+		} else {
+	        return '<a href="'.$url.'" class="btn btn-default glyphicon glyphicon-'.$icon.'"
+	        data-optionsx="iconClsx:\'icon-'.$icon.'\',
+	        plain: '.$plain.'"  " > '.$caption.'</a>';
 		}
     }
 }
@@ -184,7 +521,7 @@ if(!function_exists('datasource')){
     function datasource($sql){
         $CI =& get_instance();
         $query=$CI->db->query($sql);
-		$rows=null;
+		$rows=array();
 		if($query){ 
 	        foreach($query->result_array() as $row){
 				if($row){
@@ -193,23 +530,13 @@ if(!function_exists('datasource')){
 	        };
 			
 		}
-		if($rows==null){
-			$count = mysql_num_fields($query->result_id);
-			$s="";
-			for($i=0;$i<=$count-1;$i++){
-				$name=mysql_field_name($query->result_id, $i);
-				//$s .=array($name=>'');
-				$rows[0][]=array($name=>"");
-			}
-//			$rows[0]=array("item_number"=>"");
-		}
         $data['total']=count($rows);
         $data['rows']=$rows;
-                    
         return json_encode($data);
+		
     }
 }
-if(!function_exists('is_ajax')){ 
+if(!function_exists('is_ajax')){
 function is_ajax()
  {
     $CI =& get_instance();
@@ -231,10 +558,10 @@ if ( ! function_exists('valid_date')) {
 	 	return true;
 	 }
 	}
-}  
+}
 if ( ! function_exists('strzero')) {
 	function strzero($input,$len){
-		return str_pad($input,$len, "0", STR_PAD_LEFT );  
+		return str_pad($input,$len, "0", STR_PAD_LEFT );
 	}
 }
 if(!function_exists('company_header')){
@@ -253,29 +580,36 @@ if(!function_exists('company_header')){
     }
 }
 if(!function_exists('getColoumn')){
-function getColoumn($table) { 
-     $result = mysql_query("SHOW COLUMNS FROM ". $table); 
-      if (!$result) { 
-        echo 'Could not run query: ' . mysql_error(); 
-      } 
-      $fieldnames=array(); 
-      if (mysql_num_rows($result) > 0) { 
-        while ($row = mysql_fetch_assoc($result)) { 
-          $fieldnames[] = $row['Field']; 
-        } 
-      } 
+function getColoumn($table) {
+/*      $result = mysql_query("SHOW COLUMNS FROM ". $table);
+      if (!$result) {
+        echo 'Could not run query: ' . mysql_error();
+      }
+      $fieldnames=array();
+      if (mysql_num_rows($result) > 0) {
+        while ($row = mysql_fetch_assoc($result)) {
+          $fieldnames[] = $row['Field'];
+        }
+      }
+ */		$type=array();	$fieldnames=array();	$len=array(); $flag=array();
+		if($fields=$CI->db->field_data("SHOW COLUMNS FROM ".$table)){
+			foreach($fields as $fld){
+				$fieldnames[]=$fld->name;
+			}
+		}
 
-      return $fieldnames; 
-} 
+      return $fieldnames;
 }
-if(!function_exists('data_table')){
-function data_table($table,$record=null,$is_sql=false){
+}
+
+if(!function_exists('data_table_v2')){
+function data_table_v2($table,$record=null,$is_sql=false){
     $CI =& get_instance();
 	$data='';
     if($record){
-        foreach ($record as $key => $value) {
-            $data[$key]=$value;
-        }
+		foreach ($record as $key => $value) {
+			$data[$key]=$value;
+		}
     } else {
 		$result_id=0;
         if($is_sql){
@@ -313,8 +647,140 @@ function data_table($table,$record=null,$is_sql=false){
         
     return $data;
 }
+
+if(!function_exists('data_table')){
+function data_table($table,$record=null,$is_sql=false){
+	//CI3 using db->field_data 
+	//ci2 using query mysql_num_fields
+	if( substr(CI_VERSION,0,1)== '2' ) {
+		return data_table_v2($table,$record,$is_sql);
+	} else {
+		$CI =& get_instance();
+		$data='';
+		if($record){
+			foreach ($record as $key => $value) {
+				$data[$key]=$value;
+			}
+		} else {
+			 
+				if($fields=$CI->db->field_data($table)){
+					foreach($fields as $fld){
+						$type=$fld->type;
+						$name=$fld->name;
+						$len=$fld->max_length;
+				//            $flags = mysql_field_flags($result, $i);
+							switch ($type) {
+								case 'datetime':
+									$val=date('Y-m-d');
+									break;
+								case 'varchar':
+								case 'string':
+									$val='';
+									break;
+								default:
+									$val=0;
+									break;
+							}
+						$data[$name]=$val;
+					}
+				}
+			} 
+		}
+
+		return $data;
+}
+}
 if(!function_exists('data_table_post')){
 function data_table_post($table,$is_sql=false){
+	
+	if( substr(CI_VERSION,0,1)== '2' ) {
+		return data_table_post_v2($table,$is_sql);
+	} else {
+		$CI =& get_instance();
+		$fields=$CI->db->field_data($table);
+		foreach($fields as $fld){
+			$type=$fld->type;
+			$name=$fld->name;
+			$len=$fld->max_length;
+	//            $flags = mysql_field_flags($result, $i);
+				switch ($type) {
+					case 'datetime':
+						$val=date('Y-m-d');
+						if(isset($_POST[$name])){
+							$data[$name]=$CI->input->post($name);
+						} else {
+							$data[$name]=$val;
+						}
+						break;
+					case 'varchar':
+					case 'string':
+						$val='';
+						if(isset($_POST[$name])){
+							$data[$name]=$CI->input->post($name);
+						} else {
+							$data[$name]='';
+						}
+						break;
+					default:
+						$val=0;
+						if(isset($_POST[$name])){
+							if($_POST[$name]!="") $val=$data[$name]=$CI->input->post($name);
+						}
+						$data[$name]=$val;
+						break;
+				}
+		}
+		return $data;
+	}
+}}
+
+
+if(!function_exists('data_table_get')){
+function data_table_get($table,$is_sql=false){
+	if( substr(CI_VERSION,0,1)== '2' ) {
+		return data_table_get_v2($table,$is_sql);
+	} else {
+		$CI =& get_instance();
+		$fields=$CI->db->field_data($table);
+		foreach($fields as $fld){
+			$type=$fld->type;
+			$name=$fld->name;
+			$len=$fld->max_length;
+				switch ($type) {
+					case 'datetime':
+						$val=date('Y-m-d');
+						if(isset($_GET[$name])){
+							$data[$name]=$CI->input->post($name);
+						} else {
+							$data[$name]=$val;
+						}
+						break;
+					case 'varchar':
+					case 'string':
+						$val='';
+						if(isset($_GET[$name])){
+							$data[$name]=$CI->input->post($name);
+						} else {
+							$data[$name]='';
+						}
+						break;
+					default:
+						$val=0;
+						if(isset($_GET[$name])){
+							$data[$name]= (int)$CI->input->post($name);
+						} else {
+							$data[$name]=$val;
+						}
+						break;
+				}
+		}
+		return $data;
+	}
+}}
+
+
+if(!function_exists('data_table_post_v2')){
+function data_table_post_v2($table,$is_sql=false){
     $CI =& get_instance();
 
         if($is_sql){
@@ -359,8 +825,8 @@ function data_table_post($table,$is_sql=false){
 }}
 
                 
-if(!function_exists('data_table_get')){
-function data_table_get($table,$is_sql=false){
+if(!function_exists('data_table_get_v2')){
+function data_table_get_v2($table,$is_sql=false){
     $CI =& get_instance();
     
         if($is_sql){
@@ -405,14 +871,17 @@ function data_table_get($table,$is_sql=false){
     }   
     return $data;
 }}
+
+
 if (!function_exists("load_view")){
     function load_view($viewName,$data = array()){
- 
+
         $CI = & get_instance();
- 
-        $content = $CI->load->view($viewName,$data,true);
- 
-        return $content;
+		if($viewName<>""){
+			$content = $CI->load->view($viewName,$data,true);
+			return $content;
+		}
+		
     }
 }
 
@@ -429,27 +898,27 @@ if (!function_exists("criteria_text")){
 				if(strpos($fa->field_id,"date_to"))$val=date("Y-m-d 23:59:59");
 				if($fa->field_value!="")$val=$fa->field_value;
 				$s .= " ".$fa->caption.'
-				<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
+				<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'"
 				class="'.$fa->field_class.'" style="width:80px">';
 				$s .= " ";
 			} else if($fa->field_class=="checkbox"){
 				if($fa->field_value!="")$val=$fa->field_value;
-				$s .= " 
-				<input type='checkbox' value='$val' id='".$fa->field_id."'  name='".$fa->field_id."' 
+				$s .= "
+				<input type='checkbox' value='$val' id='".$fa->field_id."'  name='".$fa->field_id."'
 				> ".$fa->caption;
 				$s .= " ";
 
 			} else {
 				if($fa->field_value!="")$val=$fa->field_value;
 				$s .= " ".$fa->caption.'
-				<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'" 
+				<input type="'.$type.'" value="'.$val.'" id="'.$fa->field_id.'"  name="'.$fa->field_id.'"
 				class="'.$fa->field_class.'" style="width:80px">';
 				$s .= " ";
 
 			}
-			 
+
 			$i++;
-		}		
+		}
 		return $s;
 	 }
 
@@ -459,12 +928,14 @@ if ( ! function_exists('allow_mod')) {
 		$retval=false;
         $CI =& get_instance();
 		$uid=$CI->access->user_id();
-        $sql="select distinct ugm.module_id from user_job uj 
+        $sql="select distinct ugm.module_id from user_job uj
 		join modules_groups mg on mg.user_group_id=uj.group_id
 		join user_group_modules ugm on ugm.group_id=uj.group_id
 		where uj.user_id='$uid' and ugm.module_id='$mod_id'";
-        $query=$CI->db->query($sql);
-		return $query->num_rows()>0;
+        if($query=$CI->db->query($sql)){
+			$retval=$query->num_rows();
+		}
+		return $retval;
 	}
 }
 if ( ! function_exists('user_job_exist')) {
@@ -473,29 +944,40 @@ if ( ! function_exists('user_job_exist')) {
         $CI =& get_instance();
 		$uid=$CI->access->user_id();
         $sql="select id from user_job where user_id='$uid' and group_id='$job_id'";
-        $query=$CI->db->query($sql);
-		return $query->num_rows()>0;
+        if($query=$CI->db->query($sql)){
+			$retval=$query->num_rows();
+		}
+		return $retval;
 	}
 }
 
 if ( ! function_exists('allow_mod2')) {
-	function allow_mod2($mod_id){
+	function allow_mod2($mod_id,$json_format=false){
+		if(user_admin())return true;
         $CI =& get_instance();
 		$uid=$CI->access->user_id();
-        $sql="select distinct ugm.module_id from user_job uj 
+        $sql="select distinct ugm.module_id from user_job uj
 		join modules_groups mg on mg.user_group_id=uj.group_id
 		join user_group_modules ugm on ugm.group_id=uj.group_id
 		where uj.user_id='$uid' and ugm.module_id='$mod_id'";
         $query=$CI->db->query($sql);
-		if($query->num_rows()>0){
-			return true;
+		if($query->num_rows()){
+			if($json_format){
+				echo json_encode(array("success"=>false,"msg"=>"Not Found Row !"));
+			} else {
+				return true;
+			}
 		} else {
-			echo "<span class='not_access'>
-			Anda tidak diijinkan menjalankan proses module ini.
-			<br>Silahkan hubungi administrator.
-			<br>Module Id: [$mod_id]
-			</span>";			
-			return false;
+			if($json_format){
+				echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan  !"))				;
+			} else {
+				echo "<span class='not_access alert alert-warning'>
+				Anda tidak diijinkan menjalankan proses module ini.
+				<br>Silahkan hubungi administrator.
+				<br>Module Id: <strong>[$mod_id]</strong>
+				</span>";
+				return false;
+			}
 		}
 	}
 }
@@ -514,12 +996,25 @@ if(!function_exists("inbox_send")){
 	function inbox_send($from,$to,$subject,$message){
         $CI =& get_instance();
 		$CI->load->model("maxon_inbox_model");
-		$data['rcp_from']=$from;
-		$data['rcp_to']=$to;
-		$data['subject']=$subject;
-		$data['message']=$message;
-		$data['msg_date']=date('Y-m-d H:i:s');
-		return $CI->maxon_inbox_model->save($data);
+		if ( !is_array($to) ) {
+			$data['rcp_from']=$from;
+			$data['rcp_to']=$to;
+			$data['subject']=$subject;
+			$data['message']=$message;
+			$data['msg_date']=date('Y-m-d H:i:s');
+			return $CI->maxon_inbox_model->save($data);
+		} else {
+			for($i=0;$i<count($to);$i++)
+			{
+				$data['rcp_from']=$from;
+				$data['rcp_to']=$to[$i]['user_id'];
+				$data['subject']=$subject;
+				$data['message']=$message;
+				$data['msg_date']=date('Y-m-d H:i:s');
+				return $CI->maxon_inbox_model->save($data);
+			}
+
+		}
 	}
 
 }
@@ -535,7 +1030,18 @@ if(!function_exists("inbox_send")){
 		function getvar($varname,$varvalue=null){
 			$CI =& get_instance();
 			$CI->load->library("sysvar");
-			return $CI->sysvar->getvar($varname,$varvalue);
+			$CI->load->model("company_model");
+			$cid=$CI->access->cid;
+			if($cid=="ALL" || $cid==""){
+				$cid=$CI->db->select("company_code")->get("preferences")->row()->company_code;
+			}
+			$pref=$CI->company_model->get_by_id($cid)->row_array();
+			if(isset($pref[$varname])){
+				$retval=$pref[$varname];
+			} else {
+				$retval=$CI->sysvar->getvar($varname,$varvalue);
+			}
+			return $retval;
 		}
 	}
 	if(!function_exists("putvar")){
@@ -582,11 +1088,11 @@ if(!function_exists("inbox_send")){
 				</style></head><body>";
 			}
 			$html.="<table class='$style'><thead>";
-			if($query=$CI->db->query($sql)){ 
-				$flds=$query->list_fields();			 
+			if($query=$CI->db->query($sql)){
+				$flds=$query->list_fields();
 				$html .= '<tr>';
 				for($i=0;$i<count($flds);$i++){
-					$fld=$flds[$i]; 
+					$fld=$flds[$i];
 					$fld=str_replace('_',' ',$fld);
 					$fld=ucfirst($fld);
 					$html .='<th>'.$fld.'</th>';
@@ -604,5 +1110,165 @@ if(!function_exists("inbox_send")){
 			return $html;
 		}
 	}
-}                    
+	if(!function_exists("breadcrumb")){
+		function breadcrumb($arData){
+ 			$ret="<ol class='breadcrumb box-bcum'>";
+			for($i=0;$i<count($arData);$i++) {
+				if($i==0) {
+					$ret.=" <li><a class='glyphicon glyphicon-home'
+					  href='".$arData[$i][1]."'> Home</a></li>";
+				} else {
+					$ret.=" <li class='".$arData[$i][1]==""?"":"active"."'>
+					<a href='".$arData[$i][1]."'> ".$arData[$i][0]."</a></li>";
+				}
+			}
+			$ret.="</ol>";
+			return $ret;
+		}
+	}
+	if(!function_exists("add_log_ip_address")){
+		function add_log_ip_address(){
+			$CI =& get_instance();
+			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			} else {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
+			$s="INSERT INTO maxon_log_ip (period, ip_address)
+			SELECT * FROM (SELECT CURDATE()+0, '".$ip."') AS tmp
+			WHERE NOT EXISTS (
+				SELECT ip_address FROM maxon_log_ip
+				WHERE period = CURDATE()+0 AND ip_address='".$ip."'
+			) LIMIT 1;";
+			$CI->db->query($s);
+		}
+	}
+	if ( !function_exists('my_date_diff') ) {
+		function my_date_diff($dFromDate,$dEndDate=null) {
+			if( $dEndDate==null ) $dEndDate=date("Y-m-d",time());
+
+			$dStart = new DateTime($dFromDate);
+			$dEnd  = new DateTime($dEndDate);
+
+			//echo "dStart=".$dFromDate;
+			//echo "dEnd=".$dEndDate;
+			$dDiff = $dStart->diff($dEnd);
+			//$dDiff->format('%R');
+			//var_dump($dDiff);
+//			echo $dDiff->days;
+			return ($dDiff->m*30)+$dDiff->d;
+		}
+	}
+	if ( !function_exists('is_num_format') ) {
+	function is_num_format($fld_name,$fld_fmt){
+		for($i=0;$i<count($fld_fmt);$i++){
+			if($fld_name==$fld_fmt[$i]){
+				return true;
+			}
+		}
+	}
+	if ( !function_exists('add_field') ) {
+		function add_field($table,$field,$type='varchar',$size='50'){
+			$CI =& get_instance();
+			$CI->load->dbforge();
+			$field_info=array(
+				$field=>array('type'=>$type.'('.$size.')','size'=>$size,'caption'=>$field,'control'=>'text')
+			);
+			if($q=$CI->db->query("SHOW COLUMNS FROM $table LIKE '$field'")){
+				if(!$q->row()){
+					$CI->dbforge->add_column($table,$field_info);
+				}
+			}
+		}
+	}
+	if ( !function_exists('save_data_table') ) {
+		function save_data_table($table,$data,$id='',$field_key=''){
+			$CI =& get_instance();
+			$retval=false;
+			if($id==""){
+				$retval=$CI->db->insert($table,$data);
+			} else {
+				$retval=$CI->db->where($field_key,$id)->update($table,$data);
+			}
+		}
+	}
+	if (!function_exists('exist_unit')){
+		function exist_unit($unit){
+			$CI=&get_instance();
+			$retval=null;
+			if($unit!="")
+			{
+				if($q=$CI->db->where("to_unit",$unit)
+					->get("unit_of_measure"))
+				{
+					if($row=$q->row())
+					{
+						$retval['from_unit']=$row->from_unit;
+						$retval['to_unit']=$row->to_unit;
+						$retval['unit_value']=$row->unit_value;
+					}				
+					
+				}
+			}
+			return $retval;
+		}
+	}
+	if (!function_exists('item_sales_price')){
+		function item_sales_price($item_number){
+			$CI=&get_instance();
+			$retval=0;
+			if($item_number!="")
+			{
+				$retval=$CI->db->select("retail")
+				->where("item_number",$item_number)
+				->get('inventory')->row()->retail;
+			}
+			return $retval;
+		}
+	}
+	if (!function_exists('item_purchase_price')){
+		function item_purchase_price($item_number){
+			$CI=&get_instance();
+			$retval=0;
+			if($item_number!="")
+			{
+				$retval=$CI->db->select("cost_from_mfg")
+				->where("item_number",$item_number)
+				->get('inventory')->row()->cost_from_mfg;
+			}
+			return $retval;
+		}
+	}
+	if (!function_exists('item_cost')){
+		function item_cost($item_number){
+			$CI=&get_instance();
+			$retval=0;
+			if($item_number!="")
+			{
+				if($row=$retval=$CI->db->select("cost")
+				->where("item_number",$item_number)
+				->get('inventory')->row()){
+					$retval=$row->cost;
+				}
+			}
+			return $retval;
+		}
+	}
+	if (!function_exists('sql_in')){
+		function sql_in($data){
+			$retval="(";
+			$a="";
+			for($i=0;$i<count($data);$i++)$a.="'".$data[$i]."',";
+			if(substr($a,-1,1)==",")$a=substr($a,0,strlen($a)-1);
+			$retval.=$a.")";
+			return $retval;
+		}
+	}
+	
+
+}
+
+}
 ?>

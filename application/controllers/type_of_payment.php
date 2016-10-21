@@ -16,6 +16,7 @@ class Type_of_payment extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('type_of_payment_model');
+		$this->load->model("syslog_model");
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
@@ -40,6 +41,8 @@ class Type_of_payment extends CI_Controller {
 			$id=$this->type_of_payment_model->save($data);
             $message='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"type_of_payment","add");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -58,6 +61,8 @@ class Type_of_payment extends CI_Controller {
 			unset($data['type_of_paymnet']);                       
 			$this->type_of_payment_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"type_of_payment","edit");
+
             $this->browse();
 		} else {
 			$message='Error Update';
@@ -67,7 +72,9 @@ class Type_of_payment extends CI_Controller {
 	function save(){
 		$mode=$this->input->post('mode');
 		if($mode=="add"){
+
 			$this->add();
+			
 		} else {
 			$this->update();
 		}
@@ -118,6 +125,8 @@ class Type_of_payment extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->type_of_payment_model->delete($id);
+		$this->syslog_model->add($id,"type_of_payment","delete");
+
 	 	$this->browse();
 	}
 	

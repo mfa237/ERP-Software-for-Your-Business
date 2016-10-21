@@ -23,6 +23,7 @@ class Receive extends CI_Controller {
 		$this->load->model('inventory_products_model');
 		$this->load->model('inventory_model');
 		$this->load->model('shipping_locations_model');
+		$this->load->model('syslog_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -55,6 +56,7 @@ class Receive extends CI_Controller {
 	}
 	function index()
 	{	
+		if(!allow_mod2('_80060'))return false;   
             $this->browse();
 	}
 	function get_posts(){
@@ -63,6 +65,7 @@ class Receive extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_80061'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -73,6 +76,8 @@ class Receive extends CI_Controller {
 			$this->nomor_bukti(true);
             $data['message']='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"receive","add");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -92,6 +97,8 @@ class Receive extends CI_Controller {
 	        unset($data['id']);
 	        $this->inventory_products_model->update($id,$data);
 	        $message='Update Success';
+			$this->syslog_model->add($id,"receive","edit");
+
 	        $this->browse();
 		} else {
 			$message='Error Update';
@@ -100,6 +107,7 @@ class Receive extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80060'))return false;   
 		$id=urldecode($id);
 		 $data['shipment_id']=$id;
 		 $model=$this->inventory_products_model->get_by_id($id)->row();	
@@ -134,12 +142,15 @@ class Receive extends CI_Controller {
 		$data['fields']=array('shipment_id','item_number','description','date_received',
 		'quantity_received','unit','cost','warehouse_code');
 		$data['field_key']='shipment_id';
+		$data['import_visible']=true;
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Nomor","sid_nomor");
 		$faa[]=criteria("Supplier","sid_supplier");
+		$faa[]=criteria("Gudang","sid_gudang");
+		$faa[]=criteria("Kode Barang","sid_item");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -149,19 +160,26 @@ class Receive extends CI_Controller {
 		$no=$this->input->get('sid_nomor');
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
-
+		$gudang=$this->input->get("sid_gudang");
+		$item_no=$this->input->get("sid_item");
 		if($no!=''){
 			$sql.=" and shipment_id='".$no."'";
 		} else {
 			$sql.=" and date_received between '$d1' and '$d2'";
 			if($nama!='')$sql.=" and supplier_name like '$nama%'";	
 		}
-        $sql.=" limit $offset,$limit";
+		if($gudang!="")$sql.=" and warehouse_code='".$gudang."'";
+		if($item_no!="")$sql.=" and ip.item_number='".$item_no."'";
+		
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }
 	function delete($id){
+		if(!allow_mod2('_80063'))return false;   
 		$id=urldecode($id);
 	 	$this->inventory_products_model->delete($id);
+		$this->syslog_model->add($id,"receive","delete");
+
 	 	$this->browse();
 	}
     function detail(){
@@ -191,14 +209,11 @@ class Receive extends CI_Controller {
     function save_item(){
         $item_no=$this->input->post('item_number');
 		$id=$this->input->post('shipment_id');
+		$line=$this->input->post('line_number');
         $data['item_number']=$item_no;
         $data['quantity_received']=$this->input->post('quantity');
         $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-        if($item){
-        	$cost=$item->cost;
-        } else {
-        	$cost=0;
-        }
+       	$cost=item_cost($item_no);
         $data['cost']=$cost;
         $data['unit']=$this->input->post('unit');
         $data['shipment_id']=$id;
@@ -207,8 +222,11 @@ class Receive extends CI_Controller {
 		$data['receipt_type']='ETC_IN';
 		$data['date_received']=$this->input->post('date_received');;
 		$data['comments']=$this->input->post('comments');;
-		
-		$ok=$this->inventory_products_model->save($data);
+		if($line>0){
+			$ok=$this->inventory_products_model->update($line,$data);			
+		} else {
+			$ok=$this->inventory_products_model->save($data);
+		}
 		if ($ok){
 			echo json_encode(array('success'=>true,'shipment_id'=>$id));
 		} else {
@@ -225,7 +243,8 @@ class Receive extends CI_Controller {
 		$data['date_received']=$adj->date_received;
 		$data['warehouse_code']=$adj->warehouse_code;
 		$data['comments']=$adj->comments;
-		$this->load->view('inventory/rpt/print_receive_etc',$data);
+		$data['content']=load_view('inventory/rpt/print_receive_etc',$data);
+		$this->load->view('pdf_print',$data);
 
     }
     function del_item(){
@@ -241,7 +260,7 @@ class Receive extends CI_Controller {
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.quantity_received, 
+		$sql="select p.item_number,i.description,p.quantity_received as quantity, 
 		p.unit,p.cost,p.id as line_number
 		from inventory_products p
 		left join inventory i on i.item_number=p.item_number
@@ -249,4 +268,77 @@ class Receive extends CI_Controller {
 		 
 		echo datasource($sql);
 	}
+	function import_receive(){
+		if(!$this->input->post()){
+			$data['caption']="IMPORT TRANSAKSI PENERIMAAN BARANG";
+			$this->template->display("inventory/import_receive",$data);
+		} else {
+			$this->import_receive_run();
+		}
+	}
+	function input_col($colname){
+		$c=0;
+		if($this->input->post($colname)!=""){
+			$c=65-ord(strtoupper($this->input->post($colname)));
+		}
+		return abs($c);
+	}
+	function import_receive_run(){
+		//var_dump($this->input->post());
+		$c_gudang=$this->input_col('gudang');
+		$c_tanggal=$this->input_col('tanggal');
+		$c_person=$this->input_col('person');
+		$c_item_no=$this->input_col('item_no');
+		$c_qty=$this->input_col('qty');
+		$c_unit=$this->input_col('unit');
+		$c_cost=$this->input_col('cost');
+		$filename=$_FILES["file_excel"]["tmp_name"];
+		if($_FILES["file_excel"]["size"] > 0)
+		{
+			$file = fopen($filename, "r");
+			$i=0;
+			$ok=false;
+			$data['shipment_id']=$this->nomor_bukti();
+            $data['receipt_type']='etc_in';
+			$this->db->trans_begin();
+			while (($emapData = fgetcsv($file, 10000, chr(9))) !== FALSE)
+			{
+				//var_dump($emapData);
+				 
+				//exit();
+				$kode=$emapData[$c_item_no];
+				if(! ($kode == null or $kode == "" or $kode == "item_no" ) ) {
+					$i=1;
+					$data["item_number"]=$kode;
+					if($c_gudang>=0)$data["warehouse_code"]=$emapData[$c_gudang];
+					if($c_tanggal>=0)$data["date_received"]=$emapData[$c_tanggal];
+					if($c_person>=0)$data["receipt_by"]=$emapData[$c_person];
+					if($c_qty>=0)$data["quantity_received"]=$emapData[$c_qty];
+					if($c_unit>=0)$data["unit"]=$emapData[$c_unit];
+					if($c_cost>=0 ) {
+						if(count($emapData)-1>5) {
+							$data["cost"]=$emapData[$c_cost];
+						} else {
+							$data["cost"]=0;
+						}
+					}
+					$data["create_by"]=user_id();
+					$ok=$this->inventory_products_model->save($data);
+				}
+			}
+			if ($this->db->trans_status() === FALSE)
+			{
+				$this->db->trans_rollback();
+			}
+			else
+			{
+				$this->db->trans_commit();
+				$this->nomor_bukti(true);
+			}			
+			fclose($file);
+			if ($ok){echo json_encode(array("success"=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
+		}
+		echo "<div class='alert alert-success'>FINISH.</div>";
+	}
+	
 }

@@ -42,6 +42,7 @@
 			if($show_posting) echo link_button('Posting','posting_aed()','ok');
 		}		
 	}
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help()','help');		
 	?>
 	<a href="#" class="easyui-splitbutton" 
@@ -51,5 +52,6 @@
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>

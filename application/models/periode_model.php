@@ -74,8 +74,7 @@ function current_periode(){
 		$retval=false;
 		$sql="select closed from financial_periods where '".$date_trans."' 
 			between startdate and enddate";
-		 
-		
+	
 		$q=$this->db->query($sql);
 		if($q){
 			if($q->row())$retval=$q->row()->closed;

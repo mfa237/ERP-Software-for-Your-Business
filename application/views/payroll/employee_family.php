@@ -1,75 +1,68 @@
-<table id="dgEdu" class="easyui-datagrid" width="100%'
-	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbEdu',url: ''">
+<table id="dgFam" class="easyui-datagrid" width="100%"
+	data-options="iconCls: 'icon-edit',singleSelect: true, fitColumns: true, toolbar: '#tbFam',
+	url: '<?=base_url()?>index.php/payroll/employee/family/load/<?=$nip?>'">
 	<thead>
 		<tr>
-			<th data-options="field:'educationlevel', width:'80'">Level</th>
-			<th data-options="field:'school', width:'80'">Sekolah</th>
-			<th data-options="field:'place', width:'80'">Kota</th>
-			<th data-options="field:'major', width:'80'">Tingkat</th>
-			<th data-options="field:'enteryear', width:'80'">Tahun Masuk</th>
-			<th data-options="field:'graduationyear', width:'80'">Tahun Lulus</th>
-			<th data-options="field:'yearofattend', width:'80'">Lamanya</th>
-			<th data-options="field:'graduate', width:'80'">Lulus</th>
+			<th data-options="field:'familyname', width:'80'">Nama Family</th>
+			<th data-options="field:'relationship', width:'80'">Hubungan</th>
+			<th data-options="field:'age', width:'80'">Umur</th>
+			<th data-options="field:'job', width:'80'">Pekerjaan</th>
+			<th data-options="field:'education', width:'80'">Pendidikan</th>
+			<th data-options="field:'mariagestatus', width:'80'">Status Kawin</th>
 			<th data-options="field:'employeeid', width:'80'">NIP</th>
 			<th data-options="field:'id', width:'80'">Id</th>
 		</tr>
 	</thead>
 </table>
 	
-<div id="tbEdu">
-	<?=link_button("Tambah","add_edu()","add")?>
-	<?=link_button("Edit","edit_edu()","edit")?>
-	<?=link_button("Hapus","del_edu()","remove")?>
-	<?=link_button("Refresh","load_edu()","reload")?>
+<div id="tbFam">
+	<?=link_button("Tambah","add_fam()","add")?>
+	<?=link_button("Edit","edit_fam()","edit")?>
+	<?=link_button("Hapus","del_fam()","remove")?>
+	<?=link_button("Refresh","load_fam()","reload")?>
 </div>	
 
 
-<div id='dlgEdu'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
-	closed="true" buttons="#tbDlgEdu">
-	<form method="post" id="frmEdu">
+<div id='dlgFam'class="easyui-dialog" icon='icon-edit' style="width:500px;height:380px;padding:10px 20px"  
+	closed="true" buttons="#tbDlgFam">
+	<form method="post" id="frmFam">
 		<table style='width:100%'>
 			<tr>
-				<td>Level</td><td><?=form_input("educationlevel")?></td>
+				<td>Nama Family</td><td><?=form_input("familyname")?></td>
 			</tr>
 			<tr>
-				<td>Sekolah</td><td><?=form_input("school")?></td>
+				<td>Hubungan</td><td><?=form_input("relationship")?></td>
 			</tr>
 			<tr>
-				<td>Kota</td><td><?=form_input("place")?></td>
+				<td>Umur</td><td><?=form_input("age")?></td>
 			</tr>
 			<tr>
-				<td>Tingkat</td><td><?=form_input("place")?></td>
+				<td>Pekerjaan</td><td><?=form_input("job")?></td>
 			</tr>
 			<tr>
-				<td>Tahun Masuk</td><td><?=form_input("enteryear")?></td>
+				<td>Pendidikan</td><td><?=form_input("education")?></td>
 			</tr>
 			<tr>
-				<td>Tahun Lulus</td><td><?=form_input("graduationyear")?></td>
-			</tr>
-			<tr>
-				<td>Lamanya</td><td><?=form_input("yearofattend")?></td>
-			</tr>
-			<tr>
-				<td>Lulus</td><td><?=form_input("graduate")?></td>
+				<td>Status Pernikahan</td><td><?=form_input("mariagestatus")?></td>
 			</tr>
 		</table>		
-		<input type='hidden' id='id_edu' name='id'>
-		<input type='hidden' id='nip_edu' name='employeeid' value='<?=$nip?>'>
+		<input type='hidden' id='id_fam' name='id'>
+		<input type='hidden' id='nip_fam' name='employeeid' value='<?=$nip?>'>
 	</form>
 </div>
-<div id="tbDlgEdu">
-	<?=link_button("Save","save_edu()","save")?>
+<div id="tbDlgFam">
+	<?=link_button("Save","save_fam()","save")?>
 </div>	
 
 <script language="JavaScript">
-	function add_edu() {
-		$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+	function add_fam() {
+		$('#dlgFam').dialog('open').dialog('setTitle','Saudara');
 	}
-	function save_edu() {
-        if($('#company').val()===''){alert('Isi dulu nama perusahaan !');return false;};
+	function save_fam() {
+        if($('#familyname').val()===''){alert('Isi dulu nama saudara !');return false;};
 
-		url='<?=base_url()?>index.php/payroll/employee/education/save';
-		$('#frmEdu').form('submit',{
+		url='<?=base_url()?>index.php/payroll/employee/family/save';
+		$('#frmFam').form('submit',{
 			url: url,
 			onSubmit: function(){
 				return $(this).form('validate');
@@ -77,9 +70,9 @@
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
-					load_exp();
-					$('#dlgEdu').dialog('close');				
-					$('#frmEdu').each(function(){ this.reset(); });
+					load_fam();
+					$('#dlgFam').dialog('close');				
+					$('#frmFam').each(function(){ this.reset(); });
 					log_msg('Data sudah tersimpan.');
 				} else {
 					log_err(result.msg);
@@ -87,40 +80,35 @@
 			}
 		});	
 	}
-	function edit_edu()	{
-		var row = $('#dgEdu').datagrid('getSelected');
+	function edit_fam()	{
+		var row = $('#dgFam').datagrid('getSelected');
 		if (row){
-			$('#id_edu').val(row.id);
-			$('[name=company]').val(row.company);
-			$('[name=startdate]').val(row.startdate);
-			$('[name=finishdate]').val(row.finishdate);
-			$('[name=firstposition]').val(row.firstposition);
-			$('[name=endposition]').val(row.endposition);
-			$('[name=place]').val(row.place);
-			$('[name=lastsalary]').val(row.lastsalary);
-			$('[name=supervisor]').val(row.supervisor);
-			$('[name=referencename]').val(row.referencename);
-			$('[name=referencephone]').val(row.referencephone);
-			$('[name=reasontoleave]').val(row.reasontoleave);
+			$('#id_fam').val(row.id);
+			$('[name=familyname').val(row.familyname);
+			$('[name=relationship]').val(row.relationship);
+			$('[name=age]').val(row.age);
+			$('[name=job]').val(row.job);
+			$('[name=education]').val(row.education);
+			$('[name=mariagestatus]').val(row.mariagestatus);
 			$('[name=employeeid]').val(row.employeeid);
 			
-			$('#dlgEdu').dialog('open').dialog('setTitle','Pendidikan');
+			$('#dlgFam').dialog('open').dialog('setTitle','Saudara');
 		}
 	}
-	function load_edu()	{
+	function load_fam()	{
 		nip=$('#nip').val();
-		xurl='<?=base_url()?>index.php/payroll/employee/education/load/'+nip;
-		$('#dgEdu').datagrid({url:xurl});
+		xurl='<?=base_url()?>index.php/payroll/employee/family/load/'+nip;
+		$('#dgFam').datagrid({url:xurl});
 	}
-	function del_edu()	{
+	function del_fam()	{
 		var row = $('#dgEdu').datagrid('getSelected');
 	 
 		if (row){
-			url='<?=base_url()?>index.php/payroll/employee/education/delete/'+row.id;
+			url='<?=base_url()?>index.php/payroll/employee/family/'+row.id;
 			$.ajax({
 				type: "GET", url: url,
 				success: function(msg){
-					load_edu();
+					load_fam();
 				},
 				error: function(msg){alert(msg);}
 			});

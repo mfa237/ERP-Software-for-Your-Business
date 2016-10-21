@@ -78,8 +78,12 @@ function __construct(){
 			$data['debit']=abs($data['credit']);
 			$data['credit']=0;
 		}
+		//var_dump($data);
 		if($account_id=="" or $account_id=="0") {
-			echo "</br>ERR_INVALID_COA</br>AccountId [$account_id] not found !</br>".$operation;
+			echo "<div class='alert alert-info'><div class='alert alert-warning'>
+			ERR_INVALID_COA : <strong>AccountId:</strong> [$account_id] not found !, "
+			."<strong>Operation:</strong> $operation, <strong>Source:</strong> $source, 
+			<strong>RefId:</strong> $ref</p></div></div>";
 			return false;
 		}
 		if($data['debit']-$data['credit']==0){
@@ -111,9 +115,9 @@ function __construct(){
 			from gl_transactions where gl_id='$gl_id'")->row()->z_amt==0;
 		}
 	}
-	function validate($gl_id,$delete=true){
+	function validate($gl_id,$delete=true,$display_error=false){
 		if(!$this->balance($gl_id)){
-			echo "</br>ERR_NOT_BALANCE";
+			if($display_error) echo "</br>ERR_NOT_BALANCE";
 			if($delete) $this->del_jurnal($gl_id);
 			return false;
 		}

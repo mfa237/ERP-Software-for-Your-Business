@@ -72,7 +72,7 @@
 	
 	<div id="frmItem" align='center'>
 		<br/>Description <br/>
-		<select id="item_number" style="width:200px"
+		<select id="item_number" style="width:200px">
 		<?php
 		$q=$this->db->query("select item_number,description from inventory order by description");
 		foreach($q->result() as $row){

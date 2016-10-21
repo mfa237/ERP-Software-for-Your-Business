@@ -30,6 +30,10 @@
 			</map>
 			 
 		</div>
+
+	<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
+	
+		
 		<div class="row">
 			<div class="thumbnail col-md-6 " >
 				 

@@ -3,6 +3,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
  
 <head><title>MaxOn ERP Online Demo</title>
+<script type="text/javascript">
+   		CI_ROOT = "<?=base_url()?>index.php/";
+		CI_BASE = "<?=base_url()?>"; 		
+</script>
+
 <?
 echo $library_src;
 echo $script_head;
@@ -22,7 +27,7 @@ echo $script_head;
 				success: function(result){
 					var result = eval('('+result+')');
 					if (result.success){
-						window.open("index.php","_self");
+						window.open("<?=base_url()?>index.php","_self");
 					} else {
 						$("#lblMessage").show();
 						$("#lblMessage").html(result.msg);
@@ -35,8 +40,14 @@ echo $script_head;
        
 </head>
 <body>
- 
 <div class="container-fluid">
+
+
+	<div class='row-fluid'>
+		<?php
+			require_once "template/standard/header1.php";
+		?>
+	</div>
 	<div class="row" style="padding:10px">
 		<div class="col-md-2">
 			<a href='<?=base_url()?>index.php'>
@@ -49,7 +60,10 @@ echo $script_head;
 		</div>
 	</div>
 	<div class="row thumbnail" style='background-color:black'>
-		<div class='col-md-12'><? include "slider.php" ?></div>	
+		<div class='col-md-12'>
+                    <?php
+                    $folder="images/";
+                    include "slider.php" ?></div>	
 	</div>
 	<div class="row col-md-8" style="padding-left:10px;padding-right:10px">
 		<?
@@ -76,7 +90,7 @@ echo $script_head;
                 	<div class="row">
                 		<div class="col-md-3">
                         	<div class="foot_logo"><a href="index.html"><img src="images/logo_maxon.png" alt=""></a></div>    
-                        	<div class="copyright">© 2020 MaxOn Enterprise Resource Application. All Rights Reserved.</div>                        
+                        	<div class="copyright">ï¿½ 2020 MaxOn Enterprise Resource Application. All Rights Reserved.</div>                        
                         </div>
                         <div class="col-md-7">
 							<div style="float:right;">
@@ -121,3 +135,16 @@ $(document).ready(function(){
 //]]>
 </script>
 
+	<!--Start of Tawk.to Script-->
+	<script type="text/javascript">
+	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+	(function(){
+	var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+	s1.async=true;
+	s1.src='https://embed.tawk.to/56b677765d8a6c387d76c0be/default';
+	s1.charset='UTF-8';
+	s1.setAttribute('crossorigin','*');
+	s0.parentNode.insertBefore(s1,s0);
+	})();
+	</script>
+	<!--End of Tawk.to Script-->

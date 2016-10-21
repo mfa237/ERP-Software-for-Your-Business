@@ -52,11 +52,15 @@ class App_master extends CI_Controller {
 		$data['counter_name']='';
 		$data['loan_id']='';
 		if($record==NULL) {
-			$data['app_date']=date("Y-m-d");
-			$data['create_date']=date("Y-m-d");
+			$data['app_date']=date("Y-m-d H:i:s");
+			$data['create_date']=date("Y-m-d H:i:s");
 			$data['create_by']=user_id();
+			$data['username']=user_name();
+		} else {
+			$data['username']=user_name($data['create_by']);
 		}
-		$data['username']=user_name();
+
+
 		if(!$record==NULL){
 			if($query=$this->db->select('cust_name')
 			->where('cust_id',$data['cust_id'])
@@ -67,6 +71,7 @@ class App_master extends CI_Controller {
 			}
 			if($query=$this->db->select('counter_name')
 			->where('counter_id',$data['counter_id'])
+			->or_where('area',$this->access->cid())
 			->get('ls_counter')){
 				if($query->row()){
 					$data['counter_name']=$query->row()->counter_name;
@@ -85,8 +90,22 @@ class App_master extends CI_Controller {
 		$data=data_table_post($this->table_name);
 		return $data;
     }
+	function counter_name() {
+		$retval='';
+		if($query=$this->db->select('counter_name')
+			->where('counter_id',$this->access->cid())
+			->or_where('area',$this->access->cid())
+			->get('ls_counter')){
+				if($query->row()){
+					$retval=$query->row()->counter_name;
+				}
+		}
+		return $retval;
+	}
     function add()   {
 		$data=$this->set_defaults();
+		$data['counter_id']=$this->access->cid();
+		$data['counter_name']=$this->counter_name();
 		$this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 				$data=$this->get_posts();
@@ -125,13 +144,10 @@ class App_master extends CI_Controller {
 	}	
     function view($id,$show_tool=true)	{
 		$id=urldecode($id);
-//		$message=urldecode($message);
-			
-		
 		$data[$this->primary_key]=$id;
 		$model=$this->app_master_model->get_by_id($id)->row();
 		$data=$this->set_defaults($model);
-		
+				
 		$data['mode']='view';
 		$data['message']="";
 		$data['title']=$this->title;
@@ -144,7 +160,8 @@ class App_master extends CI_Controller {
 			->get("ls_app_survey")){
 				if($query->row()){
 					$risk=$query->row()->recomended;
-					$data['risk_approved']=$risk;		
+					$data['risk_approved']=$risk;
+					$this->db->where("app_id",$id)->update("ls_app_master",array("risk_approved"=>$risk));
 				}
 		}
 		$data['show_tool']=$show_tool;
@@ -176,15 +193,32 @@ class App_master extends CI_Controller {
 
 		$this->load->library('search_criteria');
 		$faa[]=criteria("Nama Pemohon","sid_nama");
+		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");
+		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
+		$faa[]=criteria("Nomor SPK","sid_number");
 		$data['criteria']=$faa;
-		$data['fields_caption']=array('Nomor','Tanggal','Nama Debitur','Status');
-		$data['fields']=array('app_id','app_date','cust_name','status');
+		$data['fields_caption']=array('Nomor','Tanggal','Nama Debitur','Status','Create','Update','Create Date','Update Date');
+		$data['fields']=array('app_id','app_date','cust_name','status','create_by','update_by','create_date','update_date');
 		$data['other_menu']="leasing/app_master_menu";
+		$data['msg_left']="<i>Isi range tanggal pengajuan atau isi nomor pengajuan, lalu klik tombol cari.</i>";
 		
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
-        $sql=$this->sql." where am.create_by='".user_id()."'";
+		if(user_admin() or $this->access->cid=="ALL"){
+			$sql=$this->sql." where 1=1";
+		} else {
+			$sql=$this->sql." where am.create_by='".user_id()."'";
+		}
+		$no=$this->input->get('sid_number');
+		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		if($no!=''){
+			$sql.=" and am.app_id='".$no."'";
+		} else {
+			$sql.=" and am.app_date between '$d1' and '$d2'";
+		}
+		
 		if($this->input->get("sid_nama"))$sql .= " and cust_name like '%".$this->input->get("sid_nama")."%'";
         echo datasource($sql);
     }	   
@@ -242,6 +276,13 @@ class App_master extends CI_Controller {
 			echo json_encode(array("msg"=>"Error ".mysql_error()));
 		}
 	}
+	function get_dp_percent($amount){
+		return $this->app_master_model->get_dp_percent($amount);
+	}
+	function get_bunga_percent($loan_amount){
+		return $this->app_master_model->get_bunga_percent($loan_amount);
+	}
+	
 	function calc_loan(){
 		$price=$this->input->get("price");
 		$tenor=$this->input->get("tenor");
@@ -255,7 +296,7 @@ class App_master extends CI_Controller {
 			$loan_amount=$aft_dp/$tenor;
 			$aft_tenor=$aft_dp*$bunga;
 			$angsuran=$aft_tenor+$loan_amount;
-			$admin=100000;
+			$admin=getvar("admin",100000);;
 			$asuransi=0;
 			$data=array("success"=>true,"dp"=>$dp,"dp_amount"=>$dp_amount,"bunga"=>$bunga,
 				"bunga_amount"=>$bunga_amount,"admin"=>$admin,
@@ -268,101 +309,8 @@ class App_master extends CI_Controller {
 	}
 	function _recalc($nomor=''){
 		$nomor=urldecode($nomor);
-		if($nomor!=''){
-			//-- hitungan dari tiap barang
-			$jenis_hitungan=1;	//hitungan dari total, 0-hitungan dari baris barang
-			if($jenis_hitungan==0) {
-				$sub_total=0;$total_loan_amount=0;
-				$total_dp_amount=0;$total_bunga_amount=0;$total_cicilan=0;
-				$sama_bunga=true;$old_bunga=0;
-				$sama_dp=true;$old_dp=0;
-				$dp=0; $bunga=0;
-				$pertama=0;
-				if($q=$this->db->where("app_id",$nomor)->get("ls_app_object_items")){
-					foreach($q->result() as $item){
-						$sub_total=$sub_total+$item->amount;
-						$old_dp=$dp;
-						$dp=$this->get_dp_percent($item->amount);
-						if($pertama>0)$sama_dp=$old_dp==$dp;						
-						$dp_amount=(double)round($item->amount*$dp);
-						$aft_dp=$item->amount-$dp_amount;
-						$old_bunga=$bunga;
-						$bunga=$this->get_bunga_percent($aft_dp);
-						if($pertama>0)$sama_bunga=$old_bunga==$bunga;
-						$pertama++;
-						$tenor=$this->input->get('inst_month');
-						if(!$tenor)$tenor=3;
-						$bunga_amount=(double)round($bunga*$aft_dp);
-						$loan_amount=$aft_dp/$tenor;
-						$aft_tenor=$aft_dp*$bunga;
-						$cicilan=$aft_tenor+$loan_amount;
-						$loan_amount=$loan_amount*$tenor;
-						
-						$this->db->where("id",$item->id)->update("ls_app_object_items", 
-							array("dp"=>$dp,"dp_amount"=>$dp_amount,"aft_dp_amount"=>$aft_dp,
-							"bunga"=>$bunga,"bunga_amount"=>$bunga_amount,
-							"loan_amount"=>$loan_amount,"tenor"=>$tenor,
-							"aft_tenor"=>$aft_tenor,"angsuran"=>$cicilan));
-							
-						$total_loan_amount=$total_loan_amount+$loan_amount;	
-						$total_dp_amount=$total_dp_amount+$dp_amount;
-						$total_cicilan=$total_cicilan+$cicilan;
-						$total_bunga_amount=$total_bunga_amount+$bunga_amount;
-					}
-					$admin=getvar("admin",100000);
-					$insr_amount=$this->input->get("insr_amount");
-					if(!$insr_amount)$insr_amount=0;
-					$data=array('sub_total'=>$sub_total,'loan_amount'=>$total_loan_amount,
-					'dp_amount'=>$total_dp_amount, 
-					'admin_amount'=>$admin,'inst_month'=>$tenor,'inst_amount'=>$total_cicilan,
-					'insr_amount'=>$insr_amount,'rate_prc'=>$sama_bunga==true?$bunga:0,
-					'rate_amount'=>$total_bunga_amount,
-					'dp_prc'=>$sama_dp==true?$dp:0);
-					$this->db->where("app_id",$nomor)->update("ls_app_master",$data);
-					
-					return $data;
-					
-				}
-			}
-			if($jenis_hitungan==1) {
-				//-- hitungan dari total
-				$q=$this->db->query("select sum(amount) as z_amt 
-				from ls_app_object_items where app_id='".$nomor."'");		
-				$sub_total=0;
-				$loan_amount=0;
-				if($q) $sub_total=(double)$q->row()->z_amt;	
-				//--- range down payment
-				$dp=$this->get_dp_percent($sub_total);
-				$dp_amount=(double)round($dp*$sub_total);
-				
-				$loan_amount=(double)round($sub_total-$dp_amount);
-				$admin=getvar("admin",100000);
-				//--- bunga
-				$bunga=$this->get_bunga_percent($loan_amount);
-				//-- tenor
-				$tenor=$this->input->get('inst_month');
-				if(!$tenor)$tenor=3;
-				
-				$bunga_amount=round($loan_amount*$bunga);
-				$loan_amount2=round($loan_amount/$tenor);
-				$loan_amount2=$loan_amount+$bunga_amount;
-				
-				$insr_amount=$this->input->get("insr_amount");
-				if(!$insr_amount)$insr_amount=0;
-				
-	//			$loan_amount2=$loan_amount2+$insr_amount;
-				$inst_amount=$loan_amount/$tenor;
-				$inst_amount=$inst_amount+$bunga_amount;
-				
-				$data=array('sub_total'=>$sub_total,'loan_amount'=>$loan_amount,'dp_amount'=>$dp_amount, 
-				'admin_amount'=>$admin,'inst_month'=>$tenor,'inst_amount'=>$inst_amount,
-				'insr_amount'=>$insr_amount,'rate_prc'=>$bunga,'rate_amount'=>$bunga_amount,
-				'dp_prc'=>$dp);
-				$this->db->where("app_id",$nomor)->update("ls_app_master",$data);
-				
-				return $data;
-			}
-		}
+		$data=$this->app_master_model->recalc($nomor);
+		return $data;
 	}
 	function recalc($nomor){
 		$data=$this->_recalc($nomor);
@@ -395,18 +343,29 @@ class App_master extends CI_Controller {
 		$obj_pdf->writeHTML($content, true, false, true, false, '');
 		$obj_pdf->Output('output.pdf', 'I');
 	}
-	function approve($app_id){
+	function approve($app_id=""){
 		$data['approved']='1';
 		$data['status']='Wait Contract';
+		$app_id=$this->input->get("app_id");
+		$reason=$this->input->get("reason");
 		$ok=$this->db->where("app_id",$app_id)->update($this->table_name,$data);
 		if($ok){
-			$message="Sukses nomor aplikasi $app_id sudah di setujui untuk dibuatkan akad kredit.";
+			$message="Sukses nomor aplikasi $app_id sudah di setujui untuk dibuatkan akad kredit. 
+			Catatan: $reason";
 			$from=user_id();
 			$app=$this->db->select("create_by,cust_id")->where("app_id",$app_id)
 				->get("ls_app_master")->row();
 			$to_user=$app->create_by;
 			$cust=$this->db->where("cust_id",$app->cust_id)->get("ls_cust_master")->row();
+			
+			// send inbox ke user sa
 			inbox_send($from,$to_user,$app_id." - Approved, Debitur: $cust->cust_name",$message);
+
+			// send inbox ke user adminls
+			$to_user=$this->access->user_with_job(array("admls","lsadm"));
+			
+			inbox_send($from,$to_user,$app_id." - Approved, Debitur: $cust->cust_name",$message);
+			
 			echo $message;
 			
 		} else {
@@ -415,13 +374,15 @@ class App_master extends CI_Controller {
 	
 	}
 	function filter($id=""){
-		$sql="select a.app_id,a.app_date,b.cust_name,a.status, b.cust_id,b.kec,b.kel
+		//untuk user admls field CID diisi dengan area
+		$sql="select a.app_id,a.app_date,b.cust_name,a.status, c.area,c.area_name, b.cust_id,b.kec,b.kel
 		,a.counter_id,c.counter_name,a.loan_amount,a.inst_month
 		,a.create_by as sales_id,u.username as sales_name
 		from ls_app_master a left join ls_cust_master b on b.cust_id=a.cust_id 
 		left join ls_counter c on c.counter_id=a.counter_id 
 		left join `user` u on u.user_id=a.create_by
-		where a.approved=1 and a.status not in ('Finish','Close')";
+		where a.approved=1 and a.status not in ('Finish','Close','Kontrak Batal')";
+		if( !($this->access->cid=="" or $this->access->cid=='ALL') )$sql.=" and (c.area='".$this->access->cid."' or c.area_name='".$this->access->cid."')";
 		if($id!=""){
 			$sql.=" and (a.app_id like '".$id."%' or b.cust_name like '%".$id."%')";
 		}
@@ -442,55 +403,6 @@ class App_master extends CI_Controller {
 		} else {
 			echo "Ada kesalahan !";
 		}	
-	}
-	function get_dp_percent($amount){
-		//--- range down payment
-		if($query=$this->db->query("select * from ls_dp_range order by dp_from")){
-			$dp=0;
-			foreach($query->result() as $row){
-				if($amount > $row->dp_from and $amount <= $row->dp_to){
-					$dp=$row->dp_prc;
-					break;
-				}
-			}
-			if($dp>0)$dp=$dp/100;
-		} 
-/* 		if($amount>=500000 and $amount<=1500000){
-			$dp=0.1;
-		} else if ($amount>1500000 and $amount<=3000000) {
-			$dp=0.15;
-		} else if ($amount>3000000) {
-			$dp=0.2;
-		} else {
-			$dp=0;
-		}; */
-		return $dp;
-	}
-	function get_bunga_percent($loan_amount){
-/* 		if($loan_amount>=500000 and $loan_amount<=1500000) {
-			$bunga=0.03;
-		} else if ($loan_amount>1500000 and $loan_amount<=3000000) {
-			$bunga=0.0325;
-		} else if ($loan_amount>3000000) {
-			$bunga=0.035;
-		} else {
-			$bunga=0;
-		}
-		
- */		
-		if($query=$this->db->query("select * from ls_bunga_range order by amount_from")){
-			$bunga=0;
-			foreach($query->result() as $row){
-				if($loan_amount >= $row->amount_from and $loan_amount < $row->amount_to){
-					$bunga=$row->bunga_prc;
-					break;
-				}
-			}
-			if($bunga>0)$bunga=$bunga/100;
-		} 
- 
-		return $bunga;
-	
 	}
 	
 }

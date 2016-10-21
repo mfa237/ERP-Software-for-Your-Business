@@ -8,13 +8,19 @@ class Setting extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-		$this->load->library('template');
+		$this->load->library('template_eshop');
 	}
 	function index() {	
 		$data['file']="member_view";
 		$this->view($data['file']);
 	}
-	function view($file,$active_tab=1,$page=0) {
+	function view($file='',$active_tab=1,$page=0) {
+		if($file==''){
+			header("location: ".base_url()."index.php/eshop/home");
+			exit;
+		}
+		$data['content']=true;
+		$data['footer']='eshop/footer';
 		$data['file']=$file;		
 		$data['active_tab']=$active_tab;
 		$data['caption']="PENGATURAN";
@@ -26,14 +32,9 @@ class Setting extends CI_Controller {
 		$data['email']="";
 		$data['password']="";
 		$data['zip_postal_code']="";
-		if($page<0)$page=0;
-		$max_page=$this->db->count_all("inventory");
-		if($max_page>0)$max_page=$max_page/10;
-		if($page>$max_page)$page=$max_page;
 		
-		$data['item_page_max']=$max_page;
+		
 		$cust_id=$this->session->userdata("cust_id");
-		$data['page']=$page;
 		if($q=$this->db->where("customer_number",$cust_id)
 			->get("customers")){
 			$cst=$q->row();
@@ -47,7 +48,8 @@ class Setting extends CI_Controller {
 			$data['zip_postal_code']=$cst->zip_postal_code;
 		}
 	
-		$this->template->display_eshop("eshop/setting",$data);
+		$this->template_eshop->display("setting",$data);
 	}
+
 }
 ?>

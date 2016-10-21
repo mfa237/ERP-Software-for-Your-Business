@@ -23,11 +23,21 @@ function __construct(){
 	function count_all(){
 		return $this->db->count_all($this->table_name);
 	}
-	function get_by_id($id){
+	function get_by_id($id=''){
+		$id=urldecode($id);
+		 if($id=="ALL" || $id==""){
+			 //bila all ambil saja yang paling atas
+			 $id=$this->db->select("company_code")->get("preferences")->row()->company_code;
+		 }
 		$this->db->where($this->primary_key,$id);
-		return $this->db->get($this->table_name);
+		$result=$this->db->get($this->table_name);
+		if($result->num_rows()==0){
+			$result=$this->db->get($this->table_name);
+		}
+		return $result;
 	}
     function info($id){
+		$id=urldecode($id);
         $data=$this->get_by_id($id)->row();
         if(count($data)){    
             $ret='<br/><strong>'.$id.' - '.$data->company_name.'</strong><br/>'
@@ -40,19 +50,26 @@ function __construct(){
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
+		 if($id=="ALL" || $id==""){
+			 //bila all ambil saja yang paling atas
+			 $id=$this->db->select("company_code")->get("preferences")->row()->company_code;
+		 }
+		
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 	}
 	function delete($id){
+		$id=urldecode($id);
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
 	function setting($key){
 		//echo "CID: ".$this->access->cid;
-		$retval=$this->get_by_id($this->access->cid)->result_array();
+		//$this->access->cid
+		$retval=$this->get_by_id()->result_array();
 		//echo "company_model: setting: ";
-		//var_dump($retval);
-		if(count($retval)==1){
+		 
+		if(count($retval)){
 			return $retval[0][$key];
 		} else {
 			return $retval[$key];

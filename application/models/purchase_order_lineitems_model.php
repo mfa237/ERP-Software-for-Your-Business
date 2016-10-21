@@ -19,17 +19,95 @@ function get_by_nomor($nomor) {
 	$this->db->where('purchase_order_number',$nomor);
 	return $this->db->get($this->table_name);
 }
-function save($data){
-	$this->db->insert($this->table_name,$data);
-	return $this->db->insert_id();
+function default_values($data){
+//	if(!isset($data['warehouse_code']))$data['warehouse_code']='GUDANG';
+//	if($data['warehouse_code']=='')$data['warehouse_code']='GUDANG';
+	if(!isset($data['currency_code']))$data['currency_code']='IDR';
+	if($data['currency_code']=='')$data['currency_code']='IDR';
+	if(!isset($data['currency_rate']))$data['currency_rate']=1;
+	if($data['currency_rate']<=0)$data['currency_rate']=1;
+	if(!isset($data['mu_qty']))$data['mu_qty']=$data['quantity'];
+	if($data['mu_qty']<=0)$data['mu_qty']=$data['quantity'];
+	if(!isset($data['mu_harga']))$data['mu_harga']=$data['price'];
+	if($data['mu_harga']<=0)$data['mu_harga']=$data['price'];
+	if(!isset($data['multi_unit']))$data['multi_unit']=$data['unit'];
+	if($data['multi_unit']=='')$data['multi_unit']=$data['unit'];
+	
+	return $data;
 }
-function update($id,$data){
+function save($data){
+	$this->load->model('inventory_model');
+	$data=$this->default_values($data);
+	$id=0;
+	if(isset($data['line_number']))$id=$data['line_number'];
+	$item=$this->inventory_model->get_by_id($data['item_number'])->row();
+	if(isset($data['line_number']))$id=$data['line_number'];
+
+	if(isset($data['discount']))if($data['discount']=='')$data['discount']=0;
+	if($data['discount']>1)$data['discount']=$data['discount']/100;
+
+	if(isset($data['disc_2']))if($data['disc_2']=='')$data['disc_2']=0;
+	if($data['disc_2']>1)$data['disc_2']=$data['disc_2']/100;
+
+	if(isset($data['disc_3']))if($data['disc_3']=='')$data['disc_3']=0;
+	if($data['disc_3']>1)$data['disc_3']=$data['disc_3']/100;
+
+	
+	if($unit=exist_unit($data['unit'])){
+		$data['mu_qty']=$data['quantity']*$unit['unit_value'];
+		$data['mu_harga']=item_purchase_price($data['item_number']);
+		$data['multi_unit']=$unit['from_unit'];		
+	} else {
+		$data['mu_qty']=$data['quantity'];
+		$data['mu_harga']=$data['price'];
+		$data['multi_unit']=$data['unit'];
+	}	
+	if($item){
+		if($data['description']==""); $data['description']=$item->description;
+		if($data['unit']==""); $data['unit']=$item->unit_of_measure;
+	}
+	$gross=floatval($data['quantity'])*floatval($data['price']);
+	$disc_amount=floatval($data['discount'])*$gross;
+	$gross=$gross-$disc_amount;
+	
+	$disc_amount_2=floatval($data['disc_2'])*$gross;
+	$gross=$gross-$disc_amount_2;
+
+	$disc_amount_3=floatval($data['disc_3'])*$gross;
+	$gross=$gross-$disc_amount_3;
+	
+	$data['disc_amount_1']=$disc_amount;
+	$data['disc_2']=floatval($data['disc_2']);
+	$data['disc_amount_2']=$disc_amount_2;
+	$data['disc_3']=floatval($data['disc_3']);
+	$data['disc_amount_3']=$disc_amount_3;
+	$data['total_price']=$gross;
+	unset($data['amount']);
+	if($id!=0){
+		$this->db->where($this->primary_key,$id);
+		return $this->db->update($this->table_name,$data);
+	} else {
+		$this->db->insert($this->table_name,$data);
+		return $this->db->insert_id();
+	}
+}
+function updatexxxxx($id,$data){
+	$data=$this->default_values($data);
+	if($unit=exist_unit($data['unit'])){
+		$data['mu_qty']=$data['quantity']*$unit['unit_value'];
+		$data['mu_harga']=item_purchase_price($data['item_number']);
+		$data['multi_unit']=$unit['from_unit'];		
+	} else {
+		$data['mu_qty']=$data['quantity'];
+		$data['mu_harga']=$data['price'];
+		$data['multi_unit']=$data['unit'];
+	}
 	$this->db->where($this->primary_key,$id);
-	$this->db->update($this->table_name,$data);
+	return $this->db->update($this->table_name,$data);
 }
 function delete($id){
 	$this->db->where($this->primary_key,$id);
-	$this->db->delete($this->table_name);
+	return $this->db->delete($this->table_name);
 }
 function lineitems($po_number){
 	$this->db->where('purchase_order_number',$po_number);
@@ -65,6 +143,36 @@ function update_qty_received($line,$qty){
 	$sql="update purchase_order_lineitems set received=true 
 	where line_number=$line and ifnull(qty_recvd,0)>=quantity";
 	$this->db->query($sql);
+}
+function create_po_by_request($supplier,$purchase_order_number) {
+	if(strtolower($supplier)=='unknown')$supplier='';
+	$sql="select p.purchase_order_number,p.po_date,p.due_date,p.terms,p.project_code,p.branch_code,p.dept_code,p.ordered_by,p.doc_status,
+	i.item_number,i.description,i.quantity,i.unit,t.supplier_number,i.line_number,t.cost,t.cost_from_mfg
+	from purchase_order  p left join purchase_order_lineitems i on i.purchase_order_number=p.purchase_order_number
+	left join inventory t on t.item_number=i.item_number 
+	where ifnull(selected,0)=0 and  p.doc_status='open' and p.potype='Q' and ifnull(t.supplier_number,'')='".$supplier."' 
+	order by i.item_number";								
+	if($qline=$this->db->query($sql)){
+		foreach($qline->result() as $row_items){
+			$dline=data_table('purchase_order_lineitems',null);
+			$dline['purchase_order_number']=$purchase_order_number;
+			$dline['item_number']=$row_items->item_number;
+			$dline['description']=$row_items->description;
+			$dline['quantity']=$row_items->quantity;
+			$dline['unit']=$row_items->unit;
+			$dline['price']=$row_items->cost_from_mfg;
+			if(!$dline['price'])$dline['price']=$row_items->cost;
+			if(!$dline['price'])$dline['price']=0;
+			$dline['total_price']=$dline['quantity']*$dline['price'];
+			$dline['from_line_doc']=$row_items->purchase_order_number;
+			$dline['from_line_type']='PO Request';
+			$dline['from_line_number']=$row_items->line_number;
+			if($this->save($dline)){
+				$this->db->query("update purchase_order_lineitems set selected=1 where line_number=".$row_items->line_number);
+			}
+		}
+	}
+	
 }
 
 }

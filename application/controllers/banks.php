@@ -22,6 +22,7 @@ class Banks extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('bank_accounts_model');
 		$this->load->model('chart_of_accounts_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
@@ -31,7 +32,8 @@ class Banks extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_60010'))return false;   
+        $this->browse();
 	}
 	function get_posts(){
             $data=  data_table_post($this->table_name);
@@ -39,6 +41,7 @@ class Banks extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_60011'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -47,6 +50,7 @@ class Banks extends CI_Controller {
 			$id=$this->bank_accounts_model->save($data);
             $data['message']='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"banks","add");			
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -73,6 +77,7 @@ class Banks extends CI_Controller {
 			$data=$this->get_posts();                      
 			$data['account_id']=$this->acc_id($data['account_id']);
             $this->bank_accounts_model->update($id,$data);
+			$this->syslog_model->add($id,"banks","edit");			
             $message='Update Success';
             $this->browse();
 		} else {
@@ -89,6 +94,7 @@ class Banks extends CI_Controller {
 		}
 	}
 	function view($id,$message=null){
+		if(!allow_mod2('_60010'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->bank_accounts_model->get_by_id($id)->row();
@@ -140,7 +146,9 @@ class Banks extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){
+		if(!allow_mod2('_60013'))return false;   
 		$id=urldecode($id);
+		$this->syslog_model->add($id,"banks","delete");
 	 	$this->bank_accounts_model->delete($id);
 	 	$this->browse();
 	}

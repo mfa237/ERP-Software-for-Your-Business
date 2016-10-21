@@ -6,13 +6,17 @@
 silahkan contreng rekomendasi nomor aplikasi tersebut untuk diteruskan 
 ke GM RISK untuk direview dan diproses approval kredit.</p>
 <p>Tekan tombol <strong>SIMPAN</strong> untuk mulai menyimpan data</p>
-
 <div class='thumbnail'>
 	<button type="button" onclick="save()" class="btn btn-info">Recomend</button>
 	<button type="button" onclick="not_recomend()" class="btn btn-warning">Not Recomend</button>
 </div>	
 <? 
 echo form_open('',array("action"=>"","name"=>"frmMain","id"=>"frmMain"));
+?>
+<h5><strong>Catatan </strong></h5>
+<textarea id='comments' name='comments' style='width:300px;height:100px'></textarea>
+<p><i>*Isi catatan  atau keterangan diatas sebelum klik tombol</i></p>
+<?
 echo $surveyed;
 echo form_close();
 ?>
@@ -28,6 +32,7 @@ echo form_close();
 <script language="javascript">
 	var m_app_id="";
   	function save(){
+		if($("#comments").val()==""){alert("Isi dulu catatan !"); return false;}
 		if(!confirm('Data sudah benar ? Yakin mau disimpan ?')) return false;
 		url='<?=base_url()?>index.php/leasing/risk/save';
 		$('#frmMain').form('submit',{
@@ -44,6 +49,7 @@ echo form_close();
 		});
   	}
   	function not_recomend(){
+		if($("#comments").val()==""){alert("Isi dulu catatan !"); return false;}
 		if(!confirm('Data sudah benar ? Yakin mau disimpan ?')) return false;
 		url='<?=base_url()?>index.php/leasing/risk/not_recomend';
 		$('#frmMain').form('submit',{
@@ -61,7 +67,9 @@ echo form_close();
   	}
 	function view_spk(app_id){
 		m_app_id=app_id;
-		view_survey();
+		var url="<?=base_url()?>index.php/leasing/app_master/view/"+m_app_id+'/view';
+		$("#divButton").fadeIn("fast");
+		add_tab_parent("spk_"+m_app_id,url);
 	}
 	function view_survey(){
 		$("#divButton").fadeIn("fast");
@@ -75,6 +83,10 @@ echo form_close();
 	}
 	function load_help() {
 		window.parent.$("#help").load("<?=base_url()?>index.php/help/load/risk");
+	}
+	function view_cust(cust_id){
+		var url="<?=base_url()?>index.php/leasing/cust_master/view/"+cust_id+'/view';
+		add_tab_parent("cust_"+cust_id,url);
 	}
 	
 </script>

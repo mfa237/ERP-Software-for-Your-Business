@@ -15,6 +15,7 @@ class Inventory_class extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('inventory_class_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
 		$data['mode']='';
@@ -30,7 +31,8 @@ class Inventory_class extends CI_Controller {
 	}
 	function index()
 	{	
-            $this->browse();
+		if(!allow_mod2('_80010'))return false;   
+        $this->browse();
 	}
 	function get_posts(){
 		$data['kode']=$this->input->post('kode');
@@ -39,29 +41,30 @@ class Inventory_class extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_80010'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$id=$this->inventory_class_model->save($data);
-                        $data['mode']='view';
-                        $this->browse();
+			$data['mode']='view';
+			$this->browse();
 		} else {
 			$data['mode']='add';
-                         $this->template->display_form_input($this->file_view,$data,'');
+			$this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
 	function update()
 	{
-	 
-		 $data=$this->set_defaults();
- 
+	 	 $data=$this->set_defaults(); 
 		 $this->_set_rules();
  		 $id=$this->input->post('kode');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
 			$this->inventory_class_model->update($id,$data);
 			$message='Update Success';
+			$this->syslog_model->add($id,"inventory","edit");
+
 			$this->browse();
 		} else {
 			$message='Error Update';
@@ -70,6 +73,7 @@ class Inventory_class extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80012'))return false;   
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->inventory_class_model->get_by_id($id)->row();
@@ -117,8 +121,11 @@ class Inventory_class extends CI_Controller {
         echo datasource($sql);		
     }
 	function delete($id){
+		if(!allow_mod2('_80013'))return false;   
 		$id=urldecode($id);
 	 	$this->inventory_class_model->delete($id);
+		$this->syslog_model->add($id,"inventory","delete");
+
 	 	$this->browse();
 	}
 	

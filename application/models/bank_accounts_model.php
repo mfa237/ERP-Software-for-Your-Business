@@ -29,6 +29,10 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
+	function get_by_account($id){
+		$this->db->where("account_id",$id);
+		return $this->db->get($this->table_name);		
+	}
 	function save($data){
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
@@ -86,5 +90,13 @@ function __construct(){
 		}
 		return $data;
 	}
-	
+	function account_id($id) {
+		$ret=0;
+		if($q=$this->get_by_id($id)){
+			$q2=$q->row();
+			$ret=intval($q2->account_id);
+		}
+		return $ret;
+	}
 }
+?>

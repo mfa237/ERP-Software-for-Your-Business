@@ -16,13 +16,14 @@ $controller_name=str_replace("/","_",$controller);
 
 ?>
 <div class='container'>
+	<div class='col-lg-12 clearfix'>
 <?
 	add_button_menu("MAXON APPS","market/apps","ico_manuf.png",
 	"Download New Application from MaxOn Market. You can download 
 	free application or paid application from publisher.","view_url()");
 ?>
-	<div class='clear'></div>
-	<div id='isi'></div>
+	</div>
+	<div id='isi' class='col-lg-12'></div>
 </div>
 
 <script type="text/javascript">
@@ -45,7 +46,7 @@ $(document).ready(function(){
 						app=result.rows[i];
 						html=html+'<div class="panel panel-info info2 ">';
 						html=html+"<div class='panel-heading '><div class='glyphicon glyphicon-list'>";
-						html=html+"<strong> "+app.app_name+"</strong>";
+						html=html+"<strong> "+app.app_name+"</strong> &nbsp [AppId: <i>"+app.app_id+"</i>]";
 						html=html+"</div>";
 						html=html+"<div class='top-legend'>Created By: "+app.app_create_by+"</div>";
 						html=html+"</div>";

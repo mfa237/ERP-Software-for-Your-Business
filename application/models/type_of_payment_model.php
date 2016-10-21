@@ -46,4 +46,19 @@ private $table_name='type_of_payment';
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
+	function default_terms(){
+		return "KREDIT";
+	}
+	function due_date($terms,$curdate){
+		$due_date=date("Y-m-d");
+		if($q=$this->get_by_id($terms)){
+			if($r=$q->row()){
+				$d=$r->days;
+				if($d==null)$d=0;
+				$due_date=add_date($curdate,$d);
+			}
+		}
+		return $due_date;
+	}
+					
 }

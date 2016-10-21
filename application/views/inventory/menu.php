@@ -11,6 +11,7 @@
 				<li><?=anchor('delivery','Pengeluaran Barang','class="info_link"');?></li>
 				<li><?=anchor('stock_mutasi','Mutasi Stock','class="info_link"');?></li>
 				<li><?=anchor('stock_adjust','Adjustment Stock','class="info_link"');?></li>
+				<li><?=anchor('inventory/closing','Closing Stock','class="info_link"');?></li>
 					</ul>
 				</li>
 				<li   data-options="state:'closed'">

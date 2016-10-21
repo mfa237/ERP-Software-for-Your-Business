@@ -14,9 +14,12 @@ class Coa extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
         $this->load->model('chart_of_accounts_model');
+		$this->load->model('syslog_model');
+
 	} 
 	function index()
 	{	
+		if(!allow_mod2('_10010'))return false;   
         $this->browse();
 	}
     function browse($offset=0,$limit=50,$order_column='account',$order_type='asc'){
@@ -66,6 +69,7 @@ class Coa extends CI_Controller {
 	}	    
 	function add()
 	{
+		if(!allow_mod2('_10011'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -73,6 +77,8 @@ class Coa extends CI_Controller {
 			$id=$this->chart_of_accounts_model->save($data);
             $data['message']='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"coa","add");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -128,11 +134,14 @@ class Coa extends CI_Controller {
 		 $this->form_validation->set_rules('account','Account', 'required|trim');
 	}
     function delete($id){
+		if(!allow_mod2('_10013'))return false;   
 		$id=urldecode($id);
 	 	$this->chart_of_accounts_model->delete($id);
+		$this->syslog_model->add($id,"coa","delete");
 	 	$this->browse();
 	}
 	function view($id,$message=null){
+		if(!allow_mod2('_10010'))return false;   
 		$id=urldecode($id);
 		$message=urldecode($message);
 		 $data['id']=$id;
@@ -158,6 +167,8 @@ class Coa extends CI_Controller {
 			unset($data['h_or_d']);                     
 			$this->chart_of_accounts_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"coa","edit");
+
             $this->browse();
 		} else {
 			$message='Error Update';

@@ -24,7 +24,7 @@ class Stock_adjust extends CI_Controller {
         $this->load->library('javascript');
 		$this->load->model('shipping_locations_model');
 		$this->load->model('inventory_model');
-		
+		$this->load->model('syslog_model');
 	}
 	function index()
 	{
@@ -54,8 +54,10 @@ class Stock_adjust extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='add';
             $data['message']='';
-			$data['date_received']=date("Y-m-d H:i:s");
-			if($record==NULL)$data['shipment_id']=$this->nomor_bukti();			
+			if($record==NULL) {
+				$data['shipment_id']=$this->nomor_bukti();			
+				$data['date_received']=date("Y-m-d H:i:s");
+			}
             return $data;
 	}	
 	function get_posts(){
@@ -69,6 +71,7 @@ class Stock_adjust extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_80121'))return false;   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();		 
 		 if ($this->form_validation->run()=== TRUE){
@@ -80,6 +83,8 @@ class Stock_adjust extends CI_Controller {
 			$this->nomor_bukti(true);
             $data['message']='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"stock_adjust","add");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -98,6 +103,8 @@ class Stock_adjust extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$this->inventory_card_header_model->update($id,$data);
 		    $data['message']='update success';
+			$this->syslog_model->add($id,"stock_adjust","edit");
+
 		} else {
 			$data['message']='Error Update';
 		}
@@ -106,6 +113,7 @@ class Stock_adjust extends CI_Controller {
 	}
 	
 	function view($id,$message=null){
+		if(!allow_mod2('_80120'))return false;   
 		$id=urldecode($id);
 		 $data['shipment_id']=$id;
 		 $model=$this->inventory_products_model->get_by_id($id)->row();	
@@ -188,14 +196,19 @@ class Stock_adjust extends CI_Controller {
 
 		if($no!=''){
 			$sql.=" and shipment_id='".$no."'";
-		} 
-        $sql.=" limit $offset,$limit";
+		} else {
+			$sql.=" and date_received between '$d1' and '$d2'";
+		}
+        //$sql.=" limit $offset,$limit";
         echo datasource($sql);
     }
 	 
 	function delete($id){
+		if(!allow_mod2('_80123'))return false;   
 		$id=urldecode($id);
 	 	$this->inventory_products_model->delete($id);
+		$this->syslog_model->add($id,"stock_adjust","delete");
+
 	 	$this->browse();
 	}	
 	 
@@ -236,8 +249,8 @@ class Stock_adjust extends CI_Controller {
 			$data['date_received']=$adj->date_received;
 			$data['warehouse_code']=$adj->warehouse_code;
 			$data['comments']=$adj->comments;
-			$this->load->view('inventory/rpt/print_adjust',$data);
-
+			$data['content']=load_view('inventory/rpt/print_adjust',$data);
+			$this->load->view('pdf_print',$data);
         }
     function del_item(){
     	$id=$this->input->post('line_number');

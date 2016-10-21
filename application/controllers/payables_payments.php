@@ -19,7 +19,19 @@ class Payables_payments extends CI_Controller {
 		$this->load->library(array('form_validation','sysvar'));
         $this->load->library('template');
 		$this->load->model('payables_payments_model');
-                
+   		$this->load->model('check_writer_model');
+   		$this->load->model('supplier_model');                
+   		$this->load->model('bank_accounts_model');
+		$this->load->model('supplier_model');
+		$this->load->model('purchase_order_model');
+		$this->load->model('payables_model');
+		$this->load->model('check_writer_model');
+		$this->load->model('check_writer_items_model');
+		$this->load->model('company_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('syslog_model');
+
+		
 	}
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
@@ -78,16 +90,6 @@ class Payables_payments extends CI_Controller {
 	}
 	function save()
 	{
-   		$this->load->model('bank_accounts_model');
-		$this->load->model('supplier_model');
-		$this->load->model('purchase_order_model');
-		$this->load->model('payables_model');
-		$this->load->model('check_writer_model');
-		$this->load->model('check_writer_items_model');
-		$this->load->model('company_model');
-		$this->load->model('chart_of_accounts_model');
-
-		
    		$no_bukti=$this->nomor_bukti();
 
 		$supplier_number=$this->input->post('supplier_number');
@@ -112,6 +114,14 @@ class Payables_payments extends CI_Controller {
 				break;
 			case '1':
 				$trtype='cheque out';
+				//checkwriter
+				$rkas['check_number']=$this->input->post('credit_card_number');
+				$rkas['cleared_date']=$this->input->post('expiration_date');
+				$rkas['from_bank']=$this->input->post('from_bank');
+				
+				//payables payments
+				$data['check_number']=$this->input->post('credit_card_number');
+				
 				break;
 			default:
 				$trtype='cash out';
@@ -131,7 +141,8 @@ class Payables_payments extends CI_Controller {
 		$rkas['bill_payment']=1; 	
 		
 		$trans_id=$this->check_writer_model->save($rkas); 	 
-		
+		$this->syslog_model->add($no_bukti,"payables_payments","add");
+
 		$default_account_id=$this->company_model->setting("accounts_payable");
 
 		for($i=0;$i<count($bayar);$i++){
@@ -194,6 +205,9 @@ class Payables_payments extends CI_Controller {
 		$data['supplier_number']='';
         $data['amount_paid']=0;
 		$data['how_paid_account_id']='';
+        $data['credit_card_number']="";
+        $data['expiration_date']="";
+        $data['from_bank']="";
 		
 		$this->template->display_form_input('purchase/payment_multi',$data,'');			                 
    }
@@ -220,6 +234,7 @@ class Payables_payments extends CI_Controller {
 	
    function delete($line_number)
    {
+		if(!allow_mod2('_40073'))return false;   
    		$this->payables_payments_model->delete_line($line_number);
    }
    function delete_no_bukti($no_bukti)
@@ -227,6 +242,8 @@ class Payables_payments extends CI_Controller {
 		$no_bukti=urldecode($no_bukti);
 		$this->load->model("periode_model");
 		$this->load->model("check_writer_model");
+		$this->syslog_model->add($no_bukti,"payables_payments","delete");
+
 
 		if($q=$this->check_writer_model->get_by_id($no_bukti)){
 			if($this->periode_model->closed($q->row()->check_date)){
@@ -265,14 +282,18 @@ class Payables_payments extends CI_Controller {
    }
         
    function view($no_bukti,$message=""){
+		if(!allow_mod2('_40070'))return false;   
 		$no_bukti=urldecode($no_bukti);
-   		$this->load->model('check_writer_model');
-   		$this->load->model('supplier_model');
 		$rcek=$this->check_writer_model->get_by_id($no_bukti)->row();
-		$data['posted']=$rcek->posted;
+		 
 		$data['closed']=0;
 		$data['message']=$message;
+		$data['posted']=false;
+		$data['credit_card_number']='';
+		$data['expiration_date']='';
+		$data['from_bank']='';
 		if($rcek){
+			$data['posted']=$rcek->posted;
 			$data['voucher']=$rcek->voucher;
 			$data['date_paid']=$rcek->check_date;
 			$data['amount_paid']=number_format($rcek->payment_amount);
@@ -280,6 +301,11 @@ class Payables_payments extends CI_Controller {
 			$data['trans_type']=$rcek->trans_type;
 			$data['supplier_number']=$rcek->supplier_number;
 			$data['supplier_info']=$rcek->payee;
+			$data['credit_card_number']=$rcek->check_number;
+			$data['expiration_date']=$rcek->cleared_date;
+			$data['from_bank']=$rcek->from_bank;
+			
+			
 			if($data['supplier_number']=="") { //???
 				$q=$this->db->query("select cwi.invoice_number,inv.supplier_number 
 					from check_writer_items cwi
@@ -304,13 +330,16 @@ class Payables_payments extends CI_Controller {
 			 
 			$rcek=$this->payables_payments_model->get_by_id($no_bukti)->row();
 			if($rcek){
+				$rbill=$this->payables_model->get_by_id($rcek->bill_id)->row();
+				$rsupplier=$this->supplier_model->get_by_id($rbill->supplier_number)->row();
+				$rbank=$this->bank_accounts_model->get_by_account($rcek->how_paid_account_id)->row();
 				$data['voucher']=$no_bukti;
 				$data['date_paid']=$rcek->date_paid;
 				$data['amount_paid']=number_format($rcek->amount_paid);
-				$data['account_number']=$rcek->account_number;
+				$data['account_number']=$rbank->bank_account_number;
 				$data['trans_type']=$rcek->how_paid;
-				$data['supplier_info']='';
-				$data['supplier_number']='';
+				$data['supplier_number']=$rbill->supplier_number;
+				$data['supplier_info']=$rsupplier->supplier_name;
 
 				
 				$this->template->display_form_input('purchase/payment_multi_view',$data,'');
@@ -329,12 +358,14 @@ class Payables_payments extends CI_Controller {
     }
 	
 	function posting($voucher) {
+		if(!allow_mod2('_40075'))return false;   
 		$voucher=urldecode($voucher);
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->posting($voucher);
 		$this->view($voucher);
 	}
 	function unposting($voucher) {
+		if(!allow_mod2('_40075'))return false;   
 		$voucher=urldecode($voucher);
 		$this->load->model('check_writer_model');
 		$this->check_writer_model->unposting($voucher);

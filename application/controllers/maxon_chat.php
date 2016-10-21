@@ -5,7 +5,6 @@ class Maxon_Chat extends CI_Controller {
 		parent::__construct();
 	}
 	function index() {
-		
 	}
 	function load() {
 		$msg="";
@@ -22,12 +21,18 @@ class Maxon_Chat extends CI_Controller {
 		} else {
 			$userid="Guest";
 		}
+		if($userid=="Guest"){
+			$this->load->helper('mylib_helper');
+			$userid=user_name();
+		}
+		if($userid=="")$userid="Guest";
 		$data['userid']=$userid;
 		$data['msg']=$msg;
 		echo json_encode($data);
 	}
 	function save() {
 		$userid=$this->input->get('u');
+		
 		if($uid_old=$this->session->userdata('xchat_user')) {
 			if($uid_old!=$userid){
 				$this->session->set_userdata('xchat_user',$userid);

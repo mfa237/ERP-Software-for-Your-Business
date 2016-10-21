@@ -25,4 +25,16 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->delete($this->table_name);
 	}
+	function loadlist($level_code) {
+		$rows=null;
+		$this->db->where('level_code',$level_code);
+		$this->db->order_by("salary_com_code");
+		if($q=$this->db->get($this->table_name)){
+			foreach($q->result() as $r) {
+				$rows[]=$r;
+			}
+		}
+		return $rows;
+	}
+
 }

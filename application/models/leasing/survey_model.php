@@ -42,10 +42,12 @@ class Survey_model extends CI_Model {
 				$d['survey_date']=date('Y-m-d H:i:s', strtotime($tanggal[$i]));
 				$d['area']='default';
 				$d['status']=0;
+				$d['create_by']=user_id();
+				$d['create_date']=date('Y-m-d H:i:s');
 				$ok=$this->db->insert($this->table_name,$d);            
 				unset($d);
 				if($ok){
-					$s="update ls_app_master set surveyed=1 where app_id='".$app_id[$i]."'";
+					$s="update ls_app_master set surveyed=1 where  app_id='".$app_id[$i]."'";
 					$this->db->query($s);
 				}
 			}
@@ -53,6 +55,8 @@ class Survey_model extends CI_Model {
 		return $ok;
 	}
 	function update($id,$data){
+		$data['update_by']=user_id();
+		$data['update_date']=date('Y-m-d H:i:s');
 		$this->db->where($this->primary_key,$id);
 		return  $this->db->update($this->table_name,$data);
 	}
@@ -61,3 +65,4 @@ class Survey_model extends CI_Model {
 		$this->db->delete($this->table_name);
 	}
 }
+?>

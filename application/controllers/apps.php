@@ -115,7 +115,7 @@ class Apps extends CI_Controller {
         $this->template->display_browse($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
-        $sql=$this->sql.' where 1=1 order by app_id';
+        $sql=$this->sql.' where 1=1  ';
         echo datasource($sql);
     }	   
 	function delete($id){

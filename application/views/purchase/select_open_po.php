@@ -1,6 +1,6 @@
 <!-- PILIH FAKTUR --> 
 <div id='dlgSelectFaktur'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#button-select-faktur">
+     closed="true" toolbar="#button-select-faktur">
      <div id='divSelectFaktur'> 
 		<table id="dgSelectFaktur" class="easyui-datagrid"  
 			data-options="

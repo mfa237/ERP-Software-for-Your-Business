@@ -1,22 +1,26 @@
-<legend>JURNAL UMUM</legend>
 <div class="thumbnail box-gradient">
 	<?
 	if(!isset($closed))$closed=false;
 	if($closed=="")$closed=false;
 	
-	echo link_button('Add','','add','true',base_url().'index.php/jurnal/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/jurnal');		
-	if($mode=="view") echo link_button('Refresh','','reload','true',base_url().'index.php/jurnal/view/'.$gl_id);		
-	if($mode=="view") echo link_button('Delete','','cut','true',base_url().'index.php/jurnal/delete/'.$gl_id);		
+	echo link_button('Add','','add','false',base_url().'index.php/jurnal/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/jurnal');		
+	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/jurnal/view/'.$gl_id);		
+	if($mode=="view") echo link_button('Delete','','cut','false',base_url().'index.php/jurnal/delete/'.$gl_id);		
 	echo link_button('Print', 'print()','print');		
+	
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'jurnal\')','help');		
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('jurnal')">Help</div>
+		<div onclick="show_syslog('jurnal','<?=$gl_id?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 <div class="thumbnail">
@@ -34,47 +38,40 @@
 
 
 <form id="frmItem" method='post' >
-   <table class="table2" width="100%">
+   <table class="table" width="100%">
 	<tr>
 		<td>Kode Jurnal</td><td>
 		<?php echo form_input('gl_id',$gl_id,"id=gl_id"); ?>
                 </td>
+            <td>Jenis Transaksi</td><td><?php echo form_input('operation',$operation,'id=operation');?></td>
 	</tr>	 
        <tr>
             <td>Tanggal</td><td><?php echo form_input('date',$date,'id=date 
-             class="easyui-datetimebox" required style="width:150px"');?>
+             class="easyui-datetimebox" required style="width:150px"
+			data-options="formatter:format_date,parser:parse_date"
+			');?>
             </td>
-       </tr>
-       <tr>
-            <td>Jenis Transaksi</td><td><?php echo form_input('operation',$operation,'id=operation');?></td>
-       </tr>
-       <tr>
+
             <td>Keterangan</td><td><?php echo form_input('source',$source,'id=source style="width:400px"');?></td>
+			
        </tr>
-       <tr><td></td><td></td></tr>
-       <tr>
-           <td colspan="4" align="left"> 
-           </td>
-       </tr>
-	 <tr><td> 
-	 </td><td>&nbsp;</td></tr>
    </table>
    <div id='divItem' >
-		<table class="table2" width="100%">
+		<table class="table" width="100%">
 			<tr>
 				<td>Kode Akun</td><td>Nama Akun</td><td>Debit</td><td>Credit</td><td>
 			</tr>
 			<tr>
-			         <td><input id="account" style='width:80' 
+			         <td><input id="account" style='width:80px' 
 			         	name="account"   class="easyui-validatebox" required="true">
-						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
+						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 						onclick="lookup_coa();return false"></a>
 			         </td>
-			         <td><input id="description" name="description" style='width:280'></td>
-			        <td><input id="debit" name="debit"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
-			        <td><input id="credit" name="credit"  style='width:80'  class="easyui-validatebox" validType="numeric"></td>
+			         <td><input id="description" name="description" style='width:180px'></td>
+			        <td><input id="debit" name="debit"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
+			        <td><input id="credit" name="credit"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
 			        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-             		   plain='true'	onclick='save_item();return false;'></a>
+             		   plain='false' onclick='save_item();return false;'>Add Item</a>
 					</td>
 			        <input type='hidden' id='transaction_id' name='transaction_id'>
 			</tr>

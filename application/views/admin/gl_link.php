@@ -1,214 +1,127 @@
-<div><h1>LINK KODE AKUN PERKIRAAN</H1>
-<div class="thumbnail">
-<form  id="frmLink" method='post' >
-	<table>
-		<tr>
-			<td colspan="2"><h4>PEMBELIAN</h4></td><td></td>
-		</tr>
-		<tr>
-			<td>Hutang (Account Payable)</td><td><?
-			echo form_input('accounts_payable',$accounts_payable,'id="accounts_payable" style="width:250px"');
-			echo link_button('','lookup_coa(\'accounts_payable\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Ongkos Angkut</td><td><?
-			echo form_input('po_freight',$po_freight,'id="po_freight" style="width:250px"');
-			echo link_button('','lookup_coa(\'po_freight\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Biaya Lainnya</td><td><?
-			echo form_input('po_other',$po_other,'id="po_other" style="width:250px"');
-			echo link_button('','lookup_coa(\'po_other\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Pajak Pembelian</td><td><?
-			echo form_input('po_tax',$po_tax,'id="po_tax" style="width:250px"');
-			echo link_button('','lookup_coa(\'po_tax\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Potongan Pembelian</td><td><?
-			echo form_input('po_discounts_taken',$po_discounts_taken,'id="po_discounts_taken" style="width:250px"');
-			echo link_button('','lookup_coa(\'po_discounts_taken\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Kredit/Debit Memo</td><td><?
-			echo form_input('supplier_credit_account_number',$supplier_credit_account_number,'id="supplier_credit_account_number" style="width:250px"');
-			echo link_button('','lookup_coa(\'supplier_credit_account_number\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Uang Muka Pembelian</td><td><?
-			echo form_input('txtUangMukaBeli',$txtUangMukaBeli,'id="txtUangMukaBeli" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtUangMukaBeli\')','search');
-			?></td>
-		</tr>
+ 
+<div class='alert alert-info'>
+Dibawah ini adalah seting dan pengaturan link akun yang berfungsi untuk 
+mengintegrasikan kode akun standard/default untuk semua transaksi yang 
+ada dalam software ini. Silahkan isi atau pilih dengan akun yang bersesuaian.
+</div>
+ 
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#pur-tab" data-toggle="tab">Pembelian <i class="fa"></i></a></li>
+    <li><a href="#sal-tab" data-toggle="tab">Penjualan <i class="fa"></i></a></li>
+    <li><a href="#inv-tab" data-toggle="tab">Inventory <i class="fa"></i></a></li>
+    <li><a href="#fin-tab" data-toggle="tab">Finansial <i class="fa"></i></a></li>
+</ul>
+<?php
+function show_fields($fields){
+	for($i=0;$i<count($fields);$i++) {
+	$fld=$fields[$i];
+	my_input(array("caption"=>$fld['caption'],
+		"field_name"=>$fld['field'],"value"=>$fld['value'],
+		"show_button"=>link_button2('','lookup_coa(\''.$fld['field'].'\')','search')
+		));
+	}
+}
+?>
+<form  id="frmLink" method='post'  class="form-horizontal" style="margin-top:20px">
+	<div class="tab-content">
+        <div class="tab-pane active" id="pur-tab">
+			<?php 
+			$fields=array(
+			array("caption"=>"Hutang (Account Payable)",
+				"field"=>"accounts_payable","value"=>$accounts_payable),
+			array("caption"=>"Ongkos Angkut (Freight)",
+				"field"=>"po_freight","value"=>$po_freight),
+			array("caption"=>"Biaya Lainnya (Other Expense)",
+				"field"=>"po_other","value"=>$po_other),
+			array("caption"=>"Pajak Pembelian (Purchase Tax)",
+				"field"=>"po_tax","value"=>$po_tax),
+			array("caption"=>"Potongan Pembelian",
+				"field"=>"po_discounts_taken","value"=>$po_discounts_taken),
+			array("caption"=>"Kredit/Debit Memo",
+				"field"=>"supplier_credit_account_number","value"=>$supplier_credit_account_number),
+			array("caption"=>"Uang Muka Pembelian",
+				"field"=>"txtUangMukaBeli","value"=>$txtUangMukaBeli)
+			
+			);
+			show_fields($fields);
+			?>
 
+		</div>
+        <div class="tab-pane " id="sal-tab">
+		<?php
+			$fields=array(
+			array("caption"=>"Piutang (Account Receivable)",
+				"field"=>"accounts_receivable","value"=>$accounts_receivable),
+			array("caption"=>"Ongkos Angkut Penjualan",
+				"field"=>"so_freight","value"=>$so_freight),
+			array("caption"=>"Biaya Lainnya",
+				"field"=>"so_other","value"=>$so_other),
+			array("caption"=>"Pajak Penjualan",
+				"field"=>"so_tax","value"=>$so_tax),
+			array("caption"=>"Potongan Penjualan",
+				"field"=>"so_discounts_given","value"=>$so_discounts_given),
+			array("caption"=>"Debit/Kredit Memo Piutang",
+				"field"=>"customer_credit_account_number","value"=>$customer_credit_account_number),
+			array("caption"=>"Uang Muka Penjualan",
+				"field"=>"txtUangMukaJual","value"=>$txtUangMukaJual),
+			array("caption"=>"Charge Kartu Kredit",
+				"field"=>"txtChargeCC","value"=>$txtChargeCC),
+			array("caption"=>"Biaya Promosi",
+				"field"=>"txtPromo","value"=>$txtPromo),
+			array("caption"=>"Biaya Bonus / Hadiah",
+				"field"=>"txtGift","value"=>$txtGift)			
+			);
+			show_fields($fields); 			
+		?>		
+		</div>
+        <div class="tab-pane " id="inv-tab">
+		<?php
+			$fields=array(
+			array("caption"=>"Penjualan Barang (Inventory Sales)",
+				"field"=>"inventory_sales","value"=>$inventory_sales),
+			array("caption"=>"Persediaan (Inventory)",
+				"field"=>"inventory","value"=>$inventory),
+			array("caption"=>"Harga Pokok Persediaan",
+				"field"=>"inventory_cogs","value"=>$inventory_cogs),
+			array("caption"=>"Retur Penjualan",
+				"field"=>"txtReturJual","value"=>$txtReturJual),
+			array("caption"=>"Pengeluaran Barang Lainnya",
+				"field"=>"txtCoaItemOut","value"=>$txtCoaItemOut),
+			array("caption"=>"Penerimaan Barang Lainnya",
+				"field"=>"txtCoaItemIn","value"=>$txtCoaItemIn),
+			array("caption"=>"Penyesuaian Stock (Stock Adjust)",
+				"field"=>"txtCoaItemAdj","value"=>$txtCoaItemAdj)
+			
+			);
+			show_fields($fields);
+		?>
+		</div>
+        <div class="tab-pane " id="fin-tab">
+		<?php
+			$fields=array(
+			array("caption"=>"PPerkiraan Transaksi Kas",
+				"field"=>"default_cash_payment_account","value"=>$default_cash_payment_account),
+			array("caption"=>"Perkiraan Transaksi Bank",
+				"field"=>"default_bank_account_number","value"=>$default_bank_account_number),
+			array("caption"=>"Nomor Kartu Kredit",
+				"field"=>"default_credit_card_account","value"=>$default_credit_card_account),
+			array("caption"=>"Laba/Rugi Periode Berjalan",
+				"field"=>"earning_account","value"=>$earning_account),
+			array("caption"=>"Laba/Rugi Ditahan",
+				"field"=>"year_earning_account","value"=>$year_earning_account),
+			array("caption"=>"Historical Balance",
+				"field"=>"historical_balance_account","value"=>$historical_balance_account)
+			
+			);
+			show_fields($fields);
+		?>
+		
+		</div>
+	</div>	
+	<input type='submit' name='cmdSave' class='btn btn-primary'>
 
-		<tr>
-			<td colspan="2"><h4>PERSEDIAAN</h4></td>
-		</tr>
-		<tr>
-			<td>Penjualan Barang</td><td><?
-			echo form_input('inventory_sales',$inventory_sales,'id="inventory_sales" style="width:250px"');
-			echo link_button('','lookup_coa(\'inventory_sales\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Persediaan</td><td><?
-			echo form_input('inventory',$inventory,'id="inventory" style="width:250px"');
-			echo link_button('','lookup_coa(\'inventory\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Harga Pokok Persediaan</td><td><?
-			echo form_input('inventory_cogs',$inventory_cogs,'id="inventory_cogs" style="width:250px"');
-			echo link_button('','lookup_coa(\'inventory_cogs\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Retur Penjualan</td><td><?
-			echo form_input('txtReturJual',$txtReturJual,'id="txtReturJual" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtReturJual\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Pengeluaran Barang Lainnya</td><td><?
-			echo form_input('txtCoaItemOut',$txtCoaItemOut,'id="txtCoaItemOut" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtCoaItemOut\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Penerimaan Barang Lainnya</td><td><?
-			echo form_input('txtCoaItemIn',$txtCoaItemIn,'id="txtCoaItemIn" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtCoaItemIn\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Penyesuaian Stock (Stock Adjust)</td><td><?
-			echo form_input('txtCoaItemAdj',$txtCoaItemAdj,'id="txtCoaItemAdj" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtCoaItemAdj\')','search');
-			?></td>
-		</tr>
-
-		<tr>
-			<td colspan="2"><h4>PENJUALAN</h4></td>
-		</tr>
-		<tr>
-			<td>Piutang (Account Receivable)</td><td><?
-			echo form_input('accounts_receivable',$accounts_receivable,'id="accounts_receivable" style="width:250px"');
-			echo link_button('','lookup_coa(\'accounts_receivable\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Ongkos Angkut Penjualan</td><td><?
-			echo form_input('so_freight',$so_freight,'id="so_freight" style="width:250px"');
-			echo link_button('','lookup_coa(\'so_freight\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Biaya Lainnya</td><td><?
-			echo form_input('so_other',$so_other,'id="so_other" style="width:250px"');
-			echo link_button('','lookup_coa(\'so_other\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Pajak Penjualan</td><td><?
-			echo form_input('so_tax',$so_tax,'id="so_tax" style="width:250px"');
-			echo link_button('','lookup_coa(\'so_tax\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Potongan Penjualan</td><td><?
-			echo form_input('so_discounts_given',$so_discounts_given,'id="so_discounts_given" style="width:250px"');
-			echo link_button('','lookup_coa(\'so_discounts_given\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Debit/Kredit Memo Piutang</td><td><?
-			echo form_input('customer_credit_account_number',$customer_credit_account_number,'id="customer_credit_account_number" style="width:250px"');
-			echo link_button('','lookup_coa(\'customer_credit_account_number\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Uang Muka Penjualan</td><td><?
-			echo form_input('txtUangMukaJual',$txtUangMukaJual,'id="txtUangMukaJual" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtUangMukaJual\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Charge Kartu Kredit</td><td><?
-			echo form_input('txtChargeCC',$txtChargeCC,'id="txtChargeCC" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtChargeCC\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Biaya Promosi</td><td><?
-			echo form_input('txtPromo',$txtPromo,'id="txtPromo" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtPromo\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Biaya Bonus / Hadiah</td><td><?
-			echo form_input('txtGift',$txtGift,'id="txtGift" style="width:250px"');
-			echo link_button('','lookup_coa(\'txtGift\')','search');
-			?></td>
-		</tr>
-
-		<tr>
-			<td colspan="2"><h4>KAS / BANK</h4></td>
-		</tr>
-		<tr>
-			<td>Perkiraan Transaksi Kas</td><td><?
-			echo form_input('default_cash_payment_account',$default_cash_payment_account,'id="default_cash_payment_account" style="width:250px"');
-			echo link_button('','lookup_coa(\'default_cash_payment_account\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Perkiraan Transaksi Bank</td><td><?
-			echo form_input('default_bank_account_number',$default_bank_account_number,'id="default_bank_account_number" style="width:250px"');
-			echo link_button('','lookup_coa(\'default_bank_account_number\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Nomor Kartu Kredit</td><td><?
-			echo form_input('default_credit_card_account',$default_credit_card_account,'id="default_credit_card_account" style="width:250px"');
-			echo link_button('','lookup_coa(\'default_credit_card_account\')','search');
-			?></td>
-		</tr>
-
-		<tr>
-			<td colspan="2"><h4>AKUNTANSI</h4></td>
-		</tr>
-		<tr>
-			<td>Laba/Rugi Periode Berjalan</td><td><?
-			echo form_input('earning_account',$earning_account,'id="earning_account" style="width:250px"');
-			echo link_button('','lookup_coa(\'earning_account\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Laba/Rugi Ditahan</td><td><?
-			echo form_input('year_earning_account',$year_earning_account,'id="year_earning_account" style="width:250px"');
-			echo link_button('','lookup_coa(\'year_earning_account\')','search');
-			?></td>
-		</tr>
-		<tr>
-			<td>Historical Balance</td><td><?
-			echo form_input('historical_balance_account',$historical_balance_account,'id="historical_balance_account" style="width:250px"');
-			echo link_button('','lookup_coa(\'historical_balance_account\')','search');
-			?></td>
-		</tr>
-		<tr><td colspan="4" align="right"><input type='submit' name='cmdSave'></td></tr>
-
-	</table>
-	
-	
 </form>
-</DIV></DIV>
+ 
    
 <?=load_view('gl/select_coa_link')?>   	
    

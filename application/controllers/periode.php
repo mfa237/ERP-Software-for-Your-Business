@@ -15,6 +15,7 @@ class Periode extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('periode_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
         $data=data_table($this->table_name,$record); 
@@ -24,6 +25,7 @@ class Periode extends CI_Controller {
 	}
 	function index()
 	{	
+		if (!allow_mod2('_30030'))  exit;
         $this->browse();
 	}
 	function get_posts(){
@@ -32,6 +34,7 @@ class Periode extends CI_Controller {
 	}
 	function add()
 	{
+		if (!allow_mod2('_30031'))  exit;
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -40,6 +43,8 @@ class Periode extends CI_Controller {
 			$id=$this->periode_model->save($data);
             $data['message']='update success';
             $data['mode']='view';
+			$this->syslog_model->add($id,"periode","edit");
+
             $this->browse();
 		} else {
 			$data['mode']='add';
@@ -57,6 +62,8 @@ class Periode extends CI_Controller {
             unset($data['id']);
 			$this->periode_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"periode","edit");
+
             $this->browse();
 		} else {
 			$message='Error Update';
@@ -65,6 +72,7 @@ class Periode extends CI_Controller {
 	}
 	
 	function view($id,$message=null){           
+		if (!allow_mod2('_30030'))  exit;
 		$id=urldecode($id);
 		 $data['period']=$id;
 		 $model=$this->periode_model->get_by_id($id)->row();
@@ -106,8 +114,11 @@ class Periode extends CI_Controller {
         echo datasource($sql);
     }	      
 	function delete($id){
+		if (!allow_mod2('_30030'))  exit;
 		$id=urldecode($id);
 	 	$this->periode_model->delete($id);
+		$this->syslog_model->add($id,"periode","delete");
+
 	 	$this->browse();
 	}
 	function select($periode="") {

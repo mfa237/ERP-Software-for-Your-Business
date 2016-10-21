@@ -21,22 +21,104 @@ function get_by_nomor($nomor){
 }
 
 function save($data){
+	$this->load->model('inventory_model');
+	$id=0;
+	if(isset($data['line_number']))$id=$data['line_number'];
+	$item=$this->inventory_model->get_by_id($data['item_number'])->row();
+
+	if(!isset($data['discount']))$data['discount']=0;
 	if($data['discount']=='')$data['discount']=0;
+	if($data['discount']>1)$data['discount']=$data['discount']/100;
+
+	if(!isset($data['disc_2']))$data['disc_2']=0;
+	if($data['disc_2']=='')$data['disc_2']=0;
+	if($data['disc_2']>1)$data['disc_2']=$data['disc_2']/100;
+
+	if(!isset($data['disc_3']))$data['disc_3']=0;
+	if($data['disc_3']=='')$data['disc_3']=0;
+	if($data['disc_3']>1)$data['disc_3']=$data['disc_3']/100;
+
 	if($data['quantity']=='')$data['quantity']=0;
+	if(!isset($data['amount']))$data['amount']=0;
 	if($data['amount']=='')$data['amount']=0;
+	
+	if(!isset($data['price']))$data['price']=0;
 	if($data['price']=='')$data['price']=0;
-	$this->db->insert($this->table_name,$data);
-	if($data['quantity']>"0"){
-		return $this->db->insert_id();
-	} else {
-		return true;
+
+	$data['mu_qty']=$data['quantity'];
+	$data['mu_harga']=$data['price'];
+	$data['multi_unit']=$data['unit'];
+	$data['cost']=0;
+
+	
+	if($unit=exist_unit($data['unit'])){
+		$data['mu_qty']=$data['quantity']*$unit['unit_value'];
+		$data['mu_harga']=item_sales_price($data['item_number']);
+		$data['multi_unit']=$unit['from_unit'];		
+		if($data['price']==0){
+			if($unit['unit_value']<1){	//kalau diseting unitnya kebalik dari 
+										//satuan terbesar ke kecil, misal lusin ke pcs
+										//isi unit_value adalah 1/12 = 0.083333
+				$data['price']=$data['mu_harga']*$unit['unit_value'];
+			} else {
+				$data['price']=$data['mu_harga']/$unit['unit_value'];
+				
+			}
+		}
+		
 	}
+	 
+	if($item){
+		if($data['description']=="") $data['description']=$item->description;
+		if(trim($data['unit'])=="") $data['unit']=$item->unit_of_measure;
+		$data['cost']=$item->cost;
+	}
+	//echo "Unit: ".$data['unit'].",Qty: ".$data['quantity'].", Price: ".$data['price'];
+	//echo ", MUnit: ".$data['multi_unit'].",MQty: ".$data['mu_qty'].", MPrice: ".$data['mu_harga'];
+	
+	$gross=floatval($data['quantity'])*floatval($data['price']);
+	$disc_amount=floatval($data['discount'])*$gross;
+	$gross=$gross-$disc_amount;
+	
+	$disc_amount_2=floatval($data['disc_2'])*$gross;
+	$gross=$gross-$disc_amount_2;
+
+	$disc_amount_3=floatval($data['disc_3'])*$gross;
+	$gross=$gross-$disc_amount_3;
+	
+	$data['discount_amount']=$disc_amount;
+	$data['disc_2']=floatval($data['disc_2']);
+	$data['disc_amount_2']=$disc_amount_2;
+	$data['disc_3']=floatval($data['disc_3']);
+	$data['disc_amount_3']=$disc_amount_3;
+	$data['amount']=$gross;
+	if(!isset($data['warehouse_code']))$data['warehouse_code']=$this->session->userdata("default_warehouse");
+	if($data['warehouse_code']=="")$data['warehouse_code']="Gudang";
+	
+	
+	if($id!=""){
+		unset($data['line_number']);
+		$this->db->where($this->primary_key,$id);
+		return $this->db->update($this->table_name,$data);
+	} else {
+		$this->db->insert($this->table_name,$data);
+	}
+	return $this->db->insert_id();
 }
 function update($id,$data){
 	if($data['discount']=='')$data['discount']=0;
 	if($data['quantity']=='')$data['quantity']=0;
 	if($data['amount']=='')$data['amount']=0;
 	if($data['price']=='')$data['price']=0;
+	if($unit=exist_unit($data['unit'])){
+		$data['mu_qty']=$data['quantity']*$unit['unit_value'];
+		$data['mu_harga']=item_sales_price($data['item_number']);
+		$data['multi_unit']=$unit['from_unit'];		
+	} else {
+		$data['mu_qty']=$data['quantity'];
+		$data['mu_harga']=$data['price'];
+		$data['multi_unit']=$data['unit'];
+	}
 	if($data['quantity']>"0"){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);

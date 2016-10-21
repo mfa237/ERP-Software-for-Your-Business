@@ -60,6 +60,7 @@ class Loan_create_schedule extends CI_Controller {
     }
 	function save_admin(){
 		$data=$this->input->post();	
+		//var_dump($data);
 		$ok=$this->loan_master_model->process_schedule($data);
 		if($ok){
 			echo json_encode(array("success"=>true));

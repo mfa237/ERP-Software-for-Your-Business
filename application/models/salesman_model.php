@@ -3,9 +3,11 @@ class Salesman_model extends CI_Model {
 
 private $primary_key='salesman';
 private $table_name='salesman';
+public $fields=null;
 
 function __construct(){
 	parent::__construct();
+	add_field('salesman','user_id');
 }
 	function get_paged_list($limit=10,$offset=0,
 	$order_column='',$order_type='asc')

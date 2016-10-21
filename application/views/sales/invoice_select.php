@@ -1,6 +1,6 @@
 <!-- PILIH FAKTUR  --> 
 <div id='dlgFaktur'class="easyui-dialog" style="width:600px;height:380px;padding:10px 20px"
-     closed="true" buttons="#tbFaktur">
+     closed="true" toolbar="#tbFaktur">
      <div id='divFaktur'> 
 		<table id="dgFaktur" class="easyui-datagrid"  width='100%'
 			data-options="

@@ -19,7 +19,7 @@ if(!function_exists('browse')){
             $fld=$flds[$i];
             $fld=str_replace('_',' ',$fld);
             $fld=ucfirst($fld);
-            $thead.='<th data-options="field:\''.$flds[$i].'\'">'.$fld.'</th>';
+            $thead.='<th data-options="field:\''.$flds[$i].'\' ">'.$fld.'</th>';
         }
         $thead.='</tr>';
         $search=$CI->input->get('search');

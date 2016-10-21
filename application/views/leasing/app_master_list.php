@@ -1,6 +1,6 @@
 <div id='dlgAppMaster'class="easyui-dialog" style="width:600px;height:400px;padding:10px 20px" closed="true" 
 	buttons="#tbFindAppMaster">
-	<table id="dgFindAppMaster" class="easyui-datagrid "  data-options="toolbar: '',
+	<table  style='width:100%' id="dgFindAppMaster" class="easyui-datagrid "  data-options="toolbar: '',
 			singleSelect: true,	url: '',height: 300 ">
 		<thead>
 			<tr>
@@ -8,6 +8,7 @@
 				<th data-options="field:'app_date',width:100">Tanggal</th>
 				<th data-options="field:'cust_name',width:100">Nama Debitur</th>
 				<th data-options="field:'status',width:50">Status</th>
+				<th data-options="field:'area',width:50">Area</th>
 				<th data-options="field:'counter_id',width:50">Counter</th>
 				<th data-options="field:'counter_name',width:50">Nama Counter</th>
 				<th data-options="field:'cust_id',width:50">Kode Debitur</th>

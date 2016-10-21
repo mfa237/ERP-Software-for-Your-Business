@@ -2,23 +2,25 @@
 <div class='row'>
 <div class="col-sm-5 ">
 	<form id="frmOvertime" method="POST">
-	<table class='table2' width='100%'>
+	<table class='table' width='100%'>
 	  <tr><td>NIP</td><td><input id="nip" onblur="cari_nip();return false;" name="nip">
 	  <?=link_button('','lookup_employee()','search')?>
 	  </td></tr>
-	  <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" style="width:140px"></td></tr>
+	  <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" 
+					data-options="formatter:format_date,parser:parse_date"
+					style="width:140px"></td></tr>
 	  <tr><td>Jam Awal</td><td><input id="time_in" name="time_in"></td></tr>
 	  <tr><td>Jam Akhir</td><td><input id="time_out" name="time_out"></td></tr>
 	  <tr><td>Supervisor</td><td><input id="supervisor" name="supervisor"></td></tr>
 	  <tr><td>Hari Libur</td><td><input id="hari_libur" name="hari_libur" type="checkbox"></td></tr>
 	  <tr><td>&nbsp;</td></tr>
-	  <tr><td> <?=link_button('Simpan','add_ot()','save','false')?></td></tr>
+	  <tr><td  colspan='5'> <?=link_button('Simpan','add_ot()','save','false')?></td></tr>
 	  <tr><td><input id="id" name="id" type="hidden"></td></tr>
 	</table>
 	</form>
 </div>
 <div class="col-sm-6 thumbnail">
-   <table width='100%' class='table2'>
+   <table width='100%' class='table'>
 	  <tr><td>Nama</td><td><input id="nama" name="nama" disabled></td></tr>
 	  <tr><td>Dept</td><td><input id="dept" name="dept" disabled></td></tr>
 	  <tr><td>Divisi</td><td><input id="divisi" name="divisi" disabled></td></tr>

@@ -1,29 +1,32 @@
-<div class="max-tool"><h3>RETUR PEMBELIAN</H3>  
+<div class="max-tool"> 
 <div class="thumbnail tool box-gradient">
 	<?
 	if($posted=="")$posted=0;
 	echo link_button('Save', 'save_retur()','save');		
 	echo link_button('Print', 'print_retur()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/purchase_retur/add');		
-	echo link_button('Delete','','cut','true',base_url().'index.php/purchase_retur/delete/'.$purchase_order_number);		
-	echo link_button('Search','','search','true',base_url().'index.php/purchase_retur');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/purchase_retur/view/'.$purchase_order_number);		
+	echo link_button('Add','','add','false',base_url().'index.php/purchase_retur/add');		
+	echo link_button('Delete','','cut','false',base_url().'index.php/purchase_retur/delete/'.$purchase_order_number);		
+	echo link_button('Search','','search','false',base_url().'index.php/purchase_retur');		
+	echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_retur/view/'.$purchase_order_number);		
 
 	if($posted) {
-		echo link_button('UnPosting','','cut','true',base_url().'index.php/purchase_retur/unposting/'.$purchase_order_number);		
+		echo link_button('UnPosting','','cut','false',base_url().'index.php/purchase_retur/unposting/'.$purchase_order_number);		
 	} else {
-		echo link_button('Posting','','ok','true',base_url().'index.php/purchase_retur/posting/'.$purchase_order_number);		
+		echo link_button('Posting','','ok','false',base_url().'index.php/purchase_retur/posting/'.$purchase_order_number);		
 	}
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'purchase_retur\')','help');		
 	
 	?>
 
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('purchase_retur')">Help</div>
+		<div onclick="show_syslog('purchase_retur','<?=$purchase_order_number?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
 	</div>
 </div>
 <div class="thumbnail">
@@ -42,20 +45,22 @@
 	
 <form id='frmRetur' method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<table class="table2" width="100%">
+<table class="table" width="100%">
 	<tr>
 		<td>Nomor Retur</td><td class='field'>
 			<?="<input type='text' id='purchase_order_number' name='purchase_order_number' value='$purchase_order_number'>"?>
 		</td>
-		<td rowspan='4'><div class='thumbnail' style='height:100px;width:300px;'><?=$supplier_info?></div></td>
+		<td rowspan='5'><div class='thumbnail' style='height:100px;width:300px;'><?=$supplier_info?></div></td>
 
     </tr>	 
     <tr>		
         <td>Tanggal</td><td class='field'><?php echo form_input('po_date',$po_date,'id=po_date
-           class="easyui-datetimebox"');?></td>
+           class="easyui-datetimebox"
+			data-options="formatter:format_date,parser:parse_date"
+			');?></td>
     </tr>	 
     <tr>
-    <td>Supplier</td><td colspan="4" class='field'>
+    <td>Supplier</td><td   class='field'>
  	   		<?
  	   		echo form_input("supplier_number",$supplier_number,"id='supplier_number'");      	
 			echo link_button('','select_supplier()',"search","true"); 
@@ -119,7 +124,7 @@
 		<!-- END PURCHASE_ORDER_LINEITEMS -->
 			<h5>TOTAL</H5>
 			<div id='divTotal'> 
-				<table class="table2" width="100%">
+				<table class="table" width="100%">
 					<tr>
 						<td>Sub Total: </td><td><input id='sub_total' value='<?=$subtotal?>' style='width:100px'></td>				
 						<td>Discount %: </td><td><input id='disc_total_percent' value='<?=$discount?>' style='width:50px'></td>

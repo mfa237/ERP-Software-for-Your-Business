@@ -1,5 +1,5 @@
 <legend>PERUSAHAAN</legend> 
-<div class="thumbnail box-gradient">	
+<div class="thumbnail">	
    <?php echo validation_errors(); ?>
    <?php 
    		if($mode=='view'){
@@ -12,7 +12,7 @@
 		
    ?> 
    
-   <table class='table2' width="100%">
+   <table class='table' width="100%">
 	<tr>
 		<td>Kode</td><td>
 		<?php
@@ -32,7 +32,7 @@
        </tr>
 	<tr>	 
 		<td>Alamat</td><td><?php echo form_input('street',
-                        $street,'style="width:300px"');?></td>		 
+                        $street,'style="width:90%"');?></td>		 
 	</tr>
 	<tr><td>Kota</td><td><?php echo form_input('city_state_zip_code',
                         $city_state_zip_code,'style="width:300px"');?></td></tr>

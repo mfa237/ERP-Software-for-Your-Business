@@ -1,4 +1,4 @@
-<div><h1>PEMBAYARAN HUTANG</H1><div class="thumbnail box-gradient">
+<div class="thumbnail box-gradient">
 	<?
 	echo link_button('Save', 'save_pay()','save');		
 	echo link_button('Print', 'print_pay()','print');		
@@ -11,10 +11,11 @@
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('payables_payments')">Help</div>
+		<div onclick="show_syslog('payables_payments','<?=$no_bukti?>')">Log Aktifitas</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
-	</div>
+	</div>	
 </div>
 <div class="thumbnail box-gradient">	
 	<form id='frmAddPay' method="post">

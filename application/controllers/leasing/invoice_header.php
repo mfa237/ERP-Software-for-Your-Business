@@ -21,6 +21,7 @@ class Invoice_header extends CI_Controller {
 		if($this->help=="")$this->help=$this->table_name;
 		
 		$this->load->model('leasing/invoice_header_model');
+		$this->load->model('leasing/payment_model');
     }
     function set_defaults($record=NULL){
 		$data['mode']='';
@@ -62,10 +63,27 @@ class Invoice_header extends CI_Controller {
 	function save(){
 		$data=$this->input->post();
 		$id=$this->input->post("invoice_no");
+		if( !$id ) $id=$this->input->post('invoice_number');
 		$mode=$data["mode"];	unset($data['mode']);
+		
 		if($mode=="add"){ 			
 			$ok=$this->invoice_header_model->save($data);
 		} else {
+			//$data['invoice_date']=$this->input->post('invoice_date');
+			//$data['date_paid']=$data['invoice_date'];
+//			var_dump($data);
+			unset($data['cust_name']);
+			if(isset($data['date_paid']))$data['date_paid']=date('Y-m-d',strtotime($data['date_paid']));
+			if(isset($data['amount']))$data['amount']=str_replace(",","",$data['amount']);
+			if(isset($data['pokok']))$data['pokok']=str_replace(",","",$data['pokok']);
+			if(isset($data['bunga']))$data['bunga']=str_replace(",","",$data['bunga']);
+			if(isset($data['amount_paid']))$data['amount_paid']=str_replace(",","",$data['amount_paid']);
+			if(isset($data['admin_amount']))$data['admin_amount']=str_replace(",","",$data['admin_amount']);
+			if(isset($data['pokok_paid']))$data['pokok_paid']=str_replace(",","",$data['pokok_paid']);
+			if(isset($data['bunga_paid']))$data['bunga_paid']=str_replace(",","",$data['bunga_paid']);
+			if(isset($data['denda']))$data['denda']=str_replace(",","",$data['denda']);
+			if(isset($data['bunga_finalty']))$data['bunga_finalty']=str_replace(",","",$data['bunga_finalty']);
+
 			$ok=$this->invoice_header_model->update($id,$data);				
 		}
 		if($ok){
@@ -74,9 +92,12 @@ class Invoice_header extends CI_Controller {
 			echo json_encode(array("msg"=>"Error atau loan_id sudah ada."));
 		}
 	}	
-    function view($id,$message=null){
+	function edit($id){
 		$id=urldecode($id);
-		$message=urldecode($message);
+		$this->view($id,"edit");
+	}
+    function view($id,$mode="view",$show_tool=true){
+		$id=urldecode($id);
 		$data[$this->primary_key]=$id;
 		$model=$this->invoice_header_model->get_by_id($id)->row();
 		$data=$this->set_defaults($model);
@@ -88,13 +109,13 @@ class Invoice_header extends CI_Controller {
 			}
 		}
 		$data['cust_name']=$cst_name;
-		$data['mode']='view';
-		$data['message']=$message;
+		$data['mode']=$mode;
+		$data['message']="View Invoice";
 		$data['title']=$this->title;
 		$data['help']=$this->help;
 		$data['form_controller']=$this->controller;
 		$data['field_key']=$this->primary_key;
-		$data['only_posting']=true;
+		//$data['only_posting']=true;
 		$this->template->display_form_input($this->file_view,$data);
     }
      // validation rules
@@ -137,11 +158,20 @@ class Invoice_header extends CI_Controller {
 //	 	$this->loan_master_model->delete($id);
 		$this->browse();
 	}
-	function find($nomor){
+	function find($nomor){ 
 		$nomor=urldecode($nomor);
 		$query=$this->db->query("select * from $table_name where invoice_no='$nomor'");
 		echo json_encode($query->row_array());
  	}	
+	function delete_payment($id){
+		$id=urldecode($id);
+		$invoice_number=$this->db->select('invoice_number')
+			->where('id',$id)->get('ls_invoice_payments')->row()->invoice_number;			
+		if($id!=""){
+			$this->payment_model->delete($id);
+		}
+		$this->view($invoice_number);
+	}
 	function add_payment($faktur){
 		$faktur=urldecode($faktur);
 		$data['date_paid']=$this->input->post('date_paid');
@@ -184,6 +214,31 @@ class Invoice_header extends CI_Controller {
 	function posting($invoice_no) {
 		$message=$this->invoice_header_model->posting($invoice_no);
 		$this->view($invoice_no,$message);
+	}
+	function recalc_balance_view($faktur,$update_denda=false){
+		$this->recalc_balance($faktur,$update_denda);
+		$this->view($faktur);
+	}
+	function recalc_balance($faktur,$update_denda=false){
+		$faktur=urldecode($faktur);
+		 $this->invoice_header_model->recalc_hari_telat($faktur);
+		 $this->invoice_header_model->recalc_saldo($faktur);
+		$success=true;
+		$data=$this->payment_model->summary($faktur);
+		 
+		$saldo_titip=$this->invoice_header_model->saldo_titip($faktur);
+		$data_return=array("success"=>$success,"data"=>$data,"saldo_titip"=>$saldo_titip);
+		echo json_encode($data_return);
+		
+	}
+	 
+	function get_payment_json($faktur){
+		$faktur=urldecode($faktur);
+		$success=true;
+		$data=$this->payment_model->summary($faktur);		
+		$data['saldo_titip']=$this->invoice_header_model->saldo_titip($faktur);
+		$data_return=array("success"=>$success,"data"=>$data);
+		echo json_encode($data_return);
 	}
 	
 }

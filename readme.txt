@@ -1,18 +1,11 @@
-CARA INSTALL
-=============
-1. Install WAMP Server
-2. Extract maxon.rar ke c:\wamp\www\maxon
-3. Open MySQL dan Create database simak
-4. Execute simak.sql di database tersebut
+1. create database di panel hosting
+2. upload maxon php
+3. edit file application/config/database.php
+4. edit file application/config/config.php
+   base_url=http://www.xxxxx.com
+   session tmp_path ke //www.xxxx.com/tmp
+   $config['sess_save_path'] = '/var/www/vhosts/maxonerp.com/tmp/';
 
-5. Edit file c:\wamp\www\maxon\application\database.php
 
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = 'simak';
-$db['default']['database'] = 'simak';
+192.168.23.24:3306
 
-6. Jalankan http://localhost/maxon
-   dengan login admin password admin
-
-7. selamat mencoba

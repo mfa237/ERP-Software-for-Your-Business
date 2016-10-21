@@ -15,6 +15,7 @@ class Inventory_prices extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('inventory_prices_model');
+		$this->load->model('syslog_model');
 	}
 	function set_defaults($record=NULL){
 		$data['mode']='';
@@ -67,6 +68,8 @@ class Inventory_prices extends CI_Controller {
 			$data=$this->get_posts();                      
 			$this->inventory_prices_model->update($id,$data);
 	        $message='Update Success';
+			$this->syslog_model->add($id,"inventory_prices","edit");
+
 	        $this->browse();
 		} else {
 			$message='Error Update';
@@ -121,6 +124,8 @@ class Inventory_prices extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->inventory_prices_model->delete($id);
+		$this->syslog_model->add($id,"inventory_prices","delete");
+
 	 	$this->browse();
 	}
 	

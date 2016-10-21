@@ -15,7 +15,9 @@
 		<table  style='width:100%' class="table2">
 			<tr><td colspan='4'><strong>TAGIHAN</strong></td></tr>
 			<tr>
-				<td>Nomor Faktur </td><td><?=form_input(array("name"=>"invoice_number","id"=>"invoice_number"),$invoice_number,$disabled)?></td>
+				<td>Nomor Faktur </td><td><?=form_input(array("name"=>"invoice_number","id"=>"invoice_number"),$invoice_number,$disabled)?>
+					<a href='#' onclick='recalc_tagihan();return false;' class='btn btn-default'>Recalc</a>
+				</td>
 				<td>Tanggal</td><td><?=form_input('invoice_date',$invoice_date,$disabled)?></td>
 			</tr>
 			<tr>
@@ -54,11 +56,44 @@
 		</table>
 	</form>
 	</div>	 
+	<div class='col-md-12'>
+		<h3>PAYMENT LIST</h3>
+		<?php
+			if($q=$this->db->where('invoice_number',$invoice_number)->get('ls_invoice_payments')){
+				echo "<table class='table'><thead><tr><th>Tanggal Bayar</th><th>Jenis</th>
+				<th>Denda Paid</th><th>Bunga Paid</th><th>Pokok Paid</th><th>Total Paid</th>
+				<th>Nomor Bukti</th><th>ID</th></thead><tbody>";
+				foreach($q->result() as $pay){
+					echo "<tr><td>$pay->date_paid</td><td>$pay->how_paid</td>
+					<td>".number_format($pay->denda)."</td>
+					<td>".number_format($pay->bunga)."</td>
+					<td>".number_format($pay->pokok)."</td>
+					<td>".number_format($pay->amount_paid)."</td>
+					<td>$pay->voucher_no</td>";
+					if(user_job_exist('ADMLS')){
+						echo "
+						<td><a href='#' class='btn btn-warning' 
+							onclick='delete_payment($pay->id);return false'>Hapus</a>
+							&nbsp
+							<a href='#' class='btn btn-info' 
+							onclick='dlgPayment_Edit($pay->id);return false'>Edit</a>
+						</td></tr>";
+					}
+				}
+				echo "</tbody></table>";
+			}
+		
+		?>
+	</div>
+	<div class='col-md-12'>
+	<h3>JURNAL INVOICE</h3>
 	<? 
 		$gl_id=$invoice_number;
 		require_once(__DIR__.'../../gl/jurnal_view.php');	
 	?>
-	
+	</div>
+
+<?php include_once 'payment_form.php'; ?>	
  <script language='javascript'>
 	function edit_aed(){
 		var url="<?=base_url()?>index.php/<?=$form_controller?>/edit/<?=$invoice_number?>";	
@@ -76,9 +111,10 @@
 		var url="<?=base_url()?>index.php/<?=$form_controller?>/add";	
 		window.open(url,"_self");
 	}
+	
   	function save_aed(){
-		if(!valid())return false;
-		if(!validnum())return false;
+		if($("#invoice_number").val()==""){alert("Nomor Invoice belum diisi !");return false;};
+		if($("#amount_paid").val()==""){alert("Jumlah bayar belum diisi !");return false;};
 		url='<?=base_url()?>index.php/<?=$form_controller?>/save';
 		$('#frmMain').form('submit',{
 			url: url, onSubmit: function(){	return $(this).form('validate'); },
@@ -100,7 +136,7 @@
 		$.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
 			if (r){
 				var url="<?=base_url()?>index.php/<?=$form_controller?>/delete/<?=$invoice_number?>";	
-				window.open(url,"_self");
+				window.open(url,"_self"); 
 			}
 		})
 	}
@@ -115,7 +151,23 @@
 		window.open(url,"_self");	
 	}
 	function print_aed(){
-		var url="<?=base_url()?>index.php/<?=$form_controller?>/print/<?=$invoice_number?>";	
+//		var url="<?=base_url()?>index.php/<?=$form_controller?>/print/<?=$invoice_number?>";	
+//		window.open(url,"_self");
+		var url="<?=base_url()?>index.php/leasing/payment/kwitansi/<?=$invoice_number?>";
+		window.open(url,"Kwitansi_<?=$invoice_number?>");
+		
+	}
+	function delete_payment(id) {
+		$.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
+			if (r){
+				var url="<?=base_url()?>index.php/leasing/invoice_header/delete_payment/"+id;	
+				window.open(url,"_self");
+			}
+		})
+	}
+	function recalc_tagihan(){
+		var invoice_number='<?php echo $invoice_number; ?>';
+		var url='<?=base_url()?>index.php/leasing/invoice_header/recalc_balance_view/'+invoice_number+'/true';
 		window.open(url,"_self");
 	}
 </script>

@@ -42,10 +42,12 @@
 				contentType: 'application/json; charset=utf-8',
                 data:{dp_amount:$("#dp_amount").val(),insr_amount:$("#insr_amount").val(),
                 admin_amount:$("#admin_amount").val(),inst_amount:$("#inst_amount").val(),
-                inst_month:$("#inst_month").val()
+                inst_month:$("#inst_month").val(),dp_prc:$("#dp_prc").val(),rate_prc:$('#rate_prc').val(),
+				promo_code:$("#promo_code").val()
 				}, 
                 success: function(msg){
                     var obj=jQuery.parseJSON(msg);
+					console.log(obj);
 					$('#sub_total').val(obj.sub_total);
                     $('#loan_amount').val(obj.loan_amount);
                     $('#dp_prc').val((obj.dp_prc));

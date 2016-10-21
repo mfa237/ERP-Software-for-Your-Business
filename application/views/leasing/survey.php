@@ -39,4 +39,8 @@ echo form_close();
 	function load_help() {
 		window.parent.$("#help").load("<?=base_url()?>index.php/help/load/app_survey");
 	}
+	function view_cust(nomor){
+		var url="<?=base_url()?>index.php/leasing/cust_master/view/"+nomor+"/view/false";
+		add_tab_parent("ViewCst"+nomor,url);
+	}
 </script>

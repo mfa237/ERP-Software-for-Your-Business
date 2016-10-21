@@ -32,24 +32,18 @@ if ( ! function_exists('browse_select'))
            if(isset($sql_array['group_by']))$group_by=$sql_array['group_by']; 
 		   
         };
-        
-        //echo '<script src="'.base_url().'public/js/browse.js"></script>';
-        //echo '<script src="'.base_url().'public/ui/jquery-1.8.0.min.js"></script>';
         $CI =& get_instance();
         $CI->load->library('template');
         $CI->load->library('table');
         $i=0+$offset;        
-        $query=$CI->db->query($sql.' limit 1');
-        $result = mysql_query($sql.' limit 1');
-        $count = mysql_num_fields($result);
-        $type[0]='';$flds[0]='';            
-        for ($i=0; $i < $count; $i++) {
-            $type[$i]  = mysql_field_type($result, $i);
-            $flds[$i]  = mysql_field_name($result, $i);
-            $len   = mysql_field_len($result, $i);
-            $flags = mysql_field_flags($result, $i);
-            //echo $type . " " . $name . " " . $len . " " . $flags . "\n";
-        }
+ 		$type=array();	$name=array();	$len=array(); $flag=array();
+		if($fields=$CI->db->field_data($table)){
+			foreach($fields as $fld){
+				$type[]=$fld->type;
+				$name[]=$fld->name;
+				$len[]=$fld->max_length;
+			}
+		}
 
         $where='';
         for($i=0;$i<$count;$i++){

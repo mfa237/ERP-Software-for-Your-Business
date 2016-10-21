@@ -1,15 +1,14 @@
 <div id="tb_search" style="height:auto" class="box-gradient">
 	<div style="float:left">
-	Enter Text: <input  id="search_item" style='width:180' name="search_item">
+	Enter Text: <input  id="search_item" style='width:100px' name="search_item">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 	onclick="searchItem();return false;">Search</a>        
 	</div>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItem();return false;">Select</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"   onclick="dlgSearchItem_Close();return false;">Close</a>
 </div>
 
 <div id='dlgSearchItem' class="easyui-dialog" style="width:500px;height:380px;"
-        closed="true" buttons="#tb_search">
+        closed="true" toolbar="#tb_search">
      <div id='divItemSearchResult'> 
 		<table id="dgItemSearch" class="easyui-datagrid"  width="100%"
 			data-options="
@@ -33,22 +32,32 @@
 
 
 		function find(){
-		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val();
-		    console.log(xurl);
+			var cust_type=$('#cust_type').val();
+			 
+			var item=$("#item_number").val();
+			if( item=="" || item=="undefined")return false;
+			var cust_no=$("#sold_to_customer").val();
+		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val()+'/'+cust_type ;
+			var param={item_no:item,cust_type:cust_type,cust_no:cust_no};
 		    $.ajax({
-		                type: "GET",
-		                url: xurl,
-		                data:'item_no='+$('#item_number').val(),
-		                success: function(msg){
-		                    var obj=jQuery.parseJSON(msg);
-		                    $('#item_number').val(obj.item_number);
-		                    $('#price').val(obj.retail);
-		                    //$('#cost').val(obj.cost);
-		                    //$('#unit').val(obj.unit_of_measure);
-		                    $('#description').val(obj.description);
-		                    hitung();
-		                },
-		                error: function(msg){alert(msg);}
+				type: "GET",
+				url: xurl,
+				data: param,
+				success: function(msg){
+					var obj=jQuery.parseJSON(msg);
+					$('#item_number').val(obj.item_number);
+					$('#price').val(obj.retail);
+					$('#cost').val(obj.cost);
+					$('#unit').val(obj.unit_of_measure);
+					$('#description').val(obj.description);
+					$("#discount").val(obj.discount);
+					if(obj.discount==0) $("#discount").val(obj.disc_prc_1);
+					$("#disc_2").val(obj.disc_prc_2);
+					$("#disc_3").val(obj.disc_prc_3);
+					
+					hitung();
+				},
+				error: function(msg){alert(msg);}
 		    });
 		};
 		function selectSearchItem()
@@ -64,7 +73,8 @@
 		}
 		function searchItem()
 		{
-			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang');
+			$('#dlgSearchItem').dialog('open')
+				.dialog('setTitle','Cari data barang');
 			nama=$('#search_item').val();
 			$('#dgItemSearch').datagrid({url:'<?=base_url()?>index.php/inventory/filter/'+nama});
 			$('#dgItemSearch').datagrid('reload');

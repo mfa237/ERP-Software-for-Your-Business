@@ -2,8 +2,8 @@
 
 class Purchase_order extends CI_Controller {
         private $limit=10;
-        private $sql="select purchase_order_number,po_date,amount, 
-                i.supplier_number,c.supplier_name,c.city,i.warehouse_code,i.received
+        private $sql="select purchase_order_number,po_date,
+				c.supplier_name,i.received
                 from purchase_order i
                 left join suppliers c on c.supplier_number=i.supplier_number
                 where i.potype='O'";
@@ -26,6 +26,7 @@ class Purchase_order extends CI_Controller {
 		$this->load->model('supplier_model');
 		$this->load->model('inventory_model');
 		$this->load->model('type_of_payment_model');
+		$this->load->model('syslog_model');
 		 
 	}
 	function set_defaults($record=NULL){
@@ -50,6 +51,7 @@ class Purchase_order extends CI_Controller {
 	}
 	function add()
 	{
+		if(!allow_mod2('_40041'))return false;
 	 	$data=$this->set_defaults();
 		$this->_set_rules();
 		$data['mode']='add';
@@ -62,22 +64,7 @@ class Purchase_order extends CI_Controller {
 	}
 	function nomor_bukti($add=false)
 	{
-		$key="Purchase Order Numbering";
-		if($add){
-		  	$this->sysvar->autonumber_inc($key);
-		} else {			
-			$no=$this->sysvar->autonumber($key,0,'!PO~$00001');
-			for($i=0;$i<100;$i++){			
-				$no=$this->sysvar->autonumber($key,0,'!PO~$00001');
-				$rst=$this->purchase_order_model->get_by_id($no)->row();
-				if($rst){
-				  	$this->sysvar->autonumber_inc($key);
-				} else {
-					break;					
-				}
-			}
-			return $no;
-		}
+		return $this->purchase_order_model->nomor_bukti($add);
 	}
 	function save(){
 		
@@ -103,8 +90,11 @@ class Purchase_order extends CI_Controller {
 			
 		if($mode=="add"){
 			$ok=$this->purchase_order_model->save($data);
+			$this->syslog_model->add($id,"purchase_order","add");
+
 		} else {
 			$ok=$this->purchase_order_model->update($id,$data);			
+			$this->syslog_model->add($id,"purchase_order","edit");
 		}
 
 		if ($ok){
@@ -118,7 +108,8 @@ class Purchase_order extends CI_Controller {
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity,p.qty_recvd 
-		,p.unit,p.price,p.discount,p.total_price,p.line_number,p.from_line_doc
+		,p.unit,p.price,p.discount,p.total_price,
+		p.line_number,p.from_line_doc,p.disc_2,p.disc_3
 		from purchase_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where purchase_order_number='$nomor'";
@@ -134,7 +125,8 @@ class Purchase_order extends CI_Controller {
 			$data=$this->get_posts();
 			unset($data['has_receive']);
 			$this->purchase_order_model->update($id,$data);
-                        $message='Update Success';
+			$message='Update Success';
+			$this->syslog_model->add($id,"purchase_order","edit");
 		} else {
 			$message='Error Update';
 		}
@@ -143,6 +135,7 @@ class Purchase_order extends CI_Controller {
 	}
 	 
 	function view($id,$mode="view"){
+		if(!allow_mod2('_40040'))return false;
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $model=$this->purchase_order_model->get_by_id($id)->row();
@@ -189,9 +182,11 @@ class Purchase_order extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor PO','Tanggal','Jumlah','Kode Supplier','Nama Supplier','Kota','Gudang','Rcvd');
-		$data['fields']=array('purchase_order_number','po_date','amount', 
-                'supplier_number','supplier_name','city','warehouse_code','received');
+		$data['fields_caption']=array('Nomor PO','Tanggal','Nama Supplier','Rcvd');
+		$data['fields']=array('purchase_order_number','po_date', 
+                'supplier_name','received');
+		$data['col_width']=array('purchase_order_number'=>50,'po_date'=>50,
+		'supplier_name'=>200,'recv'=>20);
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR PURCHASE ORDER';
 
@@ -216,6 +211,7 @@ class Purchase_order extends CI_Controller {
         echo datasource($sql);
     }	 
 	function delete($id){	 	 
+		$id=urldecode($id);
 		if(!allow_mod('_40043')){
 			echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan menjalankan proses module ini."));
 			return false;
@@ -225,6 +221,8 @@ class Purchase_order extends CI_Controller {
 		} else {
 			echo json_encode(array("success"=>false,"msg"=>"Nomor PO ini tidak bisa dihapus! <br>Sudah ada penerimaan."));
 		}
+		$this->syslog_model->add($id,"purchase_order","delete");
+
 	}
 	function detail(){
 		$data['purchase_order_number']=isset($_GET['purchase_order_number'])?$_GET['purchase_order_number']:'';
@@ -267,12 +265,15 @@ class Purchase_order extends CI_Controller {
         function delete_item($id){
 			$id=urldecode($id);
             $this->load->model('purchase_order_lineitems_model');
-            return $this->purchase_order_lineitems_model->delete($id);
+            $ok=$this->purchase_order_lineitems_model->delete($id);			
+			if ($ok){
+				echo json_encode(array('success'=>true));
+			} else {
+				echo json_encode(array('msg'=>'Some errors occured.'));
+			}
         }        
         function print_po($nomor){
 			$nomor=urldecode($nomor);
-		    $this->load->helper('mylib');
-			$this->load->helper('pdf_helper');		
 			
             $invoice=$this->purchase_order_model->get_by_id($nomor)->row();
 			$saldo=$this->purchase_order_model->recalc($nomor);
@@ -289,7 +290,8 @@ class Purchase_order extends CI_Controller {
 			$data['tax']=$invoice->tax;
 			$data['tax_amount']=$invoice->tax*($data['sub_total']-$data['disc_amount']);
 			$data['comments']=$invoice->comments;
-			$this->load->view('purchase/print_po',$data);
+			$data['content']=load_view('purchase/rpt/print_po_pdf.php',$data);
+			$this->load->view('pdf_print',$data);
 
 		}
         function sum_info(){
@@ -341,8 +343,10 @@ class Purchase_order extends CI_Controller {
 				$rows[0]='';
 				if($query){ 
 					foreach($query->result_array() as $row){
-						$row['qty']=form_input("qty[]","","style='width:50px'");
+						$qty_sisa=$row['quantity']-$row['qty_recvd'];
+						$row['qty']=form_input("qty[]",$qty_sisa,"style='width:50px'");
 						$row['line']=$row['line_number'].form_hidden("line[]",$row['line_number']);
+						
 						$rows[$i++]=$row;
 					};
 				}
@@ -420,7 +424,7 @@ class Purchase_order extends CI_Controller {
 		if($this->input->get()){
 			$sql="update purchase_order set discount=".$_GET['discount'].",tax=".$_GET['tax']
 			.",freight=".$_GET['freight'].",other=".$_GET['others']." where purchase_order_number='$nomor'";
-			$rs=mysql_query($sql);
+			$rs=$this->db->query($sql);
 		} 
 		$saldo=$this->purchase_order_model->recalc($nomor);
 		$sub_total=$this->purchase_order_model->sub_total;
@@ -429,37 +433,15 @@ class Purchase_order extends CI_Controller {
 		echo json_encode($data);				
 	}
     function save_item(){
-    	 
-        $item_no=$this->input->post('item_number');
-		$po=$this->input->post('po_number_item');
-        $data['purchase_order_number']=$po;
-        $data['item_number']=$item_no;
-        $data['quantity']=$this->input->post('quantity');
-        $data['unit']=$this->input->post('unit');
-        $data['price']=$this->input->post('price');
-		$data['discount']=$this->input->post('discount');
-		$data['warehouse_code']=$this->input->post('gudang_item');
-		if($data['discount']=='')$data['discount']=0;
-		$data['total_price']=$this->input->post('amount');			
-		$id=$this->input->post('line_number');
-		if($id!='')$data['line_number']=$id;
-        $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-		if($item){
-            $data['description']=$item->description;
-		}
-		if($data['unit']=='')$data['unit']=$item->unit_of_measure;
-		if($data['total_price']==0){
-	        $gross=($data['quantity']*$data['price']);
-			$disc_amt=$gross*$data['discount'];
-			$data['total_price']=$gross-$disc_amt;
-		}
         $this->load->model('purchase_order_lineitems_model');
-        
-		if($id!=''){
-			$ok=$this->purchase_order_lineitems_model->update($id,$data);
-		} else {
-        	$ok=$this->purchase_order_lineitems_model->save($data);
-		}
+		$data=$this->input->post();
+        $item_no=$this->input->post('item_number');
+		$po=$data['po_number_item'];
+		unset($data['po_number_item']);
+        $data['purchase_order_number']=$po;
+		$data['warehouse_code']=$data['gudang_item'];
+		unset($data['gudang_item']);
+       	$ok=$this->purchase_order_lineitems_model->save($data);
 		$this->purchase_order_model->recalc($po);
 		 
 		if ($ok){

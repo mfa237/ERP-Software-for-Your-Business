@@ -22,6 +22,8 @@ class Jurnal extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('jurnal_model');
 		$this->load->model('chart_of_accounts_model');
+		$this->load->model('syslog_model');
+		
 	}
 	function set_defaults($record=NULL){
 		$data['mode']='';
@@ -80,6 +82,7 @@ class Jurnal extends CI_Controller {
 
 	function add()
 	{
+		if(!allow_mod2('_10061'))return false;   
 	 	$data=$this->set_defaults();
 		$this->_set_rules();
 		$data['mode']='add';
@@ -90,10 +93,13 @@ class Jurnal extends CI_Controller {
 	function save(){
 		$data=$this->get_posts();
 		$id=$this->jurnal_model->save($data);
-        $message='update success';		
+        $message='update success';
+		$this->syslog_model->add($id,"jurnal","add");
+		
 	}
 	function view($gl_id,$message="")
 	{
+		if(!allow_mod2('_10060'))return false;   
 		$gl_id=urldecode($gl_id);
 		$data=$this->set_defaults();
 		$this->_set_rules();
@@ -129,6 +135,8 @@ class Jurnal extends CI_Controller {
 			
 			$this->jurnal_model->update($id,$data);
             $message='Update Success';
+			$this->syslog_model->add($id,"jurnal","edit");
+
 		} else {
 			$message='Error Update';
 		}	  
@@ -170,10 +178,9 @@ class Jurnal extends CI_Controller {
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Kode Akun','Nama Akun','Debit'
-		,'Kredit','Source','Jenis','Ref','account_id','ID');
+		,'Kredit','Source','Jenis');
 		$data['fields']=array('gl_id','date','account','account_description'
-        ,'debit','credit','source','operation','custsuppbank','account_id'
-        ,'transaction_id');
+        ,'debit','credit','source','operation');
 		$data['field_key']='gl_id';
 		$data['caption']='DAFTAR TRANSAKSI JURNAL';
 		$data['export_visible']=true;
@@ -218,6 +225,7 @@ class Jurnal extends CI_Controller {
 		return $sql;
 	}
 	function delete($id=''){
+		if(!allow_mod2('_10063',false))return false;   
 		$id=urldecode($id);
 		$this->load->model("periode_model");
 		
@@ -230,6 +238,7 @@ class Jurnal extends CI_Controller {
 					return false;
 				}
 				if($this->jurnal_model->del_jurnal($id)){
+					$this->syslog_model->add($id,"jurnal","delete");
 					$this->browse();
 				} else {
 					$this->view($id,"Tidak bisa hapus jurnal ini");
@@ -276,6 +285,8 @@ class Jurnal extends CI_Controller {
 		$data['source']=$this->input->post('source');
 		$data['operation']=$this->input->post('operation');
 		if($this->jurnal_model->save($data)){
+			$this->syslog_model->add($data['gl_id'],"jurnal","add");
+
 			echo json_encode(array('success'=>true));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));

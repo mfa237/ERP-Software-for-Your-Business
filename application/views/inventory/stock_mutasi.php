@@ -10,6 +10,8 @@
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('stock_mutasi')">Help</div>
+		<div onclick="show_syslog('stock_mutasi','<?=$transfer_id?>')">Log Aktifitas</div>
+
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -22,27 +24,42 @@
 		<td>Nomor</td><td><?php 
                 echo form_input('transfer_id',$transfer_id,'id=transfer_id');
         ?></td>
+		<td>Status </td><td><?php 
+            echo form_dropdown('status',$status_list,$status,'id=status');
+			echo link_button("Update","update_status();return false","save");
+        ?></td>
+		
+		
 	</tr>
        <tr>
 		<td>Tanggal</td><td><?php  
                 echo form_input('date_trans',$date_trans
-				,"id='date_trans' class='easyui-datetimebox' required");
+				,"id='date_trans' class='easyui-datetimebox' required 
+				data-options='formatter:format_date,parser:parse_date'");
                 
         ?></td>
+		<td>Verify By</td>
+		<td><?=form_input("verify_by",$verify_by," readonly")?></td>
        </tr>
 	<tr>
 		<td>Gudang Sumber</td><td><?php 
-                echo form_dropdown('from_location',$warehouse_list,$from_location,'id=from_location');
+				$gudang_locked="";
+				if($from_location!="")$gudang_locked="disabled";
+                echo form_dropdown('from_location',$warehouse_list,$from_location,'id=from_location '.$gudang_locked);
         ?></td>
+		<td>Verify Date</td>
+		<td><?=form_input("verify_date",$verify_date," readonly")?></td>
 	</tr>
 	<tr>
 		<td>Gudang Tujuan</td><td><?php 
                 echo form_dropdown('to_location',$warehouse_list,$to_location,'id=to_location');
         ?></td>
+		<td></td>
+		<td></td>
 	</tr>
     <tr>
 		<td>Catatan</td>
-		<td><?php 
+		<td colspan='3'><?php 
                 	echo form_input('comments',$comments,'style="width:400px"');
         ?></td>
      </tr>
@@ -95,6 +112,13 @@
 		url="<?=base_url()?>index.php/stock_mutasi/print_bukti/"+nomor;
 		window.open(url,'_blank');
 	}
-
+	function update_status()
+	{
+		var status=$("#status").val();
+	 	var nomor=$('#transfer_id').val();
+		var url='<?=base_url()?>index.php/stock_mutasi/verify/'+nomor+"?status="+status;
+		var next_url='<?=base_url()?>index.php/stock_mutasi/view/'+nomor;
+		ajax_get(url,null,next_url);
+	}
     
  </script>

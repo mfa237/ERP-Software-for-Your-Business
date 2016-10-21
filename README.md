@@ -21,3 +21,6 @@ $db['default']['database'] = 'simak';
    dengan login admin password admin
 
 7. selamat mencoba
+
+Untuk demonya ada di http://demo.maxonerp.com
+panduan di http://help.maxonerp.com

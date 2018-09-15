@@ -3,24 +3,18 @@ MAXON
 
 ERP Software for Your Business
 
-CARA INSTALL
-=============
-1. Install WAMP Server
-2. Extract maxon.rar ke c:\wamp\www\maxon
-3. Open MySQL dan Create database simak
-4. Execute simak.sql di database tersebut
+HOW TO INSTALL
+==============
+1. Extract maxon.rar to your xampp installation (example:c:\xampp\htdocs)
+2. Open your browse (chrome recomended) and run to http://localhost/maxon
+4. Input your mysql configuration and proses
+5. Wait about 5 minute to install
+6. After finish please delete or rename folder install (c:\xampp\htdocs\maxon\install)
+5. Open http://localhost/maxon
+6. Input login: admin and pasword: admin
+7. After login klik menu Setting and proses Check Database
+8. Enjoy !!!
 
-5. Edit file c:\wamp\www\maxon\application\database.php
-
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = 'simak';
-$db['default']['database'] = 'simak';
-
-6. Jalankan http://localhost/maxon
-   dengan login admin password admin
-
-7. selamat mencoba
 
 Untuk demonya ada di http://demo.maxonerp.com
 panduan di http://help.maxonerp.com

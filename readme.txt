@@ -1,11 +1,11 @@
-1. create database di panel hosting
-2. upload maxon php
-3. edit file application/config/database.php
-4. edit file application/config/config.php
-   base_url=http://www.xxxxx.com
-   session tmp_path ke //www.xxxx.com/tmp
-   $config['sess_save_path'] = '/var/www/vhosts/maxonerp.com/tmp/';
-
-
-192.168.23.24:3306
-
+HOW TO INSTALL
+==============
+1. Extract maxon.rar to your xampp installation (example:c:\xampp\htdocs)
+2. Open your browse (chrome recomended) and run to http://localhost/maxon
+4. Input your mysql configuration and proses
+5. Wait about 5 minute to install
+6. After finish please delete or rename folder install (c:\xampp\htdocs\maxon\install)
+5. Open http://localhost/maxon
+6. Input login: admin and pasword: admin
+7. After login klik menu Setting and proses Check Database
+8. Enjoy !!!
